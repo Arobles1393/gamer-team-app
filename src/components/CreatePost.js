@@ -1,33 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { db } from "../firebase/config";
-import { doc, getDoc, collection, addDoc } from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
+import { Card } from "primereact/card";
+import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
+import { InputTextarea } from "primereact/inputtextarea";
 
-export default function CreatePost({ user }) {
+export default function CreatePost({ user, userData }) {
   const [game, setGame] = useState("");
   const [players, setPlayers] = useState("");
   const [comments, setComments] = useState("");
-  const [userData, setUserData] = useState(null);
-
-  useEffect(() => {
-    const getUserData = async () => {
-      if (!user) return;
-
-      const docRef = doc(db, "users", user.uid);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        setUserData(docSnap.data());
-      }
-    };
-
-    getUserData();
-  }, [user]);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try{
-
       if (!game || !players || !comments) {
         alert("Completa todos los campos");
         return;
@@ -35,10 +22,10 @@ export default function CreatePost({ user }) {
 
       await addDoc(collection(db, "posts"), {
         userId: user.uid,
-        username: userData.username,
+        username: userData?.username,
         game,
         playersNeeded: players,
-        phone: userData.phone,
+        phone: userData?.phone,
         createdAt: new Date(),
         comments
       });
@@ -52,28 +39,71 @@ export default function CreatePost({ user }) {
     }
   };
 
+  if (!isOpen) {
+    return (
+      <Card style={{ marginBottom: "1rem", borderRadius: "8px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            <h3 style={{ margin: 0 }}>🎮 ¿Buscas equipo?</h3>
+            <p style={{ marginTop: 20, color: "#666" }}>
+              Publica una partida y encuentra jugadores rapidamente.
+            </p>
+          </div>
+          <Button
+            label="Publicar"
+            icon="pi pi-plus"
+            onClick={() => setIsOpen(true)}
+          />
+        </div>
+      </Card>
+    );
+  }
+
   return (
-    <form onSubmit={handleSubmit}>
-
-      <input
-        placeholder="Juego (Warzone, Fortnite...)"
-        value={game}
-        onChange={(e) => setGame(e.target.value)}
-      />
-
-      <input
-        placeholder="Jugadores necesarios"
-        value={players}
-        onChange={(e) => setPlayers(e.target.value)}
-      />
-
-      <input
-        placeholder="Comentarios"
-        value={comments}
-        onChange={(e) => setComments(e.target.value)}
-      />
-
-      <button type="submit">Crear</button>
-    </form>
+    <Card style={{ marginBottom: "1rem", borderRadius: "8px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h3 style={{ margin: 0 }}>Crear partida 🎮</h3>
+      </div>
+      <div className="p-fluid" style={{ marginTop: "1rem" }}>
+        {/* Inputs en fila */}
+        <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
+          <InputText
+            placeholder="Nombre del juego"
+            value={game}
+            onChange={(e) => setGame(e.target.value)}
+            style={{ flex: 1 }}
+          />
+          <InputText
+            placeholder="Cant. jugadores"
+            value={players}
+            onChange={(e) => setPlayers(e.target.value)}
+            style={{ width: "120px" }}
+          />
+        </div>
+        {/* Descripción */}
+        <InputTextarea
+          placeholder="Describe tu partida..."
+          value={comments}
+          onChange={(e) => setComments(e.target.value)}
+          rows={3}
+          autoResize
+          style={{ marginBottom: "1rem" }}
+        />
+        {/* Botones */}
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <Button
+            label="Publicar"
+            icon="pi pi-check"
+            onClick={handleSubmit}
+            className="p-button-success"
+          />
+          <Button
+            label="Cancelar"
+            className="p-button-text"
+            onClick={() => setIsOpen(false)}
+          />
+        </div>
+      </div>
+    </Card>
   );
 }
