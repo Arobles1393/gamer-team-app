@@ -2,19 +2,17 @@ import { useEffect, useState } from "react";
 import { auth, db } from "./firebase/config";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import Login from "./components/Login";
-import Register from "./components/Register";
 import CreatePost from "./components/CreatePost";
 import PostList from "./components/PostList";
 import Profile from "./components/Profile";
 import { Toolbar } from "primereact/toolbar";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
+import Auth from "./components/Auth";
 
 function App() {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
-  const [showLogin, setShowLogin] = useState(true);
   const [showProfile, setShowProfile] = useState(false);
 
   useEffect(() => {
@@ -41,44 +39,13 @@ function App() {
 
   if (!user) {
     return (
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          height: "100vh",
-          overflow: "hidden"
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            width: "100%",
-            transition: "all 0.6s cubic-bezier(0.25, 1, 0.5, 1)",
-            transform: showLogin ? "translateX(0%)" : "translateX(-100%)",
-            opacity: showLogin ? 1 : 0
-          }}
-        >
-          <Login setShowLogin={setShowLogin} />
-        </div>
-        <div
-          style={{
-            position: "absolute",
-            width: "100%",
-            transition: "all 0.6s cubic-bezier(0.25, 1, 0.5, 1)",
-            transform: showLogin ? "translateX(100%)" : "translateX(0%)",
-            opacity: showLogin ? 0 : 1
-          }}
-        >
-          <Register setShowLogin={setShowLogin} />
-        </div>
-      </div>
+      <Auth/>
     );
   }
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      setShowLogin(true);
       setShowProfile(false)
       console.log("Sesión cerrada");
     } catch (error) {

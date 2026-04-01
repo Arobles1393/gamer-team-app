@@ -51,17 +51,17 @@ export default function Register({ setShowLogin }) {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "100vh",
-        background: "linear-gradient(135deg, #1e3c72, #2a5298)"
+        height: "100vh"
       }}
     >
       <Card
-        title="🔥 Crear cuenta"
+        title="Crear cuenta"
         style={{
-          width: "350px",
           opacity: visible ? 1 : 0,
           transform: visible ? "translateY(0)" : "translateY(30px)",
-          transition: "all 1.0s ease"
+          transition: "all 1.0s ease",
+          background: "rgba(255,255,255,0.1)",
+          color: "#fff",
         }}
       >
         <div className="p-fluid">
@@ -103,7 +103,7 @@ export default function Register({ setShowLogin }) {
             label="Registrarse"
             icon="pi pi-user-plus"
             onClick={handleRegister}
-            disabled={!email || !password || !username || !phone}
+            disabled={!email || !password || !username}
             className="p-button-success"
             style={{ width: "100%", marginBottom: "1rem" }}
           />
