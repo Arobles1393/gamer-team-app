@@ -5,17 +5,25 @@ import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
+import { Dropdown } from "primereact/dropdown";
 
 export default function CreatePost({ user, userData }) {
   const [game, setGame] = useState("");
   const [players, setPlayers] = useState("");
   const [comments, setComments] = useState("");
+  const [platform, setPlatform] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const platforms = [
+    { label: "🎮 PlayStation", value: "playstation" },
+    { label: "🟢 Xbox", value: "xbox" },
+    { label: "💻 PC", value: "pc" },
+    { label: "📱 Mobile", value: "mobile" }
+  ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try{
-      if (!game || !players || !comments) {
+      if (!game || !players || !comments || !platform) {
         alert("Completa todos los campos");
         return;
       }
@@ -27,12 +35,14 @@ export default function CreatePost({ user, userData }) {
         playersNeeded: players,
         phone: userData?.phone,
         createdAt: new Date(),
-        comments
+        comments,
+        platform
       });
 
       setGame("");
       setPlayers("");
       setComments("");
+      setPlatform("")
       setIsOpen(false);
       alert("Publicación creada 🚀");
     }catch (error) {
@@ -73,6 +83,13 @@ export default function CreatePost({ user, userData }) {
             value={game}
             onChange={(e) => setGame(e.target.value)}
             style={{ flex: 1 }}
+          />
+          <Dropdown
+            value={platform}
+            options={platforms}
+            onChange={(e) => setPlatform(e.value)}
+            placeholder="Selecciona plataforma"
+            style={{ width: "200px" }}
           />
           <InputText
             placeholder="Cant. jugadores"
