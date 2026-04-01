@@ -33,6 +33,7 @@ export default function CreatePost({ user, userData }) {
       setGame("");
       setPlayers("");
       setComments("");
+      setIsOpen(false);
       alert("Publicación creada 🚀");
     }catch (error) {
         console.error("Error:", error);

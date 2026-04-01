@@ -79,6 +79,7 @@ function App() {
     try {
       await signOut(auth);
       setShowLogin(true);
+      setShowProfile(false)
       console.log("Sesión cerrada");
     } catch (error) {
       console.error("Error al cerrar sesión:", error);

@@ -6,11 +6,15 @@ import { Button } from "primereact/button";
 import { Tag } from "primereact/tag";
 import { Avatar } from "primereact/avatar";
 import { Dropdown } from "primereact/dropdown";
+import { Dialog } from "primereact/dialog";
+import UserProfile from "./UserProfile";
 
 export default function PostList({ user }) {
   const [posts, setPosts] = useState([]);
   const [filterGame, setFilterGame] = useState("");
   const games = [...new Set(posts.map(post => post.game))];
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [showProfile, setShowProfile] = useState(false);
   const gameOptions = [
     { label: "Todos", value: "" },
     ...games.map((game) => ({
@@ -102,7 +106,13 @@ export default function PostList({ user }) {
               shape="circle"
               size="normal"
             />
-            <span style={{ fontWeight: "bold" }}>
+            <span 
+              style={{ cursor: "pointer", color: "#3b82f6" }}
+              onClick={() => {
+                setSelectedUserId(post.userId);
+                setShowProfile(true);
+              }}
+            >
               {post.username}
             </span>
           </div>
@@ -137,6 +147,18 @@ export default function PostList({ user }) {
           </div>
         </Card>
       ))}
+      <Dialog
+        header="Perfil de usuario 🎮"
+        visible={showProfile}
+        style={{ width: "400px" }}
+        onHide={() => setShowProfile(false)}
+        breakpoints={{ "960px": "75vw", "640px": "90vw" }}
+        dismissableMask
+      >
+        {selectedUserId && (
+          <UserProfile userId={selectedUserId} />
+        )}
+      </Dialog>
     </div>
   );
 }

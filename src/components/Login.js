@@ -30,10 +30,35 @@ export default function Login({ setShowLogin }) {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "100vh",
-        background: "#f5f5f5"
+        height: "100vh"
       }}
     >
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          top: 0,
+          left: 0,
+          zIndex: -1
+        }}
+      >
+        <source src="/video/vidControl.mp4" type="video/mp4" />
+      </video>
+      <div
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+          background: "rgba(0,0,0,0.6)",
+          zIndex: 0
+        }}
+      />
       <Card 
         title="🎮 GamerMatch" 
         style={{
@@ -41,7 +66,10 @@ export default function Login({ setShowLogin }) {
           borderRadius: "12px", 
           opacity: visible ? 1 : 0,
           transform: visible ? "translateY(0)" : "translateY(30px)",
-          transition: "all 1.0s ease" 
+          transition: "all 1.0s ease",
+          background: "rgba(255,255,255,0.1)",
+          color: "#fff",
+          border: "1px solid rgba(255,255,255,0.2)"
         }}
       >
         <div 
