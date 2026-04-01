@@ -148,12 +148,13 @@ export default function PostList({ user }) {
         </Card>
       ))}
       <Dialog
-        header="Perfil de usuario 🎮"
+        header="Perfil de usuario"
         visible={showProfile}
         style={{ width: "400px" }}
         onHide={() => setShowProfile(false)}
         breakpoints={{ "960px": "75vw", "640px": "90vw" }}
         dismissableMask
+        draggable={false}
       >
         {selectedUserId && (
           <UserProfile userId={selectedUserId} />

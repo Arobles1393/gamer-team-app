@@ -16,3 +16,194 @@ code {
   transform: scale(1.05);
   transition: all 0.2s ease;
 }
+
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #0f172a, #020617);
+  color: #e2e8f0;
+  font-family: 'Inter', sans-serif;
+}
+
+/* 🎮 TÍTULOS */
+h1, h2, h3, h4 {
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 1.5px;
+  color: #38bdf8;
+}
+
+/* 🧭 NAVBAR */
+.navbar {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+/* 🃏 CARDS */
+.p-card {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  transition: 0.3s;
+}
+
+/* ✨ HOVER CARD */
+.p-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+}
+
+/* 🏷 TITULO CARD */
+.p-card-title {
+  text-shadow: 0 0 8px #38bdf8;
+  text-align: center;
+  font-family: 'Orbitron', sans-serif; 
+}
+
+/* 📝 CONTENIDO */
+.p-card-content {
+  font-family: 'Inter', sans-serif;
+}
+
+/* 🔘 BOTONES */
+.p-button {
+  font-family: 'Rajdhani', sans-serif;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+/* 🔥 BOTÓN PRINCIPAL */
+.p-button-success {
+  background: linear-gradient(135deg, #22c55e, #4ade80);
+  border: none;
+}
+
+/* ✨ HOVER BOTÓN */
+.p-button:hover {
+  transform: scale(1.05);
+}
+
+/* 🧑‍🎮 AVATAR */
+.p-avatar {
+  border: 2px solid #38bdf8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+}
+
+/* 🔗 LINKS */
+a {
+  color: #38bdf8;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #7dd3fc;
+}
+
+/* 📥 INPUTS */
+.p-inputtext {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #fff;
+}
+
+/* ✨ INPUT FOCUS */
+.p-inputtext:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 5px #38bdf8;
+}
+
+/* 🎬 MODAL */
+.p-dialog {
+  background: rgba(15, 23, 42, 0.95);
+  border-radius: 12px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+/* 🌫 OVERLAY (LOGIN VIDEO) */
+.overlay {
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+}
+
+.p-button-primary {
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
+  border: none;
+}
+
+.p-dialog {
+  background: rgba(15, 23, 42, 0.95);
+  border-radius: 12px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+}
+
+/* 🧠 HEADER */
+.p-dialog-header {
+  background: transparent;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+  font-family: 'Orbitron', sans-serif;
+  color: #38bdf8;
+}
+
+/* ❌ BOTÓN CERRAR */
+.p-dialog-header-icon {
+  color: #38bdf8;
+}
+
+.p-dialog-header-icon:hover {
+  color: #7dd3fc;
+}
+
+/* 📦 CONTENIDO */
+.p-dialog-content {
+  color: #e2e8f0;
+}
+
+/* 📥 INPUT */
+.p-dropdown {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #fff;
+  border-radius: 8px;
+}
+
+/* TEXTO */
+.p-dropdown-label {
+  color: #e2e8f0;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+/* ICONO */
+.p-dropdown-trigger {
+  color: #38bdf8;
+}
+
+/* ✨ HOVER */
+.p-dropdown:hover {
+  border-color: #38bdf8;
+}
+
+/* 📜 PANEL (lista) */
+.p-dropdown-panel {
+  background: #020617;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 8px;
+}
+
+/* OPCIONES */
+.p-dropdown-item {
+  color: #e2e8f0;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+/* HOVER OPCIÓN */
+.p-dropdown-item:hover {
+  background: rgba(56, 189, 248, 0.2);
+}
+
+/* SELECCIONADO */
+.p-dropdown-item.p-highlight {
+  background: rgba(56, 189, 248, 0.3);
+}

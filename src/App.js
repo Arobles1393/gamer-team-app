@@ -100,10 +100,10 @@ function App() {
           padding: "1rem",
           borderRadius: "8px"
         }}
-        start={<h2 style={{ margin: 0 }}>🎮 GamerMatch</h2>}
+        start={<h2 style={{ margin: 0 }}>GamerMatch</h2>}
         end={
           <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-            <span>{userData?.username || user.email}</span>
+            <h4>{userData?.username || user.email}</h4>
             <Avatar
               label={userData?.username?.charAt(0).toUpperCase()}
               shape="circle"

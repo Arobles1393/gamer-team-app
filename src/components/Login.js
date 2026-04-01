@@ -18,7 +18,6 @@ export default function Login({ setShowLogin }) {
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      alert("Bienvenido 🚀");
     } catch (error) {
       alert(error.message);
     }
@@ -60,16 +59,13 @@ export default function Login({ setShowLogin }) {
         }}
       />
       <Card 
-        title="🎮 GamerMatch" 
+        title="GamerMatch" 
         style={{
-          width: "350px", 
-          borderRadius: "12px", 
           opacity: visible ? 1 : 0,
           transform: visible ? "translateY(0)" : "translateY(30px)",
           transition: "all 1.0s ease",
           background: "rgba(255,255,255,0.1)",
           color: "#fff",
-          border: "1px solid rgba(255,255,255,0.2)"
         }}
       >
         <div 
