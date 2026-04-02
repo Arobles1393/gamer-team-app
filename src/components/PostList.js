@@ -3,7 +3,6 @@ import { db } from "../firebase/config";
 import { collection, onSnapshot, deleteDoc, doc } from "firebase/firestore";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
-import { Tag } from "primereact/tag";
 import { Avatar } from "primereact/avatar";
 import { Dropdown } from "primereact/dropdown";
 import { Dialog } from "primereact/dialog";
@@ -25,11 +24,19 @@ export default function PostList({ user }) {
   ];
   const platformOptions = [
     { label: "Todas", value: "" },
-    { label: "🎮 PlayStation", value: "playstation" },
-    { label: "🟢 Xbox", value: "xbox" },
-    { label: "💻 PC", value: "pc" },
-    { label: "📱 Mobile", value: "mobile" }
+    { label: "PlayStation", value: "playstation" },
+    { label: "Xbox", value: "xbox" },
+    { label: "Switch", value: "switch" },
+    { label: "PC", value: "pc" },
+    { label: "Mobile", value: "mobile" }
   ]
+  const platformIcons = {
+    pc: "/icons/pc.png",
+    playstation: "/icons/playstation.png",
+    xbox: "/icons/xbox.png",
+    switch: "/icons/switch.png",
+    mobile: "/icons/mobile.png"
+  };
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "posts"), (snapshot) => {
@@ -105,65 +112,78 @@ export default function PostList({ user }) {
         </div>
       </div>
       <div className="post-grid">
-      {filteredPosts.map((post) => (
-        <Card
-          key={post.id}
-          className="post-card-grid"
-        >
-          <div className="post-container">
-            <div className="post-main">
-              <h3 className="post-game">{post.game}</h3>
-              <div className="post-meta">
-                <Tag value={`${post.playersNeeded} jugadores`} />
-                <span className="platform">
-                  {post.platform}
-                </span>
+        {filteredPosts.map((post) => (
+          <Card
+            key={post.id}
+            className="rawg-card"
+          >
+            <div className="rawg-image-container">
+              <img
+                src={post.image || "/default-game.jpg"}
+                alt={post.game}
+                className="rawg-image"
+              />
+              <div className="rawg-overlay" />
+              <div className="rawg-content">
+                <h2>{post.game}</h2>
+                <div className="rawg-meta">
+                  <div className="meta-item">
+                    <img
+                      src={platformIcons[post.platform]}
+                      alt={post.platform}
+                      className="platform-icon"
+                    />
+                    <span>{post.platform}</span>
+                  </div>
+
+                  <div className="meta-item">
+                    <i className="pi pi-users"></i>
+                    <span>{post.playersNeeded} jugadores</span>
+                  </div>
+                </div>
               </div>
-              {post.comments && (
-                <p style={{ marginTop: "0.8rem", color: "#444" }}>
-                  {post.comments}
-                </p>
-              )}
-            </div>
-            <div className="post-side">
-              <div className="user-info">
-                <Avatar
-                  label={post.username?.charAt(0).toUpperCase()}
-                  shape="circle"
-                  size="normal"
-                />
-                <span 
-                  className="user-name"
-                  onClick={() => {
-                    setSelectedUserId(post.userId);
-                    setShowProfile(true);
-                  }}
-                >
-                  {post.username}
-                </span>
-              </div>
-              <div className="post-actions">
-                {post.userId !== user.uid && (
-                  <Button
-                    label="Unirme"
-                    icon="pi pi-users"
-                    className="p-button-success"
-                    onClick={() => handleJoin(post)}
-                  />
+              <div className="rawg-hover">
+                {post.comments && (
+                  <p style={{ marginTop: "0.8rem" }}>
+                    {post.comments}
+                  </p>
                 )}
-                {post.userId === user.uid && (
-                  <Button
-                    label="Eliminar"
-                    icon="pi pi-trash"
-                    className="p-button-danger"
-                    onClick={() => eliminar(post.id)}
+                <div className="user-row">
+                  <Avatar
+                    label={post.username?.charAt(0).toUpperCase()}
+                    shape="circle"
                   />
-                )}
+                  <span 
+                    onClick={() => {
+                      setSelectedUserId(post.userId);
+                      setShowProfile(true);
+                    }}
+                  >
+                    {post.username}
+                  </span>
+                </div>
+                <div className="post-actions">
+                  {post.userId !== user.uid && (
+                    <Button
+                      label="Unirme"
+                      icon="pi pi-users"
+                      className="p-button-success p-button-sm"
+                      onClick={() => handleJoin(post)}
+                    />
+                  )}
+                  {post.userId === user.uid && (
+                    <Button
+                      label="Eliminar"
+                      icon="pi pi-trash"
+                      className="p-button-danger p-button-sm"
+                      onClick={() => eliminar(post.id)}
+                    />
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        </Card>
-      ))}
+          </Card>
+        ))}
       </div>
       <Dialog
         header="Perfil de usuario"

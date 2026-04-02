@@ -14,10 +14,11 @@ export default function CreatePost({ user, userData }) {
   const [platform, setPlatform] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const platforms = [
-    { label: "🎮 PlayStation", value: "playstation" },
-    { label: "🟢 Xbox", value: "xbox" },
-    { label: "💻 PC", value: "pc" },
-    { label: "📱 Mobile", value: "mobile" }
+    { label: "PlayStation", value: "playstation" },
+    { label: "Xbox", value: "xbox" },
+    { label: "Switch", value: "switch" },
+    { label: "PC", value: "pc" },
+    { label: "Mobile", value: "mobile" }
   ];
 
   const handleSubmit = async (e) => {
@@ -27,12 +28,16 @@ export default function CreatePost({ user, userData }) {
         alert("Completa todos los campos");
         return;
       }
-
+      let image = null;
+      /*if (game) {
+        image = await fetchGameImage(game); // 👈 AQUÍ
+      }*/
       await addDoc(collection(db, "posts"), {
         userId: user.uid,
         username: userData?.username,
         game,
         playersNeeded: players,
+        image,
         phone: userData?.phone,
         createdAt: new Date(),
         comments,
@@ -48,6 +53,15 @@ export default function CreatePost({ user, userData }) {
     }catch (error) {
         console.error("Error:", error);
     }
+  };
+
+  const fetchGameImage = async (gameName) => {
+    const res = await fetch(
+      `https://api.rawg.io/api/games?key=TU_API_KEY&search=${gameName}`
+    );
+    const data = await res.json();
+
+    return data.results[0]?.background_image;
   };
 
   if (!isOpen) {
