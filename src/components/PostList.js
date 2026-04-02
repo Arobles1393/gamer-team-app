@@ -11,10 +11,11 @@ import UserProfile from "./UserProfile";
 
 export default function PostList({ user }) {
   const [posts, setPosts] = useState([]);
-  const [filterGame, setFilterGame] = useState("");
+  const [filterGame, setFilterGame] = useState(null);
   const games = [...new Set(posts.map(post => post.game))];
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
+  const [filterPlatform, setFilterPlatform] = useState(null);
   const gameOptions = [
     { label: "Todos", value: "" },
     ...games.map((game) => ({
@@ -22,6 +23,13 @@ export default function PostList({ user }) {
       value: game
     }))
   ];
+  const platformOptions = [
+    { label: "Todas", value: "" },
+    { label: "🎮 PlayStation", value: "playstation" },
+    { label: "🟢 Xbox", value: "xbox" },
+    { label: "💻 PC", value: "pc" },
+    { label: "📱 Mobile", value: "mobile" }
+  ]
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "posts"), (snapshot) => {
@@ -55,11 +63,10 @@ export default function PostList({ user }) {
     }
   }
 
-  const filteredPosts = posts.filter(post => {
-    console.log("Filtro:", filterGame);
-    console.log("Posts:", posts);
-    if (!filterGame || filterGame === "") return true;
-    return post.game === filterGame;
+  const filteredPosts = posts.filter((post) => {
+    const matchGame = !filterGame || post.game === filterGame;
+    const matchPlatform = !filterPlatform || post.platform === filterPlatform;
+    return matchGame && matchPlatform;
   });
 
   return (
@@ -78,75 +85,86 @@ export default function PostList({ user }) {
             ({filteredPosts.length})
           </span>
         </h2>
-        <Dropdown
-          value={filterGame}
-          options={gameOptions}
-          onChange={(e) => setFilterGame(e.value)}
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Filtrar por juego"
-          style={{ width: "200px" }}
-        />
+        <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
+          <Dropdown
+            value={filterGame}
+            options={gameOptions}
+            onChange={(e) => setFilterGame(e.value)}
+            optionLabel="label"
+            optionValue="value"
+            placeholder="🎮 Juego"
+          />
+          <Dropdown
+            value={filterPlatform}
+            options={platformOptions}
+            onChange={(e) => setFilterPlatform(e.value)}
+            optionLabel="label"
+            optionValue="value"
+            placeholder="🕹 Plataforma"
+          />
+        </div>
       </div>
+      <div className="post-grid">
       {filteredPosts.map((post) => (
         <Card
           key={post.id}
-          style={{
-            marginBottom: "1rem",
-            borderRadius: "8px"
-          }}
+          className="post-card-grid"
         >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <h3 style={{ margin: 0 }}>{post.game}</h3>
-            <Tag value={`${post.playersNeeded} jugadores`} />
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.5rem" }}>
-            <Avatar
-              label={post.username?.charAt(0).toUpperCase()}
-              shape="circle"
-              size="normal"
-            />
-            <span 
-              style={{ cursor: "pointer", color: "#3b82f6" }}
-              onClick={() => {
-                setSelectedUserId(post.userId);
-                setShowProfile(true);
-              }}
-            >
-              {post.username}
-            </span>
-          </div>
-          {post.comments && (
-            <p style={{ marginTop: "0.8rem", color: "#444" }}>
-              {post.comments}
-            </p>
-          )}
-          <div
-            style={{
-              display: "flex",
-              gap: "0.5rem",
-              marginTop: "1rem"
-            }}
-          >
-            {post.userId !== user.uid && (
-              <Button
-                label="Unirme"
-                icon="pi pi-users"
-                className="p-button-success"
-                onClick={() => handleJoin(post)}
-              />
-            )}
-            {post.userId === user.uid && (
-              <Button
-                label="Eliminar"
-                icon="pi pi-trash"
-                className="p-button-danger"
-                onClick={() => eliminar(post.id)}
-              />
-            )}
+          <div className="post-container">
+            <div className="post-main">
+              <h3 className="post-game">{post.game}</h3>
+              <div className="post-meta">
+                <Tag value={`${post.playersNeeded} jugadores`} />
+                <span className="platform">
+                  {post.platform}
+                </span>
+              </div>
+              {post.comments && (
+                <p style={{ marginTop: "0.8rem", color: "#444" }}>
+                  {post.comments}
+                </p>
+              )}
+            </div>
+            <div className="post-side">
+              <div className="user-info">
+                <Avatar
+                  label={post.username?.charAt(0).toUpperCase()}
+                  shape="circle"
+                  size="normal"
+                />
+                <span 
+                  className="user-name"
+                  onClick={() => {
+                    setSelectedUserId(post.userId);
+                    setShowProfile(true);
+                  }}
+                >
+                  {post.username}
+                </span>
+              </div>
+              <div className="post-actions">
+                {post.userId !== user.uid && (
+                  <Button
+                    label="Unirme"
+                    icon="pi pi-users"
+                    className="p-button-success"
+                    onClick={() => handleJoin(post)}
+                  />
+                )}
+                {post.userId === user.uid && (
+                  <Button
+                    label="Eliminar"
+                    icon="pi pi-trash"
+                    className="p-button-danger"
+                    onClick={() => eliminar(post.id)}
+                  />
+                )}
+              </div>
+            </div>
           </div>
         </Card>
       ))}
+      </div>
       <Dialog
         header="Perfil de usuario"
         visible={showProfile}

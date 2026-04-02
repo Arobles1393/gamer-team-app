@@ -194,13 +194,16 @@ a:hover {
 
 /* OPCIONES */
 .p-dropdown-item {
+  background: transparent;
   color: #e2e8f0;
   font-family: 'Rajdhani', sans-serif;
+  transition: background 0.2s ease;
 }
 
 /* HOVER OPCIÓN */
 .p-dropdown-item:hover {
   background: rgba(56, 189, 248, 0.2);
+  box-shadow: 0 0 5px #38bdf8;
 }
 
 /* SELECCIONADO */
@@ -241,4 +244,104 @@ a:hover {
   justify-content: center;
   align-items: center;
   height: 100%;
+}
+
+/* layout horizontal */
+.post-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* IZQUIERDA */
+.post-main {
+  flex: 1;
+}
+
+/* título */
+.post-game {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* meta info */
+.post-meta {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.3rem;
+  align-items: center;
+}
+
+.platform {
+  font-size: 0.85rem;
+  color: #38bdf8;
+}
+
+/* comentario */
+.post-comments {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+/* DERECHA */
+.post-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+/* usuario */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.username {
+  cursor: pointer;
+  color: #3b82f6;
+  font-size: 0.85rem;
+}
+
+/* botones */
+.post-actions {
+  margin-top: auto; /* 👈 EMPUJA HACIA ABAJO 🔥 */
+  display: flex;
+  justify-content: flex-end; /* 👉 derecha */
+  gap: 0.5rem;
+}
+
+.post-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 👈 3 columnas fijas */
+  gap: 1rem;
+}
+
+/* CARD */
+.post-card-grid {
+  border-radius: 12px;
+  transition: 0.2s;
+  height: 100%;
+}
+
+/* HOVER */
+.post-card-grid:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+}
+
+/* tablet */
+@media (max-width: 900px) {
+  .post-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* celular */
+@media (max-width: 600px) {
+  .post-grid {
+    grid-template-columns: 1fr;
+  }
 }
