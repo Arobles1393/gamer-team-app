@@ -5,7 +5,6 @@ import { doc, getDoc } from "firebase/firestore";
 import CreatePost from "./components/CreatePost";
 import PostList from "./components/PostList";
 import Profile from "./components/Profile";
-import { Toolbar } from "primereact/toolbar";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
 import Auth from "./components/Auth";
@@ -54,38 +53,36 @@ function App() {
   };
 
   return (
-    <div 
-      style={{
-        maxWidth: "1200px",
-        margin: "auto",
-        padding: "1rem"
-      }}
-    >
-      <Toolbar
+    <>
+      <header className="app-header">
+        <div className="header-left">
+          <h2>GamerMatch</h2>
+        </div>
+        <div className="header-right">
+          <span className="username">
+            {userData?.username || user.email}
+          </span>
+          <Avatar
+            label={userData?.username?.charAt(0).toUpperCase()}
+            shape="circle"
+            style={{ backgroundColor: "#6366f1", color: "#fff", cursor: "pointer" }}
+            onClick={() => setShowProfile(!showProfile)}
+            size="large"
+          />
+          <Button
+            icon="pi pi-sign-out"
+            className="p-button-danger"
+            onClick={handleLogout}
+          />
+        </div>
+      </header>
+      <div 
         style={{
-          marginBottom: "2rem",
-          padding: "1rem",
-          borderRadius: "8px"
+          maxWidth: "1200px",
+          margin: "auto",
+          padding: "1.5rem"
         }}
-        start={<h2 style={{ margin: 0 }}>GamerMatch</h2>}
-        end={
-          <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-            <h4>{userData?.username || user.email}</h4>
-            <Avatar
-              label={userData?.username?.charAt(0).toUpperCase()}
-              shape="circle"
-              style={{ backgroundColor: "#6366f1", color: "#fff", cursor: "pointer" }}
-              onClick={() => setShowProfile(!showProfile)}
-              size="large"
-            />
-            <Button
-              icon="pi pi-sign-out"
-              className="p-button-danger"
-              onClick={handleLogout}
-            />
-          </div>
-        }
-      />
+      >
       {showProfile ? (
         <Profile user={user} userData={userData} />
       ) : (
@@ -95,6 +92,7 @@ function App() {
         </>
       )}
     </div>
+    </>
   );
 }
 
