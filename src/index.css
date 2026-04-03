@@ -1,4 +1,23 @@
-body {
+:root {
+  /* 🎮 fondos */
+  --bg-main: #020617;
+  --bg-card: rgba(15, 23, 42, 0.7);
+
+  /* 🔥 colores */
+  --primary: #38bdf8;
+  --secondary: #a855f7;
+  --accent: #22c55e;
+
+  /* texto */
+  --text-main: #e2e8f0;
+  --text-muted: #94a3b8;
+
+  /* efectos */
+  --glow-blue: rgba(56, 189, 248, 0.6);
+  --glow-purple: rgba(168, 85, 247, 0.5);
+}
+
+/*body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'Inter'
@@ -7,6 +26,44 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background: linear-gradient(135deg, #0f172a, #020617);
   color: #e2e8f0;
+}*/
+
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #020617, #0f172a);
+  color: var(--text-main);
+  font-family: 'Inter', sans-serif;
+}
+
+/*HEADER*/
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0.8rem 1.5rem;
+
+  background: rgba(2, 6, 23, 0.9);
+  backdrop-filter: blur(10px);
+
+  border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-left h2 {
+  margin: 0;
+  background: linear-gradient(90deg, #38bdf8, #a855f7);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
 }
 
 code {
@@ -27,19 +84,36 @@ h1, h2, h3, h4 {
 }
 
 /* 🃏 CARDS */
-.p-card {
+/*.p-card {
   background: rgba(15, 23, 42, 0.7);
   border: 1px solid rgba(56, 189, 248, 0.2);
   border-radius: 12px;
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 20px rgba(0,0,0,0.4);
   transition: 0.3s;
-}
+}*/
 
 /* ✨ HOVER CARD */
-.p-card:hover {
+/*.p-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+}*/
+
+.p-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+/* hover */
+.p-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow:
+    0 0 20px var(--glow-blue),
+    0 0 40px var(--glow-purple);
 }
 
 /* 🏷 TITULO CARD */
@@ -63,7 +137,7 @@ h1, h2, h3, h4 {
 
 /* 🔥 BOTÓN PRINCIPAL */
 .p-button-success {
-  background: linear-gradient(135deg, #22c55e, #4ade80);
+  background: linear-gradient(135deg, #22c55e, #38bdf8);
   border: none;
 }
 
@@ -270,6 +344,7 @@ a:hover {
   position: absolute;
   inset: 0;
   background: rgba(2, 6, 23, 0.95);
+  backdrop-filter: blur(6px);
   color: white;
   opacity: 0;
   transition: 0.3s;
@@ -318,39 +393,12 @@ a:hover {
   align-items: center;
   gap: 0.3rem;
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 /* icono usuarios */
 .meta-item i {
   font-size: 0.9rem;
-}
-
-/* HEADER */
-.app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.8rem 1.5rem;
-  background: rgba(15, 23, 42, 0.9);
-  backdrop-filter: blur(10px);
-  color: white;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-
-/* IZQUIERDA */
-.header-left h2 {
-  margin: 0;
-  font-size: 1.3rem;
-}
-
-/* DERECHA */
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
 }
 
 /* USERNAME */
@@ -371,7 +419,6 @@ a:hover {
   .post-image-container {
     width: 100%;
   }
-
   .post-grid {
     grid-template-columns: 1fr;
   }
