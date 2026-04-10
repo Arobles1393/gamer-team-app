@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { db } from "../firebase/config";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
+import { getGameImage } from "../utils/getGameImage";
 
 export default function CreatePost({ user, userData }) {
   const [game, setGame] = useState("");
@@ -28,16 +29,16 @@ export default function CreatePost({ user, userData }) {
         alert("Completa todos los campos");
         return;
       }
-      let image = null;
-      /*if (game) {
-        image = await fetchGameImage(game); // 👈 AQUÍ
-      }*/
+      let image = await getExistingImage(game);
+      if (!image) {
+        image = await getGameImage(game);
+      }
       await addDoc(collection(db, "posts"), {
         userId: user.uid,
         username: userData?.username,
         game,
         playersNeeded: players,
-        image,
+        image: image || null,
         phone: userData?.phone,
         createdAt: new Date(),
         comments,
@@ -55,13 +56,16 @@ export default function CreatePost({ user, userData }) {
     }
   };
 
-  const fetchGameImage = async (gameName) => {
-    const res = await fetch(
-      `https://api.rawg.io/api/games?key=TU_API_KEY&search=${gameName}`
-    );
-    const data = await res.json();
+  const getExistingImage = async (game) => {
+    const q = query(collection(db, "posts"), where("game", "==", game));
 
-    return data.results[0]?.background_image;
+    const snapshot = await getDocs(q);
+
+    if (!snapshot.empty) {
+      return snapshot.docs[0].data().image;
+    }
+
+    return null;
   };
 
   if (!isOpen) {
