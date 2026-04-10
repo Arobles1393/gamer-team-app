@@ -7,6 +7,8 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { getGameImage } from "../utils/getGameImage";
+import { AutoComplete } from "primereact/autocomplete";
+import { searchGames } from "../utils/searchGames";
 
 export default function CreatePost({ user, userData }) {
   const [game, setGame] = useState("");
@@ -14,6 +16,7 @@ export default function CreatePost({ user, userData }) {
   const [comments, setComments] = useState("");
   const [platform, setPlatform] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
   const platforms = [
     { label: "PlayStation", value: "playstation" },
     { label: "Xbox", value: "xbox" },
@@ -68,6 +71,27 @@ export default function CreatePost({ user, userData }) {
     return null;
   };
 
+  let timeout = null;
+
+  const handleSearch = async (e) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(async () => {
+      const results = await searchGames(e.query);
+      setSuggestions(results);
+    }, 300);
+  };
+
+  const itemTemplate = (item) => (
+    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+      <img
+        src={item.image}
+        alt={item.label}
+        style={{ width: "40px", borderRadius: "6px" }}
+      />
+      <span>{item.label}</span>
+    </div>
+  );
+
   if (!isOpen) {
     return (
       <Card style={{ marginBottom: "1rem", borderRadius: "8px" }}>
@@ -96,10 +120,14 @@ export default function CreatePost({ user, userData }) {
       <div className="p-fluid" style={{ marginTop: "1rem" }}>
         {/* Inputs en fila */}
         <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-          <InputText
-            placeholder="Nombre del juego"
+          <AutoComplete
             value={game}
-            onChange={(e) => setGame(e.target.value)}
+            suggestions={suggestions}
+            completeMethod={handleSearch}
+            onChange={(e) => setGame(e.value)}
+            field="label"
+            itemTemplate={itemTemplate}
+            placeholder="Nombre del juego"
             style={{ flex: 1 }}
           />
           <Dropdown
