@@ -58,6 +58,13 @@ body {
   background: linear-gradient(90deg, #38bdf8, #a855f7);
   -webkit-background-clip: text;
   color: transparent;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.header-left h2:hover {
+  color: #38bdf8;
+  text-shadow: 0 0 10px #38bdf8;
 }
 
 .header-right {
@@ -422,4 +429,83 @@ a:hover {
   .post-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* contenedor */
+.p-menu {
+  background: rgba(2, 6, 23, 0.95);
+  border-radius: 12px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  backdrop-filter: blur(10px);
+  padding: 0.5rem;
+  box-shadow:
+    0 0 20px rgba(56, 189, 248, 0.2),
+    0 0 40px rgba(168, 85, 247, 0.2);
+}
+
+/* item */
+.p-menuitem {
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+/* texto */
+.p-menuitem-text {
+  color: #e2e8f0;
+  font-size: 0.9rem;
+}
+
+/* icono */
+.p-menuitem-icon {
+  color: #38bdf8;
+}
+
+/* glow sutil */
+.p-menuitem:hover .p-menuitem-text {
+  color: #38bdf8;
+}
+
+.p-menu-separator {
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  margin: 0.4rem 0;
+}
+
+.p-menu {
+  animation: fadeScale 0.2s ease;
+}
+
+@keyframes fadeScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.p-menuitem:last-child .p-menuitem-text {
+  color: #ef4444;
+}
+
+.p-menu .p-menuitem-link:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(56, 189, 248, 0.2),
+    rgba(168, 85, 247, 0.2)
+  ) !important;
+}
+
+.p-menu .p-menuitem-link:focus {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.p-menu .p-menuitem-link:active {
+  background: transparent !important;
+}
+
+.p-menuitem-link:focus-visible {
+  outline: none !important;
 }

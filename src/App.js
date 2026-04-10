@@ -1,18 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { auth, db } from "./firebase/config";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import CreatePost from "./components/CreatePost";
 import PostList from "./components/PostList";
 import Profile from "./components/Profile";
-import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
 import Auth from "./components/Auth";
+import { Menu } from "primereact/menu";
 
 function App() {
+  const menuRef = useRef(null);
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
+  const [showMyPosts, setShowMyPosts] = useState(false)
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async(currentUser) => {
@@ -52,27 +54,57 @@ function App() {
     }
   };
 
+  const items = [
+    {
+      label: "Mi perfil",
+      icon: "pi pi-user",
+      command: () => setShowProfile(true)
+    },
+    {
+      label: "Mis publicaciones",
+      icon: "pi pi-file"
+    },
+    {
+      label: "Mis partidas",
+      icon: "pi pi-users"
+    },
+    { separator: true },
+    {
+      label: "Configuración",
+      icon: "pi pi-cog"
+    },
+    { separator: true },
+    {
+      label: "Cerrar sesión",
+      icon: "pi pi-sign-out",
+      command: handleLogout
+    }
+  ];
+
   return (
     <>
       <header className="app-header">
         <div className="header-left">
-          <h2>GamerMatch</h2>
+          <h2
+            onClick={() => {
+              setShowProfile(false);
+              setShowMyPosts(false);
+            }}
+            >
+              GamerMatch
+            </h2>
         </div>
         <div className="header-right">
           <span className="username">
             {userData?.username || user.email}
           </span>
+          <Menu model={items} popup ref={menuRef} />
           <Avatar
             label={userData?.username?.charAt(0).toUpperCase()}
             shape="circle"
             style={{ backgroundColor: "#6366f1", color: "#fff", cursor: "pointer" }}
-            onClick={() => setShowProfile(!showProfile)}
+            onClick={(e) => menuRef.current.toggle(e)}
             size="large"
-          />
-          <Button
-            icon="pi pi-sign-out"
-            className="p-button-danger"
-            onClick={handleLogout}
           />
         </div>
       </header>
