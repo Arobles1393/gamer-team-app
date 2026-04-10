@@ -119,7 +119,7 @@ export default function PostList({ user }) {
           >
             <div className="rawg-image-container">
               <img
-                src={post.image || "/default-game.jpg"}
+                src={post.image || "/imagenotfound.png"}
                 alt={post.game}
                 className="rawg-image"
               />
