@@ -11,7 +11,7 @@ import { AutoComplete } from "primereact/autocomplete";
 import { searchGames } from "../utils/searchGames";
 
 export default function CreatePost({ user, userData }) {
-  const [game, setGame] = useState("");
+  const [game, setGame] = useState({});
   const [players, setPlayers] = useState("");
   const [comments, setComments] = useState("");
   const [platform, setPlatform] = useState("");
@@ -28,18 +28,18 @@ export default function CreatePost({ user, userData }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try{
-      if (!game || !players || !comments || !platform) {
+      if (!game.value || !players || !comments || !platform) {
         alert("Completa todos los campos");
         return;
       }
-      let image = await getExistingImage(game);
+      let image = await getExistingImage(game.value);
       if (!image) {
-        image = await getGameImage(game);
+        image = await getGameImage(game.value);
       }
       await addDoc(collection(db, "posts"), {
         userId: user.uid,
         username: userData?.username,
-        game,
+        game: game.value,
         playersNeeded: players,
         image: image || null,
         phone: userData?.phone,
@@ -48,7 +48,7 @@ export default function CreatePost({ user, userData }) {
         platform
       });
 
-      setGame("");
+      setGame({});
       setPlayers("");
       setComments("");
       setPlatform("")
