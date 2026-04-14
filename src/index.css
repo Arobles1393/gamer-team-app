@@ -130,7 +130,7 @@ a:hover {
   border-radius: var(--radius);
   border: 1px solid rgba(56, 189, 248, 0.2);
   transition: var(--transition);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .p-card:hover {
@@ -275,12 +275,19 @@ a:hover {
 /* CARD */
 .rawg-card {
   border-radius: var(--radius);
-  overflow: hidden;
+  overflow: visible;
   transition: var(--transition);
 }
 
 .rawg-card:hover {
-  transform: translateY(-6px);
+  transform: scale(1.03);
+  box-shadow:
+    0 20px 40px rgba(0,0,0,0.5),
+    0 0 20px rgba(56, 189, 248, 0.2);
+  position: relative;
+  z-index: 1;
+  transition: var(--transition);
+  backdrop-filter: blur(10px);
 }
 
 .rawg-image-container {
@@ -300,15 +307,25 @@ a:hover {
 }
 
 .rawg-extra {
-  max-height: 0;
-  overflow: hidden;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 1rem;
+  border-radius: 0 0 12px 12px;
   opacity: 0;
-  transition: var(--transition);
+  transform: translateY(10px);
+  transition: 
+    max-height 0.4s ease,
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 
 .rawg-card:hover .rawg-extra {
-  max-height: 200px; /* ajusta según contenido */
   opacity: 1;
+  transform: translateY(0);
 }
 
 /* ================= GRID ================= */
@@ -316,6 +333,7 @@ a:hover {
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* 👈 3 columnas */
   gap: 1rem;
+  overflow: visible;
 }
 
 /* tablet */
