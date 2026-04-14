@@ -6,7 +6,6 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
-import { getGameImage } from "../utils/getGameImage";
 import { AutoComplete } from "primereact/autocomplete";
 import { searchGames } from "../utils/searchGames";
 
@@ -34,7 +33,7 @@ export default function CreatePost({ user, userData }) {
       }
       let image = await getExistingImage(game.value);
       if (!image) {
-        image = await getGameImage(game.value);
+        image = game.image
       }
       await addDoc(collection(db, "posts"), {
         userId: user.uid,

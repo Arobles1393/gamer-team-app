@@ -125,7 +125,7 @@ export default function PostList({ user }) {
               />
               <div className="rawg-overlay" />
               <div className="rawg-content">
-                <h2>{post.game}</h2>
+                <h3>{post.game}</h3>
                 <div className="rawg-meta">
                   <div className="meta-item">
                     <img
