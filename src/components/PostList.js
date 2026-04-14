@@ -76,6 +76,9 @@ export default function PostList({ user }) {
     return matchGame && matchPlatform;
   });
 
+  const editar = async (id) => {
+  }
+
   return (
     <div>
       <div
@@ -165,12 +168,20 @@ export default function PostList({ user }) {
                     />
                   )}
                   {post.userId === user.uid && (
-                    <Button
-                      label="Eliminar"
-                      icon="pi pi-trash"
-                      className="p-button-danger p-button-sm"
-                      onClick={() => eliminar(post.id)}
-                    />
+                    <>
+                      <Button
+                        label="Editar"
+                        icon="pi pi-pencil"
+                        className="p-button-success p-button-sm"
+                        onClick={() => editar(post.id)}
+                      />
+                      <Button
+                        label="Eliminar"
+                        icon="pi pi-trash"
+                        className="p-button-danger p-button-sm"
+                        onClick={() => eliminar(post.id)}
+                      />
+                    </>
                   )}
                 </div>
               </div>
