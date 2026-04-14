@@ -113,52 +113,45 @@ export default function PostList({ user }) {
       </div>
       <div className="post-grid">
         {filteredPosts.map((post) => (
-          <Card
-            key={post.id}
-            className="rawg-card"
-          >
+          <Card key={post.id} className="rawg-card">
             <div className="rawg-image-container">
               <img
                 src={post.image || "/imagenotfound.png"}
                 alt={post.game}
                 className="rawg-image"
               />
-              <div className="rawg-overlay" />
-              <div className="rawg-content">
-                <h3>{post.game}</h3>
-                <div className="rawg-meta">
-                  <div className="meta-item">
-                    <img
-                      src={platformIcons[post.platform]}
-                      alt={post.platform}
-                      className="platform-icon"
-                    />
-                    <span>{post.platform}</span>
-                  </div>
-
-                  <div className="meta-item">
-                    <i className="pi pi-users"></i>
-                    <span>{post.playersNeeded} jugadores</span>
-                  </div>
+            </div>
+            <div>
+              <h3>{post.game}</h3>
+              <div className="rawg-meta">
+                <div className="meta-item">
+                  <img
+                    src={platformIcons[post.platform]}
+                    alt={post.platform}
+                    className="platform-icon"
+                  />
+                  <span>{post.platform}</span>
+                </div>
+                <div className="meta-item">
+                  <i className="pi pi-users"></i>
+                  <span>{post.playersNeeded} jugadores</span>
                 </div>
               </div>
-              <div className="rawg-hover">
+              {/* 🔥 CONTENIDO OCULTO */}
+              <div className="rawg-extra">
                 {post.comments && (
-                  <p style={{ marginTop: "0.8rem" }}>
-                    {post.comments}
-                  </p>
+                  <p>{post.comments}</p>
                 )}
                 <div className="user-row">
                   <Avatar
                     label={post.username?.charAt(0).toUpperCase()}
                     shape="circle"
-                  />
-                  <span 
                     onClick={() => {
                       setSelectedUserId(post.userId);
                       setShowProfile(true);
                     }}
-                  >
+                  />
+                  <span>
                     {post.username}
                   </span>
                 </div>
