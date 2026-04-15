@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect} from "react";
 import { db } from "../firebase/config";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import { Card } from "primereact/card";
@@ -16,6 +16,7 @@ export default function CreatePost({ user, userData }) {
   const [platform, setPlatform] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
+  const [isSticky, setIsSticky] = useState(false);
   const platforms = [
     { label: "PlayStation", value: "playstation" },
     { label: "Xbox", value: "xbox" },
@@ -23,6 +24,15 @@ export default function CreatePost({ user, userData }) {
     { label: "PC", value: "pc" },
     { label: "Mobile", value: "mobile" }
   ];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsSticky(window.scrollY > 150);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -93,21 +103,37 @@ export default function CreatePost({ user, userData }) {
 
   if (!isOpen) {
     return (
-      <Card style={{ marginBottom: "1rem", borderRadius: "8px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div>
-            <h3 style={{ margin: 0 }}>🎮 ¿Buscas equipo?</h3>
-            <p style={{ marginTop: 20, color: "#666" }}>
-              Publica una partida y encuentra jugadores rapidamente.
-            </p>
+      <>
+        <Card style={{ marginBottom: "1rem", borderRadius: "8px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div>
+              <h3 style={{ margin: 0 }}>🎮 ¿Buscas equipo?</h3>
+              <p style={{ marginTop: 20, color: "#666" }}>
+                Publica una partida y encuentra jugadores rapidamente.
+              </p>
+            </div>
+            <Button
+              label="Publicar"
+              icon="pi pi-plus"
+              onClick={() => setIsOpen(true)}
+            />
           </div>
+        </Card>
+        {isSticky && (
           <Button
             label="Publicar"
             icon="pi pi-plus"
-            onClick={() => setIsOpen(true)}
+            onClick={() => {
+              window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+              });
+              setIsOpen(true);
+            }}
+            className="publish-btn-floating"
           />
-        </div>
-      </Card>
+        )}
+      </>
     );
   }
 

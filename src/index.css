@@ -171,6 +171,20 @@ a:hover {
   border: none;
 }
 
+.publish-btn-floating {
+  position: fixed;
+  top: 15px;
+  right: 200px;
+  z-index: 9999;
+  background: linear-gradient(90deg, #38bdf8, #a855f7);
+  border: none;
+  box-shadow:
+    0 0 15px rgba(56, 189, 248, 0.5),
+    0 0 25px rgba(168, 85, 247, 0.4);
+  transition: var(--transition);
+  animation: slideDown 0.3s ease;
+}
+
 /* ================= INPUTS ================= */
 .p-inputtext,
 .p-dropdown {
@@ -310,11 +324,11 @@ a:hover {
   position: absolute;
   left: 0;
   right: 0;
-  top: 100%;
+  top: 95%;
   background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(10px);
   padding: 1rem;
-  border-radius: 0 0 12px 12px;
+  border-radius: 12px 12px 12px 12px;
   opacity: 0;
   transform: translateY(10px);
   transition: 
@@ -380,6 +394,17 @@ a:hover {
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 
