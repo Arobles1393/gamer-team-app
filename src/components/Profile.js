@@ -1,24 +1,30 @@
-import { useEffect, useState } from "react";
-import { db } from "../firebase/config";
+import { useEffect, useState, useRef } from "react";
+import { db, storage } from "../firebase/config";
 import { doc, updateDoc } from "firebase/firestore";
 import { Card } from "primereact/card";
 import { Avatar } from "primereact/avatar";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
+import { updateEmail } from "firebase/auth";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default function Profile({ user, userData }) {
   const [isEditing, setIsEditing] = useState(false);
+  const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [phone, setPhone] = useState("");
   const [links, setLinks] = useState([]);
+  const [preview, setPreview] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (userData) {
+      setEmail(userData.email || "");
       setUsername(userData.username || "");
       setPhone(userData.phone || "");
       setLinks(userData.links || []);
     }
-  }, [userData]);
+  }, [userData, user]);
 
   const handleSave = async () => {
     try {
@@ -28,6 +34,15 @@ export default function Profile({ user, userData }) {
         alert("Todos los links deben comenzar con https://");
         return;
       }
+
+      if (email !== user.email) {
+        if (!email.includes("@")) {
+          alert("Correo inválido");
+          return;
+        }
+        await updateEmail(user, email);
+      }
+
       await updateDoc(userRef, {
         username,
         phone,
@@ -78,6 +93,8 @@ export default function Profile({ user, userData }) {
   };
 
   const handleCancel = () => {
+    setEmail(userData.email || "");
+    setUsername(userData.username || "");
     setPhone(userData?.phone || "");
     setLinks(userData?.links || []);
     setIsEditing(false);
@@ -85,38 +102,102 @@ export default function Profile({ user, userData }) {
 
   const hasChanges = () => {
     return (
+      email !== (userData?.email || "") ||
+      username !== (userData?.username || "") ||
       phone !== (userData?.phone || "") ||
       JSON.stringify(links) !== JSON.stringify(userData?.links || [])
     );
   };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Solo imágenes");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Máximo 5MB");
+      return;
+    }
+
+    setPreview(URL.createObjectURL(file));
+
+    try {
+      const storageRef = ref(storage, `avatars/${user.uid}`);
+
+      // subir archivo
+      await uploadBytes(storageRef, file);
+
+      // obtener URL
+      const url = await getDownloadURL(storageRef);
+
+      // guardar en firestore
+      await updateDoc(doc(db, "users", user.uid), {
+        avatar: url
+      });
+
+    } catch (error) {
+      console.error("Error subiendo imagen:", error);
+    }
+  };
   
   return (
     <Card style={{ borderRadius: "8px" }}>
-      {/* HEADER */}
-      <div style={{ textAlign: "center" }}>
-        <Avatar
-          label={userData?.username?.charAt(0).toUpperCase()}
-          size="xlarge"
-          shape="circle"
-          style={{ marginBottom: "1rem", backgroundColor: "#6366f1", color: "#fff" }}
-        />
-        <h2 style={{ margin: 0 }}>
-          {userData?.username || "Gamer"}
-        </h2>
-        <p style={{ color: "#666", marginTop: "0.3rem" }}>
-          {user?.email}
-        </p>
+      <input
+        type="file"
+        accept="image/*"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+      />
+      <div className="profile-header">
+        <div className="profile-banner" />
+        <div className="profile-avatar-wrapper">
+          <Avatar
+            image={preview || userData?.avatar}
+            label={userData?.username?.charAt(0).toUpperCase()}
+            size="xlarge"
+            shape="circle"
+            className="profile-avatar"
+          />
+          {isEditing && (
+            <div className="avatar-edit-icon" onClick={() => fileInputRef.current.click()}>
+              <i className="pi pi-pencil"></i>
+            </div>
+          )}
+        </div>
       </div>
-      {/* INFO */}
-      <div style={{ marginTop: "1.5rem" }}>
-        {isEditing ? (
-          <InputText value={phone} onChange={(e) => setPhone(e.target.value)} />
-        ) : (
-          <p><strong>📞 Teléfono:</strong> {userData?.phone || "No agregado"}</p>
-        )}
+      <div className="profile-section form-row">
+        <div className="form-group">
+          <label>Correo</label>
+          <InputText
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={!isEditing}
+          />
+        </div>
+        <div className="form-group">
+          <label>NickName</label>
+          <InputText
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            disabled={!isEditing}
+          />
+        </div>
+        <div className="form-group">
+          <label>Teléfono</label>
+          <InputText
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            disabled={!isEditing}
+          />
+        </div>
       </div>
       {/* LINKS */}
-      <div style={{ marginTop: "1rem" }}>
+      <div className="profile-section">
         <h4>🎮 Perfiles gamer</h4>
         {isEditing ? (
           <>
@@ -163,33 +244,28 @@ export default function Profile({ user, userData }) {
         ) : (
           <>
             {userData?.links?.length > 0 ? (
-              userData.links.map((link, index) => {
-                const platform = getPlatform(link);
-                const icon = getIcon(platform);
-                return(
-                  <a
-                    key={index}
-                    href={link}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "0.5rem",
-                      marginBottom: "0.5rem",
-                      color: "#3b82f6",
-                      textDecoration: "none"
-                    }}
-                  >
-                    <img
-                      src={icon}
-                      alt={platform}
-                      style={{ width: "20px", height: "20px" }}
-                    />
-                    {getLabel(platform)}
-                  </a>
-                )
-              })
+              <div className="gamer-links">
+                {userData.links.map((link, index) => {
+                  const platform = getPlatform(link);
+                  const icon = getIcon(platform);
+                  return(
+                    <a
+                      key={index}
+                      href={link}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="gamer-link"
+                    >
+                      <img
+                        src={icon}
+                        alt={platform}
+                        style={{ width: "20px", height: "20px" }}
+                      />
+                      {getLabel(platform)}
+                    </a>
+                  )
+                })}
+              </div>
             ) : (
               <p style={{ color: "#888" }}>No hay links</p>
             )}

@@ -408,6 +408,109 @@ a:hover {
   }
 }
 
+/* ================= PROFILE ================= */
+.profile-header {
+  position: relative;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.profile-banner {
+  height: 120px;
+  background: linear-gradient(90deg, #38bdf8, #a855f7);
+  border-radius: 8px 8px 0 0;
+}
+
+.profile-avatar-wrapper {
+  margin-top: -100px;
+  position: relative;
+  display: inline-block;
+}
+
+.profile-avatar {
+  width: 130px !important;
+  height: 130px !important;
+  font-size: 3rem !important;
+  background-color: #6366f1;
+  color: white;
+  border: 3px solid #0f172a;
+}
+
+.profile-section {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 8px;
+}
+
+.avatar-edit-icon {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #38bdf8;
+  color: white;
+  border-radius: 50%;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+  transition: 0.2s;
+  opacity: 0;
+}
+
+.avatar-edit-icon:hover {
+  background: #a855f7;
+}
+
+.profile-avatar-wrapper:hover .avatar-edit-icon {
+  opacity: 1;
+}
+
+/* ================= LINKS ================= */
+.gamer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.gamer-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  background: rgba(56, 189, 248, 0.1);
+  color: #38bdf8;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.gamer-link:hover {
+  background: rgba(168, 85, 247, 0.2);
+}
+
+/* ================= FORM PROFILE ================= */
+.form-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap; /* 🔥 para responsive */
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* 🔥 todos ocupan el mismo espacio */
+  min-width: 150px; /* evita que se rompa feo */
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin-bottom: 0.3rem;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
