@@ -147,6 +147,7 @@ export default function PostList({ user }) {
                 )}
                 <div className="user-row">
                   <Avatar
+                    image={post?.avatar}
                     label={post.username?.charAt(0).toUpperCase()}
                     shape="circle"
                     onClick={() => {

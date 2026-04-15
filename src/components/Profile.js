@@ -26,6 +26,14 @@ export default function Profile({ user, userData }) {
     }
   }, [userData, user]);
 
+  useEffect(() => {
+    return () => {
+      if (preview) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
+
   const handleSave = async () => {
     try {
       const userRef = doc(db, "users", user.uid);

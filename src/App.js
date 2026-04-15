@@ -100,6 +100,7 @@ function App() {
           </span>
           <Menu model={items} popup ref={menuRef} />
           <Avatar
+            image={userData?.avatar}
             label={userData?.username?.charAt(0).toUpperCase()}
             shape="circle"
             style={{ backgroundColor: "#6366f1", color: "#fff", cursor: "pointer" }}
