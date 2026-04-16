@@ -15,6 +15,8 @@ export default function Profile({ user, userData }) {
   const [phone, setPhone] = useState("");
   const [links, setLinks] = useState([]);
   const [preview, setPreview] = useState(null);
+  const [bannerPreview, setBannerPreview] = useState(null);
+  const bannerInputRef = useRef(null);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -24,7 +26,7 @@ export default function Profile({ user, userData }) {
       setPhone(userData.phone || "");
       setLinks(userData.links || []);
     }
-  }, [userData, user]);
+  }, [userData]);
 
   useEffect(() => {
     return () => {
@@ -33,6 +35,12 @@ export default function Profile({ user, userData }) {
       }
     };
   }, [preview]);
+
+  useEffect(() => {
+    return () => {
+      if (bannerPreview) URL.revokeObjectURL(bannerPreview);
+    };
+  }, [bannerPreview]);
 
   const handleSave = async () => {
     try {
@@ -151,6 +159,38 @@ export default function Profile({ user, userData }) {
       console.error("Error subiendo imagen:", error);
     }
   };
+
+  const handleBannerChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Solo imágenes");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Máximo 5MB");
+      return;
+    }
+
+    setBannerPreview(URL.createObjectURL(file));
+
+    try {
+      const storageRef = ref(storage, `banners/${user.uid}`);
+
+      await uploadBytes(storageRef, file);
+
+      const url = await getDownloadURL(storageRef);
+
+      await updateDoc(doc(db, "users", user.uid), {
+        banner: url
+      });
+
+    } catch (error) {
+      console.error("Error subiendo banner:", error);
+    }
+  };
   
   return (
     <Card style={{ borderRadius: "8px" }}>
@@ -161,12 +201,45 @@ export default function Profile({ user, userData }) {
         style={{ display: "none" }}
         onChange={handleFileChange}
       />
+      <input
+        type="file"
+        accept="image/*"
+        ref={bannerInputRef}
+        style={{ display: "none" }}
+        onChange={handleBannerChange}
+      />
       <div className="profile-header">
-        <div className="profile-banner" />
+        <div className="profile-banner-container">
+          <div className="profile-banner" 
+            style={
+              bannerPreview || userData?.banner
+                ? {
+                    backgroundImage: `url(${bannerPreview || userData?.banner})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center"
+                  }
+                : {
+                    background: "linear-gradient(90deg, #38bdf8, #a855f7)"
+                  }
+            }
+          />
+          {isEditing && (
+            <div
+              className="banner-edit-icon"
+              onClick={() => bannerInputRef.current.click()}
+            >
+              <i className="pi pi-pencil"></i>
+            </div>
+          )}
+        </div>
         <div className="profile-avatar-wrapper">
           <Avatar
-            image={preview || userData?.avatar}
-            label={userData?.username?.charAt(0).toUpperCase()}
+            image={preview || userData?.avatar || undefined}
+            label={
+              !preview && !userData?.avatar
+                ? userData?.username?.charAt(0).toUpperCase()
+                : null
+            }
             size="xlarge"
             shape="circle"
             className="profile-avatar"

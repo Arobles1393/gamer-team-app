@@ -416,9 +416,10 @@ a:hover {
 }
 
 .profile-banner {
-  height: 120px;
-  background: linear-gradient(90deg, #38bdf8, #a855f7);
+  height: 140px;
   border-radius: 8px 8px 0 0;
+  background-size: cover;
+  background-position: center;
 }
 
 .profile-avatar-wrapper {
@@ -443,6 +444,7 @@ a:hover {
   border-radius: 8px;
 }
 
+/* ================= AVATAR PROFILE ================= */
 .avatar-edit-icon {
   position: absolute;
   bottom: 0;
@@ -466,6 +468,22 @@ a:hover {
 
 .profile-avatar-wrapper:hover .avatar-edit-icon {
   opacity: 1;
+}
+
+/* ================= BANNER PROFILE ================= */
+.profile-banner-container {
+  position: relative;
+}
+
+.banner-edit-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border-radius: 50%;
+  padding: 8px;
+  cursor: pointer;
 }
 
 /* ================= LINKS ================= */

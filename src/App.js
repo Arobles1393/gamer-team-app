@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { auth, db } from "./firebase/config";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import CreatePost from "./components/CreatePost";
 import PostList from "./components/PostList";
 import Profile from "./components/Profile";
@@ -17,25 +17,31 @@ function App() {
   const [showMyPosts, setShowMyPosts] = useState(false)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async(currentUser) => {
+    let unsubscribeUserDoc = null;
+    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
         try {
           const docRef = doc(db, "users", currentUser.uid);
-          const docSnap = await getDoc(docRef);
-
-          if (docSnap.exists()) {
-            setUserData(docSnap.data());
-          }
+          unsubscribeUserDoc = onSnapshot(docRef, (docSnap) => {
+            console.log("🔥 SNAPSHOT:", docSnap.data());
+            if (docSnap.exists()) {
+              setUserData(docSnap.data());
+            }
+          });
         } catch (error) {
           console.error("Error obteniendo userData:", error);
         }
       } else {
         setUserData(null);
+        if (unsubscribeUserDoc) unsubscribeUserDoc();
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeUserDoc) unsubscribeUserDoc();
+    };
   }, []);
 
   if (!user) {
