@@ -60,7 +60,11 @@ export default function UserProfile({ userId }) {
         <div style={{ textAlign: "center" }}>
             <Avatar
               image={userData?.avatar}
-              label={userData?.username?.charAt(0).toUpperCase()}
+              label={
+                !userData?.avatar
+                  ? userData?.username?.charAt(0).toUpperCase()
+                  : null
+              }
               size="xlarge"
               shape="circle"
               style={{ marginBottom: "1rem", backgroundColor: "#6366f1", color: "#fff" }}
