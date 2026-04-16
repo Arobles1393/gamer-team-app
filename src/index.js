@@ -7,13 +7,16 @@ import "primereact/resources/themes/lara-dark-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import { PrimeReactProvider } from "primereact/api";
+import { BrowserRouter } from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <PrimeReactProvider value={{ ripple: true }}>
-      <App />
-    </PrimeReactProvider>
+    <BrowserRouter>
+      <PrimeReactProvider value={{ ripple: true }}>
+        <App />
+      </PrimeReactProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );
 

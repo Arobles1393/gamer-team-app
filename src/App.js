@@ -8,13 +8,13 @@ import Profile from "./components/Profile";
 import { Avatar } from "primereact/avatar";
 import Auth from "./components/Auth";
 import { Menu } from "primereact/menu";
+import { Routes, Route, useNavigate } from "react-router-dom"
 
 function App() {
   const menuRef = useRef(null);
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
-  const [showProfile, setShowProfile] = useState(false);
-  const [showMyPosts, setShowMyPosts] = useState(false)
+  const navigate = useNavigate();
 
   useEffect(() => {
     let unsubscribeUserDoc = null;
@@ -53,7 +53,6 @@ function App() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      setShowProfile(false)
       console.log("Sesión cerrada");
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
@@ -64,7 +63,9 @@ function App() {
     {
       label: "Mi perfil",
       icon: "pi pi-user",
-      command: () => setShowProfile(true)
+      command: () => {
+        navigate("/profile");
+      }
     },
     {
       label: "Mis publicaciones",
@@ -91,14 +92,9 @@ function App() {
     <>
       <header className="app-header">
         <div className="header-left">
-          <h2
-            onClick={() => {
-              setShowProfile(false);
-              setShowMyPosts(false);
-            }}
-            >
-              GamerMatch
-            </h2>
+          <h2 onClick={() => navigate("/")}>
+            GamerMatch
+          </h2>
         </div>
         <div className="header-right">
           <span className="username">
@@ -122,15 +118,22 @@ function App() {
           padding: "1.5rem"
         }}
       >
-      {showProfile ? (
-        <Profile user={user} userData={userData} />
-      ) : (
-        <>
-          <CreatePost user={user} userData={userData} />
-          <PostList user={user} />
-        </>
-      )}
-    </div>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <CreatePost user={user} userData={userData} />
+                <PostList user={user} />
+              </>
+            }
+          />
+          <Route
+            path="/profile"
+            element={<Profile user={user} userData={userData} />}
+          />
+        </Routes>
+      </div>
     </>
   );
 }
