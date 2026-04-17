@@ -1,4 +1,4 @@
-import { useState, useEffect} from "react";
+import { useState } from "react";
 import { db } from "../firebase/config";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import { Card } from "primereact/card";
@@ -9,14 +9,14 @@ import { Dropdown } from "primereact/dropdown";
 import { AutoComplete } from "primereact/autocomplete";
 import { searchGames } from "../utils/searchGames";
 
-export default function CreatePost({ user, userData }) {
+export default function CreatePost({ user, userData, onClose }) {
   const [game, setGame] = useState({});
   const [players, setPlayers] = useState("");
   const [comments, setComments] = useState("");
   const [platform, setPlatform] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
+  //const [isOpen, setIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
-  const [isSticky, setIsSticky] = useState(false);
+  //const [isSticky, setIsSticky] = useState(false);
   const platforms = [
     { label: "PlayStation", value: "playstation" },
     { label: "Xbox", value: "xbox" },
@@ -25,14 +25,14 @@ export default function CreatePost({ user, userData }) {
     { label: "Mobile", value: "mobile" }
   ];
 
-  useEffect(() => {
+  /*useEffect(() => {
     const handleScroll = () => {
       setIsSticky(window.scrollY > 150);
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, []);*/
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,7 +61,7 @@ export default function CreatePost({ user, userData }) {
       setPlayers("");
       setComments("");
       setPlatform("")
-      setIsOpen(false);
+      onClose();
       alert("Publicación creada 🚀");
     }catch (error) {
         console.error("Error:", error);
@@ -101,46 +101,32 @@ export default function CreatePost({ user, userData }) {
     </div>
   );
 
-  if (!isOpen) {
+  /*if (!isOpen) {
     return (
-      <>
-        <Card style={{ marginBottom: "1rem", borderRadius: "8px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div>
-              <h3 style={{ margin: 0 }}>🎮 ¿Buscas equipo?</h3>
-              <p style={{ marginTop: 20, color: "#666" }}>
-                Publica una partida y encuentra jugadores rapidamente.
-              </p>
-            </div>
-            <Button
-              label="Publicar"
-              icon="pi pi-plus"
-              onClick={() => setIsOpen(true)}
-            />
+      <Card style={{ marginBottom: "1rem", borderRadius: "8px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            <h3 style={{ margin: 0 }}>🎮 ¿Buscas equipo?</h3>
+            <p style={{ marginTop: 20, color: "#666" }}>
+              Publica una partida y encuentra jugadores rapidamente.
+            </p>
           </div>
-        </Card>
-        {isSticky && (
           <Button
             label="Publicar"
             icon="pi pi-plus"
-            onClick={() => {
-              window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-              });
-              setIsOpen(true);
-            }}
-            className="publish-btn-floating"
+            onClick={() => setIsOpen(true)}
           />
-        )}
-      </>
+        </div>
+      </Card>
     );
-  }
+  }*/
 
   return (
-    <Card style={{ marginBottom: "1rem", borderRadius: "8px" }}>
+    <Card style={{ marginTop: "1.2rem", borderRadius: "8px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h3 style={{ margin: 0 }}>Crear partida 🎮</h3>
+        <p style={{ marginTop: -15, color: "#666", textAlign:"center" }}>
+              ¿Buscas equipo? Publica una partida y encuentra jugadores rapidamente.
+            </p>
       </div>
       <div className="p-fluid" style={{ marginTop: "1rem" }}>
         {/* Inputs en fila */}
@@ -189,7 +175,8 @@ export default function CreatePost({ user, userData }) {
           <Button
             label="Cancelar"
             className="p-button-text"
-            onClick={() => setIsOpen(false)}
+            onClick={onClose}
+            //onClick={() => setIsOpen(false)}
           />
         </div>
       </div>

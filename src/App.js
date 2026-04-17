@@ -9,11 +9,14 @@ import { Avatar } from "primereact/avatar";
 import Auth from "./components/Auth";
 import { Menu } from "primereact/menu";
 import { Routes, Route, useNavigate } from "react-router-dom"
+import { Button } from "primereact/button";
+import { Dialog } from "primereact/dialog";
 
 function App() {
   const menuRef = useRef(null);
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
+  const [showCreatePost, setShowCreatePost] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -97,6 +100,12 @@ function App() {
           </h2>
         </div>
         <div className="header-right">
+          <Button
+            label="Publicar"
+            icon="pi pi-plus"
+            className="publish-btn-floating"
+            onClick={() => setShowCreatePost(true)}
+          />
           <span className="username">
             {userData?.username || user.email}
           </span>
@@ -115,6 +124,18 @@ function App() {
           />
         </div>
       </header>
+      <Dialog
+        header="🎮 Crear publicación"
+        visible={showCreatePost}
+        style={{ width: "1000px" }}
+        onHide={() => setShowCreatePost(false)}
+      >
+        <CreatePost
+          user={user}
+          userData={userData}
+          onClose={() => setShowCreatePost(false)}
+        />
+      </Dialog>
       <div 
         style={{
           maxWidth: "1200px",
@@ -126,10 +147,7 @@ function App() {
           <Route
             path="/"
             element={
-              <>
-                <CreatePost user={user} userData={userData} />
-                <PostList user={user} />
-              </>
+              <PostList user={user} />
             }
           />
           <Route
