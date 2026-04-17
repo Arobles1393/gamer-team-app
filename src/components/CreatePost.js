@@ -101,6 +101,14 @@ export default function CreatePost({ user, userData, onClose }) {
     </div>
   );
 
+  const cancel = () => {
+    setGame({});
+    setPlayers("");
+    setComments("");
+    setPlatform("")
+    onClose();
+  }
+
   /*if (!isOpen) {
     return (
       <Card style={{ marginBottom: "1rem", borderRadius: "8px" }}>
@@ -175,7 +183,7 @@ export default function CreatePost({ user, userData, onClose }) {
           <Button
             label="Cancelar"
             className="p-button-text"
-            onClick={onClose}
+            onClick={cancel}
             //onClick={() => setIsOpen(false)}
           />
         </div>
