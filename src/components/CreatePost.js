@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { db } from "../firebase/config";
 import { collection, addDoc, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
 import { Card } from "primereact/card";
@@ -8,6 +8,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { AutoComplete } from "primereact/autocomplete";
 import { searchGames } from "../utils/searchGames";
+import { Toast } from "primereact/toast";
 
 export default function CreatePost({ user, userData, onClose, editingPost }) {
   const [game, setGame] = useState({});
@@ -17,6 +18,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
   //const [isOpen, setIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   //const [isSticky, setIsSticky] = useState(false);
+  const toast = useRef(null);
   const platforms = [
     { label: "PlayStation", value: "playstation" },
     { label: "Xbox", value: "xbox" },
@@ -45,6 +47,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let state = "guardar"
     try{
       if (!game.value || !players || !comments || !platform) {
         alert("Completa todos los campos");
@@ -55,6 +58,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
         image = game.image
       }
       if (editingPost) {
+        state = "actualizar"
         const postRef = doc(db, "posts", editingPost.id);
         await updateDoc(postRef, {
           game: game.value,
@@ -64,7 +68,12 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
           image: image || null
         });
 
-        alert("Publicación editada 🚀");
+        toast.current.show({
+          severity: "success",
+          summary: "Actualizada",
+          detail: "Publicación actualizada correctamente",
+          life: 3000
+        });
 
       } else {
         await addDoc(collection(db, "posts"), {
@@ -79,7 +88,12 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
           platform
         });
 
-        alert("Publicación creada 🚀");
+        toast.current.show({
+          severity: "success",
+          summary: "Creada",
+          detail: "Publicación creada correctamente",
+          life: 3000
+        });
       }
       setGame({});
       setPlayers("");
@@ -87,7 +101,13 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
       setPlatform("")
       onClose();
     }catch (error) {
-        console.error("Error:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudo "+state+" la publicacion",
+        life: 3000
+      });
+      console.error("Error:", error);
     }
   };
 
@@ -211,6 +231,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
           />
         </div>
       </div>
+      <Toast ref={toast} />
     </Card>
   );
 }

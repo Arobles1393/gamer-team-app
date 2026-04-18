@@ -63,6 +63,12 @@ export default function PostList({ user, setEditingPost, setShowCreatePost }) {
       await deleteDoc(doc(db, "posts", id));
       console.log("Eliminado correctamente");
     } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudo eliminar la publicacion",
+        life: 3000
+      });
       console.error("Error al eliminar:", error);
     }
   };
