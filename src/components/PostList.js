@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { db } from "../firebase/config";
 import { collection, onSnapshot, deleteDoc, doc } from "firebase/firestore";
 import { Card } from "primereact/card";
@@ -7,6 +7,8 @@ import { Avatar } from "primereact/avatar";
 import { Dropdown } from "primereact/dropdown";
 import { Dialog } from "primereact/dialog";
 import UserProfile from "./UserProfile";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { Toast } from "primereact/toast";
 
 export default function PostList({ user, setEditingPost, setShowCreatePost }) {
   const [posts, setPosts] = useState([]);
@@ -15,6 +17,7 @@ export default function PostList({ user, setEditingPost, setShowCreatePost }) {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
   const [filterPlatform, setFilterPlatform] = useState(null);
+  const toast = useRef(null);
   const gameOptions = [
     { label: "Todos", value: "" },
     ...games.map((game) => ({
@@ -64,11 +67,26 @@ export default function PostList({ user, setEditingPost, setShowCreatePost }) {
     }
   };
 
-  const eliminar = async (id) => {
-    if (window.confirm("¿Seguro que quieres eliminar?")) {
-      handleDelete(id);
-    }
-  }
+  const confirmDelete = (id) => {
+    confirmDialog({
+      message: "¿Seguro que quieres eliminar esta publicación?",
+      header: "Advertencia",
+      icon: "pi pi-exclamation-triangle",
+      acceptLabel: "eliminar",
+      rejectLabel: "Cancelar",
+
+      accept: () => {
+        handleDelete(id);
+        toast.current.show({
+          severity: "success",
+          summary: "Eliminado",
+          detail: "Publicación eliminada correctamente",
+          life: 3000
+        });
+      },
+      reject: () => {}
+    });
+  };
 
   const filteredPosts = posts.filter((post) => {
     const matchGame = !filterGame || post.game === filterGame;
@@ -180,7 +198,7 @@ export default function PostList({ user, setEditingPost, setShowCreatePost }) {
                         label="Eliminar"
                         icon="pi pi-trash"
                         className="p-button-danger p-button-sm"
-                        onClick={() => eliminar(post.id)}
+                        onClick={() => confirmDelete(post.id)}
                       />
                     </>
                   )}
@@ -203,6 +221,8 @@ export default function PostList({ user, setEditingPost, setShowCreatePost }) {
           <UserProfile userId={selectedUserId} />
         )}
       </Dialog>
+      <ConfirmDialog />
+      <Toast ref={toast} />
     </div>
   );
 }
