@@ -17,6 +17,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
   const [showCreatePost, setShowCreatePost] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -125,15 +126,19 @@ function App() {
         </div>
       </header>
       <Dialog
-        header="🎮 Crear publicación"
+        header= { editingPost ? "✏️ Editar publicación" :"🎮 Crear publicación" }
         visible={showCreatePost}
         style={{ width: "1000px" }}
-        onHide={() => setShowCreatePost(false)}
+        onHide={() => {setShowCreatePost(false); setEditingPost(null);}}
       >
         <CreatePost
           user={user}
           userData={userData}
-          onClose={() => setShowCreatePost(false)}
+          editingPost={editingPost}
+          onClose={() => {
+            setShowCreatePost(false);
+            setEditingPost(null);
+          }}
         />
       </Dialog>
       <div 
@@ -147,7 +152,9 @@ function App() {
           <Route
             path="/"
             element={
-              <PostList user={user} />
+              <PostList user={user} 
+                setEditingPost={setEditingPost}
+                setShowCreatePost={setShowCreatePost} />
             }
           />
           <Route

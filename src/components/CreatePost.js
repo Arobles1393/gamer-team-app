@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { db } from "../firebase/config";
-import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
@@ -9,7 +9,7 @@ import { Dropdown } from "primereact/dropdown";
 import { AutoComplete } from "primereact/autocomplete";
 import { searchGames } from "../utils/searchGames";
 
-export default function CreatePost({ user, userData, onClose }) {
+export default function CreatePost({ user, userData, onClose, editingPost }) {
   const [game, setGame] = useState({});
   const [players, setPlayers] = useState("");
   const [comments, setComments] = useState("");
@@ -24,6 +24,15 @@ export default function CreatePost({ user, userData, onClose }) {
     { label: "PC", value: "pc" },
     { label: "Mobile", value: "mobile" }
   ];
+
+  useEffect(() => {
+    if (editingPost) {
+      setGame(editingPost.game || "");
+      setPlatform(editingPost.platform || "");
+      setPlayers(editingPost.playersNeeded || "");
+      setComments(editingPost.comments || "");
+    }
+  }, [editingPost]);
 
   /*useEffect(() => {
     const handleScroll = () => {
@@ -45,24 +54,38 @@ export default function CreatePost({ user, userData, onClose }) {
       if (!image) {
         image = game.image
       }
-      await addDoc(collection(db, "posts"), {
-        userId: user.uid,
-        username: userData?.username,
-        game: game.value,
-        playersNeeded: players,
-        image: image || null,
-        phone: userData?.phone,
-        createdAt: new Date(),
-        comments,
-        platform
-      });
+      if (editingPost) {
+        const postRef = doc(db, "posts", editingPost.id);
+        await updateDoc(postRef, {
+          game: game.value,
+          platform,
+          playersNeeded: players,
+          comments,
+          image: image || null
+        });
 
+        alert("Publicación editada 🚀");
+
+      } else {
+        await addDoc(collection(db, "posts"), {
+          userId: user.uid,
+          username: userData?.username,
+          game: game.value,
+          playersNeeded: players,
+          image: image || null,
+          phone: userData?.phone,
+          createdAt: new Date(),
+          comments,
+          platform
+        });
+
+        alert("Publicación creada 🚀");
+      }
       setGame({});
       setPlayers("");
       setComments("");
       setPlatform("")
       onClose();
-      alert("Publicación creada 🚀");
     }catch (error) {
         console.error("Error:", error);
     }

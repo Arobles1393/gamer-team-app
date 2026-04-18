@@ -8,7 +8,7 @@ import { Dropdown } from "primereact/dropdown";
 import { Dialog } from "primereact/dialog";
 import UserProfile from "./UserProfile";
 
-export default function PostList({ user }) {
+export default function PostList({ user, setEditingPost, setShowCreatePost }) {
   const [posts, setPosts] = useState([]);
   const [filterGame, setFilterGame] = useState(null);
   const games = [...new Set(posts.map(post => post.game))];
@@ -75,9 +75,6 @@ export default function PostList({ user }) {
     const matchPlatform = !filterPlatform || post.platform === filterPlatform;
     return matchGame && matchPlatform;
   });
-
-  const editar = async (id) => {
-  }
 
   return (
     <div>
@@ -174,7 +171,10 @@ export default function PostList({ user }) {
                         label="Editar"
                         icon="pi pi-pencil"
                         className="p-button-success p-button-sm"
-                        onClick={() => editar(post.id)}
+                        onClick={() => {
+                          setEditingPost(post);
+                          setShowCreatePost(true);
+                        }}
                       />
                       <Button
                         label="Eliminar"
