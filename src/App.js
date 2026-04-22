@@ -80,7 +80,10 @@ function App() {
     },
     {
       label: "Mis partidas",
-      icon: "pi pi-users"
+      icon: "pi pi-users",
+      command: () => {
+        navigate("/mypartys");
+      }
     },
     { separator: true },
     {
@@ -176,6 +179,15 @@ function App() {
                 setEditingPost={setEditingPost}
                 setShowCreatePost={setShowCreatePost}
                 onlyMine
+              />
+            }
+          />
+          <Route
+            path="/mypartys"
+            element={
+              <PostList user={user}
+                setShowCreatePost={setShowCreatePost}
+                joined
               />
             }
           />

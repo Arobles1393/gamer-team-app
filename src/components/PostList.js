@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { db } from "../firebase/config";
-import { collection, onSnapshot, deleteDoc, doc, query, where } from "firebase/firestore";
+import { collection, onSnapshot, deleteDoc, doc, query, where, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
@@ -10,7 +10,7 @@ import UserProfile from "./UserProfile";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 
-export default function PostList({ user, setEditingPost, setShowCreatePost, onlyMine = false }) {
+export default function PostList({ user, setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
   const [posts, setPosts] = useState([]);
   const [filterGame, setFilterGame] = useState(null);
   const games = [...new Set(posts.map(post => post.game))];
@@ -46,9 +46,20 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
 
     const base = collection(db, "posts");
 
-    let q = onlyMine
-      ? query(base, where("userId", "==", user.uid))
-      : base;
+    let q;
+
+    if (onlyMine) {
+      q = query(
+        base, 
+        where("userId", "==", user.uid));
+    } else if (joined) {
+      q = query(
+        base,
+        where("joinedUsers", "array-contains", user.uid)
+      );
+    } else {
+      q = base;
+    }
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({
@@ -60,9 +71,13 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
     });
 
     return () => unsubscribe();
-  }, [user, onlyMine]);
+  }, [user, onlyMine, joined]);
 
-  const handleJoin = (post) => {
+  const handleJoin = async(post) => {
+    const ref = doc(db, "posts", post.id);
+    await updateDoc(ref, {
+      joinedUsers: arrayUnion(user.uid)
+    });
     const message = `Hola ${post.username}, Quiero unirme a tu partida de ${post.game} 🎮`;
     window.open(`https://wa.me/${post.phone}?text=${encodeURIComponent(message)}`);
   };
@@ -109,6 +124,14 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
     return matchGame && matchPlatform;
   });
 
+  const handleLeave = async (post) => {
+    const ref = doc(db, "posts", post.id);
+
+    await updateDoc(ref, {
+      joinedUsers: arrayRemove(user.uid)
+    });
+  };
+
   return (
     <div>
       <div
@@ -147,6 +170,12 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
       <div className="post-grid">
         {filteredPosts.map((post) => (
           <Card key={post.id} className="rawg-card">
+            {post.userId !== user.uid &&
+            post.joinedUsers?.includes(user.uid) && (
+              <div style={{marginBottom:"1rem"}}>
+                <span className="joined-badge">Sigues esta partida</span>
+              </div>
+            )}
             <div className="rawg-image-container">
               <img
                 src={post.image || "/imagenotfound.png"}
@@ -191,12 +220,21 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
                 </div>
                 <div className="post-actions">
                   {post.userId !== user.uid && (
-                    <Button
-                      label="Unirme"
-                      icon="pi pi-users"
-                      className="p-button-success p-button-sm"
-                      onClick={() => handleJoin(post)}
-                    />
+                    post.joinedUsers?.includes(user.uid) ? (
+                      <Button
+                        label="Dejar de seguir"
+                        icon="pi pi-users"
+                        className="p-button-danger p-button-sm"
+                        onClick={() => handleLeave(post)}
+                      />
+                    ) : (
+                      <Button
+                        label="Seguir y unirme"
+                        icon="pi pi-users"
+                        className="p-button-success p-button-sm"
+                        onClick={() => handleJoin(post)}
+                      />
+                    ) 
                   )}
                   {post.userId === user.uid && (
                     <>
