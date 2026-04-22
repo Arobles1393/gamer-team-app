@@ -73,7 +73,10 @@ function App() {
     },
     {
       label: "Mis publicaciones",
-      icon: "pi pi-file"
+      icon: "pi pi-file",
+      command: () => {
+        navigate("/myposts");
+      }
     },
     {
       label: "Mis partidas",
@@ -154,12 +157,27 @@ function App() {
             element={
               <PostList user={user} 
                 setEditingPost={setEditingPost}
-                setShowCreatePost={setShowCreatePost} />
+                setShowCreatePost={setShowCreatePost}
+              />
             }
           />
           <Route
             path="/profile"
-            element={<Profile user={user} userData={userData} />}
+            element={
+              <Profile user={user} 
+                userData={userData} 
+              />
+            }
+          />
+          <Route
+            path="/myposts"
+            element={
+              <PostList user={user} 
+                setEditingPost={setEditingPost}
+                setShowCreatePost={setShowCreatePost}
+                onlyMine
+              />
+            }
           />
         </Routes>
       </div>

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { db } from "../firebase/config";
-import { collection, onSnapshot, deleteDoc, doc } from "firebase/firestore";
+import { collection, onSnapshot, deleteDoc, doc, query, where } from "firebase/firestore";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
@@ -10,7 +10,7 @@ import UserProfile from "./UserProfile";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 
-export default function PostList({ user, setEditingPost, setShowCreatePost }) {
+export default function PostList({ user, setEditingPost, setShowCreatePost, onlyMine = false }) {
   const [posts, setPosts] = useState([]);
   const [filterGame, setFilterGame] = useState(null);
   const games = [...new Set(posts.map(post => post.game))];
@@ -42,16 +42,25 @@ export default function PostList({ user, setEditingPost, setShowCreatePost }) {
   };
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "posts"), (snapshot) => {
+    if (onlyMine && !user) return;
+
+    const base = collection(db, "posts");
+
+    let q = onlyMine
+      ? query(base, where("userId", "==", user.uid))
+      : base;
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
+
       setPosts(data);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [user, onlyMine]);
 
   const handleJoin = (post) => {
     const message = `Hola ${post.username}, Quiero unirme a tu partida de ${post.game} 🎮`;
