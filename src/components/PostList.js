@@ -17,6 +17,7 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
   const [filterPlatform, setFilterPlatform] = useState(null);
+  const [title, setTitle] = useState("");
   const toast = useRef(null);
   const gameOptions = [
     { label: "Todos", value: "" },
@@ -34,11 +35,30 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
     { label: "Mobile", value: "mobile" }
   ]
   const platformIcons = {
-    pc: "/icons/pc.png",
-    playstation: "/icons/playstation.png",
-    xbox: "/icons/xbox.png",
-    switch: "/icons/switch.png",
-    mobile: "/icons/mobile.png"
+    pc: (<svg className="platform-icon" viewBox="0 0 485.211 485.211">
+          <path fill="white" d="M121.304,75.816H30.327C13.564,75.816,0,89.409,0,106.141v333.586c0,16.76,13.564,30.322,30.327,30.322h90.978    c16.762,0,30.324-13.562,30.324-30.322V106.141C151.628,89.409,138.066,75.816,121.304,75.816z M45.49,379.073    c-8.382,0-15.163-6.781-15.163-15.168c0-8.377,6.781-15.158,15.163-15.158c8.38,0,15.161,6.781,15.161,15.158    C60.651,372.292,53.87,379.073,45.49,379.073z M121.304,197.118H30.327v-30.324h90.978V197.118z M121.304,136.467H30.327v-30.326    h90.978V136.467z"/>
+          <path fill="white" d="M318.423,409.396v-30.322h-90.98v30.322c-16.759,0-30.327,13.567-30.327,30.331h151.629    C348.745,422.963,335.183,409.396,318.423,409.396z"/>
+          <path fill="white" d="M454.889,15.163H90.978c-16.762,0-30.327,13.593-30.327,30.327h30.327h90.978h272.934v242.604H181.955v60.653h272.934    c16.759,0,30.322-13.562,30.322-30.332V45.489C485.211,28.755,471.647,15.163,454.889,15.163z M272.933,333.584    c-8.382,0-15.163-6.777-15.163-15.169c0-8.377,6.781-15.158,15.163-15.158c8.383,0,15.164,6.781,15.164,15.158    C288.097,326.807,281.315,333.584,272.933,333.584z"/>
+        </svg>),
+    playstation: (<svg className="platform-icon" viewBox="0 0 40 40">
+                    <path fill="white" d="M35.27,26.37a5.76,5.76,0,0,1-2.09,1.31l-11.07,4V28.73l8.14-2.91c.93-.33,1.07-.8.32-1a5.51,5.51,0,0,0-3,.15l-5.42,1.92V23.8l.31-.1a18.28,18.28,0,0,1,3.77-.8,16.06,16.06,0,0,1,7,.83C35.61,24.49,35.88,25.6,35.27,26.37Zm-12.11-5v-7.5c0-.89-.16-1.7-1-1.93-.63-.2-1,.39-1,1.27V32l-5.06-1.61V8a61.12,61.12,0,0,1,7,1.91c4.29,1.48,5.74,3.31,5.74,7.44S26.32,22.9,23.16,21.38Zm-16.37,7c-2.46-.69-2.86-2.13-1.75-3a11.91,11.91,0,0,1,2.79-1.34l7.27-2.58v2.94L9.87,26.35c-.92.33-1.07.8-.32,1a5.61,5.61,0,0,0,3-.16l2.51-.91V29l-.5.09a16.39,16.39,0,0,1-7.81-.63Z" id="Path"/>
+                  </svg>),
+    xbox: (<svg className="platform-icon" viewBox="0 0 32 32">
+            <path fill="white" d="M5.469 28.041c2.812 2.469 6.5 3.959 10.531 3.959 4.036 0 7.719-1.489 10.536-3.959 2.5-2.547-5.755-11.609-10.536-15.219-4.776 3.609-13.036 12.672-10.531 15.219zM20.349 8.839c3.333 3.948 9.979 13.749 8.104 17.213 2.219-2.745 3.547-6.24 3.547-10.047 0-4.453-1.817-8.484-4.76-11.38 0 0-0.037-0.032-0.109-0.057-0.084-0.032-0.204-0.057-0.376-0.057-0.785 0-2.645 0.577-6.405 4.328zM4.869 4.568c-0.072 0.025-0.109 0.057-0.115 0.057-2.937 2.896-4.755 6.927-4.755 11.38 0 3.807 1.328 7.297 3.547 10.041-1.864-3.468 4.771-13.265 8.109-17.208-3.76-3.756-5.625-4.328-6.411-4.328-0.172 0-0.297 0.025-0.376 0.063zM16 4.735c0 0-3.927-2.297-6.995-2.407-1.203-0.041-1.937 0.391-2.027 0.453 2.86-1.921 5.901-2.781 9-2.781h0.021c3.115 0 6.14 0.86 9.021 2.781-0.089-0.063-0.819-0.495-2.027-0.453-3.068 0.109-6.995 2.401-6.995 2.401z"/>
+          </svg>),
+    switch: (<svg className="platform-icon" viewBox="0 0 15 15">
+              <path d="M8.5 14.5H8C8 14.6326 8.05268 14.7598 8.14645 14.8536C8.24021 14.9473 8.36739 15 8.5 15V14.5ZM8.5 2.5V2C8.36739 2 8.24021 2.05268 8.14645 2.14645C8.05268 2.24022 8 2.36739 8 2.5H8.5ZM14.5 11.5H15H14.5ZM11.5 14.5V14V14.5ZM14.5 5.5H14H14.5ZM11.5 2.5V3V2.5ZM6.5 0.500002L7 0.500002C7 0.22386 6.77614 2.32458e-06 6.5 2.14577e-06L6.5 0.500002ZM6.5 12.5V13C6.77614 13 7 12.7761 7 12.5H6.5ZM0.5 3.5H1H0.5ZM3.5 0.5L3.5 1L3.5 0.5ZM3.5 12.5V13V12.5ZM0.5 9.5H0H0.5ZM14 5.5V11.5H15V5.5H14ZM11.5 14H8.5V15H11.5V14ZM9 14.5V2.5H8L8 14.5H9ZM8.5 3L11.5 3V2L8.5 2L8.5 3ZM14 11.5C14 12.8807 12.8807 14 11.5 14V15C13.433 15 15 13.433 15 11.5H14ZM15 5.5C15 3.56701 13.433 2.00001 11.5 2V3C12.8807 3.00001 14 4.11929 14 5.5H15ZM6 0.500002L6 12.5H7L7 0.500002L6 0.500002ZM6.5 12H3.5V13H6.5V12ZM1 9.5L1 3.5H2.68221e-07L0 9.5H1ZM3.5 1L6.5 1L6.5 2.14577e-06L3.5 0L3.5 1ZM1 3.5C1 2.11929 2.11929 0.999999 3.5 1L3.5 0C1.56701 -1.37091e-06 3.57628e-07 1.567 2.68221e-07 3.5H1ZM3.5 12C2.11929 12 1 10.8807 1 9.5H0C-5.96046e-08 11.433 1.567 13 3.5 13V12ZM13 10.5C13 9.67157 12.3284 9 11.5 9V10C11.7761 10 12 10.2239 12 10.5H13ZM11.5 12C12.3284 12 13 11.3284 13 10.5H12C12 10.7761 11.7761 11 11.5 11V12ZM10 10.5C10 11.3284 10.6716 12 11.5 12V11C11.2239 11 11 10.7761 11 10.5H10ZM11 10.5C11 10.2239 11.2239 10 11.5 10V9C10.6716 9 10 9.67157 10 10.5H11ZM3.5 5C3.22386 5 3 4.77614 3 4.5H2C2 5.32843 2.67157 6 3.5 6V5ZM4 4.5C4 4.77614 3.77614 5 3.5 5V6C4.32843 6 5 5.32843 5 4.5H4ZM3.5 4C3.77614 4 4 4.22386 4 4.5H5C5 3.67157 4.32843 3 3.5 3V4ZM3.5 3C2.67157 3 2 3.67157 2 4.5H3C3 4.22386 3.22386 4 3.5 4V3Z" fill="white"/>
+            </svg>),
+    mobile: (<svg className="platform-icon" viewBox="0 0 430 430">
+                <path fill="white" d="M140,0c-7.854,0.001-15.665,3.228-21.219,8.781C113.228,14.334,110.001,22.146,110,30v370
+                  c0.001,7.854,3.228,15.665,8.781,21.219c5.553,5.553,13.365,8.78,21.219,8.781h150c7.854-0.001,15.665-3.228,21.219-8.781
+                  c5.553-5.554,8.78-13.365,8.781-21.219V30c-0.001-7.854-3.228-15.665-8.781-21.219C305.666,3.228,297.854,0.001,290,0H140z
+                  M199.281,20c0.073-0.002,0.146-0.002,0.219,0c0.167-0.008,0.333-0.008,0.5,0h30c2.761-0.039,5.032,2.168,5.071,4.929
+                  s-2.168,5.032-4.929,5.071c-0.047,0.001-0.094,0.001-0.141,0h-30c-2.762,0.196-5.159-1.883-5.356-4.645
+                  C194.448,22.596,196.523,20.2,199.281,20L199.281,20z M120,50h190v325H120C120,375,120,50,120,50z M215,385c8.284,0,15,6.716,15,15
+                  s-6.716,15-15,15s-15-6.716-15-15C200,391.715,206.716,385,215,385z"/>
+            </svg>
+            )
   };
 
   useEffect(() => {
@@ -51,13 +71,17 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
     if (onlyMine) {
       q = query(
         base, 
-        where("userId", "==", user.uid));
+        where("userId", "==", user.uid)
+      );
+      setTitle("Mis publicaciones 🎮");
     } else if (joined) {
       q = query(
         base,
         where("joinedUsers", "array-contains", user.uid)
       );
+      setTitle("Mis partidas 🎮");
     } else {
+      setTitle("Partidas disponibles 🎮");
       q = base;
     }
 
@@ -143,7 +167,7 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
         }}
       >
         <h2 style={{ margin: 0 }}>
-          Partidas disponibles 🎮
+          {title}
           <span style={{ marginLeft: "8px", color: "#666", fontSize: "16px" }}>
             ({filteredPosts.length})
           </span>
@@ -170,13 +194,13 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
       <div className="post-grid">
         {filteredPosts.map((post) => (
           <Card key={post.id} className="rawg-card">
-            {post.userId !== user.uid &&
-            post.joinedUsers?.includes(user.uid) && (
-              <div style={{marginBottom:"1rem"}}>
-                <span className="joined-badge">Sigues esta partida</span>
-              </div>
-            )}
             <div className="rawg-image-container">
+              {post.userId !== user.uid &&
+              post.joinedUsers?.includes(user.uid) && (
+                <div style={{marginBottom:"1rem"}}>
+                  <span className="joined-badge">Sigues esta partida</span>
+                </div>
+              )}
               <img
                 src={post.image || "/imagenotfound.png"}
                 alt={post.game}
@@ -187,11 +211,12 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
               <h3>{post.game}</h3>
               <div className="rawg-meta">
                 <div className="meta-item">
-                  <img
+                  {platformIcons[post.platform]}
+                  {/*<img
                     src={platformIcons[post.platform]}
                     alt={post.platform}
                     className="platform-icon"
-                  />
+                  />*/}
                   <span>{post.platform}</span>
                 </div>
                 <div className="meta-item">
