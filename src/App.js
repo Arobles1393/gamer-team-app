@@ -5,6 +5,7 @@ import { doc, onSnapshot } from "firebase/firestore";
 import CreatePost from "./components/CreatePost";
 import PostList from "./components/PostList";
 import Profile from "./components/Profile";
+import ChatPage from "./chat/ChatPage";
 import { Avatar } from "primereact/avatar";
 import Auth from "./components/Auth";
 import { Menu } from "primereact/menu";
@@ -83,6 +84,13 @@ function App() {
       icon: "pi pi-users",
       command: () => {
         navigate("/mypartys");
+      }
+    },
+    {
+      label: "Chats",
+      icon: "pi pi-comments",
+      command: () => {
+        navigate("/chat");
       }
     },
     /*{ separator: true },
@@ -189,6 +197,12 @@ function App() {
                 setShowCreatePost={setShowCreatePost}
                 joined
               />
+            }
+          />
+          <Route
+            path="/chat"
+            element={
+              <ChatPage user={user}/>
             }
           />
         </Routes>
