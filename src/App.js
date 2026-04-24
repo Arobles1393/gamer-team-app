@@ -85,11 +85,11 @@ function App() {
         navigate("/mypartys");
       }
     },
-    { separator: true },
+    /*{ separator: true },
     {
       label: "Configuración",
       icon: "pi pi-cog"
-    },
+    },*/
     { separator: true },
     {
       label: "Cerrar sesión",
