@@ -7,6 +7,9 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { updateEmail } from "firebase/auth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { platformIcons } from "../utils/platformIcons";
+import { getPlatform } from "../utils/getPlatform";
+import { getLabel } from "../utils/getLabel"
 
 export default function Profile({ user, userData }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -72,40 +75,6 @@ export default function Profile({ user, userData }) {
 
   const isValidLink = (url) => {
     return url.startsWith("https://");
-  };
-
-  const getPlatform = (url) => {
-    if (url.includes("steam")) return "steam";
-    if (url.includes("discord")) return "discord";
-    if (url.includes("xbox")) return "xbox";
-    if (url.includes("playstation") || url.includes("psn")) return "playstation";
-    if (url.includes("epicgames")) return "epic";
-    return "other";
-  };
-
-  const getIcon = (platform) => {
-    switch (platform) {
-      case "steam":
-        return "https://cdn-icons-png.flaticon.com/512/5968/5968705.png";
-      case "discord":
-        return "https://cdn-icons-png.flaticon.com/512/2111/2111370.png";
-      case "xbox":
-        return "https://cdn-icons-png.flaticon.com/512/5968/5968885.png";
-      case "playstation":
-        return "https://cdn-icons-png.flaticon.com/512/5968/5968753.png";
-      default:
-        return "https://cdn-icons-png.flaticon.com/512/709/709496.png";
-      }
-  };
-
-  const getLabel = (platform) => {
-    switch (platform) {
-      case "steam": return "Steam";
-      case "discord": return "Discord";
-      case "xbox": return "Xbox";
-      case "playstation": return "PlayStation";
-      default: return "Perfil";
-    }
   };
 
   const handleCancel = () => {
@@ -279,7 +248,7 @@ export default function Profile({ user, userData }) {
       </div>
       {/* LINKS */}
       <div className="profile-section">
-        <h4>Comparte tus perfiles (steam, discord, facebook, etc.)</h4>
+        <h4>Mis redes sociales</h4>
         {isEditing ? (
           <>
             {links.length > 0 ? (
@@ -328,7 +297,6 @@ export default function Profile({ user, userData }) {
               <div className="gamer-links">
                 {userData.links.map((link, index) => {
                   const platform = getPlatform(link);
-                  const icon = getIcon(platform);
                   return(
                     <a
                       key={index}
@@ -337,11 +305,7 @@ export default function Profile({ user, userData }) {
                       rel="noreferrer"
                       className="gamer-link"
                     >
-                      <img
-                        src={icon}
-                        alt={platform}
-                        style={{ width: "20px", height: "20px" }}
-                      />
+                      {platformIcons[platform]?.()}
                       {getLabel(platform)}
                     </a>
                   )
