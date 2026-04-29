@@ -60,7 +60,28 @@ export default function UserProfile({ userId }) {
             </h2>
         </div>
       </div>
-      <div style={{ marginTop: "1rem", textAlign: "center" }}>
+      <div style={{ marginTop: "1rem" }}>
+        <p>{userData?.description}</p>
+      </div>
+      <div style={{ marginTop: "1rem" }}>
+        <h4>Juegos favoritos</h4>
+        <>
+          {userData?.games?.length > 0 ? (
+            <div className="games-grid">
+              {userData.games.map((game, index) => (
+                <div key={game.id} className="game-card">
+                  <img src={game.image} alt={game.name} />
+                  <div className="game-card-overlay">{game.name}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p style={{ color: "#888" }}>No hay juegos que mostrar</p>
+          )}
+        </>
+      </div>
+      <div style={{ marginTop: "1rem" }}>
+        <h4>Redes sociales</h4>
         {userData?.links?.length > 0 ? (
           <div className="gamer-links">
             {userData.links.map((link, index) => {
