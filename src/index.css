@@ -693,3 +693,60 @@ code {
 .chat-fab:hover {
   transform: scale(1.1);
 }
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 180px);
+  gap: 10px;
+}
+
+.game-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.game-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+/* 🔥 overlay */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  opacity: 0;
+  transition: 0.3s;
+}
+
+/* hover */
+.game-card:hover .overlay {
+  opacity: 1;
+}
+
+/* ❌ botón eliminar */
+.remove-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.remove-btn:hover {
+  background: red;
+}

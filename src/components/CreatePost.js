@@ -187,7 +187,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
             suggestions={suggestions}
             completeMethod={handleSearch}
             onChange={(e) => setGame(e.value)}
-            field="label"
+            field="name"
             itemTemplate={itemTemplate}
             placeholder="Nombre del juego"
             style={{ flex: 1 }}

@@ -10,13 +10,20 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { platformIcons } from "../utils/platformIcons";
 import { getPlatform } from "../utils/getPlatform";
 import { getLabel } from "../utils/getLabel"
+import { InputTextarea } from "primereact/inputtextarea";
+import { AutoComplete } from "primereact/autocomplete";
+import { searchGames } from "../utils/searchGames";
 
 export default function Profile({ user, userData }) {
   const [isEditing, setIsEditing] = useState(false);
+  const [description, setDescription] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [phone, setPhone] = useState("");
   const [links, setLinks] = useState([]);
+  const [games, setGames] = useState([]);
+  const [gameQuery, setGameQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
   const [preview, setPreview] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
   const bannerInputRef = useRef(null);
@@ -28,6 +35,8 @@ export default function Profile({ user, userData }) {
       setUsername(userData.username || "");
       setPhone(userData.phone || "");
       setLinks(userData.links || []);
+      setGames(userData.games || []);
+      setDescription(userData.description || []);
     }
   }, [userData]);
 
@@ -65,7 +74,9 @@ export default function Profile({ user, userData }) {
       await updateDoc(userRef, {
         username,
         phone,
-        links
+        links,
+        description,
+        games
       });
       setIsEditing(false);
     } catch (error) {
@@ -82,6 +93,8 @@ export default function Profile({ user, userData }) {
     setUsername(userData.username || "");
     setPhone(userData?.phone || "");
     setLinks(userData?.links || []);
+    setGames(userData?.games || []);
+    setDescription(userData?.description || []);
     setIsEditing(false);
   };
 
@@ -90,7 +103,9 @@ export default function Profile({ user, userData }) {
       email !== (userData?.email || "") ||
       username !== (userData?.username || "") ||
       phone !== (userData?.phone || "") ||
-      JSON.stringify(links) !== JSON.stringify(userData?.links || [])
+      description !== (userData?.description || "") ||
+      JSON.stringify(links) !== JSON.stringify(userData?.links || []) ||
+      JSON.stringify(games) !== JSON.stringify(userData?.games || [])
     );
   };
 
@@ -160,6 +175,45 @@ export default function Profile({ user, userData }) {
       console.error("Error subiendo banner:", error);
     }
   };
+
+  const handleAddGame = (game) => {
+    const newGame = {
+      id: game.id,
+      name: game.value,
+      image: game.image
+    };
+
+    setGames(prev => {
+      if (prev.some(g => g.id === game.id)) return prev;
+      return [...prev, newGame];
+    });
+    setGameQuery("");
+  };
+
+  let timeout = null;
+
+  const handleSearch = async (e) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(async () => {
+      const results = await searchGames(e.query);
+      setSuggestions(results);
+    }, 300);
+  };
+
+  const itemTemplate = (item) => (
+    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+      <img
+        src={item.image}
+        alt={item.label}
+        style={{ width: "40px", borderRadius: "6px" }}
+      />
+      <span>{item.label}</span>
+    </div>
+  );
+
+  const handleRemoveGame = (id) => {
+    setGames(prev => prev.filter(game => game.id !== id));
+  };
   
   return (
     <Card style={{ borderRadius: "8px" }}>
@@ -220,35 +274,101 @@ export default function Profile({ user, userData }) {
           )}
         </div>
       </div>
-      <div className="profile-section form-row">
-        <div className="form-group">
-          <label>Correo</label>
-          <InputText
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={!isEditing}
-          />
+      <div className="profile-section">
+        <h4>Datos personales</h4>
+        <div className="form-row">
+          <div className="form-group">
+            <label>Correo</label>
+            <InputText
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={!isEditing}
+            />
+          </div>
+          <div className="form-group">
+            <label>NickName</label>
+            <InputText
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              disabled={!isEditing}
+            />
+          </div>
+          <div className="form-group">
+            <label>Teléfono</label>
+            <InputText
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              disabled={!isEditing}
+            />
+          </div>
         </div>
+      </div>
+      <div className="profile-section" style={{marginTop:0}}>
         <div className="form-group">
-          <label>NickName</label>
-          <InputText
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            disabled={!isEditing}
-          />
-        </div>
-        <div className="form-group">
-          <label>Teléfono</label>
-          <InputText
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+          <InputTextarea
+            placeholder="Cuentanos sobre ti..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={3}
+            autoResize
             disabled={!isEditing}
           />
         </div>
       </div>
+      <div className="profile-section">
+        <h4>Juegos favoritos</h4>
+        {isEditing ? (
+          <>
+            <AutoComplete
+              value={gameQuery}
+              suggestions={suggestions}
+              completeMethod={handleSearch}
+              onChange={(e) => setGameQuery(e.value)}
+              onSelect={(e) => handleAddGame(e.value)}
+              field="name"
+              itemTemplate={itemTemplate}
+              placeholder="Nombre del juego"
+              style={{ flex: 1, marginBottom: "2rem" }}
+            />
+            {games.length > 0 ? (
+              <div className="games-grid">
+                {games.map((game, index) => (
+                  <div key={game.id} className="game-card">
+                    <img src={game.image} alt={game.name} />
+                    <div className="overlay">{game.name}</div>
+                    <button
+                      className="remove-btn"
+                      onClick={() => handleRemoveGame(game.id)}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p style={{ color: "#888" }}>No hay juegos que mostrar</p>
+            )}
+          </>
+        ) : (
+          <>
+            {userData?.games?.length > 0 ? (
+              <div className="games-grid">
+                {userData.games.map((game, index) => (
+                  <div key={game.id} className="game-card">
+                    <img src={game.image} alt={game.name} />
+                    <div className="overlay">{game.name}</div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p style={{ color: "#888" }}>No hay juegos que mostrar</p>
+            )}
+          </>
+        )}
+      </div>
       {/* LINKS */}
       <div className="profile-section">
-        <h4>Mis redes sociales</h4>
+        <h4>Redes sociales</h4>
         {isEditing ? (
           <>
             {links.length > 0 ? (

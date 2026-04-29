@@ -97,7 +97,7 @@ export default function Register({ setShowLogin }) {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
             />
-            <label htmlFor="phone">Teléfono</label>
+            <label htmlFor="phone">Teléfono (opcional)</label>
           </FloatLabel>
           <Button
             label="Registrarse"

@@ -5,11 +5,13 @@ import { Card } from "primereact/card";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
+import { useNavigate } from "react-router-dom";
 
 export default function Login({ setShowLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setVisible(true);
@@ -18,6 +20,7 @@ export default function Login({ setShowLogin }) {
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      navigate("/");
     } catch (error) {
       alert(error.message);
     }
