@@ -669,3 +669,27 @@ code {
   box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
   z-index: 2;
 }
+
+.profile-modal-container {
+  position: relative;
+}
+
+.chat-fab {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #22c55e;
+  color: white;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  transition: 0.2s;
+}
+
+.chat-fab:hover {
+  transform: scale(1.1);
+}

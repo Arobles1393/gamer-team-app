@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
 import { db } from "../firebase/config";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { Avatar } from "primereact/avatar";
 
 export default function UserProfile({ userId }) {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const docRef = doc(db, "users", userId);
-      const docSnap = await getDoc(docRef);
+    if (!userId) return;
 
+    const docRef = doc(db, "users", userId);
+
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
       if (docSnap.exists()) {
         setUserData(docSnap.data());
       }
-    };
+    });
 
-    if (userId) fetchUser();
+    return () => unsubscribe();
   }, [userId]);
 
   if (!userData) return <p>Cargando...</p>;
@@ -57,55 +58,72 @@ export default function UserProfile({ userId }) {
 
   return (
     <>
-        <div style={{ textAlign: "center" }}>
-            <Avatar
-              image={userData?.avatar}
-              label={
-                !userData?.avatar
-                  ? userData?.username?.charAt(0).toUpperCase()
-                  : null
-              }
-              size="xlarge"
-              shape="circle"
-              style={{ marginBottom: "1rem", backgroundColor: "#6366f1", color: "#fff" }}
-            />
+      <div className="profile-header">
+        <div className="profile-banner-container">
+          <div className="profile-banner" 
+            style={
+              userData?.banner
+                ? {
+                    backgroundImage: `url(${userData?.banner})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center"
+                  }
+                : {
+                    background: "linear-gradient(90deg, #38bdf8, #a855f7)"
+                  }
+            }
+          />
+        </div>
+        <div className="profile-avatar-wrapper">
+          <Avatar
+            image={userData?.avatar || undefined}
+            label={
+              !userData?.avatar
+                ? userData?.username?.charAt(0).toUpperCase()
+                : null
+            }
+            size="xlarge"
+            shape="circle"
+            className="profile-avatar"
+          />
             <h2 style={{ margin: 0 }}>
-                {userData?.username || "Gamer"}
+              {userData?.username || "Gamer"}
             </h2>
         </div>
-        <div style={{ marginTop: "1rem", textAlign: "center" }}>
-            {userData?.links?.length > 0 ? (
-              userData.links.map((link, index) => {
-                const platform = getPlatform(link);
-                const icon = getIcon(platform);
-                return(
-                  <a
-                    key={index}
-                    href={link}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "0.5rem",
-                      marginBottom: "0.5rem",
-                      color: "#3b82f6",
-                      textDecoration: "none"
-                    }}
-                  >
-                    <img
-                      src={icon}
-                      alt={platform}
-                      style={{ width: "20px", height: "20px" }}
-                    />
-                    {getLabel(platform)}
-                  </a>
-                )
-              })
-            ) : (
-              <p style={{ color: "#888" }}>No hay links</p>
-            )}
-        </div>
+      </div>
+      <div style={{ marginTop: "1rem", textAlign: "center" }}>
+        {userData?.links?.length > 0 ? (
+          userData.links.map((link, index) => {
+            const platform = getPlatform(link);
+            const icon = getIcon(platform);
+            return(
+              <a
+                key={index}
+                href={link}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  marginBottom: "0.5rem",
+                  color: "#3b82f6",
+                  textDecoration: "none"
+                }}
+              >
+                <img
+                  src={icon}
+                  alt={platform}
+                  style={{ width: "20px", height: "20px" }}
+                />
+                {getLabel(platform)}
+              </a>
+            )
+          })
+        ) : (
+          <p style={{ color: "#888" }}>No hay links</p>
+        )}
+      </div>
     </>
   );
 }

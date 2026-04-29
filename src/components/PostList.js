@@ -9,6 +9,8 @@ import { Dialog } from "primereact/dialog";
 import UserProfile from "./UserProfile";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
+import { useNavigate } from "react-router-dom";
+import { createOrGetChat } from "../services/chatService";
 
 export default function PostList({ user, setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
   const [posts, setPosts] = useState([]);
@@ -19,6 +21,7 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
   const [filterPlatform, setFilterPlatform] = useState(null);
   const [title, setTitle] = useState("");
   const toast = useRef(null);
+  const navigate = useNavigate();
   const gameOptions = [
     { label: "Todos", value: "" },
     ...games.map((game) => ({
@@ -156,6 +159,18 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
     });
   };
 
+  const handleChat = async () => {
+    const chatId = await createOrGetChat(user, {
+      uid: selectedUserId
+    });
+
+    navigate("/chat", {
+      state: { chatId }
+    });
+
+    setShowProfile(false);
+  };
+
   return (
     <div>
       <div
@@ -287,16 +302,27 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
         ))}
       </div>
       <Dialog
-        header="Perfil de usuario"
+        pt={{
+          header: { style: { padding: 0 } }
+        }}
         visible={showProfile}
-        style={{ width: "400px" }}
+        style={{ width: "1100px" }}
         onHide={() => setShowProfile(false)}
         breakpoints={{ "960px": "75vw", "640px": "90vw" }}
         dismissableMask
         draggable={false}
       >
         {selectedUserId && (
-          <UserProfile userId={selectedUserId} />
+          <div className="profile-container">
+            <UserProfile userId={selectedUserId} />
+            {user.uid !== selectedUserId && (
+              <Button
+                icon="pi pi-comments"
+                className="chat-fab p-button-rounded p-button-success"
+                onClick={handleChat}
+              />
+            )}
+          </div>
         )}
       </Dialog>
       <ConfirmDialog />
