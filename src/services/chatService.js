@@ -1,36 +1,18 @@
-import {
-  collection,
-  addDoc,
-  query,
-  where,
-  getDocs
-} from "firebase/firestore";
+import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase/config";
-import { serverTimestamp } from "firebase/firestore";
 
 export const createOrGetChat = async (user1, user2) => {
-  const q = query(
-    collection(db, "chats"),
-    where("participants", "array-contains", user1.uid)
-  );
+  const chatId = [user1.uid, user2.uid].sort().join("_");
 
-  const snapshot = await getDocs(q);
+  const chatRef = doc(db, "chats", chatId);
+  const chatSnap = await getDoc(chatRef);
 
-  let existingChat = null;
+  if (!chatSnap.exists()) {
+    await setDoc(chatRef, {
+      participants: [user1.uid, user2.uid],
+      createdAt: serverTimestamp()
+    });
+  }
 
-  snapshot.forEach(doc => {
-    const data = doc.data();
-    if (data.participants.includes(user2.uid)) {
-      existingChat = doc.id;
-    }
-  });
-
-  if (existingChat) return existingChat;
-
-  const docRef = await addDoc(collection(db, "chats"), {
-    participants: [user1.uid, user2.uid],
-    createdAt: serverTimestamp()
-  });
-
-  return docRef.id;
+  return chatId;
 };

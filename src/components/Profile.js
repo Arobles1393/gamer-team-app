@@ -279,7 +279,7 @@ export default function Profile({ user, userData }) {
       </div>
       {/* LINKS */}
       <div className="profile-section">
-        <h4>🎮 Perfiles gamer</h4>
+        <h4>Comparte tus perfiles (steam, discord, facebook, etc.)</h4>
         {isEditing ? (
           <>
             {links.length > 0 ? (

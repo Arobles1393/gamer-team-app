@@ -93,33 +93,28 @@ export default function UserProfile({ userId }) {
       </div>
       <div style={{ marginTop: "1rem", textAlign: "center" }}>
         {userData?.links?.length > 0 ? (
-          userData.links.map((link, index) => {
-            const platform = getPlatform(link);
-            const icon = getIcon(platform);
-            return(
-              <a
-                key={index}
-                href={link}
-                target="_blank"
-                rel="noreferrer"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  marginBottom: "0.5rem",
-                  color: "#3b82f6",
-                  textDecoration: "none"
-                }}
-              >
-                <img
-                  src={icon}
-                  alt={platform}
-                  style={{ width: "20px", height: "20px" }}
-                />
-                {getLabel(platform)}
-              </a>
-            )
-          })
+          <div className="gamer-links">
+            {userData.links.map((link, index) => {
+              const platform = getPlatform(link);
+              const icon = getIcon(platform);
+              return(
+                <a
+                  key={index}
+                  href={link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="gamer-link"
+                >
+                  <img
+                    src={icon}
+                    alt={platform}
+                    style={{ width: "20px", height: "20px" }}
+                  />
+                  {getLabel(platform)}
+                </a>
+              )
+            })}
+          </div>
         ) : (
           <p style={{ color: "#888" }}>No hay links</p>
         )}
