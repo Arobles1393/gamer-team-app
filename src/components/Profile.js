@@ -335,7 +335,7 @@ export default function Profile({ user, userData }) {
                 {games.map((game, index) => (
                   <div key={game.id} className="game-card">
                     <img src={game.image} alt={game.name} />
-                    <div className="overlay">{game.name}</div>
+                    <div className="game-card-overlay">{game.name}</div>
                     <button
                       className="remove-btn"
                       onClick={() => handleRemoveGame(game.id)}
@@ -356,7 +356,7 @@ export default function Profile({ user, userData }) {
                 {userData.games.map((game, index) => (
                   <div key={game.id} className="game-card">
                     <img src={game.image} alt={game.name} />
-                    <div className="overlay">{game.name}</div>
+                    <div className="game-card-overlay">{game.name}</div>
                   </div>
                 ))}
               </div>
