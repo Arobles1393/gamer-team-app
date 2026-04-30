@@ -289,7 +289,7 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
       >
         {selectedUserId && (
           <div className="profile-container">
-            <UserProfile userId={selectedUserId} />
+            <UserProfile userId={selectedUserId} user={user} />
             {user.uid !== selectedUserId && (
               <Button
                 icon="pi pi-comments"

@@ -5,9 +5,14 @@ import { Avatar } from "primereact/avatar";
 import { platformIcons } from "../utils/platformIcons";
 import { getPlatform } from "../utils/getPlatform";
 import { getLabel } from "../utils/getLabel";
+import { httpsCallable } from "firebase/functions";
+import { functions } from "../firebase/config";
 
-export default function UserProfile({ userId }) {
+export default function UserProfile({ userId, user }) {
   const [userData, setUserData] = useState(null);
+  const [steamStats, setSteamStats] = useState(null);
+  const [loadingSteam, setLoadingSteam] = useState(false);
+  const getSteamStats = httpsCallable(functions, "getSteamStats");
 
   useEffect(() => {
     if (!userId) return;
@@ -22,6 +27,38 @@ export default function UserProfile({ userId }) {
 
     return () => unsubscribe();
   }, [userId]);
+
+  useEffect(() => {
+    if (!userData?.links || userData.links.length === 0) return;
+
+    const steamId = getSteamIdFromLinks(userData.links);
+
+    if (!steamId) {
+      console.log("❌ No se encontró Steam ID");
+      return;
+    }
+
+    console.log("🚀 Enviando SteamID:", steamId);
+
+    const fetchSteam = async () => {
+      try {
+        const res = await getSteamStats({ steamId: String(steamId) });
+        setSteamStats(res.data);
+      } catch (error) {
+        console.error("Error Steam:", error);
+      }
+    };
+
+    fetchSteam();
+  }, [userData]);
+
+  const getSteamIdFromLinks = (links) => {
+    const steamLink = links?.find(link => link.includes("steamcommunity"));
+    if (!steamLink) return null;
+
+    const parts = steamLink.split("/");
+    return parts[parts.length - 1] || parts[parts.length - 2];
+  };
 
   if (!userData) return <p>Cargando...</p>;
 
@@ -79,6 +116,51 @@ export default function UserProfile({ userId }) {
             <p style={{ color: "#888" }}>No hay juegos que mostrar</p>
           )}
         </>
+      </div>
+      <div style={{ marginTop: "1rem" }}>
+        <h4>Estadísticas de Steam</h4>
+
+        {loadingSteam && <p>Cargando stats...</p>}
+
+        {steamStats && (
+          <>
+            <div className="steam-stats">
+              <div className="stat-card">
+                <h3>{steamStats.totalGames}</h3>
+                <p>Juegos</p>
+              </div>
+
+              <div className="stat-card">
+                <h3>{steamStats.totalHours}</h3>
+                <p>Horas</p>
+              </div>
+            </div>
+
+            <div className="steam-games">
+              {steamStats.games.map((game) => (
+                <div key={game.appid} className="game-card">
+                  <img
+                    src={`https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appid}/header.jpg`}
+                    alt={game.name}
+                  />
+                  <div className="game-card-overlay">
+                    <span>{game.name}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {!loadingSteam && !steamStats && (
+          <>
+            {user.uid !== userId ? (
+              <p style={{ color: "#888" }}>No hay datos de Steam.</p>
+            ) : (
+              <p style={{ color: "#888" }}>Si quieres mostrar tu perfil de Steam aqui, solo pega la url de tu perfil de steam en la parte de redes sociles de tu perfil de GamerMatch y automaticamente mostraremos tus estadisticas</p>
+            )}
+          </>
+        )}
       </div>
       <div style={{ marginTop: "1rem" }}>
         <h4>Redes sociales</h4>
