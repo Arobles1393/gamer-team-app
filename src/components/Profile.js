@@ -316,7 +316,7 @@ export default function Profile({ user, userData }) {
         </div>
       </div>
       <div className="profile-section">
-        <h4>Juegos favoritos</h4>
+        <h4>Juegos favoritos (Mostraremos estos juegos si no tienes perfil de steam añadido en gamermatch)</h4>
         {isEditing ? (
           <>
             <AutoComplete

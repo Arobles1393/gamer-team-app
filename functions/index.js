@@ -65,6 +65,7 @@ exports.getSteamStats = functions.https.onCall(async (request) => {
     );
 
     const games = gamesRes.data.response.games || [];
+    games.sort((a, b) => b.playtime_forever - a.playtime_forever);
 
     const totalGames = games.length;
     const totalHours =
@@ -73,7 +74,7 @@ exports.getSteamStats = functions.https.onCall(async (request) => {
     return {
       totalGames,
       totalHours: Math.round(totalHours),
-      games: games.slice(0, 6) // top 6 🔥
+      games: games.slice(0, 12)
     };
 
   } catch (error) {

@@ -751,29 +751,3 @@ code {
 .remove-btn:hover {
   background: red;
 }
-
-.steam-stats {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.stat-card {
-  flex: 1;
-  background: #1f2937;
-  padding: 1rem;
-  border-radius: 12px;
-  text-align: center;
-  color: white;
-}
-
-.stat-card h3 {
-  margin: 0;
-  font-size: 1.5rem;
-}
-
-.steam-games {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 12px;
-}

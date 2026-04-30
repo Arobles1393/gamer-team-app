@@ -7,6 +7,7 @@ import { getPlatform } from "../utils/getPlatform";
 import { getLabel } from "../utils/getLabel";
 import { httpsCallable } from "firebase/functions";
 import { functions } from "../firebase/config";
+import SteamStats from "../steam/steamStats";
 
 export default function UserProfile({ userId, user }) {
   const [userData, setUserData] = useState(null);
@@ -100,56 +101,32 @@ export default function UserProfile({ userId, user }) {
       <div style={{ marginTop: "1rem" }}>
         <p>{userData?.description}</p>
       </div>
-      <div style={{ marginTop: "1rem" }}>
-        <h4>Juegos favoritos</h4>
-        <>
-          {userData?.games?.length > 0 ? (
-            <div className="games-grid">
-              {userData.games.map((game, index) => (
-                <div key={game.id} className="game-card">
-                  <img src={game.image} alt={game.name} />
-                  <div className="game-card-overlay">{game.name}</div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p style={{ color: "#888" }}>No hay juegos que mostrar</p>
-          )}
-        </>
-      </div>
+      {!steamStats && (
+        <div style={{ marginTop: "1rem" }}>
+          <h4>Juegos favoritos</h4>
+          <>
+            {userData?.games?.length > 0 ? (
+              <div className="games-grid">
+                {userData.games.map((game, index) => (
+                  <div key={game.id} className="game-card">
+                    <img src={game.image} alt={game.name} />
+                    <div className="game-card-overlay">{game.name}</div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p style={{ color: "#888" }}>No hay juegos que mostrar</p>
+            )}
+          </>
+        </div>
+      )}
       <div style={{ marginTop: "1rem" }}>
         <h4>Estadísticas de Steam</h4>
 
         {loadingSteam && <p>Cargando stats...</p>}
 
         {steamStats && (
-          <>
-            <div className="steam-stats">
-              <div className="stat-card">
-                <h3>{steamStats.totalGames}</h3>
-                <p>Juegos</p>
-              </div>
-
-              <div className="stat-card">
-                <h3>{steamStats.totalHours}</h3>
-                <p>Horas</p>
-              </div>
-            </div>
-
-            <div className="steam-games">
-              {steamStats.games.map((game) => (
-                <div key={game.appid} className="game-card">
-                  <img
-                    src={`https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appid}/header.jpg`}
-                    alt={game.name}
-                  />
-                  <div className="game-card-overlay">
-                    <span>{game.name}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
+          <SteamStats stats={steamStats} />
         )}
 
         {!loadingSteam && !steamStats && (
