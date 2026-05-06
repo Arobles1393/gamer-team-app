@@ -1,19 +1,23 @@
 import { useEffect, useState } from "react";
-import { db } from "../firebase/config";
+import { db, functions } from "../firebase/config";
 import { doc, onSnapshot } from "firebase/firestore";
 import { Avatar } from "primereact/avatar";
 import { platformIcons } from "../utils/platformIcons";
 import { getPlatform } from "../utils/getPlatform";
 import { getLabel } from "../utils/getLabel";
 import { httpsCallable } from "firebase/functions";
-import { functions } from "../firebase/config";
 import SteamStats from "../steam/steamStats";
+import GameAchievements from "./GameArchievements";
+import { Dialog } from "primereact/dialog";
 
 export default function UserProfile({ userId, user }) {
   const [userData, setUserData] = useState(null);
   const [steamStats, setSteamStats] = useState(null);
   const [loadingSteam, setLoadingSteam] = useState(false);
   const getSteamStats = httpsCallable(functions, "getSteamStats");
+  const [selectedGame, setSelectedGame] = useState(null);
+  const [showAchievements, setShowAchievements] = useState(false);
+  const [steamID, setSteamId] = useState(null);
 
   useEffect(() => {
     if (!userId) return;
@@ -39,7 +43,11 @@ export default function UserProfile({ userId, user }) {
       return;
     }
 
+    setLoadingSteam(true);
+
     console.log("🚀 Enviando SteamID:", steamId);
+
+    setSteamId(steamId)
 
     const fetchSteam = async () => {
       try {
@@ -50,6 +58,8 @@ export default function UserProfile({ userId, user }) {
       }
     };
 
+    setLoadingSteam(false);
+
     fetchSteam();
   }, [userData]);
 
@@ -59,6 +69,11 @@ export default function UserProfile({ userId, user }) {
 
     const parts = steamLink.split("/");
     return parts[parts.length - 1] || parts[parts.length - 2];
+  };
+
+  const handleSelectGame = (game) => {
+    setSelectedGame(game);
+    setShowAchievements(true);
   };
 
   if (!userData) return <p>Cargando...</p>;
@@ -126,7 +141,10 @@ export default function UserProfile({ userId, user }) {
         {loadingSteam && <p>Cargando stats...</p>}
 
         {steamStats && (
-          <SteamStats stats={steamStats} />
+          <SteamStats 
+            stats={steamStats} 
+            onSelectGame={handleSelectGame}
+          />
         )}
 
         {!loadingSteam && !steamStats && (
@@ -163,6 +181,17 @@ export default function UserProfile({ userId, user }) {
           <p style={{ color: "#888" }}>No hay links</p>
         )}
       </div>
+      <Dialog
+        header={selectedGame?.name}
+        visible={showAchievements}
+        style={{ width: "500px" }}
+        onHide={() => setShowAchievements(false)}
+      >
+        <GameAchievements 
+          game={selectedGame} 
+          steamId={steamID} 
+        />
+      </Dialog>
     </>
   );
 }

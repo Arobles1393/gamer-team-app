@@ -1,6 +1,6 @@
 import "./steam.css";
 
-export default function SteamStats({ stats }) {
+export default function SteamStats({ stats, onSelectGame }) {
   if (!stats) return null;
 
   return (
@@ -26,7 +26,11 @@ export default function SteamStats({ stats }) {
           const maxPlaytime = stats.games[0]?.playtime_forever || 1;
           const percentage = (game.playtime_forever / maxPlaytime) * 100;
           return(
-            <div key={game.appid} className="steam-game-card">
+            <div 
+              key={game.appid} 
+              className="steam-game-card"
+              onClick={() => onSelectGame(game)}
+            >
               
               <img
                 src={`https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appid}/header.jpg`}

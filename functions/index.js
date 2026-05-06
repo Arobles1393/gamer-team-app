@@ -4,7 +4,10 @@ require("dotenv").config();
 
 exports.getSteamStats = functions.https.onCall(async (request) => {
   try {
-    let { steamId } = request.data;
+
+    let { steamId, appid } = request.data;
+
+    console.log("Este es el request ", request.data)
 
     if (!steamId) {
       throw new functions.https.HttpsError(
@@ -49,6 +52,26 @@ exports.getSteamStats = functions.https.onCall(async (request) => {
       }
 
       steamIdFinal = resolveRes.data.response.steamid;
+    }
+    
+    // Obtener logros
+    if (appid) {
+      const achievementsRes = await axios.get(
+        "https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/",
+        {
+          params: {
+            key: key,
+            steamid: steamIdFinal,
+            appid
+          }
+        }
+      );
+    
+      const achievements = achievementsRes.data.playerstats?.achievements || [];
+    
+      return {
+        achievements
+      };
     }
 
     // 🎮 obtener juegos

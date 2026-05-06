@@ -751,3 +751,19 @@ code {
 .remove-btn:hover {
   background: red;
 }
+
+/*Game Archievements*/
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.5rem;
+}
+
+.achievement-card {
+  background: #1b2838;
+  border-radius: 8px;
+  padding: 0.5rem;
+  text-align: center;
+  color: white;
+  font-size: 0.8rem;
+}
