@@ -33,7 +33,7 @@ export default function SteamStats({ stats, onSelectGame }) {
             >
               
               <img
-                src={`https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appid}/header.jpg`}
+                src={`https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appid}/library_600x900.jpg`}
                 alt={game.name}
               />
 
