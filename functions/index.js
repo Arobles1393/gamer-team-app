@@ -68,9 +68,35 @@ exports.getSteamStats = functions.https.onCall(async (request) => {
       );
     
       const achievements = achievementsRes.data.playerstats?.achievements || [];
+
+      const schemaRes = await axios.get(
+        "https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/",
+        {
+          params: {
+            key: key,
+            appid
+          }
+        }
+      );
+
+      const schemaAchievements = schemaRes.data.game?.availableGameStats?.achievements || [];
+
+      const mergedAchievements = achievements.map((ach) => {
+        const schema = schemaAchievements.find(
+          (s) => s.name === ach.apiname
+        );
+
+        return {
+          name: schema?.displayName || ach.apiname,
+          description: schema?.description || "",
+          icon: schema?.icon || "",
+          iconGray: schema?.icongray || "",
+          achieved: ach.achieved,
+        };
+      });
     
       return {
-        achievements
+        achievements: mergedAchievements
       };
     }
 
@@ -91,8 +117,7 @@ exports.getSteamStats = functions.https.onCall(async (request) => {
     games.sort((a, b) => b.playtime_forever - a.playtime_forever);
 
     const totalGames = games.length;
-    const totalHours =
-      games.reduce((acc, game) => acc + (game.playtime_forever || 0), 0) / 60;
+    const totalHours = games.reduce((acc, game) => acc + (game.playtime_forever || 0), 0) / 60;
 
     return {
       totalGames,

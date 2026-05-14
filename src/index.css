@@ -753,17 +753,27 @@ code {
 }
 
 /*Game Archievements*/
-.achievements-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+.achievement-card {
+  display: flex;
   gap: 0.5rem;
+  background: #1b2838;
+  padding: 0.5rem;
+  border-radius: 8px;
+  align-items: center;
+  color: white;
 }
 
-.achievement-card {
-  background: #1b2838;
-  border-radius: 8px;
-  padding: 0.5rem;
-  text-align: center;
-  color: white;
+.achievement-card img {
+  width: 40px;
+  height: 40px;
+}
+
+.achievement-info p {
   font-size: 0.8rem;
+  margin: 0;
+}
+
+.achievement-info span {
+  font-size: 0.7rem;
+  color: #9ca3af;
 }
