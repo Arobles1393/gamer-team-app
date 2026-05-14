@@ -184,7 +184,7 @@ export default function UserProfile({ userId, user }) {
       <Dialog
         header={selectedGame?.name}
         visible={showAchievements}
-        style={{ width: "500px" }}
+        style={{ width: "700px" }}
         onHide={() => setShowAchievements(false)}
       >
         <GameAchievements 

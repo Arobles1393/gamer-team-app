@@ -777,3 +777,78 @@ code {
   font-size: 0.7rem;
   color: #9ca3af;
 }
+
+/* 🔥 raro */
+.achievement-card.rare {
+  border: 1px solid #a855f7;
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
+}
+
+/* 💎 muy raro */
+.achievement-card.very-rare {
+  border: 1px solid #3b82f6;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.8);
+}
+
+/* 👑 ultra raro */
+.achievement-card.ultra-rare {
+  border: 1px solid gold;
+  box-shadow: 0 0 15px gold;
+  animation: glow 1.5s infinite alternate;
+}
+
+.rarity {
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: block;
+  margin-top: 2px;
+}
+
+.rarity-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.rarity-title h4 {
+  margin: 0;
+}
+
+/* contenedor de puntos */
+.rarity-dots {
+  display: flex;
+  gap: 0.4rem;
+}
+
+/* estilo base */
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* colores */
+.dot.rare {
+  background: #a855f7;
+}
+
+.dot.very-rare {
+  background: #3b82f6;
+}
+
+.dot.ultra-rare {
+  background: gold;
+  box-shadow: 0 0 6px gold;
+}
+
+/* ✨ animación */
+@keyframes glow {
+  from {
+    box-shadow: 0 0 10px gold;
+  }
+  to {
+    box-shadow: 0 0 20px gold;
+  }
+}

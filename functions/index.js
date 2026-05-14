@@ -81,9 +81,24 @@ exports.getSteamStats = functions.https.onCall(async (request) => {
 
       const schemaAchievements = schemaRes.data.game?.availableGameStats?.achievements || [];
 
+      const globalRes = await axios.get(
+        "https://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2/",
+        {
+          params: {
+            gameid: appid
+          }
+        }
+      );
+
+      const globalAchievements = globalRes.data.achievementpercentages.achievements;
+
       const mergedAchievements = achievements.map((ach) => {
         const schema = schemaAchievements.find(
           (s) => s.name === ach.apiname
+        );
+
+        const global = globalAchievements.find(
+          (g) => g.name === ach.apiname
         );
 
         return {
@@ -92,6 +107,7 @@ exports.getSteamStats = functions.https.onCall(async (request) => {
           icon: schema?.icon || "",
           iconGray: schema?.icongray || "",
           achieved: ach.achieved,
+          percent: global?.percent ? parseFloat(global.percent) : 0
         };
       });
     

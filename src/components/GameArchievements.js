@@ -6,6 +6,12 @@ export default function GameAchievements({ game, steamId }) {
   const [achievements, setAchievements] = useState([]);
   const unlocked = achievements.filter(a => a.achieved === 1);
   const locked = achievements.filter(a => a.achieved === 0);
+  const getRarityClass = (percent) => {
+    if (percent < 1) return "ultra-rare";
+    if (percent < 5) return "very-rare";
+    if (percent < 10) return "rare";
+    return "";
+  };
 
   useEffect(() => {
     if (!game || !steamId) return;
@@ -34,11 +40,12 @@ export default function GameAchievements({ game, steamId }) {
         {title} ({list.length})
       </h4>
       {list.map((ach, index) => (
-        <div key={index} className={`achievement-card ${isUnlocked ? "unlocked" : "locked"}`}>
+        <div key={index} className={`achievement-card ${getRarityClass(ach.percent)} ${isUnlocked ? "unlocked" : "locked"}`}>
           <img src={isUnlocked ? ach.icon : ach.iconGray} alt={ach.name} />
           <div className="achievement-info">
             <p>{ach.name}</p>
             <span>{ach.description}</span>
+            <span className="rarity">{ach.percent.toFixed(1)}% jugadores</span>
           </div>
         </div>
       ))}
@@ -49,6 +56,14 @@ export default function GameAchievements({ game, steamId }) {
     <>
       {achievements.length > 0 ? (
         <>
+          <div className="rarity-title">
+            <h4>Rareza de logros</h4>
+            <div className="rarity-dots">
+              <span className="dot rare" title="Raro" />
+              <span className="dot very-rare" title="Muy raro" />
+              <span className="dot ultra-rare" title="Ultra raro" />
+            </div>
+          </div>
           {unlocked.length > 0 && renderAchievements(unlocked, "Desbloqueados", true)}
           {locked.length > 0 && renderAchievements(locked, "Bloqueados", false)}
         </>
