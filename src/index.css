@@ -891,6 +891,8 @@ code {
   min-height: 100vh;
   color: white;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 .post-content {
@@ -901,6 +903,8 @@ code {
   color: white;
   box-sizing: border-box;
   width: 100%;
+  flex: 1;
+  overflow: auto;
 }
 
 .left-panel {
