@@ -6,6 +6,7 @@ import CreatePost from "./components/CreatePost";
 import PostList from "./components/PostList";
 import Profile from "./components/Profile";
 import ChatPage from "./chat/ChatPage";
+import PostDetail from "./components/PostDetail";
 import { Avatar } from "primereact/avatar";
 import Auth from "./components/Auth";
 import { Menu } from "primereact/menu";
@@ -203,6 +204,12 @@ function App() {
             path="/chat"
             element={
               <ChatPage user={user}/>
+            }
+          />
+          <Route
+            path="/post/:id" 
+            element={
+              <PostDetail />
             }
           />
         </Routes>

@@ -183,7 +183,10 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
       </div>
       <div className="post-grid">
         {filteredPosts.map((post) => (
-          <Card key={post.id} className="rawg-card">
+          <Card key={post.id}
+            className="rawg-card"
+            onClick={() => navigate(`/post/${post.id}`, { state: post })}
+          >
             <div className="rawg-image-container">
               {post.userId !== user.uid &&
               post.joinedUsers?.includes(user.uid) && (

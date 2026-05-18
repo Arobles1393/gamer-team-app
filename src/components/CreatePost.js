@@ -54,8 +54,12 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
         return;
       }
       let image = await getExistingImage(game.value);
+      let clip = await getExistingClip(game.value)
       if (!image) {
         image = game.image
+      }
+      if (!clip) {
+        clip = game.clip
       }
       if (editingPost) {
         state = "actualizar"
@@ -65,7 +69,8 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
           platform,
           playersNeeded: players,
           comments,
-          image: image || null
+          image: image || null,
+          clip: clip || null
         });
 
         toast.current.show({
@@ -82,6 +87,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
           game: game.value,
           playersNeeded: players,
           image: image || null,
+          clip: clip || null,
           phone: userData?.phone,
           createdAt: new Date(),
           comments,
@@ -118,6 +124,18 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
 
     if (!snapshot.empty) {
       return snapshot.docs[0].data().image;
+    }
+
+    return null;
+  };
+
+  const getExistingClip = async (game) => {
+    const q = query(collection(db, "posts"), where("game", "==", game));
+
+    const snapshot = await getDocs(q);
+
+    if (!snapshot.empty) {
+      return snapshot.docs[0].data().clip;
     }
 
     return null;
