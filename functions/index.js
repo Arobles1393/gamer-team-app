@@ -150,3 +150,77 @@ exports.getSteamStats = functions.https.onCall(async (request) => {
     );
   }
 });
+
+exports.getGameLogo = functions.https.onCall(async (request) => {
+
+  try {
+
+    const { gameName } = request.data;
+
+    if (!gameName) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "Nombre del juego requerido"
+      );
+    }
+
+    const apiKey = process.env.STEAMGRID_API_KEY;
+
+    if (!apiKey) {
+      throw new functions.https.HttpsError(
+        "internal",
+        "API key no configurada"
+      );
+    }
+
+    // Buscar juego
+    const searchRes = await axios.get(
+      `https://www.steamgriddb.com/api/v2/search/autocomplete/${encodeURIComponent(gameName)}`,
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`
+        }
+      }
+    );
+
+    const game = searchRes.data.data[0];
+
+    if (!game) {
+      return {
+        logo: null
+      };
+    }
+
+    // Obtener logos
+    const logosRes = await axios.get(
+      `https://www.steamgriddb.com/api/v2/logos/game/${game.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`
+        }
+      }
+    );
+
+    const logos = logosRes.data.data;
+
+    // Priorizar logos no NSFW y estilo limpio
+    const cleanLogo = logos.find(
+      (logo) =>
+        !logo.nsfw &&
+        logo.width > 500
+    );
+
+    return {
+      logo: cleanLogo?.url || logos[0]?.url || null
+    };
+
+  } catch (error) {
+
+    console.error("❌ SteamGrid Error:", error);
+
+    throw new functions.https.HttpsError(
+      "internal",
+      error.message || "Error obteniendo logo"
+    );
+  }
+});
