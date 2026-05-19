@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { db } from "../firebase/config";
+import { db, functions } from "../firebase/config";
 import { collection, addDoc, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
@@ -9,15 +9,14 @@ import { Dropdown } from "primereact/dropdown";
 import { AutoComplete } from "primereact/autocomplete";
 import { searchGames } from "../utils/searchGames";
 import { Toast } from "primereact/toast";
+import { httpsCallable } from "firebase/functions";
 
 export default function CreatePost({ user, userData, onClose, editingPost }) {
   const [game, setGame] = useState({});
   const [players, setPlayers] = useState("");
   const [comments, setComments] = useState("");
   const [platform, setPlatform] = useState("");
-  //const [isOpen, setIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
-  //const [isSticky, setIsSticky] = useState(false);
   const toast = useRef(null);
   const platforms = [
     { label: "PlayStation", value: "playstation" },
@@ -26,6 +25,10 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
     { label: "PC", value: "pc" },
     { label: "Mobile", value: "mobile" }
   ];
+  const getGameLogo = httpsCallable(
+    functions,
+    "getGameLogo"
+  );
 
   useEffect(() => {
     if (editingPost) {
@@ -36,15 +39,6 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
     }
   }, [editingPost]);
 
-  /*useEffect(() => {
-    const handleScroll = () => {
-      setIsSticky(window.scrollY > 150);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);*/
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     let state = "guardar"
@@ -54,12 +48,12 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
         return;
       }
       let image = await getExistingImage(game.value);
-      let clip = await getExistingClip(game.value)
+      let logo = await getExistingLogo(game.value);
       if (!image) {
         image = game.image
       }
-      if (!clip) {
-        clip = game.clip
+      if (!logo) {
+        logo = await getGameLogo({ gameName: game.value });
       }
       if (editingPost) {
         state = "actualizar"
@@ -70,7 +64,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
           playersNeeded: players,
           comments,
           image: image || null,
-          clip: clip || null
+          logo: logo.data?.logo || null
         });
 
         toast.current.show({
@@ -87,7 +81,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
           game: game.value,
           playersNeeded: players,
           image: image || null,
-          clip: clip || null,
+          logo: logo.data?.logo || null,
           phone: userData?.phone,
           createdAt: new Date(),
           comments,
@@ -129,13 +123,13 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
     return null;
   };
 
-  const getExistingClip = async (game) => {
-    const q = query(collection(db, "posts"), where("game", "==", game));
+  const getExistingLogo = async (game) => {
+    const q = query(collection(db, "posts"), where("game", "==", game), where("logo", "!=", null));
 
     const snapshot = await getDocs(q);
 
     if (!snapshot.empty) {
-      return snapshot.docs[0].data().clip;
+      return snapshot.docs[0].data().logo;
     }
 
     return null;
@@ -170,26 +164,6 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
     onClose();
   }
 
-  /*if (!isOpen) {
-    return (
-      <Card style={{ marginBottom: "1rem", borderRadius: "8px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div>
-            <h3 style={{ margin: 0 }}>🎮 ¿Buscas equipo?</h3>
-            <p style={{ marginTop: 20, color: "#666" }}>
-              Publica una partida y encuentra jugadores rapidamente.
-            </p>
-          </div>
-          <Button
-            label="Publicar"
-            icon="pi pi-plus"
-            onClick={() => setIsOpen(true)}
-          />
-        </div>
-      </Card>
-    );
-  }*/
-
   return (
     <Card style={{ marginTop: "1.2rem", borderRadius: "8px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -205,7 +179,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
             suggestions={suggestions}
             completeMethod={handleSearch}
             onChange={(e) => setGame(e.value)}
-            field="name"
+            field="value"
             itemTemplate={itemTemplate}
             placeholder="Nombre del juego"
             style={{ flex: 1 }}
@@ -245,7 +219,6 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
             label="Cancelar"
             className="p-button-text"
             onClick={cancel}
-            //onClick={() => setIsOpen(false)}
           />
         </div>
       </div>

@@ -227,7 +227,8 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
                     image={post?.avatar}
                     label={post.username?.charAt(0).toUpperCase()}
                     shape="circle"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setSelectedUserId(post.userId);
                       setShowProfile(true);
                     }}
@@ -243,14 +244,14 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
                         label="Dejar de seguir"
                         icon="pi pi-users"
                         className="p-button-danger p-button-sm"
-                        onClick={() => handleLeave(post)}
+                        onClick={(e) => {e.stopPropagation(); handleLeave(post);}}
                       />
                     ) : (
                       <Button
                         label="Seguir y unirme"
                         icon="pi pi-users"
                         className="p-button-success p-button-sm"
-                        onClick={() => handleJoin(post)}
+                        onClick={(e) => {e.stopPropagation(); handleJoin(post);}}
                       />
                     ) 
                   )}
@@ -260,7 +261,8 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
                         label="Editar"
                         icon="pi pi-pencil"
                         className="p-button-success p-button-sm"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setEditingPost(post);
                           setShowCreatePost(true);
                         }}
@@ -269,7 +271,7 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
                         label="Eliminar"
                         icon="pi pi-trash"
                         className="p-button-danger p-button-sm"
-                        onClick={() => confirmDelete(post.id)}
+                        onClick={(e) => {e.stopPropagation(); confirmDelete(post.id);}}
                       />
                     </>
                   )}
