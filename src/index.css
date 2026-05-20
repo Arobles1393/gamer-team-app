@@ -946,3 +946,11 @@ code {
   object-fit: contain;
   filter: drop-shadow(0 6px 12px rgba(0,0,0,0.7));
 }
+
+.logo-game {
+  max-width: 110px;
+  max-height: 45px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,0.7));
+  margin-top: 20px;
+}

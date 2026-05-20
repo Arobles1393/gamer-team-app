@@ -30,11 +30,6 @@ export default function PostDetail() {
       <div className="post-content">
         <div className="left-panel">
             <img src={post.image} className="game-cover" />
-            {post.logo ? (
-              <img src={post.logo} alt={post.game} className="game-logo" />
-            ) : (
-              <h2>{post.game}</h2>
-            )}
         </div>
         <div className="right-panel">
             

@@ -201,7 +201,11 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
               />
             </div>
             <div>
-              <h3>{post.game}</h3>
+              {post.logo ? (
+                <img src={post.logo} alt={post.game} className="logo-game" />
+              ) : (
+                <h3>{post.game}</h3>
+              )}
               <div className="rawg-meta">
                 <div className="meta-item">
                   {platformIcons[post.platform]?.()}

@@ -29,6 +29,10 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
     functions,
     "getGameLogo"
   );
+  const getGamePortada = httpsCallable(
+    functions,
+    "getGamePortada"
+  );
 
   useEffect(() => {
     if (editingPost) {
@@ -50,6 +54,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
       let image = await getExistingImage(game.value);
       let logo = await getExistingLogo(game.value);
       let clip = await getExistingClip(game.value);
+      let portada = await getExistingPortada(game.value);
       if (!image) {
         image = game.image
       }
@@ -58,6 +63,9 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
       }
       if (!clip) {
         clip = game.clip;
+      }
+      if (!portada) {
+        portada = await getGamePortada({ gameName: game.value });
       }
       if (editingPost) {
         state = "actualizar"
@@ -69,7 +77,8 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
           comments,
           image: image || null,
           logo: logo.data?.logo || null,
-          clip: clip || null
+          clip: clip || null,
+          portada: portada.data?.portada || null
         });
 
         toast.current.show({
@@ -88,6 +97,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
           image: image || null,
           logo: logo.data?.logo || null,
           clip: clip || null,
+          portada: portada.data?.portada || null,
           phone: userData?.phone,
           createdAt: new Date(),
           comments,
@@ -110,7 +120,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo "+state+" la publicacion",
+        detail: "No se pudo "+state+" la publicacion " + error,
         life: 3000
       });
       console.error("Error:", error);
@@ -148,6 +158,18 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
 
     if (!snapshot.empty) {
       return snapshot.docs[0].data().logo;
+    }
+
+    return null;
+  };
+
+  const getExistingPortada = async (game) => {
+    const q = query(collection(db, "posts"), where("game", "==", game), where("portada", "!=", null));
+
+    const snapshot = await getDocs(q);
+
+    if (!snapshot.empty) {
+      return snapshot.docs[0].data().portada;
     }
 
     return null;
