@@ -29,7 +29,10 @@ export default function PostDetail() {
       </div>  
       <div className="post-content">
         <div className="left-panel">
-            <img src={post.image} className="game-cover" />
+            <img src={!post.portada ? post.image : post.portada} className="game-cover" />
+            {!post.portada && (
+              <h2>{post.game}</h2>
+            )}
         </div>
         <div className="right-panel">
             

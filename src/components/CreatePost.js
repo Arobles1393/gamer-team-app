@@ -59,13 +59,13 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
         image = game.image
       }
       if (!logo) {
-        logo = await getGameLogo({ gameName: game.value });
+        logo = await getGameLogo({ steamAppId: game.steamAppId, gameName: game.value });
       }
       if (!clip) {
         clip = game.clip;
       }
       if (!portada) {
-        portada = await getGamePortada({ gameName: game.value });
+        portada = await getGamePortada({ steamAppId: game.steamAppId, gameName: game.value });
       }
       if (editingPost) {
         state = "actualizar"
