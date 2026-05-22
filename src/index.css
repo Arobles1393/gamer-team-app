@@ -1002,6 +1002,7 @@ code {
   backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 1rem;
+  position: relative;
 }
 
 .comment-header {
@@ -1009,19 +1010,6 @@ code {
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 0.75rem;
-}
-
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.2);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-weight: bold;
 }
 
 .comment-image {
@@ -1045,4 +1033,18 @@ code {
 
 .upload-btn {
   font-size: 1.2rem;
+}
+
+.delete-comment-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: 0.2s;
+}
+
+.delete-comment-btn:hover {
+  transform: scale(1.2);
 }

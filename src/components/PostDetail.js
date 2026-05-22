@@ -2,6 +2,8 @@ import { useLocation, useParams } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { Toast } from "primereact/toast";
 import {
   collection,
   addDoc,
@@ -9,7 +11,9 @@ import {
   where,
   orderBy,
   onSnapshot,
-  serverTimestamp
+  serverTimestamp,
+  deleteDoc,
+  doc
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 import {
@@ -27,6 +31,7 @@ export default function PostDetail({ user }) {
   const [file, setFile] = useState(null);
   const storage = getStorage();
   const fileInputRef = useRef(null);
+  const toast = useRef(null);
   
   useEffect(() => {
     if (!id) return;
@@ -85,6 +90,37 @@ export default function PostDetail({ user }) {
     }
   };
 
+  const handleDeleteComment = async (commentId) => {
+    try {
+      await deleteDoc(
+        doc(db, "post_comments", commentId)
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const confirmDelete = (id) => {
+    confirmDialog({
+      message: "¿Seguro que quieres eliminar este comentario?",
+      header: "Advertencia",
+      icon: "pi pi-exclamation-triangle",
+      acceptLabel: "eliminar",
+      rejectLabel: "Cancelar",
+
+      accept: () => {
+        handleDeleteComment(id);
+        toast.current.show({
+          severity: "success",
+          summary: "Eliminado",
+          detail: "Comentario eliminado correctamente",
+          life: 3000
+        });
+      },
+      reject: () => {}
+    });
+  };
+
   return (
     <div className="post-detail">  
       <div className="hero">  
@@ -97,13 +133,13 @@ export default function PostDetail({ user }) {
             muted  
           />  
         ) : (  
-            <div   
-                className="hero-video"  
-                style={{  
-                    backgroundImage: `url(${post.image})`,  
-                    backgroundSize: "cover"  
-                }}  
-            />  
+          <div   
+            className="hero-video"  
+            style={{  
+              backgroundImage: `url(${post.image})`,  
+              backgroundSize: "cover"  
+            }}  
+          />  
         )}  
         <div className="hero-overlay" />  
       </div>  
@@ -154,6 +190,13 @@ export default function PostDetail({ user }) {
                   key={item.id}
                   className="comment-card"
                 >
+                  {item.userId === post.userId && (
+                    <Button
+                      icon="pi pi-times"
+                      className="p-button-rounded p-button-text p-button-danger delete-comment-btn"
+                      onClick={() => confirmDelete(item.id)}
+                    />
+                  )}
                   <div className="comment-header">
                     <Avatar
                       image={item?.avatar}
@@ -186,7 +229,9 @@ export default function PostDetail({ user }) {
             </div>
           </div>
         </div>
-      </div>  
+      </div>
+      <ConfirmDialog />
+      <Toast ref={toast} />  
     </div>
   );
 }
