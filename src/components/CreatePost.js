@@ -10,6 +10,7 @@ import { AutoComplete } from "primereact/autocomplete";
 import { searchGames } from "../utils/searchGames";
 import { Toast } from "primereact/toast";
 import { httpsCallable } from "firebase/functions";
+import { Checkbox } from "primereact/checkbox";
 
 export default function CreatePost({ user, userData, onClose, editingPost }) {
   const [game, setGame] = useState({});
@@ -17,13 +18,15 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
   const [comments, setComments] = useState("");
   const [platform, setPlatform] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const [multiplatform, setMultiplatform] = useState(false);
   const toast = useRef(null);
   const platforms = [
     { label: "PlayStation", value: "playstation" },
     { label: "Xbox", value: "xbox" },
     { label: "Switch", value: "switch" },
     { label: "PC", value: "pc" },
-    { label: "Mobile", value: "mobile" }
+    { label: "Mobile", value: "mobile" },
+    { label: "Wii", value: "wii" }
   ];
   const getGameLogo = httpsCallable(
     functions,
@@ -40,6 +43,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
       setPlatform(editingPost.platform || "");
       setPlayers(editingPost.playersNeeded || "");
       setComments(editingPost.comments || "");
+      setMultiplatform(editingPost.multiplatform)
     }
   }, [editingPost]);
 
@@ -47,7 +51,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
     e.preventDefault();
     let state = "guardar"
     try{
-      if (!game.value || !players || !comments || !platform) {
+      if (!game.value || !players || !comments || (!multiplatform && !platform)) {
         alert("Completa todos los campos");
         return;
       }
@@ -78,7 +82,9 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
           image: image || null,
           logo: logo.data?.logo || null,
           clip: clip || null,
-          portada: portada.data?.portada || null
+          portada: portada.data?.portada || null,
+          platforms: game.platforms,
+          multiplatform: multiplatform
         });
 
         toast.current.show({
@@ -101,7 +107,9 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
           phone: userData?.phone,
           createdAt: new Date(),
           comments,
-          platform
+          platform,
+          platforms: game.platforms,
+          multiplatform: multiplatform
         });
 
         toast.current.show({
@@ -115,6 +123,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
       setPlayers("");
       setComments("");
       setPlatform("")
+      setMultiplatform(false);
       onClose();
     }catch (error) {
       toast.current.show({
@@ -200,7 +209,8 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
     setGame({});
     setPlayers("");
     setComments("");
-    setPlatform("")
+    setPlatform("");
+    setMultiplatform(false);
     onClose();
   }
 
@@ -224,13 +234,24 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
             placeholder="Nombre del juego"
             style={{ flex: 1 }}
           />
-          <Dropdown
-            value={platform}
-            options={platforms}
-            onChange={(e) => setPlatform(e.value)}
-            placeholder="Selecciona plataforma"
-            style={{ width: "200px" }}
+          <Checkbox
+            inputId="multiplatform"
+            checked={multiplatform}
+            style={{position: "relative", top: "10px"}}
+            onChange={(e) => setMultiplatform(e.checked)}
           />
+          <label htmlFor="multiplatform" style={{position: "relative", top: "10px"}}>
+            Multiplataforma
+          </label>
+          {!multiplatform && (
+            <Dropdown
+              value={platform}
+              options={platforms}
+              onChange={(e) => setPlatform(e.value)}
+              placeholder="Selecciona plataforma"
+              style={{ width: "200px" }}
+            />
+          )}
           <InputText
             placeholder="Cant. jugadores"
             value={players}
