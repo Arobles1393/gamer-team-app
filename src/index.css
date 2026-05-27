@@ -1048,3 +1048,22 @@ code {
 .delete-comment-btn:hover {
   transform: scale(1.2);
 }
+
+.game-info-card {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.play-btn {
+  width: 100%;
+  margin-top: 15px;
+}

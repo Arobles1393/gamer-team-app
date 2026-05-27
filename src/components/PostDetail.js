@@ -4,6 +4,7 @@ import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
+import { Timestamp } from "firebase/firestore";
 import {
   collection,
   addDoc,
@@ -145,10 +146,55 @@ export default function PostDetail({ user }) {
       </div>  
       <div className="post-content">
         <div className="left-panel">
-            <img src={!post.portada ? post.image : post.portada} className="game-cover" />
-            {!post.portada && (
-              <h2>{post.game}</h2>
-            )}
+          <img src={!post.portada ? post.image : post.portada} className="game-cover" />
+          {!post.portada && (
+            <h2>{post.game}</h2>
+          )}
+          <div className="game-info-card">
+
+            <div className="info-row">
+              <i className="pi pi-user"></i>
+              <span>{post.username}</span>
+            </div>
+
+            <div className="info-row">
+              <i className="pi pi-clock"></i>
+              <span>{formatDate(post.createdAt)}</span>
+            </div>
+
+            {/*<div className="info-row">
+              <i className="pi pi-comments"></i>
+              <span>{comments.length} comentarios</span>
+            </div>
+
+            <div className="info-row">
+              <i className="pi pi-users"></i>
+              <span>{interestedCount} interesados</span>
+            </div>
+
+            <div className="info-row">
+              <i className="pi pi-crosshairs"></i>
+              <span>{post.lookingFor}</span>
+            </div>
+
+            <div className="info-row">
+              <i className="pi pi-globe"></i>
+              <span>{post.region}</span>
+            </div>
+
+            <div className="info-row">
+              <i className="pi pi-microphone"></i>
+              <span>{post.voiceChat}</span>
+            </div>
+
+            <Button
+              label="Quiero jugar"
+              icon="pi pi-users"
+              className="play-btn"
+              onClick={handleInterested}
+            />*/}
+
+          </div>
         </div>
         <div className="right-panel">
           <div className="community-section">
@@ -234,4 +280,31 @@ export default function PostDetail({ user }) {
       <Toast ref={toast} />  
     </div>
   );
+}
+
+function formatDate(timestamp) {
+
+  if (!timestamp) return "";
+
+  const date = new Date(
+    timestamp.seconds * 1000
+  );
+
+  const diff = Date.now() - date.getTime();
+
+  const minutes = Math.floor(diff / 60000);
+
+  if (minutes < 60) {
+    return `Hace ${minutes} min`;
+  }
+
+  const hours = Math.floor(minutes / 60);
+
+  if (hours < 24) {
+    return `Hace ${hours} h`;
+  }
+
+  const days = Math.floor(hours / 24);
+
+  return `Hace ${days} días`;
 }
