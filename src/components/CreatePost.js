@@ -51,39 +51,39 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
     e.preventDefault();
     let state = "guardar"
     try{
-      if (!game.value || !players || !comments || (!multiplatform && !platform)) {
+      if (!game || !players || !comments?.trim() || (!multiplatform && !platform)) {
         alert("Completa todos los campos");
         return;
       }
-      let image = await getExistingImage(game.value);
-      let logo = await getExistingLogo(game.value);
-      let clip = await getExistingClip(game.value);
-      let portada = await getExistingPortada(game.value);
+      let image = await getExistingImage(game.value ?? game);
+      let logo = await getExistingLogo(game.value ?? game);
+      let clip = await getExistingClip(game.value ?? game);
+      let portada = await getExistingPortada(game.value ?? game);
       if (!image) {
-        image = game.image
+        image = game.image ?? editingPost?.image ?? null;
       }
       if (!logo) {
-        logo = await getGameLogo({ steamAppId: game.steamAppId, gameName: game.value });
+        logo = await getGameLogo({ steamAppId: game.steamAppId ?? editingPost?.steamAppId, gameName: game.value ?? game });
       }
       if (!clip) {
-        clip = game.clip;
+        clip = game.clip ?? editingPost?.clip ?? null;
       }
       if (!portada) {
-        portada = await getGamePortada({ steamAppId: game.steamAppId, gameName: game.value });
+        portada = await getGamePortada({ steamAppId: game.steamAppId ?? editingPost?.steamAppId, gameName: game.value ?? game });
       }
       if (editingPost) {
         state = "actualizar"
         const postRef = doc(db, "posts", editingPost.id);
         await updateDoc(postRef, {
-          game: game.value,
+          game: game.value ?? game,
           platform,
           playersNeeded: players,
           comments,
           image: image || null,
-          logo: logo.data?.logo || null,
+          logo: logo.data?.logo ?? editingPost?.logo ?? null,
           clip: clip || null,
-          portada: portada.data?.portada || null,
-          platforms: game.platforms,
+          portada: portada.data?.portada ?? editingPost?.portada ?? null,
+          platforms: game.platforms ?? editingPost.platforms,
           multiplatform: multiplatform
         });
 
