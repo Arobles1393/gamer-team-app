@@ -4,6 +4,7 @@ import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
+import { platformIcons } from "../utils/platformIcons";
 import {
   collection,
   addDoc,
@@ -212,6 +213,34 @@ export default function PostDetail({ user, userData }) {
 
   };
 
+  const getPlatformKey = (platform) => {
+    const name = platform.toLowerCase();
+    if (name.includes("xbox")) {
+      return "xbox";
+    }
+    if (name.includes("playstation")) {
+      return "playstation";
+    }
+    if (name.includes("switch")) {
+      return "switch";
+    }
+    if (name.includes("pc")) {
+      return "pc";
+    }
+    if (name.includes("mobile")) {
+      return "mobile";
+    }
+    return null;
+  };
+
+  const uniquePlatforms = [
+    ...new Set(
+      (post.platforms || [])
+        .map(getPlatformKey)
+        .filter(Boolean)
+    )
+  ];
+
   return (
     <div className="post-detail">  
       <div className="hero">  
@@ -240,6 +269,22 @@ export default function PostDetail({ user, userData }) {
           {!post.portada && (
             <h2>{post.game}</h2>
           )}
+          <div className="meta-item">
+            {
+              post.multiplatform ? (
+                uniquePlatforms.map((platform) => (
+                  <span key={platform}>
+                    {platformIcons[platform]?.()}
+                  </span>
+                ))
+              ) : (
+                <>
+                  {platformIcons[post.platform]?.()}
+                  <span>{post.platform}</span>
+                </>
+              )
+            }
+          </div>
           <div className="game-info-card">
 
             <div className="info-row">
