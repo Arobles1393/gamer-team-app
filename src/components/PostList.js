@@ -146,6 +146,26 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
     setShowProfile(false);
   };
 
+  const getPlatformKey = (platform) => {
+    const name = platform.toLowerCase();
+    if (name.includes("xbox")) {
+      return "xbox";
+    }
+    if (name.includes("playstation")) {
+      return "playstation";
+    }
+    if (name.includes("switch")) {
+      return "switch";
+    }
+    if (name.includes("pc")) {
+      return "pc";
+    }
+    if (name.includes("mobile")) {
+      return "mobile";
+    }
+    return null;
+  };
+
   return (
     <div>
       <div
@@ -182,108 +202,124 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
         </div>
       </div>
       <div className="post-grid">
-        {filteredPosts.map((post) => (
-          <Card key={post.id}
-            className="rawg-card"
-            onClick={() => navigate(`/post/${post.id}`, { state: post })}
-          >
-            <div className="rawg-image-container">
-              {post.userId !== user.uid &&
-              post.joinedUsers?.includes(user.uid) && (
-                <div style={{marginBottom:"1rem"}}>
-                  <span className="joined-badge">Sigues esta partida</span>
-                </div>
-              )}
-              <img
-                src={post.image || "/imagenotfound.png"}
-                alt={post.game}
-                className="rawg-image"
-              />
-            </div>
-            <div>
-              {post.logo ? (
-                <img src={post.logo} alt={post.game} className="logo-game" />
-              ) : (
-                <h3>{post.game}</h3>
-              )}
-              <div className="rawg-meta">
-                <div className="meta-item">
-                  {platformIcons[post.platform]?.()}
-                  {/*<img
-                    src={platformIcons[post.platform]}
-                    alt={post.platform}
-                    className="platform-icon"
-                  />*/}
-                  <span>{post.platform}</span>
-                </div>
-                <div className="meta-item">
-                  <i className="pi pi-users"></i>
-                  <span>{post.playersNeeded} jugadores</span>
-                </div>
-              </div>
-              {/* 🔥 CONTENIDO OCULTO */}
-              <div className="rawg-extra">
-                {post.comments && (
-                  <p>{post.comments}</p>
+        {filteredPosts.map((post) => {
+          const uniquePlatforms = [
+            ...new Set(
+              (post.platforms || [])
+                .map(getPlatformKey)
+                .filter(Boolean)
+            )
+          ];
+          return(
+            <Card key={post.id}
+              className="rawg-card"
+              onClick={() => navigate(`/post/${post.id}`, { state: post })}
+            >
+              <div className="rawg-image-container">
+                {post.userId !== user.uid &&
+                post.joinedUsers?.includes(user.uid) && (
+                  <div style={{marginBottom:"1rem"}}>
+                    <span className="joined-badge">Sigues esta partida</span>
+                  </div>
                 )}
-                <div className="user-row">
-                  <Avatar
-                    image={post?.avatar}
-                    label={post.username?.charAt(0).toUpperCase()}
-                    shape="circle"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedUserId(post.userId);
-                      setShowProfile(true);
-                    }}
-                  />
-                  <span>
-                    {post.username}
-                  </span>
+                <img
+                  src={post.image || "/imagenotfound.png"}
+                  alt={post.game}
+                  className="rawg-image"
+                />
+              </div>
+              <div>
+                {post.logo ? (
+                  <img src={post.logo} alt={post.game} className="logo-game" />
+                ) : (
+                  <h3>{post.game}</h3>
+                )}
+                <div className="rawg-meta">
+                  <div className="meta-item">
+                    {
+                      post.multiplatform ? (
+                        uniquePlatforms.map((platform) => (
+                          <span key={platform}>
+                            {platformIcons[platform]?.()}
+                          </span>
+                        ))
+                      ) : (
+                        <>
+                          {platformIcons[post.platform]?.()}
+                          <span>{post.platform}</span>
+                        </>
+                      )
+                    }
+                  </div>
+                  <div className="meta-item" style={{ marginLeft: "auto" }}>
+                    <i className="pi pi-users"></i>
+                    <span>{post.playersNeeded} jugadores</span>
+                  </div>
                 </div>
-                <div className="post-actions">
-                  {post.userId !== user.uid && (
-                    post.joinedUsers?.includes(user.uid) ? (
-                      <Button
-                        label="Dejar de seguir"
-                        icon="pi pi-users"
-                        className="p-button-danger p-button-sm"
-                        onClick={(e) => {e.stopPropagation(); handleLeave(post);}}
-                      />
-                    ) : (
-                      <Button
-                        label="Seguir y unirme"
-                        icon="pi pi-users"
-                        className="p-button-success p-button-sm"
-                        onClick={(e) => {e.stopPropagation(); handleJoin(post);}}
-                      />
-                    ) 
+                {/* 🔥 CONTENIDO OCULTO */}
+                <div className="rawg-extra">
+                  {post.comments && (
+                    <p>{post.comments}</p>
                   )}
-                  {post.userId === user.uid && (
-                    <>
-                      <Button
-                        label="Editar"
-                        icon="pi pi-pencil"
-                        className="p-button-success p-button-sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingPost(post);
-                          setShowCreatePost(true);
-                        }}
-                      />
-                      <Button
-                        label="Eliminar"
-                        icon="pi pi-trash"
-                        className="p-button-danger p-button-sm"
-                        onClick={(e) => {e.stopPropagation(); confirmDelete(post.id);}}
-                      />
-                    </>
-                  )}
+                  <div className="user-row">
+                    <Avatar
+                      image={post?.avatar}
+                      label={post.username?.charAt(0).toUpperCase()}
+                      shape="circle"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedUserId(post.userId);
+                        setShowProfile(true);
+                      }}
+                    />
+                    <span>
+                      {post.username}
+                    </span>
+                  </div>
+                  <div className="post-actions">
+                    {post.userId !== user.uid && (
+                      post.joinedUsers?.includes(user.uid) ? (
+                        <Button
+                          label="Dejar de seguir"
+                          icon="pi pi-users"
+                          className="p-button-danger p-button-sm"
+                          onClick={(e) => {e.stopPropagation(); handleLeave(post);}}
+                        />
+                      ) : (
+                        <Button
+                          label="Seguir y unirme"
+                          icon="pi pi-users"
+                          className="p-button-success p-button-sm"
+                          onClick={(e) => {e.stopPropagation(); handleJoin(post);}}
+                        />
+                      ) 
+                    )}
+                    {post.userId === user.uid && (
+                      <>
+                        <Button
+                          label="Editar"
+                          icon="pi pi-pencil"
+                          className="p-button-success p-button-sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingPost(post);
+                            setShowCreatePost(true);
+                          }}
+                        />
+                        <Button
+                          label="Eliminar"
+                          icon="pi pi-trash"
+                          className="p-button-danger p-button-sm"
+                          onClick={(e) => {e.stopPropagation(); confirmDelete(post.id);}}
+                        />
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          </Card>
-        ))}
+            </Card>
+          );
+        })}
       </div>
       <Dialog
         pt={{
