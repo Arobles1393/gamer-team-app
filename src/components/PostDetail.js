@@ -304,6 +304,11 @@ export default function PostDetail({ user, userData }) {
             </div>
 
             <div className="info-row">
+              <i className="pi pi-globe"></i>
+              <span>{post.region}</span>
+            </div>
+
+            <div className="info-row">
               <i className="pi pi-comments"></i>
               <span>{comments.length} comentarios</span>
             </div>
@@ -316,11 +321,6 @@ export default function PostDetail({ user, userData }) {
             {/*<div className="info-row">
               <i className="pi pi-crosshairs"></i>
               <span>{post.lookingFor}</span>
-            </div>
-
-            <div className="info-row">
-              <i className="pi pi-globe"></i>
-              <span>{post.region}</span>
             </div>
 
             <div className="info-row">

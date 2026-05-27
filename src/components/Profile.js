@@ -13,6 +13,7 @@ import { getLabel } from "../utils/getLabel"
 import { InputTextarea } from "primereact/inputtextarea";
 import { AutoComplete } from "primereact/autocomplete";
 import { searchGames } from "../utils/searchGames";
+import { Dropdown } from "primereact/dropdown";
 
 export default function Profile({ user, userData }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -26,6 +27,8 @@ export default function Profile({ user, userData }) {
   const [suggestions, setSuggestions] = useState([]);
   const [preview, setPreview] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
+  const [countries, setCountries] = useState([]);
+  const [region, setRegion] = useState(null);
   const bannerInputRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -37,6 +40,7 @@ export default function Profile({ user, userData }) {
       setLinks(userData.links || []);
       setGames(userData.games || []);
       setDescription(userData.description || []);
+      setRegion(userData.region || "");
     }
   }, [userData]);
 
@@ -53,6 +57,30 @@ export default function Profile({ user, userData }) {
       if (bannerPreview) URL.revokeObjectURL(bannerPreview);
     };
   }, [bannerPreview]);
+
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const res = await fetch(
+          "https://restcountries.com/v3.1/all?fields=name,flags"
+        );
+        const data = await res.json();
+        const countries = data
+          .map((country) => ({
+            label: country.name.common,
+            value: country.name.common,
+            flag: country.flags.png
+          }))
+          .sort((a, b) =>
+            a.label.localeCompare(b.label)
+          );
+        setCountries(countries);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchCountries();
+  }, []);
 
   const handleSave = async () => {
     try {
@@ -76,7 +104,8 @@ export default function Profile({ user, userData }) {
         phone,
         links,
         description,
-        games
+        games,
+        region
       });
       setIsEditing(false);
     } catch (error) {
@@ -95,6 +124,7 @@ export default function Profile({ user, userData }) {
     setLinks(userData?.links || []);
     setGames(userData?.games || []);
     setDescription(userData?.description || []);
+    setRegion(userData?.region || "");
     setIsEditing(false);
   };
 
@@ -103,6 +133,7 @@ export default function Profile({ user, userData }) {
       email !== (userData?.email || "") ||
       username !== (userData?.username || "") ||
       phone !== (userData?.phone || "") ||
+      region !== (userData?.region || "") ||
       description !== (userData?.description || "") ||
       JSON.stringify(links) !== JSON.stringify(userData?.links || []) ||
       JSON.stringify(games) !== JSON.stringify(userData?.games || [])
@@ -298,6 +329,18 @@ export default function Profile({ user, userData }) {
             <InputText
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
+              disabled={!isEditing}
+            />
+          </div>
+          <div className="form-group">
+            <label>Region</label>
+            <Dropdown
+              value={region}
+              options={countries}
+              onChange={(e) => setRegion(e.value)}
+              optionLabel="label"
+              placeholder="Selecciona tu región"
+              filter
               disabled={!isEditing}
             />
           </div>

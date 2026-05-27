@@ -7,6 +7,7 @@ import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import { FloatLabel } from "primereact/floatlabel";
+import { Dropdown } from "primereact/dropdown";
 
 export default function Register({ setShowLogin }) {
   const [email, setEmail] = useState("");
@@ -14,13 +15,39 @@ export default function Register({ setShowLogin }) {
   const [username, setUsername] = useState("");
   const [phone, setPhone] = useState("");
   const [visible, setVisible] = useState(false);
+  const [countries, setCountries] = useState([]);
+  const [region, setRegion] = useState(null);
 
   useEffect(() => {
     setVisible(true);
   }, []);
 
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const res = await fetch(
+          "https://restcountries.com/v3.1/all?fields=name,flags"
+        );
+        const data = await res.json();
+        const countries = data
+          .map((country) => ({
+            label: country.name.common,
+            value: country.name.common,
+            flag: country.flags.png
+          }))
+          .sort((a, b) =>
+            a.label.localeCompare(b.label)
+          );
+        setCountries(countries);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchCountries();
+  }, []);
+
   const handleRegister = async () => {
-    if (!email || !password || !username) {
+    if (!email || !password || !username || !region) {
       alert("Completa todos los campos");
       return;
     }
@@ -35,6 +62,7 @@ export default function Register({ setShowLogin }) {
         email,
         username,
         phone,
+        region,
         createdAt: new Date()
       });
 
@@ -98,6 +126,21 @@ export default function Register({ setShowLogin }) {
               onChange={(e) => setPhone(e.target.value)}
             />
             <label htmlFor="phone">Teléfono (opcional)</label>
+          </FloatLabel>
+          <FloatLabel style={{ marginBottom: "1.5rem" }}>
+            <Dropdown
+              id="region"
+              value={region}
+              options={countries}
+              onChange={(e) => setRegion(e.value)}
+              optionLabel="label"
+              placeholder="Selecciona tu región"
+              filter
+            />
+
+            <label htmlFor="region">
+              Región
+            </label>
           </FloatLabel>
           <Button
             label="Registrarse"
