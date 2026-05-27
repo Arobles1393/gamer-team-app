@@ -209,7 +209,7 @@ function App() {
           <Route
             path="/post/:id" 
             element={
-              <PostDetail />
+              <PostDetail user={user} userData={userData}/>
             }
           />
         </Routes>

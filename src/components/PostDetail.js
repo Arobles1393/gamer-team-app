@@ -4,7 +4,6 @@ import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
-import { Timestamp } from "firebase/firestore";
 import {
   collection,
   addDoc,
@@ -24,12 +23,15 @@ import {
   getDownloadURL
 } from "firebase/storage";
 
-export default function PostDetail({ user }) {
+export default function PostDetail({ user, userData }) {
   const { state: post } = useLocation();
   const { id } = useParams();
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [file, setFile] = useState(null);
+  const [interestedCount, setInterestedCount] = useState(0);
+  const [isInterested, setIsInterested] = useState(false);
+  const [interestDocId, setInterestDocId] = useState(null);
   const storage = getStorage();
   const fileInputRef = useRef(null);
   const toast = useRef(null);
@@ -53,6 +55,57 @@ export default function PostDetail({ user }) {
     return () => unsubscribe();
 
   }, [id]);
+
+  useEffect(() => {
+
+    const q = query(
+      collection(db, "post_interested"),
+      where("postId", "==", id)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+
+      setInterestedCount(snapshot.size);
+
+    });
+
+    return () => unsubscribe();
+
+  }, [id]);
+
+  useEffect(() => {
+
+    if (!user || !id) return;
+
+    const q = query(
+      collection(db, "post_interested"),
+      where("postId", "==", id),
+      where("userId", "==", user.uid)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+
+      if (!snapshot.empty) {
+
+        setIsInterested(true);
+
+        setInterestDocId(
+          snapshot.docs[0].id
+        );
+
+      } else {
+
+        setIsInterested(false);
+
+        setInterestDocId(null);
+
+      }
+
+    });
+
+    return () => unsubscribe();
+
+  }, [id, user]);
 
   const handlePublish = async () => {
     if (!comment.trim()) return;
@@ -78,16 +131,22 @@ export default function PostDetail({ user }) {
       await addDoc(collection(db, "post_comments"), {
         postId: id,
         text: comment,
-        userId: post.userId,
-        userName: post.username,
-        avatar: post.avatar || null,
+        userId: user.uid,
+        userName: userData.username,
+        avatar: userData.avatar || null,
         mediaUrl,
         mediaType,
         createdAt: serverTimestamp()
       });
       setComment("");
     } catch (error) {
-      console.error(error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudo eliminar la publicacion " + error + " user " + JSON.stringify(user),
+        life: 3000
+      });
+      console.error("Error al eliminar:", error);
     }
   };
 
@@ -122,6 +181,37 @@ export default function PostDetail({ user }) {
     });
   };
 
+  const handleInterested = async () => {
+
+    try {
+
+      if (isInterested && interestDocId) {
+
+        await deleteDoc(
+          doc(db, "post_interested", interestDocId)
+        );
+
+        return;
+      }
+
+      await addDoc(
+        collection(db, "post_interested"),
+        {
+          postId: id,
+          userId: user.uid,
+          userName: userData.username,
+          createdAt: serverTimestamp()
+        }
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+  };
+
   return (
     <div className="post-detail">  
       <div className="hero">  
@@ -153,8 +243,14 @@ export default function PostDetail({ user }) {
           <div className="game-info-card">
 
             <div className="info-row">
-              <i className="pi pi-user"></i>
-              <span>{post.username}</span>
+              <Avatar
+                image={post?.avatar}
+                label={post.username?.charAt(0).toUpperCase()}
+                shape="circle"
+              />
+              <span>
+                {post.username}
+              </span>
             </div>
 
             <div className="info-row">
@@ -162,17 +258,17 @@ export default function PostDetail({ user }) {
               <span>{formatDate(post.createdAt)}</span>
             </div>
 
-            {/*<div className="info-row">
+            <div className="info-row">
               <i className="pi pi-comments"></i>
               <span>{comments.length} comentarios</span>
             </div>
 
             <div className="info-row">
               <i className="pi pi-users"></i>
-              <span>{interestedCount} interesados</span>
+              <span>{interestedCount} jugadores interesados</span>
             </div>
 
-            <div className="info-row">
+            {/*<div className="info-row">
               <i className="pi pi-crosshairs"></i>
               <span>{post.lookingFor}</span>
             </div>
@@ -185,14 +281,30 @@ export default function PostDetail({ user }) {
             <div className="info-row">
               <i className="pi pi-microphone"></i>
               <span>{post.voiceChat}</span>
-            </div>
+            </div>*/}
 
-            <Button
-              label="Quiero jugar"
-              icon="pi pi-users"
-              className="play-btn"
-              onClick={handleInterested}
-            />*/}
+            {
+              post.userId != user.uid && (
+                <Button
+                  label={
+                    isInterested
+                      ? "Ya no me interesa"
+                      : "Quiero jugar"
+                  }
+                  icon={
+                    isInterested
+                      ? "pi pi-times"
+                      : "pi pi-users"
+                  }
+                  className={
+                    isInterested
+                      ? "p-button-danger"
+                      : "p-button-success"
+                  }
+                  onClick={handleInterested}
+                />
+              )
+            }
 
           </div>
         </div>
@@ -236,7 +348,7 @@ export default function PostDetail({ user }) {
                   key={item.id}
                   className="comment-card"
                 >
-                  {item.userId === post.userId && (
+                  {item.userId === user.uid && (
                     <Button
                       icon="pi pi-times"
                       className="p-button-rounded p-button-text p-button-danger delete-comment-btn"
@@ -250,7 +362,7 @@ export default function PostDetail({ user }) {
                       shape="circle"
                     />
                     <span>
-                      {post.username}
+                      {item.userName}
                     </span>
                   </div>
                   {item.text && (
