@@ -5,6 +5,10 @@ import { Avatar } from "primereact/avatar";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import { platformIcons } from "../utils/platformIcons";
+import UserProfile from "./UserProfile";
+import { Dialog } from "primereact/dialog";
+import { createOrGetChat } from "../services/chatService";
+import { useNavigate } from "react-router-dom";
 import {
   collection,
   addDoc,
@@ -33,9 +37,12 @@ export default function PostDetail({ user, userData }) {
   const [interestedCount, setInterestedCount] = useState(0);
   const [isInterested, setIsInterested] = useState(false);
   const [interestDocId, setInterestDocId] = useState(null);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [showProfile, setShowProfile] = useState(false);
   const storage = getStorage();
   const fileInputRef = useRef(null);
   const toast = useRef(null);
+  const navigate = useNavigate();
   
   useEffect(() => {
     if (!id) return;
@@ -241,6 +248,18 @@ export default function PostDetail({ user, userData }) {
     )
   ];
 
+  const handleChat = async () => {
+    const chatId = await createOrGetChat(user, {
+      uid: selectedUserId
+    });
+
+    navigate("/chat", {
+      state: { chatId }
+    });
+
+    setShowProfile(false);
+  };
+
   return (
     <div className="post-detail">  
       <div className="hero">  
@@ -278,10 +297,7 @@ export default function PostDetail({ user, userData }) {
                   </span>
                 ))
               ) : (
-                <>
-                  {platformIcons[post.platform]?.()}
-                  <span>{post.platform}</span>
-                </>
+                platformIcons[post.platform]?.()
               )
             }
           </div>
@@ -292,6 +308,11 @@ export default function PostDetail({ user, userData }) {
                 image={post?.avatar}
                 label={post.username?.charAt(0).toUpperCase()}
                 shape="circle"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedUserId(post.userId);
+                  setShowProfile(true);
+                }}
               />
               <span>
                 {post.username}
@@ -317,16 +338,6 @@ export default function PostDetail({ user, userData }) {
               <i className="pi pi-users"></i>
               <span>{interestedCount} jugadores interesados</span>
             </div>
-
-            {/*<div className="info-row">
-              <i className="pi pi-crosshairs"></i>
-              <span>{post.lookingFor}</span>
-            </div>
-
-            <div className="info-row">
-              <i className="pi pi-microphone"></i>
-              <span>{post.voiceChat}</span>
-            </div>*/}
 
             {
               post.userId != user.uid && (
@@ -405,6 +416,11 @@ export default function PostDetail({ user, userData }) {
                       image={item?.avatar}
                       label={item.userName?.charAt(0).toUpperCase()}
                       shape="circle"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedUserId(item.userId);
+                        setShowProfile(true);
+                      }}
                     />
                     <span>
                       {item.userName}
@@ -433,6 +449,30 @@ export default function PostDetail({ user, userData }) {
           </div>
         </div>
       </div>
+      <Dialog
+        pt={{
+          header: { style: { padding: 0 } }
+        }}
+        visible={showProfile}
+        style={{ width: "1100px" }}
+        onHide={() => setShowProfile(false)}
+        breakpoints={{ "960px": "75vw", "640px": "90vw" }}
+        dismissableMask
+        draggable={false}
+      >
+        {selectedUserId && (
+          <div className="profile-container">
+            <UserProfile userId={selectedUserId} user={user} />
+            {user.uid !== selectedUserId && (
+              <Button
+                icon="pi pi-comments"
+                className="chat-fab p-button-rounded p-button-success"
+                onClick={handleChat}
+              />
+            )}
+          </div>
+        )}
+      </Dialog>
       <ConfirmDialog />
       <Toast ref={toast} />  
     </div>

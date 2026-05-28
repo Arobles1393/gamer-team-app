@@ -83,7 +83,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
           logo: logo.data?.logo ?? editingPost?.logo ?? null,
           clip: clip || null,
           portada: portada.data?.portada ?? editingPost?.portada ?? null,
-          platforms: game.platforms ?? editingPost.platforms,
+          platforms: game.platforms ?? editingPost.platforms ?? null,
           multiplatform: multiplatform
         });
 
@@ -98,6 +98,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
         await addDoc(collection(db, "posts"), {
           userId: user.uid,
           username: userData?.username,
+          region: userData?.region,
           game: game.value,
           playersNeeded: players,
           image: image || null,

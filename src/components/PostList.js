@@ -244,10 +244,7 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
                           </span>
                         ))
                       ) : (
-                        <>
-                          {platformIcons[post.platform]?.()}
-                          <span>{post.platform}</span>
-                        </>
+                        platformIcons[post.platform]?.()
                       )
                     }
                   </div>
