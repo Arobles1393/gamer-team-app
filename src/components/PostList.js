@@ -351,7 +351,9 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
                         onClick={(e) => {
                           e.stopPropagation();
                           handleInterested(post, interestedDoc);
-                          handleJoin(post);
+                          if(!isInterested){
+                            handleJoin(post); 
+                          }
                         }}
                       />
                     )}
