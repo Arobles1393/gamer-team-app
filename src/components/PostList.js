@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { db } from "../firebase/config";
-import { collection, onSnapshot, deleteDoc, doc, query, where, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { collection, onSnapshot, deleteDoc, doc, query, where, updateDoc, arrayUnion, addDoc } from "firebase/firestore";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { createOrGetChat } from "../services/chatService";
 import { platformIcons } from "../utils/platformIcons";
 
-export default function PostList({ user, setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
+export default function PostList({ user, userData, setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
   const [posts, setPosts] = useState([]);
   const [filterGame, setFilterGame] = useState(null);
   const games = [...new Set(posts.map(post => post.game))];
@@ -21,6 +21,7 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
   const [showProfile, setShowProfile] = useState(false);
   const [filterPlatform, setFilterPlatform] = useState(null);
   const [title, setTitle] = useState("");
+  const [interestedPosts, setInterestedPosts] = useState([]);
   const toast = useRef(null);
   const navigate = useNavigate();
   const gameOptions = [
@@ -75,6 +76,21 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
     return () => unsubscribe();
   }, [user, onlyMine, joined]);
 
+  useEffect(() => {
+    if (!user) return;
+    const q = query(
+      collection(db, "post_interested")
+    );
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setInterestedPosts(data);
+    });
+    return () => unsubscribe();
+  }, [user]);
+
   const handleJoin = async(post) => {
     const ref = doc(db, "posts", post.id);
     await updateDoc(ref, {
@@ -126,14 +142,6 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
     return matchGame && matchPlatform;
   });
 
-  const handleLeave = async (post) => {
-    const ref = doc(db, "posts", post.id);
-
-    await updateDoc(ref, {
-      joinedUsers: arrayRemove(user.uid)
-    });
-  };
-
   const handleChat = async () => {
     const chatId = await createOrGetChat(user, {
       uid: selectedUserId
@@ -164,6 +172,38 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
       return "mobile";
     }
     return null;
+  };
+
+  const handleInterested = async (post, interestedDoc) => {
+    try {
+      if (interestedDoc) {
+        await deleteDoc(
+          doc(
+            db,
+            "post_interested",
+            interestedDoc.id
+          )
+        );
+        return;
+      }
+      await addDoc(
+        collection(db, "post_interested"),
+        {
+          postId: post.id,
+          userId: user.uid,
+          userName: userData.username,
+          createdAt: new Date()
+        }
+      );
+    } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudo guardar el interes " + error,
+        life: 3000
+      });
+      console.error(error);
+    }
   };
 
   return (
@@ -210,18 +250,32 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
                 .filter(Boolean)
             )
           ];
+          const isInterested = interestedPosts.some(
+            (item) =>
+              item.postId === post.id &&
+              item.userId === user.uid
+          );
+          const interestedDoc = interestedPosts.find(
+            (item) =>
+              item.postId === post.id &&
+              item.userId === user.uid
+          );
           return(
             <Card key={post.id}
               className="rawg-card"
               onClick={() => navigate(`/post/${post.id}`, { state: post })}
             >
               <div className="rawg-image-container">
-                {post.userId !== user.uid &&
-                post.joinedUsers?.includes(user.uid) && (
-                  <div style={{marginBottom:"1rem"}}>
-                    <span className="joined-badge">Sigues esta partida</span>
-                  </div>
-                )}
+                {
+                  post.userId !== user.uid &&
+                  isInterested && (
+                    <div style={{ marginBottom: "1rem" }}>
+                      <span className="joined-badge">
+                        Te interesa esta publicación
+                      </span>
+                    </div>
+                  )
+                }
                 <img
                   src={post.image || "/imagenotfound.png"}
                   alt={post.game}
@@ -275,21 +329,31 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
                   </div>
                   <div className="post-actions">
                     {post.userId !== user.uid && (
-                      post.joinedUsers?.includes(user.uid) ? (
-                        <Button
-                          label="Dejar de seguir"
-                          icon="pi pi-users"
-                          className="p-button-danger p-button-sm"
-                          onClick={(e) => {e.stopPropagation(); handleLeave(post);}}
-                        />
-                      ) : (
-                        <Button
-                          label="Seguir y unirme"
-                          icon="pi pi-users"
-                          className="p-button-success p-button-sm"
-                          onClick={(e) => {e.stopPropagation(); handleJoin(post);}}
-                        />
-                      ) 
+                      <Button
+                        label={
+                          isInterested
+                            ? "Ya no me interesa"
+                            : "Quiero jugar"
+                        }
+
+                        icon={
+                          isInterested
+                            ? "pi pi-times"
+                            : "pi pi-users"
+                        }
+
+                        className={
+                          isInterested
+                            ? "p-button-danger p-button-sm"
+                            : "p-button-success p-button-sm"
+                        }
+
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleInterested(post, interestedDoc);
+                          handleJoin(post);
+                        }}
+                      />
                     )}
                     {post.userId === user.uid && (
                       <>

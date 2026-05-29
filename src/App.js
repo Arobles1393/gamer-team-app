@@ -168,6 +168,7 @@ function App() {
             path="/"
             element={
               <PostList user={user} 
+                userData={userData}
                 setEditingPost={setEditingPost}
                 setShowCreatePost={setShowCreatePost}
               />
