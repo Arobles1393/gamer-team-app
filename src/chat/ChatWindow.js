@@ -9,14 +9,15 @@ import {
   addDoc,
   serverTimestamp,
   updateDoc,
-  doc
+  doc,
+  getDoc
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 
-export default function ChatWindow({ user, chatId }) {
+export default function ChatWindow({ user, chatId, userData }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [sending, setSending] = useState(false);
+  const [otherUser, setOtherUser] = useState(null);
   const messagesEndRef = useRef(null);
 
   // 🔥 escuchar mensajes en tiempo real
@@ -46,6 +47,41 @@ export default function ChatWindow({ user, chatId }) {
     });
   }, [messages]);
 
+  useEffect(() => {
+
+  const loadOtherUser = async () => {
+
+    if (!chatId) return;
+
+    const chatSnap = await getDoc(
+      doc(db, "chats", chatId)
+    );
+
+    if (!chatSnap.exists()) return;
+
+    const chatData = chatSnap.data();
+
+    const otherUserId =
+      chatData.participants.find(
+        (id) => id !== user.uid
+      );
+
+    if (!otherUserId) return;
+
+    const userSnap = await getDoc(
+      doc(db, "users", otherUserId)
+    );
+
+    if (userSnap.exists()) {
+      setOtherUser(userSnap.data());
+    }
+
+  };
+
+  loadOtherUser();
+
+}, [chatId, user.uid]);
+
   // 🚀 enviar mensaje
   const sendMessage = async () => {
     if (!newMessage.trim()) return;
@@ -56,6 +92,8 @@ export default function ChatWindow({ user, chatId }) {
       {
         text: newMessage,
         senderId: user.uid,
+        senderName: userData.username,
+        senderAvatar: userData.avatar || "",
         createdAt: serverTimestamp()
       }
     );
@@ -85,16 +123,65 @@ export default function ChatWindow({ user, chatId }) {
     });
   };
 
+  const getLastSeenText = (lastSeen) => {
+
+    if (!lastSeen?.seconds) {
+      return "⚫ Desconectado";
+    }
+
+    const diffMinutes = Math.floor(
+      (Date.now() - lastSeen.seconds * 1000)
+        / 60000
+    );
+
+    if (diffMinutes < 1) {
+      return "🟢 Activo ahora";
+    }
+
+    if (diffMinutes < 60) {
+      return `Hace ${diffMinutes} min`;
+    }
+
+    const hours = Math.floor(
+      diffMinutes / 60
+    );
+
+    return `Hace ${hours} h`;
+  };
+
   return (
     <div className="chat-window">
-      <div className="chat-messages">
+      <div className="chat-header">
 
+        <Avatar
+          image={otherUser?.avatar}
+          label={
+            otherUser?.username
+              ?.charAt(0)
+              ?.toUpperCase()
+          }
+          shape="circle"
+        />
+
+        <div>
+
+          <strong>
+            {otherUser?.username || "Usuario"}
+          </strong>
+
+          <small>
+            {getLastSeenText(otherUser?.lastSeen)}
+          </small>
+
+        </div>
+
+      </div>
+      <div className="chat-messages">
         {messages.length === 0 && (
           <div className="chat-empty-messages">
             Inicia la conversación 🎮
           </div>
         )}
-
         {messages.map(msg => (
           <div
             key={msg.id}
@@ -111,11 +198,8 @@ export default function ChatWindow({ user, chatId }) {
             </small>
           </div>
         ))}
-
         <div ref={messagesEndRef}></div>
-
       </div>
-
       <div className="chat-input">
         <input
           value={newMessage}
@@ -127,10 +211,11 @@ export default function ChatWindow({ user, chatId }) {
             }
           }}
         />
-
         <Button
-          icon= "pi pi-send"
-          onClick= { sendMessage }
+          icon="pi pi-send"
+          rounded
+          text
+          onClick={sendMessage}
         />
       </div>
     </div>

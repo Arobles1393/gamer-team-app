@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { auth, db } from "./firebase/config";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc, serverTimestamp } from "firebase/firestore";
 import CreatePost from "./components/CreatePost";
 import PostList from "./components/PostList";
 import Profile from "./components/Profile";
@@ -49,6 +49,34 @@ function App() {
       if (unsubscribeUserDoc) unsubscribeUserDoc();
     };
   }, []);
+
+  useEffect(() => {
+    
+    if (!user) return;
+
+    const updatePresence = async () => {
+      try {
+        await updateDoc(
+          doc(db, "users", user.uid),
+          {
+            lastSeen: serverTimestamp()
+          }
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    updatePresence();
+
+    const interval = setInterval(
+      updatePresence,
+      30000
+    );
+
+    return () => clearInterval(interval);
+
+  }, [user]);
 
   if (!user) {
     return (
@@ -204,7 +232,7 @@ function App() {
           <Route
             path="/chat"
             element={
-              <ChatPage user={user}/>
+              <ChatPage user={user} userData={userData}/>
             }
           />
           <Route
