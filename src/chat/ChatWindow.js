@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
+import { InputTextarea } from "primereact/inputtextarea";
 import {
   collection,
   query,
@@ -112,15 +113,36 @@ export default function ChatWindow({ user, chatId, userData }) {
 
   if (!chatId) return null;
 
-  const formatTime = (timestamp) => {
+  const formatMessageTime = (timestamp) => {
+
     if (!timestamp?.seconds) return "";
 
-    return new Date(
+    const date = new Date(
       timestamp.seconds * 1000
-    ).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
+    );
+
+    const today = new Date();
+
+    const diffDays = Math.floor(
+      (today - date) / 86400000
+    );
+
+    if (diffDays === 0) {
+      return date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    if (diffDays === 1) {
+      return "Ayer";
+    }
+
+    if (diffDays < 7) {
+      return `Enviado hace ${diffDays} días`;
+    }
+
+    return date.toLocaleDateString();
   };
 
   const getLastSeenText = (lastSeen) => {
@@ -129,24 +151,46 @@ export default function ChatWindow({ user, chatId, userData }) {
       return "⚫ Desconectado";
     }
 
-    const diffMinutes = Math.floor(
-      (Date.now() - lastSeen.seconds * 1000)
-        / 60000
-    );
+    const diffMs =
+      Date.now() - (lastSeen.seconds * 1000);
 
-    if (diffMinutes < 1) {
+    const minutes = Math.floor(diffMs / 60000);
+
+    if (minutes < 1) {
       return "🟢 Activo ahora";
     }
 
-    if (diffMinutes < 60) {
-      return `Hace ${diffMinutes} min`;
+    if (minutes < 60) {
+      return `Ultima conexion: Hace ${minutes} min`;
     }
 
-    const hours = Math.floor(
-      diffMinutes / 60
-    );
+    const hours = Math.floor(minutes / 60);
 
-    return `Hace ${hours} h`;
+    if (hours < 24) {
+      return `Ultima conexion: Hace ${hours} h`;
+    }
+
+    const days = Math.floor(hours / 24);
+
+    if (days < 7) {
+      return `Ultima conexion: Hace ${days} día${days > 1 ? "s" : ""}`;
+    }
+
+    const weeks = Math.floor(days / 7);
+
+    if (weeks < 4) {
+      return `Ultima conexion: Hace ${weeks} semana${weeks > 1 ? "s" : ""}`;
+    }
+
+    const months = Math.floor(days / 30);
+
+    if (months < 12) {
+      return `Ultima conexion: Hace ${months} mes${months > 1 ? "es" : ""}`;
+    }
+
+    const years = Math.floor(days / 365);
+
+    return `Ultima conexion: Hace ${years} año${years > 1 ? "s" : ""}`;
   };
 
   return (
@@ -194,19 +238,23 @@ export default function ChatWindow({ user, chatId, userData }) {
             <div>{msg.text}</div>
 
             <small>
-              {formatTime(msg.createdAt)}
+              {formatMessageTime(msg.createdAt)}
             </small>
           </div>
         ))}
         <div ref={messagesEndRef}></div>
       </div>
       <div className="chat-input">
-        <input
+        <InputTextarea
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Escribe un mensaje..."
+          autoResize
+          rows={1}
+          style={{ width: "100%" }}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
               sendMessage();
             }
           }}
