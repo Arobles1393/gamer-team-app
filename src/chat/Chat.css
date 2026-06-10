@@ -18,12 +18,25 @@
 }
 
 .chat-item {
-  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
   cursor: pointer;
+  border-radius: 10px;
 }
 
 .chat-item:hover {
   background: #2a2a2a;
+}
+
+.chat-info {
+  flex: 1;
+}
+
+.chat-info p {
+  margin: 0;
+  color: #666;
 }
 
 .chat-window {
