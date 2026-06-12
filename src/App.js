@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { auth, db } from "./firebase/config";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, onSnapshot, updateDoc, serverTimestamp } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc, serverTimestamp, collection, query, where } from "firebase/firestore";
 import CreatePost from "./components/CreatePost";
 import PostList from "./components/PostList";
 import Profile from "./components/Profile";
@@ -13,6 +13,7 @@ import { Menu } from "primereact/menu";
 import { Routes, Route, useNavigate } from "react-router-dom"
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
+import { OverlayPanel } from "primereact/overlaypanel";
 
 function App() {
   const menuRef = useRef(null);
@@ -20,6 +21,8 @@ function App() {
   const [userData, setUserData] = useState(null);
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const notificationRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -78,11 +81,41 @@ function App() {
 
   }, [user]);
 
+  useEffect(() => {
+
+    if (!user) return;
+
+    const q = query(
+      collection(db, "notifications"),
+      where("userId", "==", user.uid)
+    );
+
+    const unsubscribe =
+      onSnapshot(q, (snapshot) => {
+
+        const data =
+          snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+
+        setNotifications(data);
+
+      });
+
+    return unsubscribe;
+
+  }, [user]);
+
   if (!user) {
     return (
       <Auth/>
     );
   }
+
+  const unreadCount = notifications.filter(
+    n => !n.read
+  ).length;
 
   const handleLogout = async () => {
     try {
@@ -166,6 +199,26 @@ function App() {
             onClick={(e) => menuRef.current.toggle(e)}
             size="large"
           />
+          <div
+            style={{
+              position: "relative"
+            }}
+          >
+            <Button
+              icon="pi pi-bell"
+              rounded
+              text
+              onClick={(e) => {
+                notificationRef.current.toggle(e)
+              }}
+            />
+
+            {unreadCount > 0 && (
+              <span className="notification-badge">
+                {unreadCount}
+              </span>
+            )}
+          </div>
         </div>
       </header>
       <Dialog
@@ -243,6 +296,27 @@ function App() {
           />
         </Routes>
       </div>
+      <OverlayPanel
+        ref={notificationRef}
+        style={{ width: "350px" }}
+      >
+        {notifications.length === 0 ? (
+          <p>No tienes notificaciones</p>
+        ) : (
+          notifications.map((n) => (
+            <div
+              key={n.id}
+              style={{
+                padding: "10px",
+                borderBottom: "1px solid #eee"
+              }}
+            >
+              <strong>{n.title}</strong>
+              <p>{n.text}</p>
+            </div>
+          ))
+        )}
+      </OverlayPanel>
     </>
   );
 }

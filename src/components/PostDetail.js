@@ -146,12 +146,26 @@ export default function PostDetail({ user, userData }) {
         mediaType,
         createdAt: serverTimestamp()
       });
+      if (post.userId !== user.uid) {
+        await addDoc(collection(db, "notifications"), {
+          userId: post.userId,
+          senderId: user.uid,
+          senderName: userData.username,
+          senderAvatar: userData.avatar || null,
+          type: "comment",
+          title: "Nuevo comentario",
+          text: `${userData.username} comentó tu publicación`,
+          read: false,
+          createdAt: serverTimestamp(),
+          relatedId: id
+        });
+      }
       setComment("");
     } catch (error) {
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo eliminar la publicacion " + error + " user " + JSON.stringify(user),
+        detail: "No se pudo guardar la publicacion " + error + " user " + JSON.stringify(user),
         life: 3000
       });
       console.error("Error al eliminar:", error);
@@ -211,6 +225,21 @@ export default function PostDetail({ user, userData }) {
           createdAt: serverTimestamp()
         }
       );
+
+      if (post.userId !== user.uid) {
+        await addDoc(collection(db, "notifications"), {
+          userId: post.userId,
+          senderId: user.uid,
+          senderName: userData.username,
+          senderAvatar: userData.avatar || null,
+          type: "interested",
+          title: "Nuevo interesado",
+          text: `${userData.username} esta interesado en tu partida`,
+          read: false,
+          createdAt: serverTimestamp(),
+          relatedId: id
+        });
+      }
 
     } catch (error) {
 

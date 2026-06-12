@@ -19,6 +19,7 @@ export default function ChatWindow({ user, chatId, userData }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [otherUser, setOtherUser] = useState(null);
+  const [idOtherUser, setIdOtherUser] = useState(null);
   const messagesEndRef = useRef(null);
 
   // 🔥 escuchar mensajes en tiempo real
@@ -67,6 +68,8 @@ export default function ChatWindow({ user, chatId, userData }) {
         (id) => id !== user.uid
       );
 
+    setIdOtherUser(otherUserId);
+
     if (!otherUserId) return;
 
     const userSnap = await getDoc(
@@ -98,6 +101,16 @@ export default function ChatWindow({ user, chatId, userData }) {
         createdAt: serverTimestamp()
       }
     );
+
+    await addDoc(collection(db, "notifications"), {
+      userId: idOtherUser,
+      type: "message",
+      title: "Nuevo mensaje",
+      text: `${userData.username} te envió un mensaje`,
+      read: false,
+      createdAt: serverTimestamp(),
+      relatedId: chatId
+    });
 
     // 🔥 actualizar metadata del chat
     await updateDoc(

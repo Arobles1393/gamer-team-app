@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { db } from "../firebase/config";
-import { collection, onSnapshot, deleteDoc, doc, query, where, updateDoc, arrayUnion, addDoc } from "firebase/firestore";
+import { collection, onSnapshot, deleteDoc, doc, query, where, updateDoc, arrayUnion, addDoc, serverTimestamp } from "firebase/firestore";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
@@ -195,6 +195,18 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
           createdAt: new Date()
         }
       );
+      await addDoc(collection(db, "notifications"), {
+        userId: post.userId,
+        senderId: user.uid,
+        senderName: userData.username,
+        senderAvatar: userData.avatar || null,
+        type: "interested",
+        title: "Nuevo interesado",
+        text: `${userData.username} esta interesado en tu partida`,
+        read: false,
+        createdAt: serverTimestamp(),
+        relatedId: post.id
+      });
     } catch (error) {
       toast.current.show({
         severity: "error",
