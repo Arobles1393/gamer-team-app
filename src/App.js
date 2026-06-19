@@ -7,6 +7,7 @@ import PostList from "./components/PostList";
 import Profile from "./components/Profile";
 import ChatPage from "./chat/ChatPage";
 import PostDetail from "./components/PostDetail";
+import Notifications from "./components/Notifications";
 import { Avatar } from "primereact/avatar";
 import Auth from "./components/Auth";
 import { Menu } from "primereact/menu";
@@ -311,7 +312,7 @@ function App() {
           />
           <Route
             path="/notifications"
-            //element={<NotificationsPage user={user} />}
+            element={<Notifications user={user} />}
           />
         </Routes>
       </div>
