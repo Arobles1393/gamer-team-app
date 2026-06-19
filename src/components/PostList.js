@@ -275,7 +275,7 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
           return(
             <Card key={post.id}
               className="rawg-card"
-              onClick={() => navigate(`/post/${post.id}`, { state: post })}
+              onClick={() => navigate(`/post/${post.id}`)}
             >
               <div className="rawg-image-container">
                 {

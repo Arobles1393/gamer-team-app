@@ -1,4 +1,4 @@
-import { useLocation, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
@@ -8,7 +8,6 @@ import { platformIcons } from "../utils/platformIcons";
 import UserProfile from "./UserProfile";
 import { Dialog } from "primereact/dialog";
 import { createOrGetChat } from "../services/chatService";
-import { useNavigate } from "react-router-dom";
 import {
   collection,
   addDoc,
@@ -18,7 +17,8 @@ import {
   onSnapshot,
   serverTimestamp,
   deleteDoc,
-  doc
+  doc,
+  getDoc
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 import {
@@ -29,8 +29,8 @@ import {
 } from "firebase/storage";
 
 export default function PostDetail({ user, userData }) {
-  const { state: post } = useLocation();
   const { id } = useParams();
+  const [post, setPost] = useState(null);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [file, setFile] = useState(null);
@@ -114,6 +114,31 @@ export default function PostDetail({ user, userData }) {
     return () => unsubscribe();
 
   }, [id, user]);
+
+  useEffect(() => {
+
+    const loadPost = async () => {
+      const postRef = doc(db, "posts", id);
+      const postSnap = await getDoc(postRef);
+
+      if (!postSnap.exists()) {
+        navigate("/");
+        return;
+      }
+
+      setPost({
+        id: postSnap.id,
+        ...postSnap.data()
+      });
+    };
+
+    loadPost();
+
+  }, [id]);
+
+  if (!post) {
+    return <div>Cargando...</div>;
+  }
 
   const handlePublish = async () => {
     if (!comment.trim()) return;

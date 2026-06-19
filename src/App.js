@@ -117,6 +117,19 @@ function App() {
     n => !n.read
   ).length;
 
+  const markAsRead = async (notificationId) => {
+    try {
+      await updateDoc(
+        doc(db, "notifications", notificationId),
+        {
+          read: true
+        }
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -309,6 +322,19 @@ function App() {
               style={{
                 padding: "10px",
                 borderBottom: "1px solid #eee"
+              }}
+              onClick={async () => {
+                await markAsRead(n.id);
+                if (n.type === "comment") {
+                  navigate(`/post/${n.relatedId}`);
+                }
+                if (n.type === "message") {
+                  navigate("/chat", {
+                    state: {
+                      chatId: n.relatedId
+                    }
+                  });
+                }
               }}
             >
               <strong>{n.title}</strong>
