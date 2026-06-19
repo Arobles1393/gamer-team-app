@@ -193,6 +193,26 @@ function App() {
           </h2>
         </div>
         <div className="header-right">
+          <div
+            style={{
+              position: "relative"
+            }}
+          >
+            <Button
+              icon="pi pi-bell"
+              rounded
+              text
+              onClick={(e) => {
+                notificationRef.current.toggle(e)
+              }}
+            />
+
+            {unreadCount > 0 && (
+              <span className="notification-badge">
+                {unreadCount}
+              </span>
+            )}
+          </div>
           <Button
             label="Publicar"
             icon="pi pi-plus"
@@ -215,26 +235,6 @@ function App() {
             onClick={(e) => menuRef.current.toggle(e)}
             size="large"
           />
-          <div
-            style={{
-              position: "relative"
-            }}
-          >
-            <Button
-              icon="pi pi-bell"
-              rounded
-              text
-              onClick={(e) => {
-                notificationRef.current.toggle(e)
-              }}
-            />
-
-            {unreadCount > 0 && (
-              <span className="notification-badge">
-                {unreadCount}
-              </span>
-            )}
-          </div>
         </div>
       </header>
       <Dialog

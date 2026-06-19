@@ -6,16 +6,20 @@ import {
   orderBy,
   onSnapshot,
   updateDoc,
-  doc
+  doc,
+  writeBatch,
+  getDocs
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase/config";
 import { Avatar } from "primereact/avatar";
 import { Card } from "primereact/card";
+import { Button } from "primereact/button";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 
 export default function Notifications({ user }) {
-
   const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,6 +40,7 @@ export default function Notifications({ user }) {
       }));
 
       setNotifications(data);
+      setLoading(false);
 
     });
 
@@ -71,65 +76,158 @@ export default function Notifications({ user }) {
 
   };
 
+  const markAllAsRead = async () => {
+
+    const q = query(
+      collection(db, "notifications"),
+      where("userId", "==", user.uid),
+      where("read", "==", false)
+    );
+
+    const snapshot = await getDocs(q);
+
+    const batch = writeBatch(db);
+
+    snapshot.forEach((docSnap) => {
+
+      batch.update(docSnap.ref, {
+        read: true
+      });
+
+    });
+
+    await batch.commit();
+
+    setNotifications(prev =>
+      prev.map(notification => ({
+        ...notification,
+        read: true
+      }))
+    );
+
+  };
+
+  const deleteAllNotifications = async () => {
+
+    const q = query(
+      collection(db, "notifications"),
+      where("userId", "==", user.uid),
+      orderBy("createdAt", "desc")
+    );
+
+    const snapshot = await getDocs(q);
+
+    const batch = writeBatch(db);
+
+    snapshot.forEach((docSnap) => {
+
+      batch.delete(docSnap.ref);
+
+    });
+
+    await batch.commit();
+
+    setNotifications([]);
+
+  };
+
+  const confirmDeleteAll = () => {
+
+    confirmDialog({
+      message:
+        "¿Eliminar todas las notificaciones?",
+      header: "Confirmar",
+      icon: "pi pi-exclamation-triangle",
+      accept: deleteAllNotifications
+    });
+
+  };
+
   return (
     <div>
       <h2>Notificaciones</h2>
 
-      {notifications.length === 0 && (
+      {loading ? (
+        <p>Cargando...</p>
+      ) : notifications.length === 0 ? (
         <p>No tienes notificaciones</p>
-      )}
-
-      {notifications.map((notification) => (
-
-        <Card
-          key={notification.id}
-          style={{
-            marginBottom: "1rem",
-            cursor: "pointer",
-            opacity: notification.read ? 0.7 : 1
-          }}
-          onClick={() =>
-            handleNotificationClick(notification)
-          }
-        >
-
+      ) : (
+        <>
           <div
             style={{
               display: "flex",
               gap: "1rem",
-              alignItems: "center"
+              marginBottom: "1rem"
             }}
           >
-
-            <Avatar
-              image={notification.senderAvatar}
-              label={
-                notification.senderName?.charAt(0)
-              }
-              shape="circle"
+            <Button
+              label="Marcar todas como leídas"
+              icon="pi pi-check"
+              outlined
+              onClick={markAllAsRead}
             />
 
-            <div>
-              <strong>
-                {notification.title}
-              </strong>
-
-              <p style={{ margin: 0 }}>
-                {notification.text}
-              </p>
-
-              <small>
-                {formatDate(
-                  notification.createdAt
-                )}
-              </small>
-            </div>
-
+            <Button
+              label="Eliminar todas"
+              icon="pi pi-trash"
+              severity="danger"
+              outlined
+              onClick={confirmDeleteAll}
+            />
           </div>
+          {notifications.map((notification) => (
+            <Card
+              key={notification.id}
+              style={{
+                marginBottom: "1rem",
+                cursor: "pointer",
+                opacity: notification.read ? 0.7 : 1
+              }}
+              onClick={() =>
+                handleNotificationClick(notification)
+              }
+            >
 
-        </Card>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "1rem",
+                  alignItems: "center"
+                }}
+              >
 
-      ))}
+                <Avatar
+                  image={notification.senderAvatar}
+                  label={
+                    notification.senderName?.charAt(0)
+                  }
+                  shape="circle"
+                />
+
+                <div>
+                  <strong>
+                    {notification.title}
+                  </strong>
+
+                  <p style={{ margin: 0 }}>
+                    {notification.text}
+                  </p>
+
+                  <small>
+                    {formatDate(
+                      notification.createdAt
+                    )}
+                  </small>
+                </div>
+
+              </div>
+
+            </Card>
+
+          ))}
+        </>
+      )}
+      <ConfirmDialog />
     </div>
   );
 }
