@@ -9,12 +9,16 @@ export const createOrGetChat = async (user1, user2) => {
 
   if (!chatSnap.exists()){
 
+    const user1Snap = await getDoc(
+      doc(db, "users", user1.uid)
+    );
+
     const user2Snap = await getDoc(
       doc(db, "users", user2.uid)
     );
 
-    const user2Data =
-      user2Snap.data();
+    const user1Data = user1Snap.data();
+    const user2Data = user2Snap.data();
 
     await setDoc(chatRef, {
       participants: [
@@ -25,11 +29,12 @@ export const createOrGetChat = async (user1, user2) => {
       participantInfo: {
         [user1.uid]: {
           username:
-            user1.displayName ||
+            user1Data?.username ||
             "Usuario",
           avatar:
-            user1.photoURL || ""
+            user1Data?.avatar || ""
         },
+
         [user2.uid]: {
           username:
             user2Data?.username ||

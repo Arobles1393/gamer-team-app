@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { auth, db } from "./firebase/config";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, onSnapshot, updateDoc, serverTimestamp, collection, query, where } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc, serverTimestamp, collection, query, where, orderBy, limit } from "firebase/firestore";
 import CreatePost from "./components/CreatePost";
 import PostList from "./components/PostList";
 import Profile from "./components/Profile";
@@ -87,7 +87,9 @@ function App() {
 
     const q = query(
       collection(db, "notifications"),
-      where("userId", "==", user.uid)
+      where("userId", "==", user.uid),
+      //orderBy("createdAt", "desc"),
+      //limit(10)
     );
 
     const unsubscribe =
@@ -307,6 +309,10 @@ function App() {
               <PostDetail user={user} userData={userData}/>
             }
           />
+          <Route
+            path="/notifications"
+            //element={<NotificationsPage user={user} />}
+          />
         </Routes>
       </div>
       <OverlayPanel
@@ -316,31 +322,62 @@ function App() {
         {notifications.length === 0 ? (
           <p>No tienes notificaciones</p>
         ) : (
-          notifications.map((n) => (
+          <>
             <div
-              key={n.id}
               style={{
-                padding: "10px",
-                borderBottom: "1px solid #eee"
-              }}
-              onClick={async () => {
-                await markAsRead(n.id);
-                if (n.type === "comment") {
-                  navigate(`/post/${n.relatedId}`);
-                }
-                if (n.type === "message") {
-                  navigate("/chat", {
-                    state: {
-                      chatId: n.relatedId
-                    }
-                  });
-                }
+                maxHeight: "400px",
+                overflowY: "auto"
               }}
             >
-              <strong>{n.title}</strong>
-              <p>{n.text}</p>
+              {notifications.map((n) => (
+                <div
+                  key={n.id}
+                  style={{
+                    padding: "10px",
+                    borderBottom: "1px solid #eee",
+                    cursor: "pointer"
+                  }}
+                  onClick={async () => {
+                    await markAsRead(n.id);
+                    notificationRef.current?.hide();
+                    if (n.type === "comment") {
+                      navigate(`/post/${n.relatedId}`);
+                    }
+                    if (n.type === "message") {
+                      navigate("/chat", {
+                        state: {
+                          chatId: n.relatedId
+                        }
+                      });
+                    }
+                    if (n.type === "interested") {
+                      navigate(`/post/${n.relatedId}`);
+                    }
+                  }}
+                >
+                  <strong>{n.title}</strong>
+                  <p>{n.text}</p>
+                </div>
+              ))}
             </div>
-          ))
+
+            <div
+              style={{
+                paddingTop: "10px",
+                textAlign: "center"
+              }}
+            >
+              <Button
+                label="Ver todas"
+                text
+                icon="pi pi-list"
+                onClick={() => {
+                  notificationRef.current?.hide();
+                  navigate("/notifications");
+                }}
+              />
+            </div>
+          </>
         )}
       </OverlayPanel>
     </>
