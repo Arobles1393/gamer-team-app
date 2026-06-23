@@ -1,5 +1,11 @@
 const functions = require("firebase-functions");
 const axios = require("axios");
+const admin = require("firebase-admin");
+const { onRequest } = require("firebase-functions/v2/https");
+const Parser = require("rss-parser");
+admin.initializeApp();
+const db = admin.firestore();
+const parser = new Parser();
 require("dotenv").config();
 
 exports.getSteamStats = functions.https.onCall(async (request) => {
@@ -309,3 +315,78 @@ exports.getGamePortada = functions.https.onCall(async (request) => {
     );
   }
 });
+
+exports.syncGamingNews = onRequest(
+  async (req, res) => {
+    try {
+      const feeds = [
+        {
+          source: "IGN",
+          url: "https://feeds.ign.com/ign/all"
+        },
+        {
+          source: "GameSpot",
+          url: "https://www.gamespot.com/feeds/mashup/"
+        }
+      ];
+
+      let inserted = 0;
+
+      for (const feed of feeds) {
+
+        const rss =
+          await parser.parseURL(
+            feed.url
+          );
+
+        for (const item of rss.items) {
+
+          const id = Buffer
+            .from(item.link)
+            .toString("base64")
+            .replace(/\//g, "_");
+
+          const docRef =
+            db.collection(
+              "gaming_news"
+            ).doc(id);
+
+          const docSnap =
+            await docRef.get();
+
+          if (!docSnap.exists) {
+
+            await docRef.set({
+              title: item.title || "",
+              description: item.contentSnippet || "",
+              link: item.link || "",
+              image: item.enclosure?.url || "",
+              source: feed.source,
+              publishedAt: item.pubDate
+                ? new Date(item.pubDate)
+                : new Date(),
+              createdAt: new Date()
+            });
+
+            inserted++;
+          }
+        }
+      }
+
+      res.json({
+        succes: true,
+        inserted
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+      res.status(500).json({
+        error:
+          error.message
+      });
+
+    }
+  }
+);

@@ -8,6 +8,7 @@ import Profile from "./components/Profile";
 import ChatPage from "./chat/ChatPage";
 import PostDetail from "./components/PostDetail";
 import Notifications from "./components/Notifications";
+import GamingNews from "./gamingNews/GamingNews"
 import { Avatar } from "primereact/avatar";
 import Auth from "./components/Auth";
 import { Menu } from "primereact/menu";
@@ -171,6 +172,13 @@ function App() {
         navigate("/chat");
       }
     },
+    {
+      label: "Noticias Gamer",
+      icon: "pi pi-megaphone",
+      command: () => {
+        navigate("/news");
+      }
+    },
     /*{ separator: true },
     {
       label: "Configuración",
@@ -313,6 +321,10 @@ function App() {
           <Route
             path="/notifications"
             element={<Notifications user={user} />}
+          />
+          <Route
+            path="/news"
+            element={<GamingNews />}
           />
         </Routes>
       </div>
