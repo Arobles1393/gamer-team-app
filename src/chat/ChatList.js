@@ -12,7 +12,7 @@ export default function ChatList({ user, setActiveChat }) {
     const q = query(
       collection(db, "chats"),
       where("participants", "array-contains", user.uid),
-      //orderBy("lastMessageAt","desc")
+      orderBy("lastMessageAt","desc")
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {

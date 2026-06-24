@@ -356,11 +356,39 @@ exports.syncGamingNews = onRequest(
 
           if (!docSnap.exists) {
 
+            let image = "";
+
+            if (item.enclosure?.url) {
+              image = item.enclosure.url;
+            }
+
+            if (!image && item.thumbnail) {
+              image = item.thumbnail;
+            }
+
+            if (!image && item["media:thumbnail"]?.$?.url) {
+              image = item["media:thumbnail"].$?.url;
+            }
+
+            if (!image && item["content:encoded"]) {
+              const match =
+                item["content:encoded"].match(
+                  /<img[^>]+src="([^"]+)"/i
+                );
+
+              if (match) {
+                image = match[1];
+              }
+            }
+
             await docRef.set({
               title: item.title || "",
-              description: item.contentSnippet || "",
+              description:
+                item.contentSnippet ||
+                item["content:encodedSnippet"] ||
+                "",
               link: item.link || "",
-              image: item.enclosure?.url || "",
+              image,
               source: feed.source,
               publishedAt: item.pubDate
                 ? new Date(item.pubDate)
