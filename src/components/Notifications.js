@@ -8,7 +8,9 @@ import {
   updateDoc,
   doc,
   writeBatch,
-  getDocs
+  getDocs,
+  addDoc,
+  serverTimestamp
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase/config";
@@ -17,7 +19,7 @@ import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 
-export default function Notifications({ user }) {
+export default function Notifications({ user, userData }) {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -47,6 +49,127 @@ export default function Notifications({ user }) {
     return () => unsubscribe();
 
   }, [user]);
+
+  const acceptFriendRequest = async (
+    notification
+  ) => {
+
+    await addDoc(
+      collection(db, "friends"),
+      {
+        users: [
+          notification.senderId,
+          notification.userId
+        ],
+        createdAt:
+          serverTimestamp()
+      }
+    );
+
+    // actualizar solicitud
+
+    const q = query(
+      collection(db, "friend_requests"),
+      where(
+        "senderId",
+        "==",
+        notification.senderId
+      ),
+      where(
+        "receiverId",
+        "==",
+        notification.userId
+      ),
+      where(
+        "status",
+        "==",
+        "pending"
+      )
+    );
+
+    const snapshot =
+      await getDocs(q);
+
+    if (!snapshot.empty) {
+
+      await updateDoc(
+        snapshot.docs[0].ref,
+        {
+          status: "accepted"
+        }
+      );
+
+      await updateDoc(
+        doc(db, "notifications", notification.id),
+        {
+          status: "accepted",
+          read: true
+        }
+      );
+
+      await addDoc(
+        collection(db, "notifications"),
+        {
+          userId: notification.senderId,
+          senderId: user.uid,
+          senderName: userData.username,
+          senderAvatar: userData.avatar || null,
+          type: "friend_accepted",
+          title: "Solicitud aceptada",
+          text: `${userData.username} aceptó tu solicitud de amistad`,
+          read: false,
+          createdAt: serverTimestamp()
+        }
+      );
+
+    }
+  };
+
+  const rejectFriendRequest = async (
+    notification
+  ) => {
+
+    const q = query(
+      collection(db, "friend_requests"),
+      where(
+        "senderId",
+        "==",
+        notification.senderId
+      ),
+      where(
+        "receiverId",
+        "==",
+        notification.userId
+      ),
+      where(
+        "status",
+        "==",
+        "pending"
+      )
+    );
+
+    const snapshot =
+      await getDocs(q);
+
+    if (!snapshot.empty) {
+
+      await updateDoc(
+        snapshot.docs[0].ref,
+        {
+          status: "rejected"
+        }
+      );
+
+      await updateDoc(
+        doc(db, "notifications", notification.id),
+        {
+          status: "rejected",
+          read: true
+        }
+      );
+
+    }
+  };
 
   const handleNotificationClick = async (notification) => {
 
@@ -191,35 +314,89 @@ export default function Notifications({ user }) {
               <div
                 style={{
                   display: "flex",
-                  gap: "1rem",
-                  alignItems: "center"
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: "1rem"
                 }}
               >
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "1rem",
+                    alignItems: "center",
+                    flex: 1
+                  }}
+                >
+                  <Avatar
+                    image={notification.senderAvatar}
+                    label={
+                      notification.senderName?.charAt(0)
+                    }
+                    shape="circle"
+                  />
 
-                <Avatar
-                  image={notification.senderAvatar}
-                  label={
-                    notification.senderName?.charAt(0)
-                  }
-                  shape="circle"
-                />
+                  <div>
+                    <strong>
+                      {notification.title}
+                    </strong>
 
-                <div>
-                  <strong>
-                    {notification.title}
-                  </strong>
+                    <p style={{ margin: 0 }}>
+                      {notification.text}
+                    </p>
 
-                  <p style={{ margin: 0 }}>
-                    {notification.text}
-                  </p>
-
-                  <small>
-                    {formatDate(
-                      notification.createdAt
-                    )}
-                  </small>
+                    <small>
+                      {formatDate(
+                        notification.createdAt
+                      )}
+                    </small>
+                  </div>
                 </div>
 
+                {notification.type === "friend_request" &&
+                notification.status !== "accepted" &&
+                notification.status !== "rejected" && (
+                  <>
+                    <Button
+                      label="Aceptar"
+                      icon="pi pi-check"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        acceptFriendRequest(notification);
+                      }}
+                    />
+
+                    <Button
+                      label="Rechazar"
+                      icon="pi pi-times"
+                      severity="danger"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        rejectFriendRequest(notification);
+                      }}
+                    />
+                  </>
+                )}
+                {notification.status === "accepted" && (
+                  <span
+                    style={{
+                      color: "green",
+                      fontWeight: "bold"
+                    }}
+                  >
+                    ✅ Aceptada
+                  </span>
+                )}
+
+                {notification.status === "rejected" && (
+                  <span
+                    style={{
+                      color: "red",
+                      fontWeight: "bold"
+                    }}
+                  >
+                    ❌ Rechazada
+                  </span>
+                )}
               </div>
 
             </Card>

@@ -8,6 +8,7 @@ import { platformIcons } from "../utils/platformIcons";
 import UserProfile from "./UserProfile";
 import { Dialog } from "primereact/dialog";
 import { createOrGetChat } from "../services/chatService";
+import { sendFriendRequest } from "../services/friendService";
 import {
   collection,
   addDoc,
@@ -18,7 +19,8 @@ import {
   serverTimestamp,
   deleteDoc,
   doc,
-  getDoc
+  getDoc,
+  getDocs
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 import {
@@ -39,6 +41,7 @@ export default function PostDetail({ user, userData }) {
   const [interestDocId, setInterestDocId] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
+  const [friendStatus, setFriendStatus] = useState("none");
   const storage = getStorage();
   const fileInputRef = useRef(null);
   const toast = useRef(null);
@@ -136,9 +139,63 @@ export default function PostDetail({ user, userData }) {
 
   }, [id]);
 
+  useEffect(() => {
+    if (!user || !selectedUserId) return;
+
+    checkFriendStatus();
+  }, [user, selectedUserId]);
+
   if (!post) {
     return <div>Cargando...</div>;
   }
+
+  const checkFriendStatus = async () => {
+
+    // Revisar amistad
+
+    const friendsQuery = query(
+      collection(db, "friends"),
+      where("users", "array-contains", user.uid)
+    );
+
+    const friendsSnap =
+      await getDocs(friendsQuery);
+
+    const isFriend =
+      friendsSnap.docs.some(doc =>
+        doc.data().users.includes(
+          selectedUserId
+        )
+      );
+
+    if (isFriend) {
+      setFriendStatus("friends");
+      return;
+    }
+
+    // Revisar solicitud pendiente
+
+    const requestQuery = query(
+      collection(db, "friend_requests"),
+      where("senderId", "==", user.uid),
+      where(
+        "receiverId",
+        "==",
+        selectedUserId
+      ),
+      where("status", "==", "pending")
+    );
+
+    const requestSnap =
+      await getDocs(requestQuery);
+
+    if (!requestSnap.empty) {
+      setFriendStatus("pending");
+      return;
+    }
+
+    setFriendStatus("none");
+  };
 
   const handlePublish = async () => {
     if (!comment.trim()) return;
@@ -518,11 +575,46 @@ export default function PostDetail({ user, userData }) {
           <div className="profile-container">
             <UserProfile userId={selectedUserId} user={user} />
             {user.uid !== selectedUserId && (
-              <Button
-                icon="pi pi-comments"
-                className="chat-fab p-button-rounded p-button-success"
-                onClick={handleChat}
-              />
+              <>
+                {friendStatus === "none" && (
+                  <Button
+                    label="Agregar amigo"
+                    icon="pi pi-user-plus"
+                    onClick={async () => {
+
+                      await sendFriendRequest(
+                        user,
+                        userData,
+                        selectedUserId
+                      );
+
+                      setFriendStatus(
+                        "pending"
+                      );
+                    }}
+                  />
+                )}
+                {friendStatus === "pending" && (
+                  <Button
+                    label="Solicitud enviada"
+                    icon="pi pi-clock"
+                    disabled
+                  />
+                )}
+                {friendStatus === "friends" && (
+                  <Button
+                    label="Amigos"
+                    icon="pi pi-check"
+                    severity="success"
+                    disabled
+                  />
+                )}
+                <Button
+                  icon="pi pi-comments"
+                  className="chat-fab p-button-rounded p-button-success"
+                  onClick={handleChat}
+                />
+              </>
             )}
           </div>
         )}

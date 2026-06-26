@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { db } from "../firebase/config";
-import { collection, onSnapshot, deleteDoc, doc, query, where, updateDoc, arrayUnion, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, onSnapshot, deleteDoc, doc, query, where, updateDoc, arrayUnion, addDoc, serverTimestamp, getDocs } from "firebase/firestore";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
@@ -12,6 +12,7 @@ import { Toast } from "primereact/toast";
 import { useNavigate } from "react-router-dom";
 import { createOrGetChat } from "../services/chatService";
 import { platformIcons } from "../utils/platformIcons";
+import { sendFriendRequest } from "../services/friendService";
 
 export default function PostList({ user, userData, setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
   const [posts, setPosts] = useState([]);
@@ -22,6 +23,7 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
   const [filterPlatform, setFilterPlatform] = useState(null);
   const [title, setTitle] = useState("");
   const [interestedPosts, setInterestedPosts] = useState([]);
+  const [friendStatus, setFriendStatus] = useState("none");
   const toast = useRef(null);
   const navigate = useNavigate();
   const gameOptions = [
@@ -90,6 +92,60 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
     });
     return () => unsubscribe();
   }, [user]);
+
+  useEffect(() => {
+    if (!user || !selectedUserId) return;
+
+    checkFriendStatus();
+  }, [user, selectedUserId]);
+
+  const checkFriendStatus = async () => {
+  
+    // Revisar amistad
+
+    const friendsQuery = query(
+      collection(db, "friends"),
+      where("users", "array-contains", user.uid)
+    );
+
+    const friendsSnap =
+      await getDocs(friendsQuery);
+
+    const isFriend =
+      friendsSnap.docs.some(doc =>
+        doc.data().users.includes(
+          selectedUserId
+        )
+      );
+
+    if (isFriend) {
+      setFriendStatus("friends");
+      return;
+    }
+
+    // Revisar solicitud pendiente
+
+    const requestQuery = query(
+      collection(db, "friend_requests"),
+      where("senderId", "==", user.uid),
+      where(
+        "receiverId",
+        "==",
+        selectedUserId
+      ),
+      where("status", "==", "pending")
+    );
+
+    const requestSnap =
+      await getDocs(requestQuery);
+
+    if (!requestSnap.empty) {
+      setFriendStatus("pending");
+      return;
+    }
+
+    setFriendStatus("none");
+  };
 
   const handleJoin = async(post) => {
     const ref = doc(db, "posts", post.id);
@@ -411,11 +467,46 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
           <div className="profile-container">
             <UserProfile userId={selectedUserId} user={user} />
             {user.uid !== selectedUserId && (
-              <Button
-                icon="pi pi-comments"
-                className="chat-fab p-button-rounded p-button-success"
-                onClick={handleChat}
-              />
+              <>
+                {friendStatus === "none" && (
+                  <Button
+                    label="Agregar amigo"
+                    icon="pi pi-user-plus"
+                    onClick={async () => {
+
+                      await sendFriendRequest(
+                        user,
+                        userData,
+                        selectedUserId
+                      );
+
+                      setFriendStatus(
+                        "pending"
+                      );
+                    }}
+                  />
+                )}
+                {friendStatus === "pending" && (
+                  <Button
+                    label="Solicitud enviada"
+                    icon="pi pi-clock"
+                    disabled
+                  />
+                )}
+                {friendStatus === "friends" && (
+                  <Button
+                    label="Amigos"
+                    icon="pi pi-check"
+                    severity="success"
+                    disabled
+                  />
+                )}
+                <Button
+                  icon="pi pi-comments"
+                  className="chat-fab p-button-rounded p-button-success"
+                  onClick={handleChat}
+                />
+              </>
             )}
           </div>
         )}

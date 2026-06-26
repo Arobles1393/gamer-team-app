@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { auth, db } from "./firebase/config";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, onSnapshot, updateDoc, serverTimestamp, collection, query, where, orderBy, limit } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc, serverTimestamp, collection, query, where, orderBy, limit, addDoc, getDocs } from "firebase/firestore";
 import CreatePost from "./components/CreatePost";
 import PostList from "./components/PostList";
 import Profile from "./components/Profile";
@@ -192,6 +192,127 @@ function App() {
     }
   ];
 
+  const acceptFriendRequest = async (
+    notification
+  ) => {
+
+    await addDoc(
+      collection(db, "friends"),
+      {
+        users: [
+          notification.senderId,
+          notification.userId
+        ],
+        createdAt:
+          serverTimestamp()
+      }
+    );
+
+    // actualizar solicitud
+
+    const q = query(
+      collection(db, "friend_requests"),
+      where(
+        "senderId",
+        "==",
+        notification.senderId
+      ),
+      where(
+        "receiverId",
+        "==",
+        notification.userId
+      ),
+      where(
+        "status",
+        "==",
+        "pending"
+      )
+    );
+
+    const snapshot =
+      await getDocs(q);
+
+    if (!snapshot.empty) {
+
+      await updateDoc(
+        snapshot.docs[0].ref,
+        {
+          status: "accepted"
+        }
+      );
+
+      await updateDoc(
+        doc(db, "notifications", notification.id),
+        {
+          status: "accepted",
+          read: true
+        }
+      );
+
+      await addDoc(
+        collection(db, "notifications"),
+        {
+          userId: notification.senderId,
+          senderId: user.uid,
+          senderName: userData.username,
+          senderAvatar: userData.avatar || null,
+          type: "friend_accepted",
+          title: "Solicitud aceptada",
+          text: `${userData.username} aceptó tu solicitud de amistad`,
+          read: false,
+          createdAt: serverTimestamp()
+        }
+      );
+
+    }
+  };
+
+  const rejectFriendRequest = async (
+    notification
+  ) => {
+
+    const q = query(
+      collection(db, "friend_requests"),
+      where(
+        "senderId",
+        "==",
+        notification.senderId
+      ),
+      where(
+        "receiverId",
+        "==",
+        notification.userId
+      ),
+      where(
+        "status",
+        "==",
+        "pending"
+      )
+    );
+
+    const snapshot =
+      await getDocs(q);
+
+    if (!snapshot.empty) {
+
+      await updateDoc(
+        snapshot.docs[0].ref,
+        {
+          status: "rejected"
+        }
+      );
+
+      await updateDoc(
+        doc(db, "notifications", notification.id),
+        {
+          status: "rejected",
+          read: true
+        }
+      );
+
+    }
+  };
+
   return (
     <>
       <header className="app-header">
@@ -320,7 +441,7 @@ function App() {
           />
           <Route
             path="/notifications"
-            element={<Notifications user={user} />}
+            element={<Notifications user={user} userData={userData}/>}
           />
           <Route
             path="/news"
@@ -351,6 +472,9 @@ function App() {
                     cursor: "pointer"
                   }}
                   onClick={async () => {
+                    if (n.type === "friend_request"){
+                      return;
+                    }
                     await markAsRead(n.id);
                     notificationRef.current?.hide();
                     if (n.type === "comment") {
@@ -368,8 +492,89 @@ function App() {
                     }
                   }}
                 >
-                  <strong>{n.title}</strong>
-                  <p>{n.text}</p>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: ".5rem"
+                    }}
+                  >
+                    <div style={{ flex: 1 }}>
+                      <strong>{n.title}</strong>
+                      <p
+                        style={{
+                          margin: "4px 0"
+                        }}
+                      >
+                        {n.text}
+                      </p>
+                    </div>
+
+                    {n.type === "friend_request" &&
+                    n.status !== "accepted" &&
+                    n.status !== "rejected" && (
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: ".25rem"
+                        }}
+                      >
+                        <Button
+                          icon="pi pi-check"
+                          rounded
+                          text
+                          severity="success"
+                          onClick={async (
+                            e
+                          ) => {
+                            e.stopPropagation();
+
+                            await acceptFriendRequest(
+                              n
+                            );
+                          }}
+                        />
+
+                        <Button
+                          icon="pi pi-times"
+                          rounded
+                          text
+                          severity="danger"
+                          onClick={async (
+                            e
+                          ) => {
+                            e.stopPropagation();
+
+                            await rejectFriendRequest(
+                              n
+                            );
+                          }}
+                        />
+                      </div>
+                    )}
+                    {n.status === "accepted" && (
+                      <span
+                        style={{
+                          color: "green",
+                          fontWeight: "bold"
+                        }}
+                      >
+                        ✅ Aceptada
+                      </span>
+                    )}
+
+                    {n.status === "rejected" && (
+                      <span
+                        style={{
+                          color: "red",
+                          fontWeight: "bold"
+                        }}
+                      >
+                        ❌ Rechazada
+                      </span>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
