@@ -8,7 +8,8 @@ import Profile from "./components/Profile";
 import ChatPage from "./chat/ChatPage";
 import PostDetail from "./components/PostDetail";
 import Notifications from "./components/Notifications";
-import GamingNews from "./gamingNews/GamingNews"
+import GamingNews from "./gamingNews/GamingNews";
+import FindPlayers from "./components/FindPlayers";
 import { Avatar } from "primereact/avatar";
 import Auth from "./components/Auth";
 import { Menu } from "primereact/menu";
@@ -170,6 +171,13 @@ function App() {
       icon: "pi pi-comments",
       command: () => {
         navigate("/chat");
+      }
+    },
+    {
+      label: "Buscar jugadores",
+      icon: "pi pi-comments",
+      command: () => {
+        navigate("/findPlayers");
       }
     },
     {
@@ -442,6 +450,14 @@ function App() {
           <Route
             path="/notifications"
             element={<Notifications user={user} userData={userData}/>}
+          />
+          <Route
+            path="/friends"
+            element={<Notifications user={user} userData={userData}/>}
+          />
+          <Route
+            path="/findPlayers"
+            element={<FindPlayers user={user} userData={userData}/>}
           />
           <Route
             path="/news"
