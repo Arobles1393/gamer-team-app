@@ -10,6 +10,7 @@ import PostDetail from "./components/PostDetail";
 import Notifications from "./components/Notifications";
 import GamingNews from "./gamingNews/GamingNews";
 import FindPlayers from "./components/FindPlayers";
+import Friends from "./components/Friends";
 import { Avatar } from "primereact/avatar";
 import Auth from "./components/Auth";
 import { Menu } from "primereact/menu";
@@ -171,6 +172,13 @@ function App() {
       icon: "pi pi-comments",
       command: () => {
         navigate("/chat");
+      }
+    },
+    {
+      label: "Amigos",
+      icon: "pi pi-comments",
+      command: () => {
+        navigate("/friends");
       }
     },
     {
@@ -453,7 +461,7 @@ function App() {
           />
           <Route
             path="/friends"
-            element={<Notifications user={user} userData={userData}/>}
+            element={<Friends user={user} userData={userData}/>}
           />
           <Route
             path="/findPlayers"
