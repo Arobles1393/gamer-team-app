@@ -40,80 +40,75 @@ export default function FindPlayers({ user, userData }) {
   }, []);
 
   useEffect(() => {
-      if (!user || !selectedUserId) return;
+    if (!user || !selectedUserId) return;
   
-      checkFriendStatus();
-    }, [user, selectedUserId]);
+    checkFriendStatus();
+  
+  }, [user, selectedUserId]);
 
-    const filteredUsers = users.filter(
-        player =>
-        player.id !== user?.uid &&
-        player.username
-            ?.toLowerCase()
-            .includes(
-                search.toLowerCase()
-            )
+  const filteredUsers = users.filter(
+    player =>
+    player.id !== user?.uid &&
+    player.username?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleChat = async () => {
+    const chatId = await createOrGetChat(user, {
+      uid: selectedUserId
+    });
+  
+    navigate("/chat", {
+      state: { chatId }
+    });
+
+    setShowProfile(false);
+  };
+
+  const checkFriendStatus = async () => {
+    
+    // Revisar amistad
+
+    const friendsQuery = query(
+      collection(db, "friends"),
+      where("users", "array-contains", user.uid)
     );
 
-    const handleChat = async () => {
-        const chatId = await createOrGetChat(user, {
-          uid: selectedUserId
-        });
-    
-        navigate("/chat", {
-          state: { chatId }
-        });
-    
-        setShowProfile(false);
-      };
+    const friendsSnap = await getDocs(friendsQuery);
 
-      const checkFriendStatus = async () => {
-        
-          // Revisar amistad
-      
-          const friendsQuery = query(
-            collection(db, "friends"),
-            where("users", "array-contains", user.uid)
-          );
-      
-          const friendsSnap =
-            await getDocs(friendsQuery);
-      
-          const isFriend =
-            friendsSnap.docs.some(doc =>
-              doc.data().users.includes(
-                selectedUserId
-              )
-            );
-      
-          if (isFriend) {
-            setFriendStatus("friends");
-            return;
-          }
-      
-          // Revisar solicitud pendiente
-      
-          const requestQuery = query(
-            collection(db, "friend_requests"),
-            where("senderId", "==", user.uid),
-            where(
-              "receiverId",
-              "==",
-              selectedUserId
-            ),
-            where("status", "==", "pending")
-          );
-      
-          const requestSnap =
-            await getDocs(requestQuery);
-      
-          if (!requestSnap.empty) {
-            setFriendStatus("pending");
-            return;
-          }
-      
-          setFriendStatus("none");
-        };
+    const isFriend =
+      friendsSnap.docs.some(doc =>
+        doc.data().users.includes(
+          selectedUserId
+        )
+      );
+
+    if (isFriend) {
+      setFriendStatus("friends");
+      return;
+    }
+
+    // Revisar solicitud pendiente
+
+    const requestQuery = query(
+      collection(db, "friend_requests"),
+      where("senderId", "==", user.uid),
+      where(
+        "receiverId",
+        "==",
+        selectedUserId
+      ),
+      where("status", "==", "pending")
+    );
+
+    const requestSnap = await getDocs(requestQuery);
+
+    if (!requestSnap.empty) {
+      setFriendStatus("pending");
+      return;
+    }
+
+    setFriendStatus("none");
+  };
 
   return (
     <div>
@@ -182,69 +177,68 @@ export default function FindPlayers({ user, userData }) {
       ))}
 
       <Dialog
-              pt={{
-                header: { style: { padding: 0 } }
-              }}
-              visible={showProfile}
-              style={{ width: "1100px" }}
-              onHide={() => {
-                setShowProfile(false);
-                setSelectedUserId(null);
-                setFriendStatus("none");
-              }}
-              breakpoints={{ "960px": "75vw", "640px": "90vw" }}
-              dismissableMask
-              draggable={false}
-            >
-              {selectedUserId && (
-                <div className="profile-container">
-                  <UserProfile userId={selectedUserId} user={user} />
-                  {user.uid !== selectedUserId && (
-                    <>
-                      {friendStatus === "none" && (
-                        <Button
-                          label="Agregar amigo"
-                          icon="pi pi-user-plus"
-                          onClick={async () => {
-      
-                            await sendFriendRequest(
-                              user,
-                              userData,
-                              selectedUserId
-                            );
-      
-                            setFriendStatus(
-                              "pending"
-                            );
-                          }}
-                        />
-                      )}
-                      {friendStatus === "pending" && (
-                        <Button
-                          label="Solicitud enviada"
-                          icon="pi pi-clock"
-                          disabled
-                        />
-                      )}
-                      {friendStatus === "friends" && (
-                        <Button
-                          label="Amigos"
-                          icon="pi pi-check"
-                          severity="success"
-                          disabled
-                        />
-                      )}
-                      <Button
-                        icon="pi pi-comments"
-                        className="chat-fab p-button-rounded p-button-success"
-                        onClick={handleChat}
-                      />
-                    </>
-                  )}
-                </div>
-              )}
-            </Dialog>
+        pt={{
+          header: { style: { padding: 0 } }
+        }}
+        visible={showProfile}
+        style={{ width: "1100px" }}
+        onHide={() => {
+          setShowProfile(false);
+          setSelectedUserId(null);
+          setFriendStatus("none");
+        }}
+        breakpoints={{ "960px": "75vw", "640px": "90vw" }}
+        dismissableMask
+        draggable={false}
+      >
+        {selectedUserId && (
+          <div className="profile-container">
+            <UserProfile userId={selectedUserId} user={user} />
+            {user.uid !== selectedUserId && (
+              <>
+                {friendStatus === "none" && (
+                  <Button
+                    label="Agregar amigo"
+                    icon="pi pi-user-plus"
+                    onClick={async () => {
+
+                      await sendFriendRequest(
+                        user,
+                        userData,
+                        selectedUserId
+                      );
+
+                      setFriendStatus(
+                        "pending"
+                      );
+                    }}
+                  />
+                )}
+                {friendStatus === "pending" && (
+                  <Button
+                    label="Solicitud enviada"
+                    icon="pi pi-clock"
+                    disabled
+                  />
+                )}
+                {friendStatus === "friends" && (
+                  <Button
+                    label="Amigos"
+                    icon="pi pi-check"
+                    severity="success"
+                    disabled
+                  />
+                )}
+                <Button
+                  icon="pi pi-comments"
+                  className="chat-fab p-button-rounded p-button-success"
+                  onClick={handleChat}
+                />
+              </>
+            )}
+          </div>
+        )}
+      </Dialog>
     </div>
   );
-
 }
