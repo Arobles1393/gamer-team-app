@@ -1,5 +1,4 @@
 import { Button } from "primereact/button";
-import { useNavigate } from "react-router-dom";
 import { Menu } from "primereact/menu";
 import { Avatar } from "primereact/avatar";
 import { useRef } from "react";
@@ -11,19 +10,20 @@ export default function AppHeader({
     unreadCount,
     items,
     onToggleNotifications,
-    onCreatePost
+    onCreatePost,
+    onHome
 }) {
     const menuRef = useRef(null);
-    const navigate = useNavigate();
+
+    const avatarLabel = userData?.avatar ? null : userData?.username?.charAt(0).toUpperCase();
+    const hasNotifications = unreadCount > 0;
 
     return(
         <header className="app-header">
             <div className="header-left">
-                <div className="header-logo">
-                    <h2 onClick={() => navigate("/")}>
-                        GamerMatch
-                    </h2>
-                </div>
+                <h2 className="header-logo" onClick={onHome}>
+                    GamerMatch
+                </h2>
             </div>
             <div className="header-right">
                 <div className="notification-container">
@@ -34,7 +34,7 @@ export default function AppHeader({
                     onClick={onToggleNotifications}
                 />
 
-                {unreadCount > 0 && (
+                {hasNotifications && (
                     <span className="notification-badge">
                     {unreadCount}
                     </span>
@@ -47,16 +47,12 @@ export default function AppHeader({
                 onClick={onCreatePost}
                 />
                 <span className="username">
-                {userData?.username || user.email}
+                {userData?.username ?? user?.email}
                 </span>
                 <Menu model={items} popup ref={menuRef} />
                 <Avatar
                 image={userData?.avatar}
-                label={
-                    !userData?.avatar
-                    ? userData?.username?.charAt(0).toUpperCase()
-                    : null
-                }
+                label={avatarLabel}
                 shape="circle"
                 className="header-avatar"
                 onClick={(e) => menuRef.current?.toggle(e)}

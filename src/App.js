@@ -11,7 +11,7 @@ import Notifications from "./components/Notifications";
 import GamingNews from "./gamingNews/GamingNews";
 import FindPlayers from "./components/FindPlayers";
 import Friends from "./components/Friends";
-import AppHeader from "./components/Header/AppHeader";
+import AppHeader from "./components/Header";
 import Auth from "./components/Auth";
 import { Routes, Route, useNavigate } from "react-router-dom"
 import { Button } from "primereact/button";
@@ -341,6 +341,7 @@ function App() {
         items={items}
         onToggleNotifications={handleToggleNotifications}
         onCreatePost={() => setShowCreatePost(true)}
+        onHome={() => navigate("/")}
       />
       <Dialog
         header= { editingPost ? "✏️ Editar publicación" :"🎮 Crear publicación" }
