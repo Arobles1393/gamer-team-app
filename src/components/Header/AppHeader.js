@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Menu } from "primereact/menu";
 import { Avatar } from "primereact/avatar";
 import { useRef } from "react";
+import "./Header.css";
 
 export default function AppHeader({
     user,
@@ -23,11 +24,7 @@ export default function AppHeader({
                 </h2>
             </div>
             <div className="header-right">
-                <div
-                style={{
-                    position: "relative"
-                }}
-                >
+                <div className="notification-container">
                 <Button
                     icon="pi pi-bell"
                     rounded
@@ -44,7 +41,7 @@ export default function AppHeader({
                 <Button
                 label="Publicar"
                 icon="pi pi-plus"
-                className="publish-btn-floating"
+                className="header-publish-btn"
                 onClick={onCreatePost}
                 />
                 <span className="username">
@@ -59,7 +56,7 @@ export default function AppHeader({
                     : null
                 }
                 shape="circle"
-                style={{ backgroundColor: "#6366f1", color: "#fff", cursor: "pointer" }}
+                className="header-avatar"
                 onClick={(e) => menuRef.current?.toggle(e)}
                 size="large"
                 />
