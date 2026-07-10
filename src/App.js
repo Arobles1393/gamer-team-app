@@ -11,16 +11,14 @@ import Notifications from "./components/Notifications";
 import GamingNews from "./gamingNews/GamingNews";
 import FindPlayers from "./components/FindPlayers";
 import Friends from "./components/Friends";
-import { Avatar } from "primereact/avatar";
+import AppHeader from "./components/Header/AppHeader";
 import Auth from "./components/Auth";
-import { Menu } from "primereact/menu";
 import { Routes, Route, useNavigate } from "react-router-dom"
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { OverlayPanel } from "primereact/overlaypanel";
 
 function App() {
-  const menuRef = useRef(null);
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
   const [showCreatePost, setShowCreatePost] = useState(false);
@@ -329,59 +327,20 @@ function App() {
     }
   };
 
+  const handleToggleNotifications=(e)=>{
+    notificationRef.current.toggle(e);
+  }
+
   return (
     <>
-      <header className="app-header">
-        <div className="header-left">
-          <h2 onClick={() => navigate("/")}>
-            GamerMatch
-          </h2>
-        </div>
-        <div className="header-right">
-          <div
-            style={{
-              position: "relative"
-            }}
-          >
-            <Button
-              icon="pi pi-bell"
-              rounded
-              text
-              onClick={(e) => {
-                notificationRef.current.toggle(e)
-              }}
-            />
-
-            {unreadCount > 0 && (
-              <span className="notification-badge">
-                {unreadCount}
-              </span>
-            )}
-          </div>
-          <Button
-            label="Publicar"
-            icon="pi pi-plus"
-            className="publish-btn-floating"
-            onClick={() => setShowCreatePost(true)}
-          />
-          <span className="username">
-            {userData?.username || user.email}
-          </span>
-          <Menu model={items} popup ref={menuRef} />
-          <Avatar
-            image={userData?.avatar}
-            label={
-              !userData?.avatar
-                ? userData?.username?.charAt(0).toUpperCase()
-                : null
-            }
-            shape="circle"
-            style={{ backgroundColor: "#6366f1", color: "#fff", cursor: "pointer" }}
-            onClick={(e) => menuRef.current.toggle(e)}
-            size="large"
-          />
-        </div>
-      </header>
+      <AppHeader
+        user={user}
+        userData={userData}
+        unreadCount={unreadCount}
+        items={items}
+        onToggleNotifications={handleToggleNotifications}
+        onCreatePost={() => setShowCreatePost(true)}
+      />
       <Dialog
         header= { editingPost ? "✏️ Editar publicación" :"🎮 Crear publicación" }
         visible={showCreatePost}
