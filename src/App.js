@@ -17,6 +17,7 @@ import { Routes, Route, useNavigate } from "react-router-dom"
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { OverlayPanel } from "primereact/overlaypanel";
+import "./styles/variables.css";
 
 function App() {
   const [user, setUser] = useState(null);

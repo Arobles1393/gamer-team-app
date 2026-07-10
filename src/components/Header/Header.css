@@ -12,9 +12,14 @@
 }
 
 .header-avatar {
-  background: #6366f1;
-  color: #fff;
+  background: var(--avatar);
+  color: var(--text-main);
   cursor: pointer;
+  transition: var(--transition);
+}
+
+.header-avatar:hover {
+  transform: scale(1.05);
 }
 
 .header-left {
@@ -22,7 +27,7 @@
   align-items: center;
 }
 
-.header-left h2 {
+.header-logo {
   margin: 0;
   background: linear-gradient(90deg, var(--primary), var(--secondary));
   -webkit-background-clip: text;
@@ -31,7 +36,7 @@
   transition: var(--transition);
 }
 
-.header-left h2:hover {
+.header-logo:hover {
   color: var(--primary);
   text-shadow: 0 0 10px var(--primary);
 }
@@ -49,32 +54,46 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 0.9rem;
-  color: #cbd5f5;
+  color: var(--text-main);
 }
 
 .header-publish-btn {
-  background: linear-gradient(90deg, #38bdf8, #a855f7);
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
   border: none;
   box-shadow:
-    0 0 15px rgba(56, 189, 248, 0.5),
-    0 0 25px rgba(168, 85, 247, 0.4);
+    0 0 15px var(--glow-blue),
+    0 0 25px var(--glow-purple);
   transition: var(--transition);
   animation: slideDown 0.3s ease;
+  will-change: transform;
+}
+
+.header-publish-btn:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 20px var(--glow-blue),
+    0 0 35px var(--glow-purple);
+}
+
+.header-publish-btn:active {
+  transform: scale(.98);
 }
 
 .notification-badge {
   position: absolute;
   top: -5px;
   right: -5px;
-  background: red;
-  color: white;
+  background: var(--danger);
+  color: var(--text-main);
   border-radius: 50%;
-  width: 20px;
+  min-width: 20px;
   height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 12px;
+  font-weight: 600;
+  padding: 0 4px;
 }
 
 .notification-container {

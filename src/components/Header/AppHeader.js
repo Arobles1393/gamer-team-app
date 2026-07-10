@@ -19,9 +19,11 @@ export default function AppHeader({
     return(
         <header className="app-header">
             <div className="header-left">
-                <h2 onClick={() => navigate("/")}>
-                GamerMatch
-                </h2>
+                <div className="header-logo">
+                    <h2 onClick={() => navigate("/")}>
+                        GamerMatch
+                    </h2>
+                </div>
             </div>
             <div className="header-right">
                 <div className="notification-container">
