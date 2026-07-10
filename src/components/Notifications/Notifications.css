@@ -1,0 +1,51 @@
+.notification-item{
+	padding: 10px;
+	border-bottom: 1px solid #eee;
+	cursor: pointer;
+}
+
+.notification-item-content{
+	display:flex;
+	justify-content:space-between;
+	align-items:center;
+	gap: .5rem;
+}
+
+.notification-actions{
+	display: flex;
+  gap: .25rem;
+}
+
+.notification-footer{
+	padding-top: 10px;
+	text-align: center;
+}
+
+.notification-content{
+	flex: 1;
+}
+
+.notification-text{
+	 margin: 4px 0;
+}
+
+.notification-status {
+  font-weight: 600;
+}
+
+.notification-status-success {
+  color: var(--accent);
+}
+
+.notification-status-danger {
+  color: var(--danger);
+}
+
+.notification-overlay {
+  width: 350px;
+}
+
+.notification-list {
+    max-height: 400px;
+    overflow-y: auto;
+}

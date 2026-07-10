@@ -13,7 +13,7 @@ import {
   serverTimestamp
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { db } from "../firebase/config";
+import { db } from "../../firebase/config";
 import { Avatar } from "primereact/avatar";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";

@@ -2,21 +2,19 @@ import { useEffect, useState, useRef } from "react";
 import { auth, db } from "./firebase/config";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, onSnapshot, updateDoc, serverTimestamp, collection, query, where, orderBy, limit, addDoc, getDocs } from "firebase/firestore";
+import { AppHeader } from "./components/Header";
+import { NotificationOverlay, Notifications } from "./components/Notifications";
 import CreatePost from "./components/CreatePost";
 import PostList from "./components/PostList";
 import Profile from "./components/Profile";
 import ChatPage from "./chat/ChatPage";
 import PostDetail from "./components/PostDetail";
-import Notifications from "./components/Notifications";
 import GamingNews from "./gamingNews/GamingNews";
 import FindPlayers from "./components/FindPlayers";
 import Friends from "./components/Friends";
-import AppHeader from "./components/Header";
 import Auth from "./components/Auth";
 import { Routes, Route, useNavigate } from "react-router-dom"
-import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
-import { OverlayPanel } from "primereact/overlaypanel";
 import "./styles/variables.css";
 
 function App() {
@@ -329,7 +327,7 @@ function App() {
   };
 
   const handleToggleNotifications=(e)=>{
-    notificationRef.current.toggle(e);
+    notificationRef.current?.toggle(e);
   }
 
   return (
@@ -342,6 +340,13 @@ function App() {
         onToggleNotifications={handleToggleNotifications}
         onCreatePost={() => setShowCreatePost(true)}
         onHome={() => navigate("/")}
+      />
+      <NotificationOverlay
+        notificationRef={notificationRef}
+        notifications={notifications}
+        onAccept={acceptFriendRequest}
+        onReject={rejectFriendRequest}
+        onMarkAsRead={markAsRead}
       />
       <Dialog
         header= { editingPost ? "✏️ Editar publicación" :"🎮 Crear publicación" }
@@ -434,155 +439,6 @@ function App() {
           />
         </Routes>
       </div>
-      <OverlayPanel
-        ref={notificationRef}
-        style={{ width: "350px" }}
-      >
-        {notifications.length === 0 ? (
-          <p>No tienes notificaciones</p>
-        ) : (
-          <>
-            <div
-              style={{
-                maxHeight: "400px",
-                overflowY: "auto"
-              }}
-            >
-              {notifications.map((n) => (
-                <div
-                  key={n.id}
-                  style={{
-                    padding: "10px",
-                    borderBottom: "1px solid #eee",
-                    cursor: "pointer"
-                  }}
-                  onClick={async () => {
-                    if (n.type === "friend_request"){
-                      return;
-                    }
-                    await markAsRead(n.id);
-                    notificationRef.current?.hide();
-                    if (n.type === "comment") {
-                      navigate(`/post/${n.relatedId}`);
-                    }
-                    if (n.type === "message") {
-                      navigate("/chat", {
-                        state: {
-                          chatId: n.relatedId
-                        }
-                      });
-                    }
-                    if (n.type === "interested") {
-                      navigate(`/post/${n.relatedId}`);
-                    }
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      gap: ".5rem"
-                    }}
-                  >
-                    <div style={{ flex: 1 }}>
-                      <strong>{n.title}</strong>
-                      <p
-                        style={{
-                          margin: "4px 0"
-                        }}
-                      >
-                        {n.text}
-                      </p>
-                    </div>
-
-                    {n.type === "friend_request" &&
-                    n.status !== "accepted" &&
-                    n.status !== "rejected" && (
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: ".25rem"
-                        }}
-                      >
-                        <Button
-                          icon="pi pi-check"
-                          rounded
-                          text
-                          severity="success"
-                          onClick={async (
-                            e
-                          ) => {
-                            e.stopPropagation();
-
-                            await acceptFriendRequest(
-                              n
-                            );
-                          }}
-                        />
-
-                        <Button
-                          icon="pi pi-times"
-                          rounded
-                          text
-                          severity="danger"
-                          onClick={async (
-                            e
-                          ) => {
-                            e.stopPropagation();
-
-                            await rejectFriendRequest(
-                              n
-                            );
-                          }}
-                        />
-                      </div>
-                    )}
-                    {n.status === "accepted" && (
-                      <span
-                        style={{
-                          color: "green",
-                          fontWeight: "bold"
-                        }}
-                      >
-                        ✅ Aceptada
-                      </span>
-                    )}
-
-                    {n.status === "rejected" && (
-                      <span
-                        style={{
-                          color: "red",
-                          fontWeight: "bold"
-                        }}
-                      >
-                        ❌ Rechazada
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div
-              style={{
-                paddingTop: "10px",
-                textAlign: "center"
-              }}
-            >
-              <Button
-                label="Ver todas"
-                text
-                icon="pi pi-list"
-                onClick={() => {
-                  notificationRef.current?.hide();
-                  navigate("/notifications");
-                }}
-              />
-            </div>
-          </>
-        )}
-      </OverlayPanel>
     </>
   );
 }
