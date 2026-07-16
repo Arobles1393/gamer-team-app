@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { db, functions } from "../firebase/config";
+import { db, functions } from "../../firebase/config";
 import { collection, addDoc, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
@@ -7,7 +7,7 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { AutoComplete } from "primereact/autocomplete";
-import { searchGames } from "../utils/searchGames";
+import { searchGames } from "../../utils/searchGames";
 import { Toast } from "primereact/toast";
 import { httpsCallable } from "firebase/functions";
 import { Checkbox } from "primereact/checkbox";

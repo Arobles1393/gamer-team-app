@@ -1,16 +1,14 @@
 import { useState, useRef } from "react";
-import { auth } from "./firebase/config";
-import { signOut } from "firebase/auth";
+import { logout } from "./services/auth";
 import { AppHeader, createHeaderMenu } from "./components/Header";
 import { NotificationOverlay } from "./components/Notifications";
 import { markNotificationAsRead } from "./services/notifications";
 import { acceptFriendRequest, rejectFriendRequest } from "./services/friends";
 import { useNotifications, useUserPresence, useAuth } from "./hooks";
 import { AppRoutes } from "./routes";
-import CreatePost from "./components/CreatePost";
+import { CreatePostDialog } from "./components/Posts";
 import Auth from "./components/Auth";
 import { useNavigate } from "react-router-dom"
-import { Dialog } from "primereact/dialog";
 import "./styles/variables.css";
 
 function App() {
@@ -37,23 +35,19 @@ function App() {
     );
   }
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      console.log("Sesión cerrada");
-    } catch (error) {
-      console.error("Error al cerrar sesión:", error);
-    }
-  };
-
   const items = createHeaderMenu(
     navigate,
-    handleLogout
+    logout
   );
 
   const handleToggleNotifications=(e)=>{
     notificationRef.current?.toggle(e);
   }
+
+  const handleCloseCreatePost = () => {
+    setShowCreatePost(false);
+    setEditingPost(null);
+  };
 
   return (
     <>
@@ -73,29 +67,15 @@ function App() {
         onReject={(notification) => rejectFriendRequest(notification)}
         onMarkAsRead={markNotificationAsRead}
       />
-      <Dialog
-        header= { editingPost ? "✏️ Editar publicación" :"🎮 Crear publicación" }
+      <CreatePostDialog
         visible={showCreatePost}
-        style={{ width: "1000px" }}
-        onHide={() => {setShowCreatePost(false); setEditingPost(null);}}
-      >
-        <CreatePost
-          user={user}
-          userData={userData}
-          editingPost={editingPost}
-          onClose={() => {
-            setShowCreatePost(false);
-            setEditingPost(null);
-          }}
-        />
-      </Dialog>
-      <div 
-        style={{
-          maxWidth: "1200px",
-          margin: "auto",
-          padding: "1.5rem"
-        }}
-      >
+        editingPost={editingPost}
+        user={user}
+        userData={userData}
+        onHide={handleCloseCreatePost}
+        onClose={handleCloseCreatePost}
+      />
+      <div className="app-content">
         <AppRoutes
           user={user}
           userData={userData}
