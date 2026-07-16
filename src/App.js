@@ -12,22 +12,24 @@ import { useNavigate } from "react-router-dom"
 import "./styles/variables.css";
 
 function App() {
+  // UI State
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
+
+  // Refs
   const notificationRef = useRef(null);
+
+  // Navigation
   const navigate = useNavigate();
 
-  const {
-    user,
-    userData
-  } = useAuth();
-
-  const {
-    notifications,
-    unreadCount
-  } = useNotifications(user);
-
+  // Hooks
+  const { user, userData } = useAuth();
+  const { notifications, unreadCount } = useNotifications(user);
   useUserPresence(user);
+
+  // UI Handlers
+  const handleToggleNotifications = (e) => { notificationRef.current?.toggle(e); }
+  const handleCloseCreatePost = () => { setShowCreatePost(false); setEditingPost(null); };
 
   if (!user) {
     return (
@@ -39,15 +41,6 @@ function App() {
     navigate,
     logout
   );
-
-  const handleToggleNotifications=(e)=>{
-    notificationRef.current?.toggle(e);
-  }
-
-  const handleCloseCreatePost = () => {
-    setShowCreatePost(false);
-    setEditingPost(null);
-  };
 
   return (
     <>
