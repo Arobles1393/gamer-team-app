@@ -1,9 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import { auth, db } from "./firebase/config";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, onSnapshot, updateDoc, serverTimestamp, collection, query, where, orderBy, limit, addDoc, getDocs } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc, serverTimestamp, collection, query, where, orderBy, limit } from "firebase/firestore";
 import { AppHeader, createHeaderMenu  } from "./components/Header";
 import { NotificationOverlay, Notifications } from "./components/Notifications";
+import { markNotificationAsRead } from "./services/notifications";
+import { acceptFriendRequest, rejectFriendRequest } from "./services/friends";
 import CreatePost from "./components/CreatePost";
 import PostList from "./components/PostList";
 import Profile from "./components/Profile";
@@ -120,19 +122,6 @@ function App() {
     n => !n.read
   ).length;
 
-  const markAsRead = async (notificationId) => {
-    try {
-      await updateDoc(
-        doc(db, "notifications", notificationId),
-        {
-          read: true
-        }
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -146,127 +135,6 @@ function App() {
     navigate,
     handleLogout
   );
-
-  const acceptFriendRequest = async (
-    notification
-  ) => {
-
-    await addDoc(
-      collection(db, "friends"),
-      {
-        users: [
-          notification.senderId,
-          notification.userId
-        ],
-        createdAt:
-          serverTimestamp()
-      }
-    );
-
-    // actualizar solicitud
-
-    const q = query(
-      collection(db, "friend_requests"),
-      where(
-        "senderId",
-        "==",
-        notification.senderId
-      ),
-      where(
-        "receiverId",
-        "==",
-        notification.userId
-      ),
-      where(
-        "status",
-        "==",
-        "pending"
-      )
-    );
-
-    const snapshot =
-      await getDocs(q);
-
-    if (!snapshot.empty) {
-
-      await updateDoc(
-        snapshot.docs[0].ref,
-        {
-          status: "accepted"
-        }
-      );
-
-      await updateDoc(
-        doc(db, "notifications", notification.id),
-        {
-          status: "accepted",
-          read: true
-        }
-      );
-
-      await addDoc(
-        collection(db, "notifications"),
-        {
-          userId: notification.senderId,
-          senderId: user.uid,
-          senderName: userData.username,
-          senderAvatar: userData.avatar || null,
-          type: "friend_accepted",
-          title: "Solicitud aceptada",
-          text: `${userData.username} aceptó tu solicitud de amistad`,
-          read: false,
-          createdAt: serverTimestamp()
-        }
-      );
-
-    }
-  };
-
-  const rejectFriendRequest = async (
-    notification
-  ) => {
-
-    const q = query(
-      collection(db, "friend_requests"),
-      where(
-        "senderId",
-        "==",
-        notification.senderId
-      ),
-      where(
-        "receiverId",
-        "==",
-        notification.userId
-      ),
-      where(
-        "status",
-        "==",
-        "pending"
-      )
-    );
-
-    const snapshot =
-      await getDocs(q);
-
-    if (!snapshot.empty) {
-
-      await updateDoc(
-        snapshot.docs[0].ref,
-        {
-          status: "rejected"
-        }
-      );
-
-      await updateDoc(
-        doc(db, "notifications", notification.id),
-        {
-          status: "rejected",
-          read: true
-        }
-      );
-
-    }
-  };
 
   const handleToggleNotifications=(e)=>{
     notificationRef.current?.toggle(e);
@@ -286,9 +154,9 @@ function App() {
       <NotificationOverlay
         notificationRef={notificationRef}
         notifications={notifications}
-        onAccept={acceptFriendRequest}
-        onReject={rejectFriendRequest}
-        onMarkAsRead={markAsRead}
+        onAccept={(notification) => acceptFriendRequest(notification, user, userData)}
+        onReject={(notification) => rejectFriendRequest(notification)}
+        onMarkAsRead={markNotificationAsRead}
       />
       <Dialog
         header= { editingPost ? "✏️ Editar publicación" :"🎮 Crear publicación" }
