@@ -2,20 +2,14 @@ import { useState, useRef } from "react";
 import { auth } from "./firebase/config";
 import { signOut } from "firebase/auth";
 import { AppHeader, createHeaderMenu } from "./components/Header";
-import { NotificationOverlay, Notifications } from "./components/Notifications";
+import { NotificationOverlay } from "./components/Notifications";
 import { markNotificationAsRead } from "./services/notifications";
 import { acceptFriendRequest, rejectFriendRequest } from "./services/friends";
 import { useNotifications, useUserPresence, useAuth } from "./hooks";
+import { AppRoutes } from "./routes";
 import CreatePost from "./components/CreatePost";
-import PostList from "./components/PostList";
-import Profile from "./components/Profile";
-import ChatPage from "./chat/ChatPage";
-import PostDetail from "./components/PostDetail";
-import GamingNews from "./gamingNews/GamingNews";
-import FindPlayers from "./components/FindPlayers";
-import Friends from "./components/Friends";
 import Auth from "./components/Auth";
-import { Routes, Route, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { Dialog } from "primereact/dialog";
 import "./styles/variables.css";
 
@@ -102,73 +96,12 @@ function App() {
           padding: "1.5rem"
         }}
       >
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <PostList user={user} 
-                userData={userData}
-                setEditingPost={setEditingPost}
-                setShowCreatePost={setShowCreatePost}
-              />
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <Profile user={user} 
-                userData={userData} 
-              />
-            }
-          />
-          <Route
-            path="/myposts"
-            element={
-              <PostList user={user} 
-                setEditingPost={setEditingPost}
-                setShowCreatePost={setShowCreatePost}
-                onlyMine
-              />
-            }
-          />
-          <Route
-            path="/mypartys"
-            element={
-              <PostList user={user}
-                setShowCreatePost={setShowCreatePost}
-                joined
-              />
-            }
-          />
-          <Route
-            path="/chat"
-            element={
-              <ChatPage user={user} userData={userData}/>
-            }
-          />
-          <Route
-            path="/post/:id" 
-            element={
-              <PostDetail user={user} userData={userData}/>
-            }
-          />
-          <Route
-            path="/notifications"
-            element={<Notifications user={user} userData={userData}/>}
-          />
-          <Route
-            path="/friends"
-            element={<Friends user={user} userData={userData}/>}
-          />
-          <Route
-            path="/findPlayers"
-            element={<FindPlayers user={user} userData={userData}/>}
-          />
-          <Route
-            path="/news"
-            element={<GamingNews />}
-          />
-        </Routes>
+        <AppRoutes
+          user={user}
+          userData={userData}
+          setEditingPost={setEditingPost}
+          setShowCreatePost={setShowCreatePost}
+        />
       </div>
     </>
   );
