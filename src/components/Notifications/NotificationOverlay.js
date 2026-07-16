@@ -93,7 +93,6 @@ export default function NotificationOverlay({
 												severity="success"
 												onClick={(e) => handleAccept(e, n)}
 											/>
-
 											<Button
 												icon="pi pi-times"
 												rounded
@@ -108,7 +107,6 @@ export default function NotificationOverlay({
 											✅ Aceptada
 										</span>
 									)}
-
 									{n.status === "rejected" && (
 										<span className="notification-status notification-status-danger">
 											❌ Rechazada

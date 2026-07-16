@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { auth, db } from "./firebase/config";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, onSnapshot, updateDoc, serverTimestamp, collection, query, where, orderBy, limit, addDoc, getDocs } from "firebase/firestore";
-import { AppHeader } from "./components/Header";
+import { AppHeader, createHeaderMenu  } from "./components/Header";
 import { NotificationOverlay, Notifications } from "./components/Notifications";
 import CreatePost from "./components/CreatePost";
 import PostList from "./components/PostList";
@@ -142,68 +142,10 @@ function App() {
     }
   };
 
-  const items = [
-    {
-      label: "Mi perfil",
-      icon: "pi pi-user",
-      command: () => {
-        navigate("/profile");
-      }
-    },
-    {
-      label: "Mis publicaciones",
-      icon: "pi pi-file",
-      command: () => {
-        navigate("/myposts");
-      }
-    },
-    {
-      label: "Mis partidas",
-      icon: "pi pi-users",
-      command: () => {
-        navigate("/mypartys");
-      }
-    },
-    {
-      label: "Chats",
-      icon: "pi pi-comments",
-      command: () => {
-        navigate("/chat");
-      }
-    },
-    {
-      label: "Amigos",
-      icon: "pi pi-comments",
-      command: () => {
-        navigate("/friends");
-      }
-    },
-    {
-      label: "Buscar jugadores",
-      icon: "pi pi-comments",
-      command: () => {
-        navigate("/findPlayers");
-      }
-    },
-    {
-      label: "Noticias Gamer",
-      icon: "pi pi-megaphone",
-      command: () => {
-        navigate("/news");
-      }
-    },
-    /*{ separator: true },
-    {
-      label: "Configuración",
-      icon: "pi pi-cog"
-    },*/
-    { separator: true },
-    {
-      label: "Cerrar sesión",
-      icon: "pi pi-sign-out",
-      command: handleLogout
-    }
-  ];
+  const items = createHeaderMenu(
+    navigate,
+    handleLogout
+  );
 
   const acceptFriendRequest = async (
     notification
