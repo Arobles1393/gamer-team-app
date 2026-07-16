@@ -1,11 +1,11 @@
-import { useEffect, useState, useRef } from "react";
-import { auth, db } from "./firebase/config";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, onSnapshot, updateDoc, serverTimestamp, collection, query, where, orderBy, limit } from "firebase/firestore";
-import { AppHeader, createHeaderMenu  } from "./components/Header";
+import { useState, useRef } from "react";
+import { auth } from "./firebase/config";
+import { signOut } from "firebase/auth";
+import { AppHeader, createHeaderMenu } from "./components/Header";
 import { NotificationOverlay, Notifications } from "./components/Notifications";
 import { markNotificationAsRead } from "./services/notifications";
 import { acceptFriendRequest, rejectFriendRequest } from "./services/friends";
+import { useNotifications, useUserPresence, useAuth } from "./hooks";
 import CreatePost from "./components/CreatePost";
 import PostList from "./components/PostList";
 import Profile from "./components/Profile";
@@ -20,107 +20,28 @@ import { Dialog } from "primereact/dialog";
 import "./styles/variables.css";
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [userData, setUserData] = useState(null);
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
-  const [notifications, setNotifications] = useState([]);
   const notificationRef = useRef(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    let unsubscribeUserDoc = null;
-    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        try {
-          const docRef = doc(db, "users", currentUser.uid);
-          unsubscribeUserDoc = onSnapshot(docRef, (docSnap) => {
-            console.log("🔥 SNAPSHOT:", docSnap.data());
-            if (docSnap.exists()) {
-              setUserData(docSnap.data());
-            }
-          });
-        } catch (error) {
-          console.error("Error obteniendo userData:", error);
-        }
-      } else {
-        setUserData(null);
-        if (unsubscribeUserDoc) unsubscribeUserDoc();
-      }
-    });
+  const {
+    user,
+    userData
+  } = useAuth();
 
-    return () => {
-      unsubscribeAuth();
-      if (unsubscribeUserDoc) unsubscribeUserDoc();
-    };
-  }, []);
+  const {
+    notifications,
+    unreadCount
+  } = useNotifications(user);
 
-  useEffect(() => {
-    
-    if (!user) return;
-
-    const updatePresence = async () => {
-      try {
-        await updateDoc(
-          doc(db, "users", user.uid),
-          {
-            lastSeen: serverTimestamp()
-          }
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    updatePresence();
-
-    const interval = setInterval(
-      updatePresence,
-      30000
-    );
-
-    return () => clearInterval(interval);
-
-  }, [user]);
-
-  useEffect(() => {
-
-    if (!user) return;
-
-    const q = query(
-      collection(db, "notifications"),
-      where("userId", "==", user.uid),
-      orderBy("createdAt", "desc"),
-      limit(10)
-    );
-
-    const unsubscribe =
-      onSnapshot(q, (snapshot) => {
-
-        const data =
-          snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }));
-
-        setNotifications(data);
-
-      });
-
-    return unsubscribe;
-
-  }, [user]);
+  useUserPresence(user);
 
   if (!user) {
     return (
       <Auth/>
     );
   }
-
-  const unreadCount = notifications.filter(
-    n => !n.read
-  ).length;
 
   const handleLogout = async () => {
     try {
