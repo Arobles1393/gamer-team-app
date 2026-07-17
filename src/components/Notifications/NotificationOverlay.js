@@ -1,6 +1,7 @@
 import { OverlayPanel } from "primereact/overlaypanel";
 import { useNavigate } from "react-router-dom";
 import { Button } from "primereact/button";
+import { navigateNotification } from "../../utils";
 
 export default function NotificationOverlay({ 
 	notificationRef,
@@ -14,29 +15,6 @@ export default function NotificationOverlay({
 	const closeOverlay = () => notificationRef.current?.hide();
 	const notificationsList = notifications ?? [];
 
-	const navigateNotification = (notification) => {
-    switch (notification.type) {
-			case "comment":
-				navigate(`/post/${notification.relatedId}`);
-				break;
-
-			case "message":
-				navigate("/chat", {
-					state: {
-						chatId: notification.relatedId
-					}
-				});
-				break;
-
-			case "interested":
-				navigate(`/post/${notification.relatedId}`);
-				break;
-
-			default:
-				break;
-    }
-	}
-
 	const handleNotificationClick = async (notification) => {
     if (notification.type === "friend_request") return;
 
@@ -44,7 +22,7 @@ export default function NotificationOverlay({
 
     closeOverlay();
 
-    navigateNotification(notification);
+    navigateNotification(notification, navigate);
 	};
 
 	const handleAccept = (e, notification) => {
@@ -69,52 +47,62 @@ export default function NotificationOverlay({
 					<div
 						className= "notification-list"
 					>
-						{notifications.map((n) => (
-							<div
-								key= {n.id}
-								className= "notification-item"
-								onClick={() => handleNotificationClick(n)}
-							>
-								<div className="notification-item-content">
-									<div className="notification-content">
-										<strong>{n.title}</strong>
-										<p className="notification-text">
-											{n.text}
-										</p>
-									</div>
-									{n.type === "friend_request" &&
-									n.status !== "accepted" &&
-									n.status !== "rejected" && (
-										<div className="notification-actions">
-											<Button
-												icon="pi pi-check"
-												rounded
-												text
-												severity="success"
-												onClick={(e) => handleAccept(e, n)}
-											/>
-											<Button
-												icon="pi pi-times"
-												rounded
-												text
-												severity="danger"
-												onClick={(e) => handleReject(e, n)}
-											/>
+						{notificationsList.map((notification) => {
+							const status = notification.status;
+
+							const isPendingFriendRequest =
+								notification.type === "friend_request" &&
+								status === "pending";
+
+							const isAccepted = status === "accepted";
+
+							const isRejected = status === "rejected";
+
+							return(
+								<div
+									key= {notification.id}
+									className= "notification-item"
+									onClick={() => handleNotificationClick(notification)}
+								>
+									<div className="notification-item-content">
+										<div className="notification-content">
+											<strong>{notification.title}</strong>
+											<p className="notification-text">
+												{notification.text}
+											</p>
 										</div>
-									)}
-									{n.status === "accepted" && (
-										<span className="notification-status notification-status-success">
-											✅ Aceptada
-										</span>
-									)}
-									{n.status === "rejected" && (
-										<span className="notification-status notification-status-danger">
-											❌ Rechazada
-										</span>
-									)}
+										{isPendingFriendRequest && (
+											<div className="notification-actions">
+												<Button
+													icon="pi pi-check"
+													rounded
+													text
+													severity="success"
+													onClick={(e) => handleAccept(e, notification)}
+												/>
+												<Button
+													icon="pi pi-times"
+													rounded
+													text
+													severity="danger"
+													onClick={(e) => handleReject(e, notification)}
+												/>
+											</div>
+										)}
+										{isAccepted && (
+											<span className="notification-status notification-status-success">
+												✅ Aceptada
+											</span>
+										)}
+										{isRejected && (
+											<span className="notification-status notification-status-danger">
+												❌ Rechazada
+											</span>
+										)}
+									</div>
 								</div>
-							</div>
-						))}
+							);
+						})}
 					</div>
 					<div className="notification-footer">
 						<Button
