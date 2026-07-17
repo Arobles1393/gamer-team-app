@@ -15,8 +15,14 @@ export default function AppHeader({
 }) {
 	const menuRef = useRef(null);
 
-	const avatarLabel = userData?.avatar ? null : userData?.username?.charAt(0).toUpperCase();
+	// Valores derivados
+	const avatarLabel = !userData?.avatar ? userData?.username?.charAt(0).toUpperCase() : null;
 	const hasNotifications = unreadCount > 0;
+
+	// Handlers
+	const handleToggleMenu = (event) => {
+		menuRef.current?.toggle(event);
+	};
 
 	return(
 		<header className="app-header">
@@ -48,13 +54,13 @@ export default function AppHeader({
 				<span className="username">
 					{userData?.username ?? user?.email}
 				</span>
-				<Menu model={items} popup ref={menuRef} />
+				<Menu ref={menuRef} model={items} popup />
 				<Avatar
 					image={userData?.avatar}
 					label={avatarLabel}
 					shape="circle"
 					className="header-avatar"
-					onClick={(e) => menuRef.current?.toggle(e)}
+					onClick={handleToggleMenu}
 					size="large"
 				/>
 			</div>
