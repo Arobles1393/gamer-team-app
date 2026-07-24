@@ -219,63 +219,6 @@ a:hover {
   ) !important;
 }
 
-/* ================= RAWG CARDS ================= */
-/* CARD */
-.rawg-card {
-  border-radius: var(--radius);
-  overflow: visible;
-  transition: var(--transition);
-}
-
-.rawg-card:hover {
-  transform: scale(1.03);
-  box-shadow:
-    0 20px 40px rgba(168, 85, 247, 0.2)
-    0 0 20px rgba(56, 189, 248, 0.2);
-  position: relative;
-  z-index: 1;
-  transition: var(--transition);
-  backdrop-filter: blur(10px);
-}
-
-.rawg-image-container {
-  position: relative;
-}
-
-.rawg-image {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  transition: transform 0.4s ease;
-  transform: scale(1.1);
-}
-
-.rawg-image-container:hover .rawg-image {
-  transform: scale(1.1);
-}
-
-.rawg-extra {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 95%;
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(10px);
-  padding: 1rem;
-  border-radius: 12px 12px 12px 12px;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: 
-    max-height 0.4s ease,
-    opacity 0.3s ease,
-    transform 0.3s ease;
-}
-
-.rawg-card:hover .rawg-extra {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 /* ================= GRID ================= */
 .post-grid {
   display: grid;
@@ -302,7 +245,7 @@ a:hover {
 }
 
 /* ================= META ================= */
-.meta-item {
+.meta-item { /* Dejo meta aqui aun porque hay en postDetail quien lo usa, una vez separado, se borrara de aqui*/
   display: flex;
   align-items: center;
   gap: 0.3rem;
@@ -541,31 +484,10 @@ code {
   height: 100%;
 }
 
-/* META */
-.rawg-meta {
-  display: flex;
-  gap: 1rem;
-  margin-top: 0.3rem;
-}
-
 .post-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* 👈 3 columnas */
   gap: 1rem;
-}
-
-.post-actions {
-  margin-top: auto;
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-}
-
-.user-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
 }
 
 .platform-icon {
@@ -584,18 +506,6 @@ code {
 
 .p-menuitem-link:focus-visible {
   outline: none !important;
-}
-
-.joined-badge {
-  position: absolute;
-  background: linear-gradient(90deg, #22c55e, #4ade80);
-  color: #fff;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
-  z-index: 2;
 }
 
 .profile-modal-container {
@@ -873,14 +783,6 @@ code {
   max-height: 90px;
   object-fit: contain;
   filter: drop-shadow(0 6px 12px rgba(0,0,0,0.7));
-}
-
-.logo-game {
-  max-width: 110px;
-  max-height: 45px;
-  object-fit: contain;
-  filter: drop-shadow(0 6px 12px rgba(0,0,0,0.7));
-  margin-top: 20px;
 }
 
 /*Post Details right panel*/

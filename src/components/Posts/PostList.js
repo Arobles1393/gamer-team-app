@@ -1,18 +1,16 @@
 import { useEffect, useState, useRef } from "react";
-import { db } from "../firebase/config";
+import { db } from "../../firebase/config";
 import { collection, onSnapshot, deleteDoc, doc, query, where, updateDoc, arrayUnion, addDoc, serverTimestamp, getDocs } from "firebase/firestore";
-import { Card } from "primereact/card";
 import { Button } from "primereact/button";
-import { Avatar } from "primereact/avatar";
 import { Dropdown } from "primereact/dropdown";
 import { Dialog } from "primereact/dialog";
-import UserProfile from "./UserProfile";
+import UserProfile from "../UserProfile";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import { useNavigate } from "react-router-dom";
-import { createOrGetChat } from "../services/chatService";
-import { platformIcons } from "../utils/platformIcons";
-import { sendFriendRequest } from "../services/friendService";
+import { createOrGetChat } from "../../services/chatService";
+import { sendFriendRequest } from "../../services/friendService";
+import PostCard from "./PostCard";
 
 export default function PostList({ user, userData, setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
   const [posts, setPosts] = useState([]);
@@ -210,26 +208,6 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
     setShowProfile(false);
   };
 
-  const getPlatformKey = (platform) => {
-    const name = platform.toLowerCase();
-    if (name.includes("xbox")) {
-      return "xbox";
-    }
-    if (name.includes("playstation")) {
-      return "playstation";
-    }
-    if (name.includes("switch")) {
-      return "switch";
-    }
-    if (name.includes("pc")) {
-      return "pc";
-    }
-    if (name.includes("mobile")) {
-      return "mobile";
-    }
-    return null;
-  };
-
   const handleInterested = async (post, interestedDoc) => {
     try {
       if (interestedDoc) {
@@ -274,6 +252,11 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
     }
   };
 
+  const handleEditPost = (post) => {
+    setEditingPost(post);
+    setShowCreatePost(true);
+  };
+
   return (
     <div>
       <div
@@ -310,147 +293,22 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
         </div>
       </div>
       <div className="post-grid">
-        {filteredPosts.map((post) => {
-          const uniquePlatforms = [
-            ...new Set(
-              (post.platforms || [])
-                .map(getPlatformKey)
-                .filter(Boolean)
-            )
-          ];
-          const isInterested = interestedPosts.some(
-            (item) =>
-              item.postId === post.id &&
-              item.userId === user.uid
-          );
-          const interestedDoc = interestedPosts.find(
-            (item) =>
-              item.postId === post.id &&
-              item.userId === user.uid
-          );
-          return(
-            <Card key={post.id}
-              className="rawg-card"
-              onClick={() => navigate(`/post/${post.id}`)}
-            >
-              <div className="rawg-image-container">
-                {
-                  post.userId !== user.uid &&
-                  isInterested && (
-                    <div style={{ marginBottom: "1rem" }}>
-                      <span className="joined-badge">
-                        Te interesa esta publicación
-                      </span>
-                    </div>
-                  )
-                }
-                <img
-                  src={post.image || "/imagenotfound.png"}
-                  alt={post.game}
-                  className="rawg-image"
-                />
-              </div>
-              <div>
-                {post.logo ? (
-                  <img src={post.logo} alt={post.game} className="logo-game" />
-                ) : (
-                  <h3>{post.game}</h3>
-                )}
-                <div className="rawg-meta">
-                  <div className="meta-item">
-                    {
-                      post.multiplatform ? (
-                        uniquePlatforms.map((platform) => (
-                          <span key={platform}>
-                            {platformIcons[platform]?.()}
-                          </span>
-                        ))
-                      ) : (
-                        platformIcons[post.platform]?.()
-                      )
-                    }
-                  </div>
-                  <div className="meta-item" style={{ marginLeft: "auto" }}>
-                    <i className="pi pi-users"></i>
-                    <span>{post.playersNeeded} jugadores</span>
-                  </div>
-                </div>
-                {/* 🔥 CONTENIDO OCULTO */}
-                <div className="rawg-extra">
-                  {post.comments && (
-                    <p>{post.comments}</p>
-                  )}
-                  <div className="user-row">
-                    <Avatar
-                      image={post?.avatar}
-                      label={post.username?.charAt(0).toUpperCase()}
-                      shape="circle"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedUserId(post.userId);
-                        setShowProfile(true);
-                      }}
-                    />
-                    <span>
-                      {post.username}
-                    </span>
-                  </div>
-                  <div className="post-actions">
-                    {post.userId !== user.uid && (
-                      <Button
-                        label={
-                          isInterested
-                            ? "Ya no me interesa"
-                            : "Quiero jugar"
-                        }
-
-                        icon={
-                          isInterested
-                            ? "pi pi-times"
-                            : "pi pi-users"
-                        }
-
-                        className={
-                          isInterested
-                            ? "p-button-danger p-button-sm"
-                            : "p-button-success p-button-sm"
-                        }
-
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleInterested(post, interestedDoc);
-                          if(!isInterested){
-                            handleJoin(post); 
-                          }
-                        }}
-                      />
-                    )}
-                    {post.userId === user.uid && (
-                      <>
-                        <Button
-                          label="Editar"
-                          icon="pi pi-pencil"
-                          className="p-button-success p-button-sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEditingPost(post);
-                            setShowCreatePost(true);
-                          }}
-                        />
-                        <Button
-                          label="Eliminar"
-                          icon="pi pi-trash"
-                          className="p-button-danger p-button-sm"
-                          onClick={(e) => {e.stopPropagation(); confirmDelete(post.id);}}
-                        />
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </Card>
-          );
-        })}
+        {filteredPosts.map((post) => (
+          <PostCard
+            key={post.id}
+            post={post}
+            user={user}
+            interestedPosts={interestedPosts}
+            onToggleInterested={handleInterested}
+            onJoin={handleJoin}
+            onEdit={handleEditPost}
+            onDelete={confirmDelete}
+            onShowProfile={(userId) => {
+              setSelectedUserId(userId);
+              setShowProfile(true);
+            }}
+          />
+        ))}
       </div>
       <Dialog
         pt={{

@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import PostList from "../components/PostList";
+import { PostList } from "../components/Posts";
 import Profile from "../components/Profile";
 import ChatPage from "../chat/ChatPage";
 import PostDetail from "../components/PostDetail";
