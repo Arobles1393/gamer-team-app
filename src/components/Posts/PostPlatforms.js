@@ -7,24 +7,35 @@ function PostPlatforms({
   platform
 }) {
   const uniquePlatforms = useMemo(
-    () =>
-      [...new Set(
-        (platforms || [])
+    () => [
+      ...new Set(
+        (platforms ?? [])
           .map(getPlatformKey)
           .filter(Boolean)
-      )],
+      )
+    ],
     [platforms]
   );
 
+  const PlatformIcon = platformIcons[platform];
+
   if (!multiplatform) {
-    return platformIcons[platform]?.() ?? null;
+    return PlatformIcon?.() ?? null;
   }
 
-  return uniquePlatforms.map((platformKey) => (
-    <span key={platformKey}>
-      {platformIcons[platformKey]?.()}
-    </span>
-  ));
+  return (
+    <>
+      {uniquePlatforms.map((key) => {
+        const Icon = platformIcons[key];
+
+        return (
+          <span key={key}>
+            {Icon?.()}
+          </span>
+        );
+      })}
+    </>
+  );
 }
 
 export default memo(PostPlatforms);
