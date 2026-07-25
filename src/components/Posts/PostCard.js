@@ -3,15 +3,15 @@ import { Card } from "primereact/card";
 import { Avatar } from "primereact/avatar";
 import { Button } from "primereact/button";
 import { memo, useMemo, useCallback } from "react";
-import { getPlatformKey, platformIcons } from "../../utils/";
+import PostPlatforms from "./PostPlatforms";
 import "./PostCard.css"
 
 function PostCard({
   post,
   user,
-  interestedPosts,
+  interestedDoc,
   onToggleInterested,
-  onJoin,
+  onContactOwner,
   onEdit,
   onDelete,
   onShowProfile
@@ -19,37 +19,26 @@ function PostCard({
 
   const navigate = useNavigate();
 
-  const uniquePlatforms = useMemo(
-    () =>
-      [...new Set(
-        (post.platforms || [])
-          .map(getPlatformKey)
-          .filter(Boolean)
-      )],
-    [post.platforms]
-  );
-
-  const interestedDoc = useMemo(
-    () =>
-      interestedPosts.find(
-        item =>
-          item.postId === post.id &&
-          item.userId === user.uid
-      ),
-    [interestedPosts, post.id, user.uid]
-  );
-
   const isInterested = Boolean(interestedDoc);
 
-  const handleInterest = useCallback((event) => {
+  const handleInterest = useCallback(async(event) => {
     event.stopPropagation();
 
-    onToggleInterested(post, interestedDoc);
+    const success = await onToggleInterested(post, interestedDoc);
 
-    if (!isInterested) {
-      onJoin(post);
+    if (!success || isInterested) {
+      return;
     }
-  }, [onToggleInterested, post, interestedDoc, isInterested, onJoin]);
+
+    onContactOwner?.(post);
+
+  },[
+    onToggleInterested,
+    post,
+    interestedDoc,
+    isInterested,
+    onContactOwner
+  ]);
 
   const handleEdit = useCallback((event) => {
     event.stopPropagation();
@@ -70,29 +59,29 @@ function PostCard({
     navigate(`/post/${post.id}`);
   }, [navigate, post.id]);
 
-  const platformContent = useMemo(() => {
-    if (post.multiplatform) {
-      return uniquePlatforms.map(platform => (
-        <span key={platform}>
-          {platformIcons[platform]?.()}
-        </span>
-      ));
-    }
+  const gameTitle = post.logo ? (
+    <img 
+      src={post.logo}
+      alt={post.game}
+      className="logo-game"
+    />
+  ) : (
+    <h3>{post.game}</h3>
+  );
 
-    return platformIcons[post.platform]?.();
-  }, [post.multiplatform, uniquePlatforms, post.platform]);
-
-  const interestLabel = isInterested
-    ? "Ya no me interesa"
-    : "Quiero jugar";
-
-  const interestIcon = isInterested
-    ? "pi pi-times"
-    : "pi pi-users";
-
-  const interestSeverity = isInterested
-    ? "danger"
-    : "success";
+  const interestButton = useMemo(() => (
+    isInterested
+      ? {
+          label: "Ya no me interesa",
+          icon: "pi pi-times",
+          severity: "danger"
+        }
+      : {
+          label: "Quiero jugar",
+          icon: "pi pi-users",
+          severity: "success"
+        }
+  ), [isInterested]);
 
   const interestedBadgeText = "Te interesa esta publicación";
 
@@ -101,6 +90,8 @@ function PostCard({
   const showInterestedBadge = !isOwner && isInterested;
 
   const imageSrc = post.image ?? "/imagenotfound.png";
+
+  const usernameInitial = post.username?.charAt(0)?.toUpperCase() || "?";
 
   return (
     <Card 
@@ -122,14 +113,14 @@ function PostCard({
         />
       </div>
       <div>
-        {post.logo ? (
-          <img src={post.logo} alt={post.game} className="logo-game" />
-        ) : (
-          <h3>{post.game}</h3>
-        )}
+        {gameTitle}
         <div className="rawg-meta">
           <div className="meta-item">
-            {platformContent}
+            <PostPlatforms
+              multiplatform={post.multiplatform}
+              platforms={post.platforms}
+              platform={post.platform}
+            />
           </div>
           <div className="meta-item meta-item-right">
             <i className="pi pi-users"></i>
@@ -143,7 +134,7 @@ function PostCard({
           <div className="user-row">
             <Avatar
               image={post?.avatar}
-              label={post.username?.[0]?.toUpperCase()}
+              label={usernameInitial}
               shape="circle"
               className="clickable-avatar"
               onClick={handleShowProfile}
@@ -172,9 +163,9 @@ function PostCard({
               </>
             ) : (
               <Button
-                label={interestLabel}
-                icon={interestIcon}
-                severity={interestSeverity}
+                label={interestButton.label}
+                icon={interestButton.icon}
+                severity={interestButton.severity}
                 size="small"
                 onClick={handleInterest}
               />

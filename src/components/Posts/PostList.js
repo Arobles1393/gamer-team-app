@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { db } from "../../firebase/config";
 import { collection, onSnapshot, deleteDoc, doc, query, where, updateDoc, arrayUnion, addDoc, serverTimestamp, getDocs } from "firebase/firestore";
 import { Button } from "primereact/button";
@@ -145,7 +145,7 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
     setFriendStatus("none");
   };
 
-  const handleJoin = async(post) => {
+  const handleContactOwner = async(post) => {
     const ref = doc(db, "posts", post.id);
     await updateDoc(ref, {
       joinedUsers: arrayUnion(user.uid)
@@ -209,53 +209,73 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
   };
 
   const handleInterested = async (post, interestedDoc) => {
-    try {
-      if (interestedDoc) {
-        await deleteDoc(
-          doc(
-            db,
-            "post_interested",
-            interestedDoc.id
-          )
-        );
-        return;
-      }
-      await addDoc(
-        collection(db, "post_interested"),
-        {
-          postId: post.id,
-          userId: user.uid,
-          userName: userData.username,
-          createdAt: new Date()
-        }
+  try {
+
+    if(interestedDoc){
+      await deleteDoc(
+        doc(db,"post_interested",interestedDoc.id)
       );
-      await addDoc(collection(db, "notifications"), {
-        userId: post.userId,
-        senderId: user.uid,
-        senderName: userData.username,
-        senderAvatar: userData.avatar || null,
-        type: "interested",
-        title: "Nuevo interesado",
-        text: `${userData.username} esta interesado en tu partida`,
-        read: false,
-        createdAt: serverTimestamp(),
-        relatedId: post.id
-      });
-    } catch (error) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo guardar el interes " + error,
-        life: 3000
-      });
-      console.error(error);
+
+      return true;
     }
-  };
+
+
+    await addDoc(
+      collection(db,"post_interested"),
+      {
+        postId:post.id,
+        userId:user.uid,
+        userName:userData.username,
+        createdAt:new Date()
+      }
+    );
+
+
+    await addDoc(
+      collection(db,"notifications"),
+      {
+        userId:post.userId,
+        senderId:user.uid,
+        senderName:userData.username,
+        senderAvatar:userData.avatar || null,
+        type:"interested",
+        title:"Nuevo interesado",
+        text:`${userData.username} está interesado en tu partida`,
+        read:false,
+        createdAt:serverTimestamp(),
+        relatedId:post.id
+      }
+    );
+
+    return true;
+
+  } catch(error){
+
+    toast.current.show({
+      severity:"error",
+      summary:"Error",
+      detail:"No se pudo guardar el interés",
+      life:3000
+    });
+
+    return false;
+  }
+};
 
   const handleEditPost = (post) => {
     setEditingPost(post);
     setShowCreatePost(true);
   };
+
+  const interestedMap = useMemo(() => {
+    const map = new Map();
+
+    interestedPosts.forEach(item => {
+      map.set(`${item.postId}_${item.userId}`, item);
+    });
+
+    return map;
+  }, [interestedPosts]);
 
   return (
     <div>
@@ -298,15 +318,15 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
             key={post.id}
             post={post}
             user={user}
-            interestedPosts={interestedPosts}
+            interestedDoc={ interestedMap.get(`${post.id}_${user.uid}`) }
             onToggleInterested={handleInterested}
-            onJoin={handleJoin}
             onEdit={handleEditPost}
             onDelete={confirmDelete}
             onShowProfile={(userId) => {
               setSelectedUserId(userId);
               setShowProfile(true);
             }}
+            onContactOwner={handleContactOwner}
           />
         ))}
       </div>
