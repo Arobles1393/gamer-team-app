@@ -9,7 +9,7 @@ import { Button } from "primereact/button";
 import { sendFriendRequest } from "../services/friendService";
 import { useNavigate } from "react-router-dom";
 import { createOrGetChat } from "../services/chatService";
-import UserProfile from "./UserProfile";
+import { UserProfile } from "./UserProfile";
 
 export default function FindPlayers({ user, userData }) {
   const [users, setUsers] = useState([]);

@@ -6,7 +6,7 @@ import { Avatar } from "primereact/avatar";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { useNavigate } from "react-router-dom";
-import UserProfile from "./UserProfile";
+import { UserProfile } from "./UserProfile";
 import { sendFriendRequest } from "../services/friendService";
 import { createOrGetChat } from "../services/chatService";
 

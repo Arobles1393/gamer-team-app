@@ -1,16 +1,14 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { db } from "../../firebase/config";
 import { collection, onSnapshot, deleteDoc, doc, query, where, updateDoc, arrayUnion, addDoc, serverTimestamp, getDocs } from "firebase/firestore";
-import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
-import { Dialog } from "primereact/dialog";
-import UserProfile from "../UserProfile";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import { useNavigate } from "react-router-dom";
 import { createOrGetChat } from "../../services/chatService";
 import { sendFriendRequest } from "../../services/friendService";
 import PostCard from "./PostCard";
+import { UserProfileDialog } from "../UserProfile";
 
 export default function PostList({ user, userData, setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
   const [posts, setPosts] = useState([]);
@@ -267,6 +265,16 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
     setShowCreatePost(true);
   };
 
+  const handleFriendRequest = async () => {
+    await sendFriendRequest(
+      user,
+      userData,
+      selectedUserId
+    );
+
+    setFriendStatus("pending");
+  };
+
   const interestedMap = useMemo(() => {
     const map = new Map();
 
@@ -330,65 +338,15 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
           />
         ))}
       </div>
-      <Dialog
-        pt={{
-          header: { style: { padding: 0 } }
-        }}
+      <UserProfileDialog
         visible={showProfile}
-        style={{ width: "1100px" }}
         onHide={() => setShowProfile(false)}
-        breakpoints={{ "960px": "75vw", "640px": "90vw" }}
-        dismissableMask
-        draggable={false}
-      >
-        {selectedUserId && (
-          <div className="profile-container">
-            <UserProfile userId={selectedUserId} user={user} />
-            {user.uid !== selectedUserId && (
-              <>
-                {friendStatus === "none" && (
-                  <Button
-                    label="Agregar amigo"
-                    icon="pi pi-user-plus"
-                    onClick={async () => {
-
-                      await sendFriendRequest(
-                        user,
-                        userData,
-                        selectedUserId
-                      );
-
-                      setFriendStatus(
-                        "pending"
-                      );
-                    }}
-                  />
-                )}
-                {friendStatus === "pending" && (
-                  <Button
-                    label="Solicitud enviada"
-                    icon="pi pi-clock"
-                    disabled
-                  />
-                )}
-                {friendStatus === "friends" && (
-                  <Button
-                    label="Amigos"
-                    icon="pi pi-check"
-                    severity="success"
-                    disabled
-                  />
-                )}
-                <Button
-                  icon="pi pi-comments"
-                  className="chat-fab p-button-rounded p-button-success"
-                  onClick={handleChat}
-                />
-              </>
-            )}
-          </div>
-        )}
-      </Dialog>
+        selectedUserId={selectedUserId}
+        user={user}
+        friendStatus={friendStatus}
+        onSendFriendRequest={handleFriendRequest}
+        onChat={handleChat}
+      />
       <ConfirmDialog />
       <Toast ref={toast} />
     </div>

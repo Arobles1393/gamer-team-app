@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { db, functions } from "../firebase/config";
+import { db, functions } from "../../firebase/config";
 import { doc, onSnapshot } from "firebase/firestore";
 import { Avatar } from "primereact/avatar";
-import { platformIcons } from "../utils/platformIcons";
-import { getPlatform } from "../utils/getPlatform";
-import { getLabel } from "../utils/getLabel";
+import { platformIcons } from "../../utils/platformIcons";
+import { getPlatform } from "../../utils/getPlatform";
+import { getLabel } from "../../utils/getLabel";
 import { httpsCallable } from "firebase/functions";
-import SteamStats from "../steam/steamStats";
-import GameAchievements from "./GameArchievements";
+import SteamStats from "../../steam/steamStats";
+import GameAchievements from "../GameArchievements";
 import { Dialog } from "primereact/dialog";
 
 export default function UserProfile({ userId, user }) {

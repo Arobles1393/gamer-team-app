@@ -5,7 +5,7 @@ import { Avatar } from "primereact/avatar";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import { platformIcons } from "../utils/platformIcons";
-import UserProfile from "./UserProfile";
+import { UserProfile } from "./UserProfile";
 import { Dialog } from "primereact/dialog";
 import { createOrGetChat } from "../services/chatService";
 import { sendFriendRequest } from "../services/friendService";
