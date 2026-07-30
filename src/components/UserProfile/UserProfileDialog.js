@@ -3,6 +3,23 @@ import { memo } from "react";
 import UserProfile from "./UserProfile";
 import UserProfileActions from "./UserProfileActions";
 
+const DIALOG_PT = {
+  header: {
+    style: { padding: 0 }
+  }
+};
+
+const DIALOG_PROPS = {
+  pt: DIALOG_PT,
+  style: { width: "1100px" },
+  breakpoints: {
+    "960px": "75vw",
+    "640px": "90vw"
+  },
+  dismissableMask: true,
+  draggable: false
+};
+
 const UserProfileDialog = ({
   visible,
   onHide,
@@ -17,26 +34,18 @@ const UserProfileDialog = ({
     return null;
   }
 
-  const isOwnProfile = user?.uid === selectedUserId;
-
   return (
     <Dialog
-      pt={{
-        header: { style: { padding: 0 } }
-      }}
+      {...DIALOG_PROPS}
       visible={visible}
-      style={{ width: "1100px" }}
       onHide={onHide}
-      breakpoints={{ "960px": "75vw", "640px": "90vw" }}
-      dismissableMask
-      draggable={false}
     >
       <div className="profile-container">
         <UserProfile
           userId={selectedUserId}
           user={user}
         />
-        {!isOwnProfile && (
+        {user?.uid !== selectedUserId && (
           <UserProfileActions
             friendStatus={friendStatus}
             onSendFriendRequest={onSendFriendRequest}
