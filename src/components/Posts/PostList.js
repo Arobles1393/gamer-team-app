@@ -9,6 +9,7 @@ import { createOrGetChat } from "../../services/chatService";
 import { sendFriendRequest } from "../../services/friendService";
 import PostCard from "./PostCard";
 import { UserProfileDialog } from "../UserProfile";
+import { useFriendStatus } from "../../hooks";
 
 export default function PostList({ user, userData, setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
   const [posts, setPosts] = useState([]);
@@ -19,7 +20,6 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
   const [filterPlatform, setFilterPlatform] = useState(null);
   const [title, setTitle] = useState("");
   const [interestedPosts, setInterestedPosts] = useState([]);
-  const [friendStatus, setFriendStatus] = useState("none");
   const toast = useRef(null);
   const navigate = useNavigate();
   const gameOptions = [
@@ -37,6 +37,14 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
     { label: "PC", value: "pc" },
     { label: "Mobile", value: "mobile" }
   ]
+
+  const {
+    friendStatus,
+    setFriendStatus
+  } = useFriendStatus(
+      user,
+      selectedUserId
+  );
 
   useEffect(() => {
     if (onlyMine && !user) return;
@@ -88,60 +96,6 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
     });
     return () => unsubscribe();
   }, [user]);
-
-  useEffect(() => {
-    if (!user || !selectedUserId) return;
-
-    checkFriendStatus();
-  }, [user, selectedUserId]);
-
-  const checkFriendStatus = async () => {
-  
-    // Revisar amistad
-
-    const friendsQuery = query(
-      collection(db, "friends"),
-      where("users", "array-contains", user.uid)
-    );
-
-    const friendsSnap =
-      await getDocs(friendsQuery);
-
-    const isFriend =
-      friendsSnap.docs.some(doc =>
-        doc.data().users.includes(
-          selectedUserId
-        )
-      );
-
-    if (isFriend) {
-      setFriendStatus("friends");
-      return;
-    }
-
-    // Revisar solicitud pendiente
-
-    const requestQuery = query(
-      collection(db, "friend_requests"),
-      where("senderId", "==", user.uid),
-      where(
-        "receiverId",
-        "==",
-        selectedUserId
-      ),
-      where("status", "==", "pending")
-    );
-
-    const requestSnap =
-      await getDocs(requestQuery);
-
-    if (!requestSnap.empty) {
-      setFriendStatus("pending");
-      return;
-    }
-
-    setFriendStatus("none");
-  };
 
   const handleContactOwner = async(post) => {
     const ref = doc(db, "posts", post.id);
