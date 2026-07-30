@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { db } from "../../firebase/config";
-import { collection, onSnapshot, deleteDoc, doc, query, where, updateDoc, arrayUnion, addDoc, serverTimestamp, getDocs } from "firebase/firestore";
+import { collection, onSnapshot, deleteDoc, doc, query, updateDoc, arrayUnion, addDoc, serverTimestamp } from "firebase/firestore";
 import { Dropdown } from "primereact/dropdown";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
@@ -9,16 +9,24 @@ import { createOrGetChat } from "../../services/chatService";
 import { sendFriendRequest } from "../../services/friendService";
 import PostCard from "./PostCard";
 import { UserProfileDialog } from "../UserProfile";
-import { useFriendStatus } from "../../hooks";
+import { useFriendStatus, usePosts } from "../../hooks";
 
 export default function PostList({ user, userData, setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
-  const [posts, setPosts] = useState([]);
+
+  const {
+    posts,
+    title
+  } = usePosts(
+    user,
+    onlyMine,
+    joined
+  );
+
   const [filterGame, setFilterGame] = useState(null);
   const games = [...new Set(posts.map(post => post.game))];
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
   const [filterPlatform, setFilterPlatform] = useState(null);
-  const [title, setTitle] = useState("");
   const [interestedPosts, setInterestedPosts] = useState([]);
   const toast = useRef(null);
   const navigate = useNavigate();
@@ -45,42 +53,6 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
       user,
       selectedUserId
   );
-
-  useEffect(() => {
-    if (onlyMine && !user) return;
-
-    const base = collection(db, "posts");
-
-    let q;
-
-    if (onlyMine) {
-      q = query(
-        base, 
-        where("userId", "==", user.uid)
-      );
-      setTitle("Mis publicaciones 🎮");
-    } else if (joined) {
-      q = query(
-        base,
-        where("joinedUsers", "array-contains", user.uid)
-      );
-      setTitle("Mis partidas 🎮");
-    } else {
-      setTitle("Partidas disponibles 🎮");
-      q = base;
-    }
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-
-      setPosts(data);
-    });
-
-    return () => unsubscribe();
-  }, [user, onlyMine, joined]);
 
   useEffect(() => {
     if (!user) return;
