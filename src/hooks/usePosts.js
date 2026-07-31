@@ -7,40 +7,41 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 
+const mapPosts = (snapshot) => snapshot.docs.map(doc => ({
+  id: doc.id,
+  ...doc.data()
+}));
+
 export const usePosts = (
   user,
   onlyMine = false,
   joined = false
 ) => {
   const [posts, setPosts] = useState([]);
-  const [title, setTitle] = useState("");
 
-  const getTitle = () => {
-    if (onlyMine) return "Mis publicaciones 🎮";
-    if (joined) return "Mis partidas 🎮";
-    return "Partidas disponibles 🎮";
-  };
+  const title = onlyMine
+    ? "Mis publicaciones 🎮"
+    : joined
+      ? "Mis partidas 🎮"
+      : "Partidas disponibles 🎮";
 
   useEffect(() => {
     if ((onlyMine || joined) && !user) {
       setPosts([]);
-      setTitle("");
       return;
     }
 
     const base = collection(db, "posts");
 
-    let postsQuery;
+    let q;
 
     if (onlyMine) {
-      postsQuery = query(
+      q = query(
         base,
         where("userId", "==", user.uid)
       );
-
-      setTitle(getTitle());
     } else if (joined) {
-      postsQuery = query(
+      q = query(
         base,
         where(
           "joinedUsers",
@@ -48,22 +49,14 @@ export const usePosts = (
           user.uid
         )
       );
-
-      setTitle(getTitle());
     } else {
-      postsQuery = base;
-      setTitle(getTitle());
+      q = base;
     }
 
     const unsubscribe = onSnapshot(
-      postsQuery,
+      q,
       (snapshot) => {
-        setPosts(
-          snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }))
-        );
+        setPosts(mapPosts(snapshot));
       },
       (error) => {
         console.error(

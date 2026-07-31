@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useState, useRef } from "react";
 import { db } from "../../firebase/config";
-import { collection, onSnapshot, deleteDoc, doc, query, updateDoc, arrayUnion, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, deleteDoc, doc, updateDoc, arrayUnion, addDoc, serverTimestamp } from "firebase/firestore";
 import { Dropdown } from "primereact/dropdown";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
@@ -9,7 +9,7 @@ import { createOrGetChat } from "../../services/chatService";
 import { sendFriendRequest } from "../../services/friendService";
 import PostCard from "./PostCard";
 import { UserProfileDialog } from "../UserProfile";
-import { useFriendStatus, usePosts } from "../../hooks";
+import { useFriendStatus, usePosts, useInterestedPosts } from "../../hooks";
 
 export default function PostList({ user, userData, setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
 
@@ -27,7 +27,6 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
   const [filterPlatform, setFilterPlatform] = useState(null);
-  const [interestedPosts, setInterestedPosts] = useState([]);
   const toast = useRef(null);
   const navigate = useNavigate();
   const gameOptions = [
@@ -54,20 +53,7 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
       selectedUserId
   );
 
-  useEffect(() => {
-    if (!user) return;
-    const q = query(
-      collection(db, "post_interested")
-    );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setInterestedPosts(data);
-    });
-    return () => unsubscribe();
-  }, [user]);
+  const { interestedMap } = useInterestedPosts(user);
 
   const handleContactOwner = async(post) => {
     const ref = doc(db, "posts", post.id);
@@ -200,16 +186,6 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
 
     setFriendStatus("pending");
   };
-
-  const interestedMap = useMemo(() => {
-    const map = new Map();
-
-    interestedPosts.forEach(item => {
-      map.set(`${item.postId}_${item.userId}`, item);
-    });
-
-    return map;
-  }, [interestedPosts]);
 
   return (
     <div>
