@@ -1,12 +1,13 @@
 import { useState, useRef } from "react";
 import { db } from "../../firebase/config";
-import { collection, deleteDoc, doc, updateDoc, arrayUnion, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, deleteDoc, doc, addDoc, serverTimestamp } from "firebase/firestore";
 import { Dropdown } from "primereact/dropdown";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import { useNavigate } from "react-router-dom";
 import { createOrGetChat } from "../../services/chatService";
 import { sendFriendRequest } from "../../services/friendService";
+import { postService } from "../../services/posts";
 import PostCard from "./PostCard";
 import { UserProfileDialog } from "../UserProfile";
 import { useFriendStatus, usePosts, useInterestedPosts } from "../../hooks";
@@ -56,17 +57,14 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
   const { interestedMap } = useInterestedPosts(user);
 
   const handleContactOwner = async(post) => {
-    const ref = doc(db, "posts", post.id);
-    await updateDoc(ref, {
-      joinedUsers: arrayUnion(user.uid)
-    });
+    await postService.joinPost(post.id, user.uid);
     const message = `Hola ${post.username}, Quiero unirme a tu partida de ${post.game} 🎮`;
     window.open(`https://wa.me/${post.phone}?text=${encodeURIComponent(message)}`);
   };
 
   const handleDelete = async (id) => {
     try {
-      await deleteDoc(doc(db, "posts", id));
+      await postService.deletePost(id);
       console.log("Eliminado correctamente");
     } catch (error) {
       toast.current.show({
