@@ -9,7 +9,7 @@ import { postService, interestService } from "../../services/posts";
 import { confirmDeletePost } from "../../utils/confirmDeletePost";
 import PostCard from "./PostCard";
 import { UserProfileDialog } from "../UserProfile";
-import { useFriendStatus, usePosts, useInterestedPosts, useFilteredPosts } from "../../hooks";
+import { useFriendStatus, usePosts, useInterestedPosts, useFilteredPosts, usePostFilters } from "../../hooks";
 
 export default function PostList({ user, userData, setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
 
@@ -22,28 +22,19 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
     joined
   );
 
-  const [filterGame, setFilterGame] = useState(null);
-  const games = [...new Set(posts.map(post => post.game))];
+  const {
+    filterGame,
+    setFilterGame,
+    filterPlatform,
+    setFilterPlatform,
+    gameOptions,
+    platformOptions
+  } = usePostFilters(posts);
+
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
-  const [filterPlatform, setFilterPlatform] = useState(null);
   const toast = useRef(null);
   const navigate = useNavigate();
-  const gameOptions = [
-    { label: "Todos", value: "" },
-    ...games.map((game) => ({
-      label: game,
-      value: game
-    }))
-  ];
-  const platformOptions = [
-    { label: "Todas", value: "" },
-    { label: "PlayStation", value: "playstation" },
-    { label: "Xbox", value: "xbox" },
-    { label: "Switch", value: "switch" },
-    { label: "PC", value: "pc" },
-    { label: "Mobile", value: "mobile" }
-  ]
 
   const {
     friendStatus,
