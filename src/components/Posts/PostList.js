@@ -1,13 +1,11 @@
 import { useState, useRef } from "react";
-import { db } from "../../firebase/config";
-import { collection, deleteDoc, doc, addDoc, serverTimestamp } from "firebase/firestore";
 import { Dropdown } from "primereact/dropdown";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import { useNavigate } from "react-router-dom";
 import { createOrGetChat } from "../../services/chatService";
 import { sendFriendRequest } from "../../services/friendService";
-import { postService } from "../../services/posts";
+import { postService, interestService } from "../../services/posts";
 import PostCard from "./PostCard";
 import { UserProfileDialog } from "../UserProfile";
 import { useFriendStatus, usePosts, useInterestedPosts } from "../../hooks";
@@ -116,59 +114,30 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
     setShowProfile(false);
   };
 
-  const handleInterested = async (post, interestedDoc) => {
-  try {
+  const handleInterested = async (
+    post,
+    interestedDoc
+  ) => {
+    try {
+      return await interestService.toggleInterested({
+        post,
+        interestedDoc,
+        user,
+        userData
+      });
 
-    if(interestedDoc){
-      await deleteDoc(
-        doc(db,"post_interested",interestedDoc.id)
-      );
+    } catch (error) {
 
-      return true;
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudo guardar el interés",
+        life: 3000
+      });
+
+      return false;
     }
-
-
-    await addDoc(
-      collection(db,"post_interested"),
-      {
-        postId:post.id,
-        userId:user.uid,
-        userName:userData.username,
-        createdAt:new Date()
-      }
-    );
-
-
-    await addDoc(
-      collection(db,"notifications"),
-      {
-        userId:post.userId,
-        senderId:user.uid,
-        senderName:userData.username,
-        senderAvatar:userData.avatar || null,
-        type:"interested",
-        title:"Nuevo interesado",
-        text:`${userData.username} está interesado en tu partida`,
-        read:false,
-        createdAt:serverTimestamp(),
-        relatedId:post.id
-      }
-    );
-
-    return true;
-
-  } catch(error){
-
-    toast.current.show({
-      severity:"error",
-      summary:"Error",
-      detail:"No se pudo guardar el interés",
-      life:3000
-    });
-
-    return false;
-  }
-};
+  };
 
   const handleEditPost = (post) => {
     setEditingPost(post);
