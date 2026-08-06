@@ -6,3 +6,4 @@ export * from "./usePosts";
 export * from "./useInterestedPosts";
 export * from "./useFilteredPosts";
 export * from "./usePostFilters";
+export * from "./useProfileChat";

@@ -2,14 +2,12 @@ import { useState, useRef } from "react";
 import { Dropdown } from "primereact/dropdown";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
-import { useNavigate } from "react-router-dom";
-import { createOrGetChat } from "../../services/chatService";
 import { sendFriendRequest } from "../../services/friendService";
 import { postService, interestService } from "../../services/posts";
 import { confirmDeletePost } from "../../utils/confirmDeletePost";
 import PostCard from "./PostCard";
 import { UserProfileDialog } from "../UserProfile";
-import { useFriendStatus, usePosts, useInterestedPosts, useFilteredPosts, usePostFilters } from "../../hooks";
+import { useFriendStatus, usePosts, useInterestedPosts, useFilteredPosts, usePostFilters, useProfileChat } from "../../hooks";
 
 export default function PostList({ user, userData, setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
 
@@ -34,7 +32,6 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
   const toast = useRef(null);
-  const navigate = useNavigate();
 
   const {
     friendStatus,
@@ -87,17 +84,13 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
     filterPlatform
   );
 
-  const handleChat = async () => {
-    const chatId = await createOrGetChat(user, {
-      uid: selectedUserId
-    });
-
-    navigate("/chat", {
-      state: { chatId }
-    });
-
-    setShowProfile(false);
-  };
+  const {
+    handleChat
+  } = useProfileChat(
+    user,
+    selectedUserId,
+    () => setShowProfile(false)
+  );
 
   const handleInterested = async (
     post,
