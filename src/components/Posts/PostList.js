@@ -1,11 +1,12 @@
 import { useState, useRef } from "react";
 import { Dropdown } from "primereact/dropdown";
-import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { ConfirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import { useNavigate } from "react-router-dom";
 import { createOrGetChat } from "../../services/chatService";
 import { sendFriendRequest } from "../../services/friendService";
 import { postService, interestService } from "../../services/posts";
+import { confirmDeletePost } from "../../utils/confirmDeletePost";
 import PostCard from "./PostCard";
 import { UserProfileDialog } from "../UserProfile";
 import { useFriendStatus, usePosts, useInterestedPosts } from "../../hooks";
@@ -76,23 +77,16 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
   };
 
   const confirmDelete = (id) => {
-    confirmDialog({
-      message: "¿Seguro que quieres eliminar esta publicación?",
-      header: "Advertencia",
-      icon: "pi pi-exclamation-triangle",
-      acceptLabel: "eliminar",
-      rejectLabel: "Cancelar",
-
-      accept: () => {
-        handleDelete(id);
+    confirmDeletePost({
+      onAccept: () => handleDelete(id),
+      onSuccess: () => {
         toast.current.show({
           severity: "success",
           summary: "Eliminado",
           detail: "Publicación eliminada correctamente",
           life: 3000
         });
-      },
-      reject: () => {}
+      }
     });
   };
 
