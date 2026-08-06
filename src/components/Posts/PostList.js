@@ -9,7 +9,7 @@ import { postService, interestService } from "../../services/posts";
 import { confirmDeletePost } from "../../utils/confirmDeletePost";
 import PostCard from "./PostCard";
 import { UserProfileDialog } from "../UserProfile";
-import { useFriendStatus, usePosts, useInterestedPosts } from "../../hooks";
+import { useFriendStatus, usePosts, useInterestedPosts, useFilteredPosts } from "../../hooks";
 
 export default function PostList({ user, userData, setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
 
@@ -90,11 +90,11 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
     });
   };
 
-  const filteredPosts = posts.filter((post) => {
-    const matchGame = !filterGame || post.game === filterGame;
-    const matchPlatform = !filterPlatform || post.platform === filterPlatform;
-    return matchGame && matchPlatform;
-  });
+  const filteredPosts = useFilteredPosts(
+    posts,
+    filterGame,
+    filterPlatform
+  );
 
   const handleChat = async () => {
     const chatId = await createOrGetChat(user, {
