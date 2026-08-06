@@ -1,11 +1,11 @@
 import { useState, useRef } from "react";
-import { Dropdown } from "primereact/dropdown";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import { sendFriendRequest } from "../../services/friendService";
 import { postService, interestService } from "../../services/posts";
 import { confirmDeletePost } from "../../utils/confirmDeletePost";
 import PostCard from "./PostCard";
+import PostFilters from "./PostFilters";
 import { UserProfileDialog } from "../UserProfile";
 import { useFriendStatus, usePosts, useInterestedPosts, useFilteredPosts, usePostFilters, useProfileChat } from "../../hooks";
 
@@ -134,39 +134,16 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
 
   return (
     <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1rem"
-        }}
-      >
-        <h2 style={{ margin: 0 }}>
-          {title}
-          <span style={{ marginLeft: "8px", color: "#666", fontSize: "16px" }}>
-            ({filteredPosts.length})
-          </span>
-        </h2>
-        <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-          <Dropdown
-            value={filterGame}
-            options={gameOptions}
-            onChange={(e) => setFilterGame(e.value)}
-            optionLabel="label"
-            optionValue="value"
-            placeholder="🎮 Juego"
-          />
-          <Dropdown
-            value={filterPlatform}
-            options={platformOptions}
-            onChange={(e) => setFilterPlatform(e.value)}
-            optionLabel="label"
-            optionValue="value"
-            placeholder="🕹 Plataforma"
-          />
-        </div>
-      </div>
+      <PostFilters
+        title={title}
+        total={filteredPosts.length}
+        filterGame={filterGame}
+        onGameChange={setFilterGame}
+        filterPlatform={filterPlatform}
+        onPlatformChange={setFilterPlatform}
+        gameOptions={gameOptions}
+        platformOptions={platformOptions}
+      />
       <div className="post-grid">
         {filteredPosts.map((post) => (
           <PostCard
