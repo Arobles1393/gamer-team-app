@@ -1,13 +1,14 @@
 import { useState, useRef } from "react";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
-import { sendFriendRequest } from "../../services/friendService";
 import { postService } from "../../services/posts";
 import { confirmDeletePost } from "../../utils/confirmDeletePost";
 import PostCard from "./PostCard";
 import PostFilters from "./PostFilters";
 import { UserProfileDialog } from "../UserProfile";
-import { useFriendStatus, usePosts, useInterestedPosts, useFilteredPosts, usePostFilters, useProfileChat, usePostInterest } from "../../hooks";
+import { useFriendStatus, usePosts, useInterestedPosts, useFilteredPosts, usePostFilters, useProfileChat, usePostInterest,
+  useFriendRequest
+} from "../../hooks";
 
 export default function PostList({ user, userData, setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
 
@@ -50,26 +51,24 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
   const handleDelete = async (id) => {
     try {
       await postService.deletePost(id);
-      console.log("Eliminado correctamente");
+      return true;
     } catch (error) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar la publicacion",
-        life: 3000
-      });
       console.error("Error al eliminar:", error);
+      return false;
     }
   };
 
   const confirmDelete = (id) => {
     confirmDeletePost({
-      onAccept: () => handleDelete(id),
-      onSuccess: () => {
+      onAccept: async () => {
+        const success = await handleDelete(id);
+
         toast.current.show({
-          severity: "success",
-          summary: "Eliminado",
-          detail: "Publicación eliminada correctamente",
+          severity: success ? "success" : "error",
+          summary: success ? "Eliminado" : "Error",
+          detail: success
+            ? "Publicación eliminada correctamente"
+            : "No se pudo eliminar la publicación",
           life: 3000
         });
       }
@@ -108,15 +107,12 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
     setShowCreatePost(true);
   };
 
-  const handleFriendRequest = async () => {
-    await sendFriendRequest(
-      user,
-      userData,
-      selectedUserId
-    );
-
-    setFriendStatus("pending");
-  };
+  const { handleFriendRequest } = useFriendRequest(
+    user,
+    userData,
+    selectedUserId,
+    () => setFriendStatus("pending")
+  );
 
   return (
     <div>
