@@ -29,7 +29,7 @@ const toggleInterested = async ({
       postId: post.id,
       userId: user.uid,
       userName: userData.username,
-      createdAt: new Date()
+      createdAt: serverTimestamp()
     }
   );
 

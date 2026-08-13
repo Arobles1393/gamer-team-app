@@ -109,6 +109,11 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
     () => setFriendStatus("pending")
   );
 
+  const handleShowProfile = (userId) => {
+    setSelectedUserId(userId);
+    setShowProfile(true);
+  };
+
   return (
     <div>
       <PostFilters
@@ -131,10 +136,7 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
             onToggleInterested={handleInterested}
             onEdit={handleEditPost}
             onDelete={confirmDelete}
-            onShowProfile={(userId) => {
-              setSelectedUserId(userId);
-              setShowProfile(true);
-            }}
+            onShowProfile={handleShowProfile}
           />
         ))}
       </div>
