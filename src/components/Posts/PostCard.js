@@ -11,7 +11,6 @@ function PostCard({
   user,
   interestedDoc,
   onToggleInterested,
-  onContactOwner,
   onEdit,
   onDelete,
   onShowProfile
@@ -21,23 +20,14 @@ function PostCard({
 
   const isInterested = Boolean(interestedDoc);
 
-  const handleInterest = useCallback(async(event) => {
+  const handleInterest = useCallback(async (event) => {
     event.stopPropagation();
 
-    const success = await onToggleInterested(post, interestedDoc);
-
-    if (!success || isInterested) {
-      return;
-    }
-
-    onContactOwner?.(post);
-
-  },[
+    await onToggleInterested(post, interestedDoc);
+  }, [
     onToggleInterested,
     post,
-    interestedDoc,
-    isInterested,
-    onContactOwner
+    interestedDoc
   ]);
 
   const handleEdit = useCallback((event) => {

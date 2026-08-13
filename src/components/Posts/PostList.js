@@ -7,8 +7,7 @@ import PostCard from "./PostCard";
 import PostFilters from "./PostFilters";
 import { UserProfileDialog } from "../UserProfile";
 import { useFriendStatus, usePosts, useInterestedPosts, useFilteredPosts, usePostFilters, useProfileChat, usePostInterest,
-  useFriendRequest
-} from "../../hooks";
+  useFriendRequest } from "../../hooks";
 
 export default function PostList({ user, userData, setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
 
@@ -43,10 +42,6 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
   );
 
   const { interestedMap } = useInterestedPosts(user);
-
-  const handleContactOwner = async (post) => {
-    await postService.contactOwner(post, user.uid);
-  };
 
   const handleDelete = async (id) => {
     try {
@@ -140,7 +135,6 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
               setSelectedUserId(userId);
               setShowProfile(true);
             }}
-            onContactOwner={handleContactOwner}
           />
         ))}
       </div>
