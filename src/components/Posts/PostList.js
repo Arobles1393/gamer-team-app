@@ -2,12 +2,12 @@ import { useState, useRef } from "react";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import { sendFriendRequest } from "../../services/friendService";
-import { postService, interestService } from "../../services/posts";
+import { postService } from "../../services/posts";
 import { confirmDeletePost } from "../../utils/confirmDeletePost";
 import PostCard from "./PostCard";
 import PostFilters from "./PostFilters";
 import { UserProfileDialog } from "../UserProfile";
-import { useFriendStatus, usePosts, useInterestedPosts, useFilteredPosts, usePostFilters, useProfileChat } from "../../hooks";
+import { useFriendStatus, usePosts, useInterestedPosts, useFilteredPosts, usePostFilters, useProfileChat, usePostInterest } from "../../hooks";
 
 export default function PostList({ user, userData, setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
 
@@ -43,10 +43,8 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
 
   const { interestedMap } = useInterestedPosts(user);
 
-  const handleContactOwner = async(post) => {
-    await postService.joinPost(post.id, user.uid);
-    const message = `Hola ${post.username}, Quiero unirme a tu partida de ${post.game} 🎮`;
-    window.open(`https://wa.me/${post.phone}?text=${encodeURIComponent(message)}`);
+  const handleContactOwner = async (post) => {
+    await postService.contactOwner(post, user.uid);
   };
 
   const handleDelete = async (id) => {
@@ -92,30 +90,18 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
     () => setShowProfile(false)
   );
 
-  const handleInterested = async (
-    post,
-    interestedDoc
-  ) => {
-    try {
-      return await interestService.toggleInterested({
-        post,
-        interestedDoc,
-        user,
-        userData
-      });
-
-    } catch (error) {
-
+  const { handleInterested } = usePostInterest(
+    user,
+    userData,
+    () => {
       toast.current.show({
         severity: "error",
         summary: "Error",
         detail: "No se pudo guardar el interés",
         life: 3000
       });
-
-      return false;
     }
-  };
+  );
 
   const handleEditPost = (post) => {
     setEditingPost(post);

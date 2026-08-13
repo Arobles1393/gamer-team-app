@@ -19,7 +19,18 @@ const joinPost = (postId, userId) => {
   );
 };
 
+const contactOwner = async (post, userId) => {
+  await joinPost(post.id, userId);
+
+  const message = `Hola ${post.username}, Quiero unirme a tu partida de ${post.game} 🎮`;
+
+  window.open(
+    `https://wa.me/${post.phone}?text=${encodeURIComponent(message)}`
+  );
+};
+
 export const postService = {
   deletePost,
-  joinPost
+  joinPost,
+  contactOwner
 };

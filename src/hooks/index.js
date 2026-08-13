@@ -7,3 +7,4 @@ export * from "./useInterestedPosts";
 export * from "./useFilteredPosts";
 export * from "./usePostFilters";
 export * from "./useProfileChat";
+export * from "./usePostInterest";
