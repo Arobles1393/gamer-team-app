@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { db, functions } from "../../firebase/config";
-import { collection, addDoc, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
+import { functions } from "../../firebase/config";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
@@ -11,6 +10,7 @@ import { searchGames } from "../../utils/searchGames";
 import { Toast } from "primereact/toast";
 import { httpsCallable } from "firebase/functions";
 import { Checkbox } from "primereact/checkbox";
+import { postService } from "../../services/posts";
 
 export default function CreatePost({ user, userData, onClose, editingPost }) {
   const [game, setGame] = useState({});
@@ -20,6 +20,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
   const [suggestions, setSuggestions] = useState([]);
   const [multiplatform, setMultiplatform] = useState(false);
   const toast = useRef(null);
+  const searchTimeout = useRef(null);
   const platforms = [
     { label: "PlayStation", value: "playstation" },
     { label: "Xbox", value: "xbox" },
@@ -38,6 +39,12 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
   );
 
   useEffect(() => {
+    return () => {
+      clearTimeout(searchTimeout.current);
+    };
+  }, []);
+
+  useEffect(() => {
     if (editingPost) {
       setGame(editingPost.game || "");
       setPlatform(editingPost.platform || "");
@@ -47,45 +54,84 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
     }
   }, [editingPost]);
 
+  const resetForm = () => {
+    setGame({});
+    setPlayers("");
+    setComments("");
+    setPlatform("");
+    setMultiplatform(false);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let state = "guardar"
-    try{
-      if (!game || !players || !comments?.trim() || (!multiplatform && !platform)) {
+
+    const state = editingPost ? "actualizar" : "guardar";
+
+    try {
+      if (
+        !game ||
+        !players ||
+        !comments?.trim() ||
+        (!multiplatform && !platform)
+      ) {
         alert("Completa todos los campos");
         return;
       }
-      let image = await getExistingImage(game.value ?? game);
-      let logo = await getExistingLogo(game.value ?? game);
-      let clip = await getExistingClip(game.value ?? game);
-      let portada = await getExistingPortada(game.value ?? game);
+
+      const gameName = game.value ?? game;
+
+      const media = await postService.getExistingMedia(gameName);
+
+      let image = media.image;
+      let clip = media.clip;
+      let logo = media.logo;
+      let portada = media.portada;
+
       if (!image) {
         image = game.image ?? editingPost?.image ?? null;
       }
-      if (!logo) {
-        logo = await getGameLogo({ steamAppId: game.steamAppId ?? editingPost?.steamAppId, gameName: game.value ?? game });
-      }
+
       if (!clip) {
         clip = game.clip ?? editingPost?.clip ?? null;
       }
-      if (!portada) {
-        portada = await getGamePortada({ steamAppId: game.steamAppId ?? editingPost?.steamAppId, gameName: game.value ?? game });
-      }
-      if (editingPost) {
-        state = "actualizar"
-        const postRef = doc(db, "posts", editingPost.id);
-        await updateDoc(postRef, {
-          game: game.value ?? game,
-          platform,
-          playersNeeded: players,
-          comments,
-          image: image || null,
-          logo: logo.data?.logo ?? editingPost?.logo ?? null,
-          clip: clip || null,
-          portada: portada.data?.portada ?? editingPost?.portada ?? null,
-          platforms: game.platforms ?? editingPost.platforms ?? null,
-          multiplatform: multiplatform
+
+      if (!logo) {
+        const result = await getGameLogo({
+          steamAppId: game.steamAppId ?? editingPost?.steamAppId,
+          gameName
         });
+
+        logo = result?.data?.logo ?? null;
+      }
+
+      if (!portada) {
+        const result = await getGamePortada({
+          steamAppId: game.steamAppId ?? editingPost?.steamAppId,
+          gameName
+        });
+
+        portada = result?.data?.portada ?? null;
+      }
+
+      const postData = {
+        game: gameName,
+        platform,
+        playersNeeded: players,
+        comments,
+        image,
+        logo: logo ?? editingPost?.logo ?? null,
+        clip,
+        portada: portada ?? editingPost?.portada ?? null,
+        platforms: game.platforms ?? editingPost?.platforms ?? null,
+        multiplatform
+      };
+
+      if (editingPost) {
+
+        await postService.updatePost(
+          editingPost.id,
+          postData
+        );
 
         toast.current.show({
           severity: "success",
@@ -95,22 +141,14 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
         });
 
       } else {
-        await addDoc(collection(db, "posts"), {
+
+        await postService.createPost({
+          ...postData,
           userId: user.uid,
           username: userData?.username,
           region: userData?.region,
-          game: game.value,
-          playersNeeded: players,
-          image: image || null,
-          logo: logo.data?.logo || null,
-          clip: clip || null,
-          portada: portada.data?.portada || null,
           phone: userData?.phone,
-          createdAt: new Date(),
-          comments,
-          platform,
-          platforms: game.platforms,
-          multiplatform: multiplatform
+          createdAt: new Date()
         });
 
         toast.current.show({
@@ -120,76 +158,27 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
           life: 3000
         });
       }
-      setGame({});
-      setPlayers("");
-      setComments("");
-      setPlatform("")
-      setMultiplatform(false);
+
+      resetForm();
       onClose();
-    }catch (error) {
+
+    } catch (error) {
+
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo "+state+" la publicacion " + error,
+        detail: `No se pudo ${state} la publicación`,
         life: 3000
       });
+
       console.error("Error:", error);
     }
   };
 
-  const getExistingImage = async (game) => {
-    const q = query(collection(db, "posts"), where("game", "==", game));
+  const handleSearch = (e) => {
+    clearTimeout(searchTimeout.current);
 
-    const snapshot = await getDocs(q);
-
-    if (!snapshot.empty) {
-      return snapshot.docs[0].data().image;
-    }
-
-    return null;
-  };
-
-  const getExistingClip = async (game) => {
-    const q = query(collection(db, "posts"), where("game", "==", game), where("clip", "!=", null));
-
-    const snapshot = await getDocs(q);
-
-    if (!snapshot.empty) {
-      return snapshot.docs[0].data().clip;
-    }
-
-    return null;
-  };
-
-  const getExistingLogo = async (game) => {
-    const q = query(collection(db, "posts"), where("game", "==", game), where("logo", "!=", null));
-
-    const snapshot = await getDocs(q);
-
-    if (!snapshot.empty) {
-      return snapshot.docs[0].data().logo;
-    }
-
-    return null;
-  };
-
-  const getExistingPortada = async (game) => {
-    const q = query(collection(db, "posts"), where("game", "==", game), where("portada", "!=", null));
-
-    const snapshot = await getDocs(q);
-
-    if (!snapshot.empty) {
-      return snapshot.docs[0].data().portada;
-    }
-
-    return null;
-  };
-
-  let timeout = null;
-
-  const handleSearch = async (e) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(async () => {
+    searchTimeout.current = setTimeout(async () => {
       const results = await searchGames(e.query);
       setSuggestions(results);
     }, 300);
@@ -207,11 +196,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
   );
 
   const cancel = () => {
-    setGame({});
-    setPlayers("");
-    setComments("");
-    setPlatform("");
-    setMultiplatform(false);
+    resetForm();
     onClose();
   }
 

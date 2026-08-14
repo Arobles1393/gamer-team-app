@@ -2,7 +2,11 @@ import {
   doc,
   deleteDoc,
   updateDoc,
-  arrayUnion
+  query,
+  collection,
+  where,
+  getDocs,
+  addDoc
 } from "firebase/firestore";
 import { db } from "../../firebase/config";
 
@@ -10,27 +14,52 @@ const deletePost = (postId) => {
   return deleteDoc(doc(db, "posts", postId));
 };
 
-const joinPost = (postId, userId) => {
-  return updateDoc(
-    doc(db, "posts", postId),
-    {
-      joinedUsers: arrayUnion(userId)
-    }
+const getExistingMedia = async (game) => {
+
+  const q = query(
+    collection(db, "posts"),
+    where("game", "==", game)
+  );
+
+  const snapshot = await getDocs(q);
+
+  if (snapshot.empty) {
+    return {
+      image: null,
+      clip: null,
+      logo: null,
+      portada: null
+    };
+  }
+
+  const data = snapshot.docs[0].data();
+
+  return {
+    image: data.image || null,
+    clip: data.clip || null,
+    logo: data.logo || null,
+    portada: data.portada || null
+  };
+};
+
+const createPost = (postData) => {
+  return addDoc(
+    collection(db, "posts"),
+    postData
   );
 };
 
-const contactOwner = async (post, userId) => {
-  await joinPost(post.id, userId);
 
-  const message = `Hola ${post.username}, Quiero unirme a tu partida de ${post.game} 🎮`;
-
-  window.open(
-    `https://wa.me/${post.phone}?text=${encodeURIComponent(message)}`
+const updatePost = (postId, postData) => {
+  return updateDoc(
+    doc(db, "posts", postId),
+    postData
   );
 };
 
 export const postService = {
   deletePost,
-  joinPost,
-  contactOwner
+  getExistingMedia,
+  createPost,
+  updatePost
 };
