@@ -9,3 +9,4 @@ export * from "./usePostFilters";
 export * from "./useProfileChat";
 export * from "./usePostInterest";
 export * from "./useFriendRequest";
+export * from "./useGameSearch";

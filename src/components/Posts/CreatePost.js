@@ -6,21 +6,19 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { AutoComplete } from "primereact/autocomplete";
-import { searchGames } from "../../utils/searchGames";
 import { Toast } from "primereact/toast";
 import { httpsCallable } from "firebase/functions";
 import { Checkbox } from "primereact/checkbox";
 import { postService } from "../../services/posts";
+import { useGameSearch } from "../../hooks";
 
 export default function CreatePost({ user, userData, onClose, editingPost }) {
   const [game, setGame] = useState({});
   const [players, setPlayers] = useState("");
   const [comments, setComments] = useState("");
   const [platform, setPlatform] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
   const [multiplatform, setMultiplatform] = useState(false);
   const toast = useRef(null);
-  const searchTimeout = useRef(null);
   const platforms = [
     { label: "PlayStation", value: "playstation" },
     { label: "Xbox", value: "xbox" },
@@ -38,11 +36,10 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
     "getGamePortada"
   );
 
-  useEffect(() => {
-    return () => {
-      clearTimeout(searchTimeout.current);
-    };
-  }, []);
+  const {
+    suggestions,
+    handleSearch
+  } = useGameSearch();
 
   useEffect(() => {
     if (editingPost) {
@@ -173,15 +170,6 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
 
       console.error("Error:", error);
     }
-  };
-
-  const handleSearch = (e) => {
-    clearTimeout(searchTimeout.current);
-
-    searchTimeout.current = setTimeout(async () => {
-      const results = await searchGames(e.query);
-      setSuggestions(results);
-    }, 300);
   };
 
   const itemTemplate = (item) => (
