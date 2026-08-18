@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef } from "react";
-import { functions } from "../../firebase/config";
+import { useRef } from "react";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
@@ -7,18 +6,10 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { AutoComplete } from "primereact/autocomplete";
 import { Toast } from "primereact/toast";
-import { httpsCallable } from "firebase/functions";
 import { Checkbox } from "primereact/checkbox";
-import { postService } from "../../services/posts";
-import { useGameSearch } from "../../hooks";
+import { useGameSearch, useCreatePost } from "../../hooks";
 
 export default function CreatePost({ user, userData, onClose, editingPost }) {
-  const [game, setGame] = useState({});
-  const [players, setPlayers] = useState("");
-  const [comments, setComments] = useState("");
-  const [platform, setPlatform] = useState("");
-  const [multiplatform, setMultiplatform] = useState(false);
-  const toast = useRef(null);
   const platforms = [
     { label: "PlayStation", value: "playstation" },
     { label: "Xbox", value: "xbox" },
@@ -27,150 +18,55 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
     { label: "Mobile", value: "mobile" },
     { label: "Wii", value: "wii" }
   ];
-  const getGameLogo = httpsCallable(
-    functions,
-    "getGameLogo"
-  );
-  const getGamePortada = httpsCallable(
-    functions,
-    "getGamePortada"
-  );
+
+  const toast = useRef(null);
+
+  const {
+    game,
+    setGame,
+    players,
+    setPlayers,
+    comments,
+    setComments,
+    platform,
+    setPlatform,
+    multiplatform,
+    setMultiplatform,
+    loading,
+    resetForm,
+    handleSubmit
+  } = useCreatePost({
+    user,
+    userData,
+    editingPost,
+    onSuccess: (action) => {
+      toast.current.show({
+        severity: "success",
+        summary: action === "actualizar"
+          ? "Actualizada"
+          : "Creada",
+        detail: action === "actualizar"
+          ? "Publicación actualizada correctamente"
+          : "Publicación creada correctamente",
+        life: 3000
+      });
+
+      onClose();
+    },
+    onError: (message) => {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: message,
+        life: 3000
+      });
+    }
+  });
 
   const {
     suggestions,
     handleSearch
   } = useGameSearch();
-
-  useEffect(() => {
-    if (editingPost) {
-      setGame(editingPost.game || "");
-      setPlatform(editingPost.platform || "");
-      setPlayers(editingPost.playersNeeded || "");
-      setComments(editingPost.comments || "");
-      setMultiplatform(editingPost.multiplatform)
-    }
-  }, [editingPost]);
-
-  const resetForm = () => {
-    setGame({});
-    setPlayers("");
-    setComments("");
-    setPlatform("");
-    setMultiplatform(false);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const state = editingPost ? "actualizar" : "guardar";
-
-    try {
-      if (
-        !game ||
-        !players ||
-        !comments?.trim() ||
-        (!multiplatform && !platform)
-      ) {
-        alert("Completa todos los campos");
-        return;
-      }
-
-      const gameName = game.value ?? game;
-
-      const media = await postService.getExistingMedia(gameName);
-
-      let image = media.image;
-      let clip = media.clip;
-      let logo = media.logo;
-      let portada = media.portada;
-
-      if (!image) {
-        image = game.image ?? editingPost?.image ?? null;
-      }
-
-      if (!clip) {
-        clip = game.clip ?? editingPost?.clip ?? null;
-      }
-
-      if (!logo) {
-        const result = await getGameLogo({
-          steamAppId: game.steamAppId ?? editingPost?.steamAppId,
-          gameName
-        });
-
-        logo = result?.data?.logo ?? null;
-      }
-
-      if (!portada) {
-        const result = await getGamePortada({
-          steamAppId: game.steamAppId ?? editingPost?.steamAppId,
-          gameName
-        });
-
-        portada = result?.data?.portada ?? null;
-      }
-
-      const postData = {
-        game: gameName,
-        platform,
-        playersNeeded: players,
-        comments,
-        image,
-        logo: logo ?? editingPost?.logo ?? null,
-        clip,
-        portada: portada ?? editingPost?.portada ?? null,
-        platforms: game.platforms ?? editingPost?.platforms ?? null,
-        multiplatform
-      };
-
-      if (editingPost) {
-
-        await postService.updatePost(
-          editingPost.id,
-          postData
-        );
-
-        toast.current.show({
-          severity: "success",
-          summary: "Actualizada",
-          detail: "Publicación actualizada correctamente",
-          life: 3000
-        });
-
-      } else {
-
-        await postService.createPost({
-          ...postData,
-          userId: user.uid,
-          username: userData?.username,
-          region: userData?.region,
-          phone: userData?.phone,
-          createdAt: new Date()
-        });
-
-        toast.current.show({
-          severity: "success",
-          summary: "Creada",
-          detail: "Publicación creada correctamente",
-          life: 3000
-        });
-      }
-
-      resetForm();
-      onClose();
-
-    } catch (error) {
-
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: `No se pudo ${state} la publicación`,
-        life: 3000
-      });
-
-      console.error("Error:", error);
-    }
-  };
 
   const itemTemplate = (item) => (
     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -212,7 +108,13 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
             inputId="multiplatform"
             checked={multiplatform}
             style={{position: "relative", top: "10px"}}
-            onChange={(e) => setMultiplatform(e.checked)}
+            onChange={(e) => {
+              setMultiplatform(e.checked);
+
+              if (e.checked) {
+                setPlatform("");
+              }
+            }}
           />
           <label htmlFor="multiplatform" style={{position: "relative", top: "10px"}}>
             Multiplataforma
@@ -245,9 +147,10 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
         {/* Botones */}
         <div style={{ display: "flex", gap: "0.5rem" }}>
           <Button
-            label="Publicar"
+            label={editingPost ? "Actualizar" : "Publicar"}
             icon="pi pi-check"
             onClick={handleSubmit}
+            loading={loading}
             className="p-button-success"
           />
           <Button
