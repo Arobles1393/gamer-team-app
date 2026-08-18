@@ -8,16 +8,9 @@ import { AutoComplete } from "primereact/autocomplete";
 import { Toast } from "primereact/toast";
 import { Checkbox } from "primereact/checkbox";
 import { useGameSearch, useCreatePost } from "../../hooks";
+import { platforms } from "../../constants";
 
 export default function CreatePost({ user, userData, onClose, editingPost }) {
-  const platforms = [
-    { label: "PlayStation", value: "playstation" },
-    { label: "Xbox", value: "xbox" },
-    { label: "Switch", value: "switch" },
-    { label: "PC", value: "pc" },
-    { label: "Mobile", value: "mobile" },
-    { label: "Wii", value: "wii" }
-  ];
 
   const toast = useRef(null);
 
