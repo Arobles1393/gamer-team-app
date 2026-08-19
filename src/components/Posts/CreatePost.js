@@ -9,6 +9,7 @@ import { Toast } from "primereact/toast";
 import { Checkbox } from "primereact/checkbox";
 import { useGameSearch, useCreatePost } from "../../hooks";
 import { platforms } from "../../constants";
+import "./CreatePost.css";
 
 export default function CreatePost({ user, userData, onClose, editingPost }) {
 
@@ -62,11 +63,11 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
   } = useGameSearch();
 
   const itemTemplate = (item) => (
-    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+    <div className="create-post__div-itemTemplate">
       <img
         src={item.image}
         alt={item.label}
-        style={{ width: "40px", borderRadius: "6px" }}
+        className="create-post__itemTemplate-image"
       />
       <span>{item.label}</span>
     </div>
@@ -78,15 +79,15 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
   }
 
   return (
-    <Card style={{ marginTop: "1.2rem", borderRadius: "8px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <p style={{ marginTop: -15, color: "#666", textAlign:"center" }}>
-              ¿Buscas equipo? Publica una partida y encuentra jugadores rapidamente.
-            </p>
+    <Card className="create-post">
+      <div className="create-post__header">
+        <p className="create-post__description-text">
+          ¿Buscas equipo? Publica una partida y encuentra jugadores rapidamente.
+        </p>
       </div>
-      <div className="p-fluid" style={{ marginTop: "1rem" }}>
+      <div className="p-fluid create-post__div-inputs">
         {/* Inputs en fila */}
-        <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
+        <div className="create-post__inputs">
           <AutoComplete
             value={game}
             suggestions={suggestions}
@@ -95,12 +96,12 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
             field="value"
             itemTemplate={itemTemplate}
             placeholder="Nombre del juego"
-            style={{ flex: 1 }}
+            className="create-post__autocomplete"
           />
           <Checkbox
             inputId="multiplatform"
             checked={multiplatform}
-            style={{position: "relative", top: "10px"}}
+            className="create-post__multiplatform"
             onChange={(e) => {
               setMultiplatform(e.checked);
 
@@ -109,7 +110,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
               }
             }}
           />
-          <label htmlFor="multiplatform" style={{position: "relative", top: "10px"}}>
+          <label htmlFor="multiplatform" className="create-post__multiplatform">
             Multiplataforma
           </label>
           {!multiplatform && (
@@ -118,14 +119,14 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
               options={platforms}
               onChange={(e) => setPlatform(e.value)}
               placeholder="Selecciona plataforma"
-              style={{ width: "200px" }}
+              className="create-post__platform"
             />
           )}
           <InputText
             placeholder="Cant. jugadores"
             value={players}
             onChange={(e) => setPlayers(e.target.value)}
-            style={{ width: "120px" }}
+            className="create-post__players"
           />
         </div>
         {/* Descripción */}
@@ -135,10 +136,10 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
           onChange={(e) => setComments(e.target.value)}
           rows={3}
           autoResize
-          style={{ marginBottom: "1rem" }}
+          className="create-post__description"
         />
         {/* Botones */}
-        <div style={{ display: "flex", gap: "0.5rem" }}>
+        <div className="create-post__actions">
           <Button
             label={editingPost ? "Actualizar" : "Publicar"}
             icon="pi pi-check"

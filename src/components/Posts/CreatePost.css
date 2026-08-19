@@ -1,0 +1,63 @@
+.create-post {
+  margin-top: 1.2rem;
+  border-radius: 8px;
+}
+
+.create-post__inputs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.create-post__multiplatform {
+  position: relative;
+  top: 10px;
+}
+
+.create-post__platform {
+  width: 200px;
+}
+
+.create-post__players {
+  width: 120px;
+}
+
+.create-post__description {
+  margin-bottom: 1rem;
+}
+
+.create-post__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.create-post__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.create-post__description-text {
+  margin-top: -15px;
+  color: #666;
+  text-align: center;
+}
+
+.create-post__div-itemTemplate {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.create-post__itemTemplate-image {
+  width: 40px;
+  border-radius: 6px;
+}
+
+.create-post__autocomplete {
+  flex: 1;
+}
+
+.create-post__div-inputs {
+  margin-top: 1rem;
+}
