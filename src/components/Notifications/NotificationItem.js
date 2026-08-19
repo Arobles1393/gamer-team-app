@@ -17,9 +17,13 @@ export default function NotificationItem({
     notification.type === "friend_request" &&
     status === "pending";
 
-  const isAccepted = status === "accepted";
+  const isAccepted =
+    notification.type === "friend_request" &&
+    status === "accepted";
 
-  const isRejected = status === "rejected";
+  const isRejected =
+    notification.type === "friend_request" &&
+    status === "rejected";
 
   const handleNotificationClick = async () => {
     if (notification.type === "friend_request") return;

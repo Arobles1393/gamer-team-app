@@ -1,1 +1,1 @@
-export * from "./markNotificationAsRead";
+export * from "./notificationService";

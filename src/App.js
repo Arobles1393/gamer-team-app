@@ -2,8 +2,8 @@ import { useState, useRef } from "react";
 import { logout } from "./services/auth";
 import { AppHeader, createHeaderMenu } from "./components/Header";
 import { NotificationOverlay } from "./components/Notifications";
-import { markNotificationAsRead } from "./services/notifications";
-import { acceptFriendRequest, rejectFriendRequest } from "./services/friends";
+import { notificationService } from "./services/notifications";
+import { friendService } from "./services/friends";
 import { useNotifications, useUserPresence, useAuth } from "./hooks";
 import { AppRoutes } from "./routes";
 import { CreatePostDialog } from "./components/Posts";
@@ -30,6 +30,25 @@ function App() {
   // UI Handlers
   const handleToggleNotifications = (e) => { notificationRef.current?.toggle(e); }
   const handleCloseCreatePost = () => { setShowCreatePost(false); setEditingPost(null); };
+  const handleAcceptFriendRequest = (notification) => {
+    return friendService.acceptFriendRequest(
+      notification,
+      user,
+      userData
+    );
+  };
+
+  const handleRejectFriendRequest = (notification) => {
+    return friendService.rejectFriendRequest(
+      notification
+    );
+  };
+
+  const handleMarkNotificationAsRead = (notificationId) => {
+    return notificationService.markNotificationAsRead(
+      notificationId
+    );
+  };
 
   if (!user) {
     return (
@@ -56,9 +75,9 @@ function App() {
       <NotificationOverlay
         notificationRef={notificationRef}
         notifications={notifications}
-        onAccept={(notification) => acceptFriendRequest(notification, user, userData)}
-        onReject={(notification) => rejectFriendRequest(notification)}
-        onMarkAsRead={markNotificationAsRead}
+        onAccept={handleAcceptFriendRequest}
+        onReject={handleRejectFriendRequest}
+        onMarkAsRead={handleMarkNotificationAsRead}
       />
       <CreatePostDialog
         visible={showCreatePost}
