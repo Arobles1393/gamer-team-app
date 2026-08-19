@@ -1,12 +1,25 @@
-import { useEffect, useState } from "react";
-import { collection, limit, onSnapshot, orderBy, query, where } from "firebase/firestore";
+import {
+  useEffect,
+  useState
+} from "react";
+
+import {
+  collection,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+  where
+} from "firebase/firestore";
+
 import { db } from "../firebase/config";
 
 export const useNotifications = (user) => {
+
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    
+
     if (!user) {
       setNotifications([]);
       return;
@@ -19,20 +32,34 @@ export const useNotifications = (user) => {
       limit(10)
     );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
 
-      setNotifications(data);
-    });
+        const data = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+
+        setNotifications(data);
+      },
+      (error) => {
+
+        console.error(
+          "Error al obtener notificaciones:",
+          error
+        );
+
+        setNotifications([]);
+      }
+    );
 
     return unsubscribe;
+
   }, [user]);
 
   const unreadCount = notifications.filter(
-    notification => !notification.read
+    (notification) => !notification.read
   ).length;
 
   return {
