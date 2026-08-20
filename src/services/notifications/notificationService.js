@@ -7,7 +7,8 @@ import {
   onSnapshot,
   updateDoc,
   doc,
-  writeBatch
+  writeBatch,
+  limit
 } from "firebase/firestore";
 
 import { db } from "../../firebase/config";
@@ -15,8 +16,9 @@ import { db } from "../../firebase/config";
 const subscribeToNotifications = (userId, onChange, onError) => {
   const q = query(
     collection(db, "notifications"),
-    where("to", "==", userId),
-    orderBy("createdAt", "desc")
+    where("userId", "==", userId),
+    orderBy("createdAt", "desc"),
+    limit(10)
   );
 
   return onSnapshot(

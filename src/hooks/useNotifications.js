@@ -3,16 +3,7 @@ import {
   useState
 } from "react";
 
-import {
-  collection,
-  limit,
-  onSnapshot,
-  orderBy,
-  query,
-  where
-} from "firebase/firestore";
-
-import { db } from "../firebase/config";
+import { notificationService } from "../services/notifications";
 
 export const useNotifications = (user) => {
 
@@ -25,34 +16,19 @@ export const useNotifications = (user) => {
       return;
     }
 
-    const q = query(
-      collection(db, "notifications"),
-      where("userId", "==", user.uid),
-      orderBy("createdAt", "desc"),
-      limit(10)
-    );
+    const unsubscribe =
+      notificationService.subscribeToNotifications(
+        user.uid,
+        setNotifications,
+        (error) => {
+          console.error(
+            "Error al obtener notificaciones:",
+            error
+          );
 
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-
-        const data = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-
-        setNotifications(data);
-      },
-      (error) => {
-
-        console.error(
-          "Error al obtener notificaciones:",
-          error
-        );
-
-        setNotifications([]);
-      }
-    );
+          setNotifications([]);
+        }
+      );
 
     return unsubscribe;
 
