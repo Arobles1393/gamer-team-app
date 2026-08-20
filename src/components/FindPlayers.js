@@ -6,7 +6,7 @@ import { Card } from "primereact/card";
 import { Avatar } from "primereact/avatar";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
-import { sendFriendRequest } from "../services/friendService";
+import { friendService } from "../services/friends";
 import { useNavigate } from "react-router-dom";
 import { createOrGetChat } from "../services/chatService";
 import { UserProfile } from "./UserProfile";
@@ -202,7 +202,7 @@ export default function FindPlayers({ user, userData }) {
                     icon="pi pi-user-plus"
                     onClick={async () => {
 
-                      await sendFriendRequest(
+                      await friendService.sendFriendRequest(
                         user,
                         userData,
                         selectedUserId

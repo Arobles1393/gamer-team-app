@@ -5,11 +5,56 @@ import {
   query,
   where,
   getDocs,
-  updateDoc,
-  doc
+  updateDoc
 } from "firebase/firestore";
+
 import { db } from "../../firebase/config";
 import { notificationService } from "../notifications";
+
+const sendFriendRequest = async (
+  sender,
+  senderData,
+  receiverId
+) => {
+
+  const q = query(
+    collection(db, "friend_requests"),
+    where("senderId", "==", sender.uid),
+    where("receiverId", "==", receiverId),
+    where("status", "==", "pending")
+  );
+
+  const existing = await getDocs(q);
+
+  if (!existing.empty) {
+    return;
+  }
+
+  await addDoc(
+    collection(db, "friend_requests"),
+    {
+      senderId: sender.uid,
+      senderName: senderData.username,
+      senderAvatar: senderData.avatar || "",
+      receiverId,
+      status: "pending",
+      createdAt: serverTimestamp()
+    }
+  );
+
+  await notificationService.createNotification({
+    userId: receiverId,
+    senderId: sender.uid,
+    senderName: senderData.username,
+    senderAvatar: senderData.avatar || "",
+    type: "friend_request",
+    status: "pending",
+    title: "Solicitud de amistad",
+    text: `${senderData.username} quiere agregarte`,
+    read: false,
+    createdAt: serverTimestamp()
+  });
+};
 
 const acceptFriendRequest = async (
   notification,
@@ -59,12 +104,9 @@ const acceptFriendRequest = async (
     }
   );
 
-  await updateDoc(
-    doc(db, "notifications", notification.id),
-    {
-      status: "accepted",
-      read: true
-    }
+  await notificationService.updateNotificationStatus(
+    notification.id,
+    "accepted"
   );
 
   await notificationService.createNotification({
@@ -113,16 +155,14 @@ const rejectFriendRequest = async (notification) => {
     }
   );
 
-  await updateDoc(
-    doc(db, "notifications", notification.id),
-    {
-      status: "rejected",
-      read: true
-    }
+  await notificationService.updateNotificationStatus(
+    notification.id,
+    "rejected"
   );
 };
 
 export const friendService = {
+  sendFriendRequest,
   acceptFriendRequest,
   rejectFriendRequest
 };

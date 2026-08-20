@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { sendFriendRequest } from "../services/friendService";
+import { friendService } from "../services/friends";
 
 export const useFriendRequest = (
   user,
@@ -10,7 +10,7 @@ export const useFriendRequest = (
 
   const handleFriendRequest = useCallback(async () => {
     try {
-      await sendFriendRequest(
+      await friendService.sendFriendRequest(
         user,
         userData,
         selectedUserId

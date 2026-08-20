@@ -8,7 +8,7 @@ import { platformIcons } from "../utils/platformIcons";
 import { UserProfile } from "./UserProfile";
 import { Dialog } from "primereact/dialog";
 import { createOrGetChat } from "../services/chatService";
-import { sendFriendRequest } from "../services/friendService";
+import { friendService } from "../services/friends";
 import {
   collection,
   addDoc,
@@ -582,7 +582,7 @@ export default function PostDetail({ user, userData }) {
                     icon="pi pi-user-plus"
                     onClick={async () => {
 
-                      await sendFriendRequest(
+                      await friendService.sendFriendRequest(
                         user,
                         userData,
                         selectedUserId

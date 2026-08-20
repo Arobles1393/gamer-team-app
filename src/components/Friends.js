@@ -7,7 +7,7 @@ import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { useNavigate } from "react-router-dom";
 import { UserProfile } from "./UserProfile";
-import { sendFriendRequest } from "../services/friendService";
+import { friendService } from "../services/friends";
 import { createOrGetChat } from "../services/chatService";
 
 export default function Friends({ user, userData }) {
@@ -192,7 +192,7 @@ export default function Friends({ user, userData }) {
                     icon="pi pi-user-plus"
                     onClick={async () => {
 
-                      await sendFriendRequest(
+                      await friendService.sendFriendRequest(
                         user,
                         userData,
                         selectedUserId

@@ -80,10 +80,24 @@ const createNotification = (notificationData) => {
   );
 };
 
+const updateNotificationStatus = (
+  notificationId,
+  status
+) => {
+  return updateDoc(
+    doc(db, "notifications", notificationId),
+    {
+      status,
+      read: true
+    }
+  );
+};
+
 export const notificationService = {
   subscribeToNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
   deleteAllNotifications,
-  createNotification
+  createNotification,
+  updateNotificationStatus
 };
