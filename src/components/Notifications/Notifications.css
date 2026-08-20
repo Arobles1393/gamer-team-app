@@ -49,3 +49,135 @@
     max-height: 400px;
     overflow-y: auto;
 }
+
+/* ================================
+   Notifications
+================================ */
+
+.notifications {
+  width: 100%;
+}
+
+
+/* ================================
+   Header / Actions
+================================ */
+
+.notifications__actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+
+/* ================================
+   Notification Card
+================================ */
+
+.notifications__card {
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.notifications__card:hover {
+  transform: translateY(-2px);
+}
+
+.notifications__card--read {
+  opacity: 0.7;
+}
+
+
+/* ================================
+   Notification Content
+================================ */
+
+.notifications__content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.notifications__sender {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.notifications__info {
+  display: flex;
+  flex-direction: column;
+}
+
+.notifications__title {
+  font-weight: 600;
+}
+
+.notifications__text {
+  margin: 0;
+}
+
+.notifications__date {
+  margin-top: 0.25rem;
+  color: #777;
+}
+
+/* ================================
+   Notification Status
+================================ */
+
+.notifications__status {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.notifications__status--accepted {
+  color: green;
+}
+
+.notifications__status--rejected {
+  color: red;
+}
+
+
+/* ================================
+   Responsive
+================================ */
+
+@media (max-width: 768px) {
+
+  .notifications__content {
+    align-items: flex-start;
+  }
+
+  .notifications__sender {
+    gap: 0.75rem;
+  }
+
+  .notifications__actions {
+    flex-wrap: wrap;
+  }
+
+}
+
+@media (max-width: 576px) {
+
+  .notifications__content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .notifications__sender {
+    width: 100%;
+  }
+
+  .notifications__notification-actions {
+    justify-content: flex-end;
+  }
+
+}
