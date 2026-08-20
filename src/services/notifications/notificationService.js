@@ -8,28 +8,31 @@ import {
   updateDoc,
   doc,
   writeBatch,
-  limit
+  limit,
+  getDocs
 } from "firebase/firestore";
 
 import { db } from "../../firebase/config";
 
-const subscribeToNotifications = (userId, onChange, onError) => {
-  const q = query(
+const subscribeToNotifications = (userId, onChange, onError, { limitCount = 10 } = {}) => {
+  const constraints = [
     collection(db, "notifications"),
     where("userId", "==", userId),
-    orderBy("createdAt", "desc"),
-    limit(10)
-  );
+    orderBy("createdAt", "desc")
+  ];
+
+  if (limitCount) {
+    constraints.push(limit(limitCount));
+  }
+
+  const q = query(...constraints);
 
   return onSnapshot(
     q,
     (snapshot) => {
-      const notifications = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-
-      onChange(notifications);
+      onChange(
+        snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+      );
     },
     onError
   );
@@ -44,30 +47,36 @@ const markNotificationAsRead = (notificationId) => {
   );
 };
 
-const markAllNotificationsAsRead = async (notifications) => {
+const markAllNotificationsAsRead = async (userId) => {
+  const q = query(
+    collection(db, "notifications"),
+    where("userId", "==", userId),
+    where("read", "==", false)
+  );
+
+  const snapshot = await getDocs(q);
+
   const batch = writeBatch(db);
 
-  notifications
-    .filter((notification) => !notification.read)
-    .forEach((notification) => {
-      batch.update(
-        doc(db, "notifications", notification.id),
-        {
-          read: true
-        }
-      );
-    });
+  snapshot.forEach((docSnap) => {
+    batch.update(docSnap.ref, { read: true });
+  });
 
   await batch.commit();
 };
 
-const deleteAllNotifications = async (notifications) => {
+const deleteAllNotifications = async (userId) => {
+  const q = query(
+    collection(db, "notifications"),
+    where("userId", "==", userId)
+  );
+
+  const snapshot = await getDocs(q);
+
   const batch = writeBatch(db);
 
-  notifications.forEach((notification) => {
-    batch.delete(
-      doc(db, "notifications", notification.id)
-    );
+  snapshot.forEach((docSnap) => {
+    batch.delete(docSnap.ref);
   });
 
   await batch.commit();

@@ -24,7 +24,7 @@ function App() {
 
   // Hooks
   const { user, userData } = useAuth();
-  const { notifications, unreadCount } = useNotifications(user);
+  const { notifications, unreadCount } = useNotifications(user, { limitCount: 10 });
   useUserPresence(user);
 
   // UI Handlers

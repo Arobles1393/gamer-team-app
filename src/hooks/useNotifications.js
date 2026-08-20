@@ -5,7 +5,7 @@ import {
 
 import { notificationService } from "../services/notifications";
 
-export const useNotifications = (user) => {
+export const useNotifications = (user, { limitCount = 10 } = {}) => {
 
   const [notifications, setNotifications] = useState([]);
 
@@ -27,12 +27,13 @@ export const useNotifications = (user) => {
           );
 
           setNotifications([]);
-        }
+        },
+        { limitCount }
       );
 
     return unsubscribe;
 
-  }, [user]);
+  }, [user, limitCount]);
 
   const unreadCount = notifications.filter(
     (notification) => !notification.read

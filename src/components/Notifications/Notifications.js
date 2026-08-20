@@ -13,11 +13,11 @@ export default function Notifications({ user, userData }) {
 
   const navigate = useNavigate();
 
-  const { notifications } = useNotifications(user);
+  const { notifications } = useNotifications(user, { limitCount: null });
 
   const handleMarkAllAsRead = () => {
     return notificationService.markAllNotificationsAsRead(
-      notifications
+      user.uid
     );
   };
 
@@ -55,7 +55,7 @@ export default function Notifications({ user, userData }) {
 
   const handleDeleteAllNotifications = () => {
     return notificationService.deleteAllNotifications(
-      notifications
+      user.uid
     );
   };
 
