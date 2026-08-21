@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { db, functions } from "../../firebase/config";
-import { doc, onSnapshot } from "firebase/firestore";
+import { functions } from "../../firebase/config";
 import { Avatar } from "primereact/avatar";
 import { platformIcons } from "../../utils/platformIcons";
 import { getPlatform } from "../../utils/getPlatform";
@@ -9,29 +8,16 @@ import { httpsCallable } from "firebase/functions";
 import SteamStats from "../../steam/steamStats";
 import GameAchievements from "../GameArchievements";
 import { Dialog } from "primereact/dialog";
+import { useUserProfile } from "../../hooks";
 
 export default function UserProfile({ userId, user }) {
-  const [userData, setUserData] = useState(null);
+  const { userData } = useUserProfile(userId);
   const [steamStats, setSteamStats] = useState(null);
   const [loadingSteam, setLoadingSteam] = useState(false);
   const getSteamStats = httpsCallable(functions, "getSteamStats");
   const [selectedGame, setSelectedGame] = useState(null);
   const [showAchievements, setShowAchievements] = useState(false);
   const [steamID, setSteamId] = useState(null);
-
-  useEffect(() => {
-    if (!userId) return;
-
-    const docRef = doc(db, "users", userId);
-
-    const unsubscribe = onSnapshot(docRef, (docSnap) => {
-      if (docSnap.exists()) {
-        setUserData(docSnap.data());
-      }
-    });
-
-    return () => unsubscribe();
-  }, [userId]);
 
   useEffect(() => {
     if (!userData?.links || userData.links.length === 0) return;
