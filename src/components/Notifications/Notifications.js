@@ -136,7 +136,7 @@ export default function Notifications({ user, userData }) {
 
                 {notification.type === "friend_request" &&
                   notification.status === "pending" && (
-                  <>
+                  <div className="notifications__notification-actions">
                     <Button
                       label="Aceptar"
                       icon="pi pi-check"
@@ -155,7 +155,7 @@ export default function Notifications({ user, userData }) {
                         handleRejectFriendRequest(notification);
                       }}
                     />
-                  </>
+                  </div>
                 )}
                 {notification.type === "friend_request" &&
                   notification.status === "accepted" && (

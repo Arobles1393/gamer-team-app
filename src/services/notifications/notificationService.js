@@ -14,14 +14,20 @@ import {
 
 import { db } from "../../firebase/config";
 
-const subscribeToNotifications = (userId, onChange, onError, { limitCount = 10 } = {}) => {
+const subscribeToNotifications = (
+  userId,
+  onChange,
+  onError,
+  { limitCount = 10 } = {}
+) => {
+
   const constraints = [
     collection(db, "notifications"),
     where("userId", "==", userId),
     orderBy("createdAt", "desc")
   ];
 
-  if (limitCount) {
+  if (limitCount !== null) {
     constraints.push(limit(limitCount));
   }
 
@@ -31,7 +37,10 @@ const subscribeToNotifications = (userId, onChange, onError, { limitCount = 10 }
     q,
     (snapshot) => {
       onChange(
-        snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        }))
       );
     },
     onError
@@ -48,6 +57,7 @@ const markNotificationAsRead = (notificationId) => {
 };
 
 const markAllNotificationsAsRead = async (userId) => {
+
   const q = query(
     collection(db, "notifications"),
     where("userId", "==", userId),
@@ -59,13 +69,19 @@ const markAllNotificationsAsRead = async (userId) => {
   const batch = writeBatch(db);
 
   snapshot.forEach((docSnap) => {
-    batch.update(docSnap.ref, { read: true });
+    batch.update(
+      docSnap.ref,
+      {
+        read: true
+      }
+    );
   });
 
   await batch.commit();
 };
 
 const deleteAllNotifications = async (userId) => {
+
   const q = query(
     collection(db, "notifications"),
     where("userId", "==", userId)

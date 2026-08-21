@@ -137,13 +137,18 @@
 }
 
 .notifications__status--accepted {
-  color: green;
+  color: var(--accent);
 }
 
 .notifications__status--rejected {
-  color: red;
+  color: var(--danger);
 }
 
+.notifications__notification-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
 
 /* ================================
    Responsive
@@ -177,7 +182,16 @@
   }
 
   .notifications__notification-actions {
+    width: 100%;
     justify-content: flex-end;
+  }
+
+  .notifications__actions {
+    flex-direction: column;
+  }
+
+  .notifications__actions .p-button {
+    width: 100%;
   }
 
 }
