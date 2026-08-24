@@ -1,61 +1,22 @@
-import { useEffect, useState } from "react";
-import { functions } from "../../firebase/config";
+import { useState } from "react";
 import { Avatar } from "primereact/avatar";
 import { platformIcons } from "../../utils/platformIcons";
 import { getPlatform } from "../../utils/getPlatform";
 import { getLabel } from "../../utils/getLabel";
-import { httpsCallable } from "firebase/functions";
 import SteamStats from "../../steam/steamStats";
 import GameAchievements from "../GameArchievements";
 import { Dialog } from "primereact/dialog";
-import { useUserProfile } from "../../hooks";
+import { useUserProfile, useSteamStats } from "../../hooks";
 
 export default function UserProfile({ userId, user }) {
   const { userData } = useUserProfile(userId);
-  const [steamStats, setSteamStats] = useState(null);
-  const [loadingSteam, setLoadingSteam] = useState(false);
-  const getSteamStats = httpsCallable(functions, "getSteamStats");
+  const {
+    steamStats,
+    steamID,
+    loadingSteam
+  } = useSteamStats(userData?.links);
   const [selectedGame, setSelectedGame] = useState(null);
   const [showAchievements, setShowAchievements] = useState(false);
-  const [steamID, setSteamId] = useState(null);
-
-  useEffect(() => {
-    if (!userData?.links || userData.links.length === 0) return;
-
-    const steamId = getSteamIdFromLinks(userData.links);
-
-    if (!steamId) {
-      console.log("❌ No se encontró Steam ID");
-      return;
-    }
-
-    setLoadingSteam(true);
-
-    console.log("🚀 Enviando SteamID:", steamId);
-
-    setSteamId(steamId)
-
-    const fetchSteam = async () => {
-      try {
-        const res = await getSteamStats({ steamId: String(steamId) });
-        setSteamStats(res.data);
-      } catch (error) {
-        console.error("Error Steam:", error);
-      }
-    };
-
-    setLoadingSteam(false);
-
-    fetchSteam();
-  }, [userData]);
-
-  const getSteamIdFromLinks = (links) => {
-    const steamLink = links?.find(link => link.includes("steamcommunity"));
-    if (!steamLink) return null;
-
-    const parts = steamLink.split("/");
-    return parts[parts.length - 1] || parts[parts.length - 2];
-  };
 
   const handleSelectGame = (game) => {
     setSelectedGame(game);
