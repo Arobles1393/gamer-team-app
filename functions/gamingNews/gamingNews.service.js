@@ -16,7 +16,7 @@ const feeds = [
 
 const syncGamingNewsService = async () => {
 
-  let inserted = 0;
+  const news = [];
 
   for (const feed of feeds) {
 
@@ -24,44 +24,82 @@ const syncGamingNewsService = async () => {
 
     for (const item of rss.items) {
 
+      if (!item.link) {
+        continue;
+      }
+
       const id = Buffer
         .from(item.link)
         .toString("base64")
         .replace(/\//g, "_");
 
-      const docRef =
-        db
-          .collection("gaming_news")
-          .doc(id);
-
-      const docSnap = await docRef.get();
-
-      if (docSnap.exists) {
-        continue;
-      }
-
       const image = getNewsImage(item);
 
-      await docRef.set({
-        title: item.title || "",
-        description:
-          item.contentSnippet ||
-          item["content:encodedSnippet"] ||
-          "",
-        link: item.link || "",
-        image,
-        source: feed.source,
-        publishedAt: item.pubDate
-          ? new Date(item.pubDate)
-          : new Date(),
-        createdAt: new Date()
+      news.push({
+        id,
+        data: {
+          title: item.title || "",
+          description:
+            item.contentSnippet ||
+            item["content:encodedSnippet"] ||
+            "",
+          link: item.link,
+          image,
+          source: feed.source,
+          publishedAt: item.pubDate
+            ? new Date(item.pubDate)
+            : new Date(),
+          createdAt: new Date()
+        }
       });
-
-      inserted++;
     }
   }
 
-  return { inserted };
+  // Si no encontramos noticias, no borramos las actuales
+  if (news.length === 0) {
+    return {
+      inserted: 0,
+      deleted: 0
+    };
+  }
+
+  // Borrar noticias anteriores
+  const existingSnapshot =
+    await db
+      .collection("gaming_news")
+      .get();
+
+  const deleteBatch =
+    db.batch();
+
+  existingSnapshot.forEach((doc) => {
+    deleteBatch.delete(doc.ref);
+  });
+
+  await deleteBatch.commit();
+
+  // Insertar noticias nuevas
+  const insertBatch = db.batch();
+
+  news.forEach((item) => {
+
+    const docRef =
+      db
+        .collection("gaming_news")
+        .doc(item.id);
+
+    insertBatch.set(
+      docRef,
+      item.data
+    );
+  });
+
+  await insertBatch.commit();
+
+  return {
+    inserted: news.length,
+    deleted: existingSnapshot.size
+  };
 };
 
 const getNewsImage = (item) => {
