@@ -1,5 +1,3 @@
-const functions = require("firebase-functions");
-const axios = require("axios");
 const admin = require("firebase-admin");
 const { onRequest } = require("firebase-functions/v2/https");
 const Parser = require("rss-parser");
@@ -7,169 +5,8 @@ admin.initializeApp();
 const db = admin.firestore();
 const parser = new Parser();
 require("dotenv").config();
-
-const {
-  getSteamStats
-} = require("./steam/steam.functions");
-
-exports.getGameLogo = functions.https.onCall(async (request) => {
-
-  try {
-
-    let { steamAppId, gameName } = request.data;
-
-    if (!gameName) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        "App ID de Steam y nombre del juego requeridos"
-      );
-    }
-
-    const apiKey = process.env.STEAMGRID_API_KEY;
-
-    if (!apiKey) {
-      throw new functions.https.HttpsError(
-        "internal",
-        "API key no configurada"
-      );
-    }
-
-    if (gameName.toLowerCase().includes("requiem")) {
-      gameName = gameName
-        .replace(/\d+/g, "")
-        .replace(/\s+/g, " ")
-        .trim();
-    }
-
-    // Buscar juego
-    const searchRes = await axios.get(
-      `https://www.steamgriddb.com/api/v2/search/autocomplete/${encodeURIComponent(gameName)}`,
-      {
-        headers: {
-          Authorization: `Bearer ${apiKey}`
-        }
-      }
-    );
-
-    const game = searchRes.data.data[0];
-
-    if (!game) {
-      return {
-        logo: null
-      };
-    }
-
-    // Obtener logos
-    const logosRes = await axios.get(
-      !steamAppId ?
-        `https://www.steamgriddb.com/api/v2/logos/game/${game.id}` :
-        `https://www.steamgriddb.com/api/v2/logos/steam/${steamAppId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${apiKey}`
-        }
-      }
-    );
-
-    const logos = logosRes.data.data;
-
-    // Priorizar logos no NSFW y estilo limpio
-    const cleanLogo = logos.find(
-      (logo) =>
-        !logo.nsfw &&
-        logo.width > 500
-    );
-
-    return {
-      logo: cleanLogo?.url || logos[0]?.url || null
-    };
-
-  } catch (error) {
-
-    console.error("❌ SteamGrid Error:", error);
-
-    throw new functions.https.HttpsError(
-      "internal",
-      error.message || "Error obteniendo logo"
-    );
-  }
-});
-
-exports.getGamePortada = functions.https.onCall(async (request) => {
-
-  try {
-
-    let { steamAppId, gameName } = request.data;
-
-    if (!gameName) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        "App ID de Steam y nombre del juego requeridos"
-      );
-    }
-
-    const apiKey = process.env.STEAMGRID_API_KEY;
-
-    if (!apiKey) {
-      throw new functions.https.HttpsError(
-        "internal",
-        "API key no configurada"
-      );
-    }
-
-    if (gameName.toLowerCase().includes("requiem")) {
-      gameName = gameName
-        .replace(/\d+/g, "")
-        .replace(/\s+/g, " ")
-        .trim();
-    }
-
-    // Buscar juego
-    const searchRes = await axios.get(
-      `https://www.steamgriddb.com/api/v2/search/autocomplete/${encodeURIComponent(gameName)}`,
-      {
-        headers: {
-          Authorization: `Bearer ${apiKey}`
-        }
-      }
-    );
-
-    const game = searchRes.data.data[0];
-
-    if (!game) {
-      return {
-        portada: null
-      };
-    }
-
-    // Obtener poratda
-    const portadasRes = await axios.get(
-      !steamAppId ?
-        `https://www.steamgriddb.com/api/v2/grids/game/${game.id}` :
-        `https://www.steamgriddb.com/api/v2/grids/steam/${steamAppId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${apiKey}`
-        }
-      }
-    );
-
-    const portadas = portadasRes.data.data;
-
-    return {
-      portada: portadas[0]?.url || null
-    };
-
-  } catch (error) {
-
-    console.error("❌ SteamGrid Error:", error);
-
-    throw new functions.https.HttpsError(
-      "internal",
-      error.message || "Error obteniendo portada"
-    );
-  }
-});
+const { getSteamStats } = require("./steam/steam.functions");
+const { getGameLogo, getGamePortada } = require("./steamgrid/steamgrid.functions");
 
 exports.syncGamingNews = onRequest(
   async (req, res) => {
@@ -275,3 +112,5 @@ exports.syncGamingNews = onRequest(
 );
 
 exports.getSteamStats = getSteamStats;
+exports.getGameLogo = getGameLogo;
+exports.getGamePortada = getGamePortada;
