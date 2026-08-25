@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Avatar } from "primereact/avatar";
 import { platformIcons } from "../../utils/platformIcons";
 import { getPlatform } from "../../utils/getPlatform";
 import { getLabel } from "../../utils/getLabel";
@@ -7,6 +6,7 @@ import SteamStats from "../../steam/steamStats";
 import GameAchievements from "../GameArchievements";
 import { Dialog } from "primereact/dialog";
 import { useUserProfile, useSteamStats } from "../../hooks";
+import ProfileHeader from "./ProfileHeader/ProfileHeader";
 
 export default function UserProfile({ userId, user }) {
   const { userData } = useUserProfile(userId);
@@ -27,39 +27,7 @@ export default function UserProfile({ userId, user }) {
 
   return (
     <>
-      <div className="profile-header">
-        <div className="profile-banner-container">
-          <div className="profile-banner" 
-            style={
-              userData?.banner
-                ? {
-                    backgroundImage: `url(${userData?.banner})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center"
-                  }
-                : {
-                    background: "linear-gradient(90deg, #38bdf8, #a855f7)"
-                  }
-            }
-          />
-        </div>
-        <div className="profile-avatar-wrapper">
-          <Avatar
-            image={userData?.avatar || undefined}
-            label={
-              !userData?.avatar
-                ? userData?.username?.charAt(0).toUpperCase()
-                : null
-            }
-            size="xlarge"
-            shape="circle"
-            className="profile-avatar"
-          />
-            <h2 style={{ margin: 0 }}>
-              {userData?.username || "Gamer"}
-            </h2>
-        </div>
-      </div>
+      <ProfileHeader userData={userData} />
       <div style={{ marginTop: "1rem" }}>
         <p>{userData?.description}</p>
       </div>
