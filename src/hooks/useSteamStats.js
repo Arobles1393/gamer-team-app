@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { httpsCallable } from "firebase/functions";
 import { functions } from "../firebase/config";
 
@@ -8,63 +8,44 @@ export const useSteamStats = (links) => {
   const [steamID, setSteamId] = useState(null);
   const [loadingSteam, setLoadingSteam] = useState(false);
 
+  const steamId = useMemo(
+    () => getSteamIdFromLinks(links),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [links?.find((link) => link.includes("steamcommunity"))]
+  );
+
   useEffect(() => {
 
     setSteamStats(null);
-    setSteamId(null);
-
-    if (!links?.length) {
-      return;
-    }
-
-    const steamId = getSteamIdFromLinks(links);
-
-    console.log("🔗 Links del usuario:", links);
-    console.log("🎮 Steam ID detectado:", steamId);
 
     if (!steamId) {
+      setSteamId(null);
       return;
     }
 
     setSteamId(steamId);
     setLoadingSteam(true);
 
-    const getSteamStats = httpsCallable(
-      functions,
-      "getSteamStats"
-    );
+    const getSteamStats = httpsCallable(functions, "getSteamStats");
 
     const fetchSteamStats = async () => {
-
       try {
-
-        const response = await getSteamStats({
-          steamId: String(steamId)
-        });
-
-        console.log("📦 Respuesta de getSteamStats:", response.data);
-
+        const response = await getSteamStats({ steamId: String(steamId) });
         setSteamStats(response.data);
-
       } catch (error) {
-
-        console.error(
-          "Error al obtener estadísticas de Steam:",
-          error
-        );
-
+        if (error.code === "functions/invalid-argument") {
+          console.log("Revisa el link de tu perfil de Steam");
+        }
+        console.error("Error al obtener estadísticas de Steam:", error);
         setSteamStats(null);
-
       } finally {
-
         setLoadingSteam(false);
-
       }
     };
 
     fetchSteamStats();
 
-  }, [links]);
+  }, [steamId]);
 
   return {
     steamStats,
@@ -74,10 +55,7 @@ export const useSteamStats = (links) => {
 };
 
 const getSteamIdFromLinks = (links) => {
-
-  const steamLink = links.find(
-    (link) => link.includes("steamcommunity")
-  );
+  const steamLink = links?.find((link) => link.includes("steamcommunity"));
 
   if (!steamLink) {
     return null;
@@ -85,7 +63,5 @@ const getSteamIdFromLinks = (links) => {
 
   const parts = steamLink.split("/");
 
-  return parts[parts.length - 1]
-    || parts[parts.length - 2]
-    || null;
+  return parts[parts.length - 1] || parts[parts.length - 2] || null;
 };
