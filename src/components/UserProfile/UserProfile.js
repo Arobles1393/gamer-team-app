@@ -21,6 +21,11 @@ export default function UserProfile({ userId, user }) {
     setShowAchievements(true);
   };
 
+  const handleCloseAchievements = () => {
+  setShowAchievements(false);
+  setSelectedGame(null);
+};
+
   if (!userData) return <p>Cargando...</p>;
 
   return (
@@ -43,7 +48,7 @@ export default function UserProfile({ userId, user }) {
         game={selectedGame}
         steamId={steamID}
         visible={showAchievements}
-        onHide={() => setShowAchievements(false)}
+        onHide={handleCloseAchievements}
       />
     </>
   );

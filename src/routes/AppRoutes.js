@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import { PostList } from "../components/Posts";
-import Profile from "../components/Profile";
+import Profile from "../components/Profile/Profile";
 import ChatPage from "../chat/ChatPage";
 import PostDetail from "../components/PostDetail";
 import { Notifications } from "../components/Notifications";

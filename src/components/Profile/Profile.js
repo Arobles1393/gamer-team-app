@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { db, storage } from "../firebase/config";
+import { db, storage } from "../../firebase/config";
 import { doc, updateDoc } from "firebase/firestore";
 import { Card } from "primereact/card";
 import { Avatar } from "primereact/avatar";
@@ -7,12 +7,12 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { updateEmail } from "firebase/auth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { platformIcons } from "../utils/platformIcons";
-import { getPlatform } from "../utils/getPlatform";
-import { getLabel } from "../utils/getLabel"
+import { platformIcons } from "../../utils/platformIcons";
+import { getPlatform } from "../../utils/getPlatform";
+import { getLabel } from "../../utils/getLabel"
 import { InputTextarea } from "primereact/inputtextarea";
 import { AutoComplete } from "primereact/autocomplete";
-import { searchGames } from "../utils/searchGames";
+import { searchGames } from "../../utils/searchGames";
 import { Dropdown } from "primereact/dropdown";
 
 export default function Profile({ user, userData }) {
