@@ -1,11 +1,10 @@
 import { useState } from "react";
-import GameAchievements from "../GameArchievements";
-import { Dialog } from "primereact/dialog";
 import { useUserProfile, useSteamStats } from "../../hooks";
 import ProfileHeader from "./ProfileHeader/ProfileHeader";
 import FavoriteGames from "./FavoriteGames/FavoriteGames";
 import SocialLinks from "./SocialLinks/SocialLinks";
 import SteamStatsSection from "./SteamStatsSection/SteamStatsSection";
+import GameAchievementsDialog from "./GameAchievementsDialog/GameAchievementsDialog";
 
 export default function UserProfile({ userId, user }) {
   const { userData } = useUserProfile(userId);
@@ -40,17 +39,12 @@ export default function UserProfile({ userId, user }) {
         onSelectGame={handleSelectGame}
       />
       <SocialLinks links={userData.links} />
-      <Dialog
-        header={selectedGame?.name}
+      <GameAchievementsDialog
+        game={selectedGame}
+        steamId={steamID}
         visible={showAchievements}
-        style={{ width: "700px" }}
         onHide={() => setShowAchievements(false)}
-      >
-        <GameAchievements 
-          game={selectedGame} 
-          steamId={steamID} 
-        />
-      </Dialog>
+      />
     </>
   );
 }
