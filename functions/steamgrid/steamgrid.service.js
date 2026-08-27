@@ -1,4 +1,3 @@
-// steamgrid/steamgrid.service.js
 const axios = require("axios");
 
 class ValidationError extends Error {}

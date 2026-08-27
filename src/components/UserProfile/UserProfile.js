@@ -7,6 +7,7 @@ import GameAchievements from "../GameArchievements";
 import { Dialog } from "primereact/dialog";
 import { useUserProfile, useSteamStats } from "../../hooks";
 import ProfileHeader from "./ProfileHeader/ProfileHeader";
+import FavoriteGames from "./FavoriteGames/FavoriteGames";
 
 export default function UserProfile({ userId, user }) {
   const { userData } = useUserProfile(userId);
@@ -32,23 +33,7 @@ export default function UserProfile({ userId, user }) {
         <p>{userData?.description}</p>
       </div>
       {!steamStats && (
-        <div style={{ marginTop: "1rem" }}>
-          <h4>Juegos favoritos</h4>
-          <>
-            {userData?.games?.length > 0 ? (
-              <div className="games-grid">
-                {userData.games.map((game, index) => (
-                  <div key={game.id} className="game-card">
-                    <img src={game.image} alt={game.name} />
-                    <div className="game-card-overlay">{game.name}</div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p style={{ color: "#888" }}>No hay juegos que mostrar</p>
-            )}
-          </>
-        </div>
+        <FavoriteGames games={userData.games} />
       )}
       <div style={{ marginTop: "1rem" }}>
         <h4>Estadísticas de Steam</h4>
