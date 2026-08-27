@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useUserProfile, useSteamStats } from "../../hooks";
-import ProfileHeader from "./ProfileHeader/ProfileHeader";
+import ProfileHeader from "../ProfileHeader/ProfileHeader";
 import FavoriteGames from "./FavoriteGames/FavoriteGames";
 import SocialLinks from "./SocialLinks/SocialLinks";
 import SteamStatsSection from "./SteamStatsSection/SteamStatsSection";
@@ -22,9 +22,9 @@ export default function UserProfile({ userId, user }) {
   };
 
   const handleCloseAchievements = () => {
-  setShowAchievements(false);
-  setSelectedGame(null);
-};
+    setShowAchievements(false);
+    setSelectedGame(null);
+  };
 
   if (!userData) return <p>Cargando...</p>;
 

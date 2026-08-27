@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from "react";
 import { db, storage } from "../../firebase/config";
 import { doc, updateDoc } from "firebase/firestore";
 import { Card } from "primereact/card";
-import { Avatar } from "primereact/avatar";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { updateEmail } from "firebase/auth";
@@ -14,6 +13,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { AutoComplete } from "primereact/autocomplete";
 import { searchGames } from "../../utils/searchGames";
 import { Dropdown } from "primereact/dropdown";
+import ProfileHeader from "../ProfileHeader/ProfileHeader";
 
 export default function Profile({ user, userData }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -262,49 +262,15 @@ export default function Profile({ user, userData }) {
         style={{ display: "none" }}
         onChange={handleBannerChange}
       />
-      <div className="profile-header">
-        <div className="profile-banner-container">
-          <div className="profile-banner" 
-            style={
-              bannerPreview || userData?.banner
-                ? {
-                    backgroundImage: `url(${bannerPreview || userData?.banner})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center"
-                  }
-                : {
-                    background: "linear-gradient(90deg, #38bdf8, #a855f7)"
-                  }
-            }
-          />
-          {isEditing && (
-            <div
-              className="banner-edit-icon"
-              onClick={() => bannerInputRef.current.click()}
-            >
-              <i className="pi pi-pencil"></i>
-            </div>
-          )}
-        </div>
-        <div className="profile-avatar-wrapper">
-          <Avatar
-            image={preview || userData?.avatar || undefined}
-            label={
-              !preview && !userData?.avatar
-                ? userData?.username?.charAt(0).toUpperCase()
-                : null
-            }
-            size="xlarge"
-            shape="circle"
-            className="profile-avatar"
-          />
-          {isEditing && (
-            <div className="avatar-edit-icon" onClick={() => fileInputRef.current.click()}>
-              <i className="pi pi-pencil"></i>
-            </div>
-          )}
-        </div>
-      </div>
+      <ProfileHeader
+        userData={userData}
+        isEditing={isEditing}
+        avatarPreview={preview}
+        bannerPreview={bannerPreview}
+        onAvatarEdit={() => fileInputRef.current.click()}
+        onBannerEdit={() => bannerInputRef.current.click()}
+        showUsername={false}
+      />
       <div className="profile-section">
         <h4>Datos personales</h4>
         <div className="form-row">
