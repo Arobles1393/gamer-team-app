@@ -1,13 +1,11 @@
 import { useState } from "react";
-import { platformIcons } from "../../utils/platformIcons";
-import { getPlatform } from "../../utils/getPlatform";
-import { getLabel } from "../../utils/getLabel";
 import SteamStats from "../../steam/steamStats";
 import GameAchievements from "../GameArchievements";
 import { Dialog } from "primereact/dialog";
 import { useUserProfile, useSteamStats } from "../../hooks";
 import ProfileHeader from "./ProfileHeader/ProfileHeader";
 import FavoriteGames from "./FavoriteGames/FavoriteGames";
+import SocialLinks from "./SocialLinks/SocialLinks";
 
 export default function UserProfile({ userId, user }) {
   const { userData } = useUserProfile(userId);
@@ -57,30 +55,7 @@ export default function UserProfile({ userId, user }) {
           </>
         )}
       </div>
-      <div style={{ marginTop: "1rem" }}>
-        <h4>Redes sociales</h4>
-        {userData?.links?.length > 0 ? (
-          <div className="gamer-links">
-            {userData.links.map((link, index) => {
-              const platform = getPlatform(link);
-              return(
-                <a
-                  key={index}
-                  href={link}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="gamer-link"
-                >
-                  {platformIcons[platform]?.()}
-                  {getLabel(platform)}
-                </a>
-              )
-            })}
-          </div>
-        ) : (
-          <p style={{ color: "#888" }}>No hay links</p>
-        )}
-      </div>
+      <SocialLinks links={userData.links} />
       <Dialog
         header={selectedGame?.name}
         visible={showAchievements}

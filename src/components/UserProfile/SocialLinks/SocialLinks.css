@@ -1,0 +1,29 @@
+.social-links {
+  margin-top: 1rem;
+}
+
+.gamer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.gamer-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  background: rgba(56, 189, 248, 0.1);
+  color: #38bdf8;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.gamer-link:hover {
+  background: rgba(168, 85, 247, 0.2);
+}
+
+.social-links-empty {
+  color: #888;
+}
