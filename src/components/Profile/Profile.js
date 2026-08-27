@@ -10,10 +10,10 @@ import { platformIcons } from "../../utils/platformIcons";
 import { getPlatform } from "../../utils/getPlatform";
 import { getLabel } from "../../utils/getLabel"
 import { InputTextarea } from "primereact/inputtextarea";
-import { AutoComplete } from "primereact/autocomplete";
 import { searchGames } from "../../utils/searchGames";
 import { Dropdown } from "primereact/dropdown";
 import ProfileHeader from "../ProfileHeader/ProfileHeader";
+import FavoriteGames from "../FavoriteGames/FavoriteGames";
 
 export default function Profile({ user, userData }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -231,17 +231,6 @@ export default function Profile({ user, userData }) {
     }, 300);
   };
 
-  const itemTemplate = (item) => (
-    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-      <img
-        src={item.image}
-        alt={item.label}
-        style={{ width: "40px", borderRadius: "6px" }}
-      />
-      <span>{item.label}</span>
-    </div>
-  );
-
   const handleRemoveGame = (id) => {
     setGames(prev => prev.filter(game => game.id !== id));
   };
@@ -324,57 +313,16 @@ export default function Profile({ user, userData }) {
           />
         </div>
       </div>
-      <div className="profile-section">
-        <h4>Juegos favoritos (Mostraremos estos juegos si no tienes perfil de steam añadido en gamermatch)</h4>
-        {isEditing ? (
-          <>
-            <AutoComplete
-              value={gameQuery}
-              suggestions={suggestions}
-              completeMethod={handleSearch}
-              onChange={(e) => setGameQuery(e.value)}
-              onSelect={(e) => handleAddGame(e.value)}
-              field="name"
-              itemTemplate={itemTemplate}
-              placeholder="Nombre del juego"
-              style={{ flex: 1, marginBottom: "2rem" }}
-            />
-            {games.length > 0 ? (
-              <div className="games-grid">
-                {games.map((game, index) => (
-                  <div key={game.id} className="game-card">
-                    <img src={game.image} alt={game.name} />
-                    <div className="game-card-overlay">{game.name}</div>
-                    <button
-                      className="remove-btn"
-                      onClick={() => handleRemoveGame(game.id)}
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p style={{ color: "#888" }}>No hay juegos que mostrar</p>
-            )}
-          </>
-        ) : (
-          <>
-            {userData?.games?.length > 0 ? (
-              <div className="games-grid">
-                {userData.games.map((game, index) => (
-                  <div key={game.id} className="game-card">
-                    <img src={game.image} alt={game.name} />
-                    <div className="game-card-overlay">{game.name}</div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p style={{ color: "#888" }}>No hay juegos que mostrar</p>
-            )}
-          </>
-        )}
-      </div>
+      <FavoriteGames
+        games={games}
+        isEditing={isEditing}
+        gameQuery={gameQuery}
+        suggestions={suggestions}
+        onSearch={handleSearch}
+        onGameQueryChange={setGameQuery}
+        onAddGame={handleAddGame}
+        onRemoveGame={handleRemoveGame}
+      />
       {/* LINKS */}
       <div className="profile-section">
         <h4>Redes sociales</h4>
