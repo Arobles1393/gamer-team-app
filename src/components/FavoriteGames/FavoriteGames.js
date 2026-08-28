@@ -34,11 +34,7 @@ export default function FavoriteGames({
 
   return (
     <section className="favorite-games">
-      <h4>
-        {isEditing
-          ? "Juegos favoritos"
-          : "Juegos favoritos"}
-      </h4>
+      <h4>Juegos favoritos</h4>
       {isEditing && (
         <AutoComplete
           value={gameQuery}

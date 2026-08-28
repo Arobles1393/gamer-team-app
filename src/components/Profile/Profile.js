@@ -6,14 +6,12 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { updateEmail } from "firebase/auth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { platformIcons } from "../../utils/platformIcons";
-import { getPlatform } from "../../utils/getPlatform";
-import { getLabel } from "../../utils/getLabel"
 import { InputTextarea } from "primereact/inputtextarea";
 import { searchGames } from "../../utils/searchGames";
 import { Dropdown } from "primereact/dropdown";
 import ProfileHeader from "../ProfileHeader/ProfileHeader";
 import FavoriteGames from "../FavoriteGames/FavoriteGames";
+import SocialLinks from "../SocialLinks/SocialLinks";
 
 export default function Profile({ user, userData }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -323,77 +321,11 @@ export default function Profile({ user, userData }) {
         onAddGame={handleAddGame}
         onRemoveGame={handleRemoveGame}
       />
-      {/* LINKS */}
-      <div className="profile-section">
-        <h4>Redes sociales</h4>
-        {isEditing ? (
-          <>
-            {links.length > 0 ? (
-              links.map((link, index) => (
-                <div
-                  key={index}
-                  style={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    marginBottom: "0.5rem"
-                  }}
-                >
-                  <InputText
-                    value={link}
-                    onChange={(e) => {
-                      const newLinks = [...links];
-                      newLinks[index] = e.target.value;
-                      setLinks(newLinks);
-                    }}
-                    style={{ flex: 1 }}
-                  />
-                  <Button
-                    icon="pi pi-trash"
-                    className="p-button-danger p-button-text"
-                    onClick={() => {
-                      const newLinks = links.filter((_, i) => i !== index);
-                      setLinks(newLinks);
-                    }}
-                  />
-                </div>
-              ))
-            ) : (
-              <p style={{ color: "#888" }}>No hay links</p>
-            )}
-            {/* ➕ Agregar link */}
-            <Button
-              label="Agregar link"
-              icon="pi pi-plus"
-              className="p-button-text"
-              onClick={() => setLinks([...links, ""])}
-            />
-          </>
-        ) : (
-          <>
-            {userData?.links?.length > 0 ? (
-              <div className="gamer-links">
-                {userData.links.map((link, index) => {
-                  const platform = getPlatform(link);
-                  return(
-                    <a
-                      key={index}
-                      href={link}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="gamer-link"
-                    >
-                      {platformIcons[platform]?.()}
-                      {getLabel(platform)}
-                    </a>
-                  )
-                })}
-              </div>
-            ) : (
-              <p style={{ color: "#888" }}>No hay links</p>
-            )}
-          </>
-        )}
-      </div>
+      <SocialLinks
+        links={links}
+        isEditing={isEditing}
+        onLinksChange={setLinks}
+      />
       {/* BOTÓN */}
       <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
         <Button

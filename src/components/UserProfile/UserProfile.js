@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useUserProfile, useSteamStats } from "../../hooks";
 import ProfileHeader from "../ProfileHeader/ProfileHeader";
 import FavoriteGames from "../FavoriteGames/FavoriteGames";
-import SocialLinks from "./SocialLinks/SocialLinks";
+import SocialLinks from "../SocialLinks/SocialLinks";
 import SteamStatsSection from "./SteamStatsSection/SteamStatsSection";
 import GameAchievementsDialog from "./GameAchievementsDialog/GameAchievementsDialog";
 
