@@ -10,6 +10,7 @@ import ProfileHeader from "../ProfileHeader/ProfileHeader";
 import FavoriteGames from "../FavoriteGames/FavoriteGames";
 import SocialLinks from "../SocialLinks/SocialLinks";
 import PersonalInfo from "./PersonalInfo/PersonalInfo";
+import { profileService } from "../../services/profile";
 
 export default function Profile({ user, userData }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -80,8 +81,10 @@ export default function Profile({ user, userData }) {
 
   const handleSave = async () => {
     try {
-      const userRef = doc(db, "users", user.uid);
-      const invalid = links.some((link) => link && !isValidLink(link));
+      const invalid = links.some(
+        (link) => link && !isValidLink(link)
+      );
+
       if (invalid) {
         alert("Todos los links deben comenzar con https://");
         return;
@@ -95,7 +98,7 @@ export default function Profile({ user, userData }) {
         await updateEmail(user, email);
       }
 
-      await updateDoc(userRef, {
+      await profileService.updateUserProfile(user.uid, {
         username,
         phone,
         links,
