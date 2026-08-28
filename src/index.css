@@ -280,34 +280,7 @@ a:hover {
   }
 }
 
-/* ================= PROFILE ================= */
-.profile-section {
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background: rgba(15, 23, 42, 0.6);
-  border-radius: 8px;
-}
-
 /* ================= FORM PROFILE ================= */
-.form-row {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap; /* 🔥 para responsive */
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  flex: 1; /* 🔥 todos ocupan el mismo espacio */
-  min-width: 150px; /* evita que se rompa feo */
-}
-
-.form-group label {
-  font-size: 0.85rem;
-  color: #94a3b8;
-  margin-bottom: 0.3rem;
-}
-
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;

@@ -3,15 +3,13 @@ import { db, storage } from "../../firebase/config";
 import { doc, updateDoc } from "firebase/firestore";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
-import { InputText } from "primereact/inputtext";
 import { updateEmail } from "firebase/auth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { InputTextarea } from "primereact/inputtextarea";
 import { searchGames } from "../../utils/searchGames";
-import { Dropdown } from "primereact/dropdown";
 import ProfileHeader from "../ProfileHeader/ProfileHeader";
 import FavoriteGames from "../FavoriteGames/FavoriteGames";
 import SocialLinks from "../SocialLinks/SocialLinks";
+import PersonalInfo from "./PersonalInfo/PersonalInfo";
 
 export default function Profile({ user, userData }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -258,59 +256,20 @@ export default function Profile({ user, userData }) {
         onBannerEdit={() => bannerInputRef.current.click()}
         showUsername={false}
       />
-      <div className="profile-section">
-        <h4>Datos personales</h4>
-        <div className="form-row">
-          <div className="form-group">
-            <label>Correo</label>
-            <InputText
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={!isEditing}
-            />
-          </div>
-          <div className="form-group">
-            <label>NickName</label>
-            <InputText
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              disabled={!isEditing}
-            />
-          </div>
-          <div className="form-group">
-            <label>Teléfono</label>
-            <InputText
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              disabled={!isEditing}
-            />
-          </div>
-          <div className="form-group">
-            <label>Region</label>
-            <Dropdown
-              value={region}
-              options={countries}
-              onChange={(e) => setRegion(e.value)}
-              optionLabel="label"
-              placeholder="Selecciona tu región"
-              filter
-              disabled={!isEditing}
-            />
-          </div>
-        </div>
-      </div>
-      <div className="profile-section" style={{marginTop:0}}>
-        <div className="form-group">
-          <InputTextarea
-            placeholder="Cuentanos sobre ti..."
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-            autoResize
-            disabled={!isEditing}
-          />
-        </div>
-      </div>
+      <PersonalInfo
+        email={email}
+        username={username}
+        phone={phone}
+        region={region}
+        description={description}
+        countries={countries}
+        isEditing={isEditing}
+        onEmailChange={setEmail}
+        onUsernameChange={setUsername}
+        onPhoneChange={setPhone}
+        onRegionChange={setRegion}
+        onDescriptionChange={setDescription}
+      />
       <FavoriteGames
         games={games}
         isEditing={isEditing}
