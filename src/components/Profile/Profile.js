@@ -1,16 +1,13 @@
 import { useEffect, useState, useRef } from "react";
-import { db, storage } from "../../firebase/config";
-import { doc, updateDoc } from "firebase/firestore";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { updateEmail } from "firebase/auth";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { searchGames } from "../../utils/searchGames";
 import ProfileHeader from "../ProfileHeader/ProfileHeader";
 import FavoriteGames from "../FavoriteGames/FavoriteGames";
 import SocialLinks from "../SocialLinks/SocialLinks";
 import PersonalInfo from "./PersonalInfo/PersonalInfo";
-import { profileService } from "../../services/profile";
+import { profileService, profileImageService } from "../../services/profile";
 
 export default function Profile({ user, userData }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -156,19 +153,11 @@ export default function Profile({ user, userData }) {
     setPreview(URL.createObjectURL(file));
 
     try {
-      const storageRef = ref(storage, `avatars/${user.uid}`);
-
-      // subir archivo
-      await uploadBytes(storageRef, file);
-
-      // obtener URL
-      const url = await getDownloadURL(storageRef);
-
-      // guardar en firestore
-      await updateDoc(doc(db, "users", user.uid), {
-        avatar: url
-      });
-
+      await profileImageService.uploadProfileImage(
+        user.uid,
+        file,
+        "avatar"
+      );
     } catch (error) {
       console.error("Error subiendo imagen:", error);
     }
@@ -191,16 +180,11 @@ export default function Profile({ user, userData }) {
     setBannerPreview(URL.createObjectURL(file));
 
     try {
-      const storageRef = ref(storage, `banners/${user.uid}`);
-
-      await uploadBytes(storageRef, file);
-
-      const url = await getDownloadURL(storageRef);
-
-      await updateDoc(doc(db, "users", user.uid), {
-        banner: url
-      });
-
+      await profileImageService.uploadProfileImage(
+        user.uid,
+        file,
+        "banner"
+      );
     } catch (error) {
       console.error("Error subiendo banner:", error);
     }
