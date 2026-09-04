@@ -1,18 +1,16 @@
 import { useEffect, useState, useRef } from "react";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
-import { searchGames } from "../../utils/searchGames";
 import ProfileHeader from "../ProfileHeader/ProfileHeader";
 import FavoriteGames from "../FavoriteGames/FavoriteGames";
 import SocialLinks from "../SocialLinks/SocialLinks";
 import PersonalInfo from "./PersonalInfo/PersonalInfo";
 import { profileImageService } from "../../services/profile";
-import { useProfileForm } from "../../hooks";
+import { useProfileForm, useGameSearch } from "../../hooks";
 import { countries } from "../../data/countries";
 
 export default function Profile({ user, userData }) {
   const [gameQuery, setGameQuery] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
   const [preview, setPreview] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
   const bannerInputRef = useRef(null);
@@ -39,6 +37,11 @@ export default function Profile({ user, userData }) {
     handleCancel,
     hasChanges
   } = useProfileForm(user, userData);
+
+  const {
+    suggestions,
+    handleSearch
+  } = useGameSearch();
 
   useEffect(() => {
     return () => {
@@ -120,16 +123,6 @@ export default function Profile({ user, userData }) {
       return [...prev, newGame];
     });
     setGameQuery("");
-  };
-
-  let timeout = null;
-
-  const handleSearch = async (e) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(async () => {
-      const results = await searchGames(e.query);
-      setSuggestions(results);
-    }, 300);
   };
 
   const handleRemoveGame = (id) => {

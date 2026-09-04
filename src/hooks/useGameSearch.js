@@ -8,9 +8,16 @@ export const useGameSearch = () => {
   const handleSearch = useCallback((e) => {
     clearTimeout(searchTimeout.current);
 
+    const query = e.query.trim();
+
+    if (!query) {
+      setSuggestions([]);
+      return;
+    }
+
     searchTimeout.current = setTimeout(async () => {
       try {
-        const results = await searchGames(e.query);
+        const results = await searchGames(query);
         setSuggestions(results);
       } catch (error) {
         console.error("Error al buscar juegos:", error);
