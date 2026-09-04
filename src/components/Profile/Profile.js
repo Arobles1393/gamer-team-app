@@ -1,42 +1,44 @@
 import { useEffect, useState, useRef } from "react";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
-import { updateEmail } from "firebase/auth";
 import { searchGames } from "../../utils/searchGames";
 import ProfileHeader from "../ProfileHeader/ProfileHeader";
 import FavoriteGames from "../FavoriteGames/FavoriteGames";
 import SocialLinks from "../SocialLinks/SocialLinks";
 import PersonalInfo from "./PersonalInfo/PersonalInfo";
-import { profileService, profileImageService } from "../../services/profile";
+import { profileImageService } from "../../services/profile";
+import { useProfileForm } from "../../hooks";
+import { countries } from "../../data/countries";
 
 export default function Profile({ user, userData }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [description, setDescription] = useState("");
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [phone, setPhone] = useState("");
-  const [links, setLinks] = useState([]);
-  const [games, setGames] = useState([]);
   const [gameQuery, setGameQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [preview, setPreview] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
-  const [countries, setCountries] = useState([]);
-  const [region, setRegion] = useState(null);
   const bannerInputRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    if (userData) {
-      setEmail(userData.email || "");
-      setUsername(userData.username || "");
-      setPhone(userData.phone || "");
-      setLinks(userData.links || []);
-      setGames(userData.games || []);
-      setDescription(userData.description || []);
-      setRegion(userData.region || "");
-    }
-  }, [userData]);
+  const {
+    isEditing,
+    setIsEditing,
+    email,
+    username,
+    phone,
+    description,
+    links,
+    games,
+    region,
+    setEmail,
+    setUsername,
+    setPhone,
+    setDescription,
+    setLinks,
+    setGames,
+    setRegion,
+    handleSave,
+    handleCancel,
+    hasChanges
+  } = useProfileForm(user, userData);
 
   useEffect(() => {
     return () => {
@@ -51,90 +53,6 @@ export default function Profile({ user, userData }) {
       if (bannerPreview) URL.revokeObjectURL(bannerPreview);
     };
   }, [bannerPreview]);
-
-  useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const res = await fetch(
-          "https://restcountries.com/v3.1/all?fields=name,flags"
-        );
-        const data = await res.json();
-        const countries = data
-          .map((country) => ({
-            label: country.name.common,
-            value: country.name.common,
-            flag: country.flags.png
-          }))
-          .sort((a, b) =>
-            a.label.localeCompare(b.label)
-          );
-        setCountries(countries);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchCountries();
-  }, []);
-
-  const handleSave = async () => {
-    try {
-      const invalid = links.some(
-        (link) => link && !isValidLink(link)
-      );
-
-      if (invalid) {
-        alert("Todos los links deben comenzar con https://");
-        return;
-      }
-
-      if (email !== user.email) {
-        if (!email.includes("@")) {
-          alert("Correo inválido");
-          return;
-        }
-        await updateEmail(user, email);
-      }
-
-      await profileService.updateUserProfile(user.uid, {
-        username,
-        phone,
-        links,
-        description,
-        games,
-        region
-      });
-      setIsEditing(false);
-    } catch (error) {
-      console.error("Error actualizando perfil:", error);
-    }
-  };
-
-  const isValidLink = (url) => {
-    return url.startsWith("https://");
-  };
-
-  const handleCancel = () => {
-    setEmail(userData.email || "");
-    setUsername(userData.username || "");
-    setPhone(userData?.phone || "");
-    setLinks(userData?.links || []);
-    setGames(userData?.games || []);
-    setDescription(userData?.description || []);
-    setRegion(userData?.region || "");
-    setIsEditing(false);
-  };
-
-  const hasChanges = () => {
-    return (
-      email !== (userData?.email || "") ||
-      username !== (userData?.username || "") ||
-      phone !== (userData?.phone || "") ||
-      region !== (userData?.region || "") ||
-      description !== (userData?.description || "") ||
-      JSON.stringify(links) !== JSON.stringify(userData?.links || []) ||
-      JSON.stringify(games) !== JSON.stringify(userData?.games || [])
-    );
-  };
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
