@@ -1,18 +1,15 @@
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import ProfileHeader from "../ProfileHeader/ProfileHeader";
 import FavoriteGames from "../FavoriteGames/FavoriteGames";
 import SocialLinks from "../SocialLinks/SocialLinks";
 import PersonalInfo from "./PersonalInfo/PersonalInfo";
-import { profileImageService } from "../../services/profile";
-import { useProfileForm, useGameSearch } from "../../hooks";
+import { useProfileForm, useGameSearch, useProfileImages } from "../../hooks";
 import { countries } from "../../data/countries";
 
 export default function Profile({ user, userData }) {
   const [gameQuery, setGameQuery] = useState("");
-  const [preview, setPreview] = useState(null);
-  const [bannerPreview, setBannerPreview] = useState(null);
   const bannerInputRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -44,73 +41,11 @@ export default function Profile({ user, userData }) {
     handleSearch
   } = useGameSearch();
 
-  useEffect(() => {
-    return () => {
-      if (preview) {
-        URL.revokeObjectURL(preview);
-      }
-    };
-  }, [preview]);
-
-  useEffect(() => {
-    return () => {
-      if (bannerPreview) URL.revokeObjectURL(bannerPreview);
-    };
-  }, [bannerPreview]);
-
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      alert("Solo imágenes");
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Máximo 5MB");
-      return;
-    }
-
-    setPreview(URL.createObjectURL(file));
-
-    try {
-      await profileImageService.uploadProfileImage(
-        user.uid,
-        file,
-        "avatar"
-      );
-    } catch (error) {
-      console.error("Error subiendo imagen:", error);
-    }
-  };
-
-  const handleBannerChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      alert("Solo imágenes");
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Máximo 5MB");
-      return;
-    }
-
-    setBannerPreview(URL.createObjectURL(file));
-
-    try {
-      await profileImageService.uploadProfileImage(
-        user.uid,
-        file,
-        "banner"
-      );
-    } catch (error) {
-      console.error("Error subiendo banner:", error);
-    }
-  };
+  const {
+    preview,
+    bannerPreview,
+    handleImageChange
+  } = useProfileImages(user);
 
   const handleAddGame = (game) => {
     addGame(game);
@@ -124,14 +59,14 @@ export default function Profile({ user, userData }) {
         accept="image/*"
         ref={fileInputRef}
         style={{ display: "none" }}
-        onChange={handleFileChange}
+        onChange={(e) => handleImageChange(e, "avatar")}
       />
       <input
         type="file"
         accept="image/*"
         ref={bannerInputRef}
         style={{ display: "none" }}
-        onChange={handleBannerChange}
+        onChange={(e) => handleImageChange(e, "banner")}
       />
       <ProfileHeader
         userData={userData}
