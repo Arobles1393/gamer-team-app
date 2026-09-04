@@ -42,7 +42,7 @@ export default function FavoriteGames({
           completeMethod={onSearch}
           onChange={(e) => onGameQueryChange(e.value)}
           onSelect={(e) => onAddGame(e.value)}
-          field="name"
+          field="label"
           itemTemplate={itemTemplate}
           placeholder="Nombre del juego"
           style={{

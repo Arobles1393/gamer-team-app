@@ -31,8 +31,9 @@ export default function Profile({ user, userData }) {
     setPhone,
     setDescription,
     setLinks,
-    setGames,
     setRegion,
+    addGame,
+    removeGame,
     handleSave,
     handleCancel,
     hasChanges
@@ -112,21 +113,8 @@ export default function Profile({ user, userData }) {
   };
 
   const handleAddGame = (game) => {
-    const newGame = {
-      id: game.id,
-      name: game.value,
-      image: game.image
-    };
-
-    setGames(prev => {
-      if (prev.some(g => g.id === game.id)) return prev;
-      return [...prev, newGame];
-    });
+    addGame(game);
     setGameQuery("");
-  };
-
-  const handleRemoveGame = (id) => {
-    setGames(prev => prev.filter(game => game.id !== id));
   };
   
   return (
@@ -176,7 +164,7 @@ export default function Profile({ user, userData }) {
         onSearch={handleSearch}
         onGameQueryChange={setGameQuery}
         onAddGame={handleAddGame}
-        onRemoveGame={handleRemoveGame}
+        onRemoveGame={removeGame}
       />
       <SocialLinks
         links={links}

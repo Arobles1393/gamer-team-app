@@ -90,6 +90,26 @@ export const useProfileForm = (user, userData) => {
     );
   };
 
+  const addGame = (game) => {
+    const newGame = {
+      id: game.id,
+      name: game.value,
+      image: game.image
+    };
+
+    setGames(prev => {
+      if (prev.some(g => g.id === game.id)) {
+        return prev;
+      }
+
+      return [...prev, newGame];
+    });
+  };
+
+  const removeGame = (id) => {
+    setGames(prev => prev.filter(game => game.id !== id));
+  };
+
   return {
     isEditing,
     setIsEditing,
@@ -107,11 +127,12 @@ export const useProfileForm = (user, userData) => {
     setPhone,
     setDescription,
     setLinks,
-    setGames,
     setRegion,
 
     handleSave,
     handleCancel,
-    hasChanges
+    hasChanges,
+    addGame,
+    removeGame
   };
 }
