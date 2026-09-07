@@ -4,7 +4,7 @@ import { Avatar } from "primereact/avatar";
 import { Button } from "primereact/button";
 import { memo, useMemo, useCallback } from "react";
 import PostPlatforms from "./PostPlatforms";
-import "./PostCard.css"
+import "./PostCard.css";
 
 function PostCard({
   post,
