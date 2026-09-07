@@ -10,7 +10,7 @@ export const useGameSearch = () => {
 
     const query = e.query.trim();
 
-    if (!query) {
+    if (query.length < 2) {
       setSuggestions([]);
       return;
     }

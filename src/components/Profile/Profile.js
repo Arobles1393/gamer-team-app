@@ -73,8 +73,8 @@ export default function Profile({ user, userData }) {
         isEditing={isEditing}
         avatarPreview={preview}
         bannerPreview={bannerPreview}
-        onAvatarEdit={() => fileInputRef.current.click()}
-        onBannerEdit={() => bannerInputRef.current.click()}
+        onAvatarEdit={() => fileInputRef.current?.click()}
+        onBannerEdit={() => bannerInputRef.current?.click()}
         showUsername={false}
       />
       <PersonalInfo
@@ -106,7 +106,6 @@ export default function Profile({ user, userData }) {
         isEditing={isEditing}
         onLinksChange={setLinks}
       />
-      {/* BOTÓN */}
       <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
         <Button
           label={isEditing ? "Guardar" : "Editar perfil"}

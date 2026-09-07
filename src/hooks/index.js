@@ -10,8 +10,8 @@ export * from "./useProfileChat";
 export * from "./usePostInterest";
 export * from "./useFriendRequest";
 export * from "./useGameSearch";
-export * from "./useCreatePost"
+export * from "./useCreatePost";
 export * from "./useUserProfile";
 export * from "./useSteamStats";
 export * from "./useProfileForm";
-export * from "./useProfileImages"
+export * from "./useProfileImages";

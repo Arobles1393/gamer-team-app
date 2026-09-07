@@ -5,20 +5,26 @@ export const useProfileImages = (user) => {
   const [preview, setPreview] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
 
+  const validateImage = (file) => {
+    if (!file.type.startsWith("image/")) {
+      alert("Solo imágenes");
+      return false;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Máximo 5MB");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleImageChange = async (e, type) => {
     const file = e.target.files[0];
 
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
-      alert("Solo imágenes");
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Máximo 5MB");
-      return;
-    }
+    if (!validateImage(file)) return;
 
     const previewUrl = URL.createObjectURL(file);
 
