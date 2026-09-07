@@ -1,9 +1,8 @@
+const API_KEY = process.env.REACT_APP_RAWG_API_KEY;
+
 const searchCache = {};
 
 export const searchGames = async (query) => {
-  const API_KEY = "";
-
-  // 🔥 evitar llamadas innecesarias
   if (!query || query.length < 2) return [];
 
   // 🔥 cache
@@ -50,7 +49,10 @@ export const searchGames = async (query) => {
           value: game.name,
           image: game.background_image,
           clip: game.clip?.clip,
-          steamAppId
+          steamAppId,
+          platforms: game.platforms?.map(
+            (p) => p.platform.name
+          ) || []
         };
       })
 
