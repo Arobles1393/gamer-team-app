@@ -1,0 +1,1 @@
+export {  default as GamingNews } from './GamingNews';
