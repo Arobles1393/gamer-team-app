@@ -1,6 +1,6 @@
 const API_KEY = process.env.REACT_APP_RAWG_API_KEY;
 
-const searchCache = {};
+const searchCache = new Map();
 
 let currentController = null;
 
@@ -10,8 +10,8 @@ export const searchGames = async (query) => {
   const normalizedQuery = query.trim().toLowerCase();
 
   // 🔥 cache
-  if (searchCache[normalizedQuery]) {
-    return searchCache[normalizedQuery];
+  if (searchCache.has(normalizedQuery)) {
+    return searchCache.get(normalizedQuery);
   }
 
   // Cancela la búsqueda anterior si seguía en curso
@@ -42,7 +42,7 @@ export const searchGames = async (query) => {
     }));
 
     // guardar en cache
-    searchCache[normalizedQuery] = results;
+    searchCache.set(normalizedQuery, results);
 
     return results;
 
