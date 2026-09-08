@@ -6,7 +6,7 @@ import PostDetail from "../components/PostDetail";
 import { Notifications } from "../components/Notifications";
 import Friends from "../components/Friends";
 import FindPlayers from "../components/FindPlayers";
-import GamingNews from "../gamingNews/GamingNews";
+import GamingNews from "../components/GamingNews/GamingNews";
 
 const AppRoutes = ({
 	user,

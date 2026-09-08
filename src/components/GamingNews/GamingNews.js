@@ -8,7 +8,7 @@ import {
   onSnapshot,
   limit
 } from "firebase/firestore";
-import { db } from "../firebase/config";
+import { db } from "../../firebase/config";
 import "./GamingNews.css";
 
 export default function GamingNews() {

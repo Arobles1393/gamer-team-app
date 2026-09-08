@@ -1,4 +1,4 @@
-import "./steam.css";
+import "./Steam.css";
 
 export default function SteamStats({ stats, onSelectGame }) {
   if (!stats) return null;
