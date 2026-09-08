@@ -84,7 +84,7 @@ export const getGameDetail = async (gameId) => {
 
     return {
       steamAppId,
-      clip: detailData.clip?.clip
+      clip: detailData.clip?.clip ?? null
     };
 
   } catch (error) {

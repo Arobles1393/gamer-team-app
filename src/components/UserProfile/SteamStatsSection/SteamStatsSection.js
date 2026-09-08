@@ -1,4 +1,4 @@
-import SteamStats from "../../../steam/steamStats";
+import SteamStats from "../../steam/steamStats";
 import "./SteamStatsSection.css";
 
 export default function SteamStatsSection({
