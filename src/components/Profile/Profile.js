@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import ProfileHeader from "../ProfileHeader/ProfileHeader";
-import FavoriteGames from "../FavoriteGames/FavoriteGames";
+import { FavoriteGames } from "../FavoriteGames";
 import SocialLinks from "../SocialLinks/SocialLinks";
 import PersonalInfo from "./PersonalInfo/PersonalInfo";
 import { useProfileForm, useGameSearch, useProfileImages } from "../../hooks";
