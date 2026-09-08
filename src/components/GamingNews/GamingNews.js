@@ -1,64 +1,11 @@
-import { useEffect, useState } from "react";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
-import {
-  collection,
-  query,
-  orderBy,
-  onSnapshot,
-  limit
-} from "firebase/firestore";
-import { db } from "../../firebase/config";
+import { useGamingNews } from "../../hooks";
+import { formatDate } from "../../utils";
 import "./GamingNews.css";
 
 export default function GamingNews() {
-  const [news, setNews] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-
-    const q = query(
-      collection(db, "gaming_news"),
-      orderBy("publishedAt", "desc"),
-      limit(20)
-    );
-
-    const unsubscribe =
-      onSnapshot(q, (snapshot) => {
-
-        const data =
-          snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }));
-
-        setNews(data);
-        setLoading(false);
-
-      });
-
-    return () => unsubscribe();
-
-  }, []);
-
-  const formatDate = (timestamp) => {
-
-    if (!timestamp) return "";
-
-    const date =
-      timestamp.toDate
-        ? timestamp.toDate()
-        : new Date(timestamp);
-
-    return date.toLocaleDateString(
-      "es-MX",
-      {
-        day: "numeric",
-        month: "short",
-        year: "numeric"
-      }
-    );
-  };
+  const { news, loading } = useGamingNews();
 
   if (loading) {
     return (
