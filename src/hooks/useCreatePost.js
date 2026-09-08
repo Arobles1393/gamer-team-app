@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { functions } from "../firebase/config";
 import { httpsCallable } from "firebase/functions";
 import { postService } from "../services/posts";
+import { getGameDetail } from "../utils/searchGames";
 
 const getGameLogo = httpsCallable(
   functions,
@@ -68,6 +69,17 @@ export const useCreatePost = ({
 
       const gameName = game.value ?? game;
 
+      // Si el usuario seleccionó un juego nuevo del autocompletado (tiene id)
+      // y no estamos editando, pedimos su detalle (steamAppId, clip) una sola vez.
+      let steamAppId = editingPost?.steamAppId ?? null;
+      let gameClip = editingPost?.clip ?? null;
+
+      if (game.id && !editingPost) {
+        const detail = await getGameDetail(game.id);
+        steamAppId = detail.steamAppId ?? steamAppId;
+        gameClip = detail.clip ?? gameClip;
+      }
+
       const media = await postService.getExistingMedia(
         gameName
       );
@@ -85,17 +97,12 @@ export const useCreatePost = ({
       }
 
       if (!clip) {
-        clip =
-          game.clip ??
-          editingPost?.clip ??
-          null;
+        clip = gameClip;
       }
 
       if (!logo) {
         const result = await getGameLogo({
-          steamAppId:
-            game.steamAppId ??
-            editingPost?.steamAppId,
+          steamAppId,
           gameName
         });
 
@@ -104,9 +111,7 @@ export const useCreatePost = ({
 
       if (!portada) {
         const result = await getGamePortada({
-          steamAppId:
-            game.steamAppId ??
-            editingPost?.steamAppId,
+          steamAppId,
           gameName
         });
 

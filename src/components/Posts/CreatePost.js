@@ -97,6 +97,7 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
             itemTemplate={itemTemplate}
             placeholder="Nombre del juego"
             className="create-post__autocomplete"
+            disabled={!!editingPost}
           />
           <Checkbox
             inputId="multiplatform"
