@@ -1,9 +1,9 @@
 import { useState, useRef } from "react";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
-import ProfileHeader from "../ProfileHeader/ProfileHeader";
+import { ProfileHeader } from "../ProfileHeader";
 import { FavoriteGames } from "../FavoriteGames";
-import SocialLinks from "../SocialLinks/SocialLinks";
+import { SocialLinks } from "../SocialLinks";
 import PersonalInfo from "./PersonalInfo/PersonalInfo";
 import { useProfileForm, useGameSearch, useProfileImages } from "../../hooks";
 import { countries } from "../../data/countries";
