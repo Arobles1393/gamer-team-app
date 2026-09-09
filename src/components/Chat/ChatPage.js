@@ -6,14 +6,14 @@ import './Chat.css'
 
 export default function ChatPage({ user, userData }) {
   const [activeChat, setActiveChat] = useState(null);
-  const location = useLocation();
+  const { state } = useLocation();
+  const chatId = state?.chatId;
 
-  // 🔥 si vienes desde "Enviar mensaje"
   useEffect(() => {
-    if (location.state?.chatId) {
-      setActiveChat(location.state.chatId);
+    if (chatId) {
+      setActiveChat(chatId);
     }
-  }, [location]);
+  }, [chatId]);
 
   return (
     <div className="chat-container">
