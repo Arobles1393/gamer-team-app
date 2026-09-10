@@ -1,6 +1,29 @@
 import { Button } from "primereact/button";
 import { useNavigate } from "react-router-dom";
 import { navigateNotification } from "../../utils";
+import { useUserProfile } from "../../hooks";
+
+const getNotificationText = (type, senderUsername) => {
+  switch (type) {
+    case "friend_request":
+      return {
+        title: "Solicitud de amistad",
+        text: `${senderUsername} quiere agregarte`
+      };
+    case "friend_accepted":
+      return {
+        title: "Solicitud aceptada",
+        text: `${senderUsername} aceptó tu solicitud de amistad`
+      };
+    case "message":
+      return {
+        title: "Nuevo mensaje",
+        text: `${senderUsername} te envió un mensaje`
+      };
+    default:
+      return { title: "Notificación", text: "" };
+  }
+};
 
 export default function NotificationItem({
   notification,
@@ -10,6 +33,13 @@ export default function NotificationItem({
   closeOverlay
 }) {
   const navigate = useNavigate();
+
+  const { userData: sender } = useUserProfile(notification.senderId);
+
+  const { title, text } = getNotificationText(
+    notification.type,
+    sender?.username || "Alguien"
+  );
 
   const status = notification.status;
 
@@ -53,10 +83,10 @@ export default function NotificationItem({
       <div className="notification-item-content">
 
         <div className="notification-content">
-          <strong>{notification.title}</strong>
+          <strong>{title}</strong>
 
           <p className="notification-text">
-            {notification.text}
+            {text}
           </p>
         </div>
 

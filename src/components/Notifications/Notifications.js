@@ -5,10 +5,119 @@ import { Button } from "primereact/button";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { notificationService } from "../../services/notifications";
 import { friendService } from "../../services/friends";
-import { useNotifications } from "../../hooks";
+import { useNotifications, useUserProfile } from "../../hooks";
 import { navigateNotification } from "../../utils";
 import { formatDates } from "../../utils";
 import "./Notifications.css";
+
+const getNotificationText = (type, senderUsername) => {
+  switch (type) {
+    case "friend_request":
+      return {
+        title: "Solicitud de amistad",
+        text: `${senderUsername} quiere agregarte`
+      };
+    case "friend_accepted":
+      return {
+        title: "Solicitud aceptada",
+        text: `${senderUsername} aceptó tu solicitud de amistad`
+      };
+    case "message":
+      return {
+        title: "Nuevo mensaje",
+        text: `${senderUsername} te envió un mensaje`
+      };
+    default:
+      return { title: "Notificación", text: "" };
+  }
+};
+
+function NotificationCard({
+  notification,
+  onClick,
+  onAccept,
+  onReject
+}) {
+  const { userData: sender } = useUserProfile(notification.senderId);
+
+  const { title, text } = getNotificationText(
+    notification.type,
+    sender?.username || "Alguien"
+  );
+
+  return (
+    <Card
+      className={`notifications__card ${
+        notification.read
+          ? "notifications__card--read"
+          : ""
+      }`}
+      onClick={() => onClick(notification)}
+    >
+      <div className="notifications__content">
+        <div className="notifications__sender">
+          <Avatar
+            image={sender?.avatar}
+            label={sender?.username?.charAt(0)}
+            shape="circle"
+          />
+
+          <div className="notifications__info">
+            <strong className="notifications__title">
+              {title}
+            </strong>
+
+            <p className="notifications__text">
+              {text}
+            </p>
+
+            <small className="notifications__date">
+              {formatDates.formatDateN(notification.createdAt)}
+            </small>
+          </div>
+        </div>
+
+        {notification.type === "friend_request" &&
+          notification.status === "pending" && (
+          <div className="notifications__notification-actions">
+            <Button
+              label="Aceptar"
+              icon="pi pi-check"
+              onClick={(e) => {
+                e.stopPropagation();
+                onAccept(notification);
+              }}
+            />
+
+            <Button
+              label="Rechazar"
+              icon="pi pi-times"
+              severity="danger"
+              onClick={(e) => {
+                e.stopPropagation();
+                onReject(notification);
+              }}
+            />
+          </div>
+        )}
+
+        {notification.type === "friend_request" &&
+          notification.status === "accepted" && (
+          <span className="notifications__status notifications__status--accepted">
+            ✅ Aceptada
+          </span>
+        )}
+
+        {notification.type === "friend_request" &&
+          notification.status === "rejected" && (
+          <span className="notifications__status notifications__status--rejected">
+            ❌ Rechazada
+          </span>
+        )}
+      </div>
+    </Card>
+  );
+}
 
 export default function Notifications({ user, userData }) {
 
@@ -17,23 +126,15 @@ export default function Notifications({ user, userData }) {
   const { notifications } = useNotifications(user, { limitCount: null });
 
   const handleMarkAllAsRead = () => {
-    return notificationService.markAllNotificationsAsRead(
-      user.uid
-    );
+    return notificationService.markAllNotificationsAsRead(user.uid);
   };
 
   const handleAcceptFriendRequest = (notification) => {
-    return friendService.acceptFriendRequest(
-      notification,
-      user,
-      userData
-    );
+    return friendService.acceptFriendRequest(notification, user, userData);
   };
 
   const handleRejectFriendRequest = (notification) => {
-    return friendService.rejectFriendRequest(
-      notification
-    );
+    return friendService.rejectFriendRequest(notification);
   };
 
   const handleNotificationClick = async (notification) => {
@@ -43,33 +144,23 @@ export default function Notifications({ user, userData }) {
     }
 
     if (!notification.read) {
-      await notificationService.markNotificationAsRead(
-        notification.id
-      );
+      await notificationService.markNotificationAsRead(notification.id);
     }
 
-    navigateNotification(
-      notification,
-      navigate
-    );
+    navigateNotification(notification, navigate);
   };
 
   const handleDeleteAllNotifications = () => {
-    return notificationService.deleteAllNotifications(
-      user.uid
-    );
+    return notificationService.deleteAllNotifications(user.uid);
   };
 
   const confirmDeleteAll = () => {
-
     confirmDialog({
-      message:
-        "¿Eliminar todas las notificaciones?",
+      message: "¿Eliminar todas las notificaciones?",
       header: "Confirmar",
       icon: "pi pi-exclamation-triangle",
       accept: handleDeleteAllNotifications
     });
-
   };
 
   return (
@@ -96,85 +187,15 @@ export default function Notifications({ user, userData }) {
               onClick={confirmDeleteAll}
             />
           </div>
+
           {notifications.map((notification) => (
-            <Card
+            <NotificationCard
               key={notification.id}
-              className={`notifications__card ${
-                notification.read
-                  ? "notifications__card--read"
-                  : ""
-              }`}
-              onClick={() =>
-                handleNotificationClick(notification)
-              }
-            >
-              <div className="notifications__content">
-                <div className="notifications__sender">
-                  <Avatar
-                    image={notification.senderAvatar}
-                    label={
-                      notification.senderName?.charAt(0)
-                    }
-                    shape="circle"
-                  />
-
-                  <div className="notifications__info">
-                    <strong className="notifications__title">
-                      {notification.title}
-                    </strong>
-
-                    <p className="notifications__text">
-                      {notification.text}
-                    </p>
-
-                    <small className="notifications__date">
-                      {formatDates.formatDateN(
-                        notification.createdAt
-                      )}
-                    </small>
-                  </div>
-                </div>
-
-                {notification.type === "friend_request" &&
-                  notification.status === "pending" && (
-                  <div className="notifications__notification-actions">
-                    <Button
-                      label="Aceptar"
-                      icon="pi pi-check"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleAcceptFriendRequest(notification);
-                      }}
-                    />
-
-                    <Button
-                      label="Rechazar"
-                      icon="pi pi-times"
-                      severity="danger"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRejectFriendRequest(notification);
-                      }}
-                    />
-                  </div>
-                )}
-                {notification.type === "friend_request" &&
-                  notification.status === "accepted" && (
-                  <span className="notifications__status notifications__status--accepted">
-                    ✅ Aceptada
-                  </span>
-                )}
-
-                {notification.type === "friend_request" &&
-                  notification.status === "rejected" && (
-                  <span className="notifications__status notifications__status--rejected">
-                    ❌ Rechazada
-                  </span>
-                )}
-              </div>
-
-            </Card>
-
+              notification={notification}
+              onClick={handleNotificationClick}
+              onAccept={handleAcceptFriendRequest}
+              onReject={handleRejectFriendRequest}
+            />
           ))}
         </>
       )}

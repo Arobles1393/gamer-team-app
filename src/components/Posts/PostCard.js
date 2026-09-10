@@ -4,6 +4,7 @@ import { Avatar } from "primereact/avatar";
 import { Button } from "primereact/button";
 import { memo, useMemo, useCallback } from "react";
 import PostPlatforms from "./PostPlatforms";
+import { useUserProfile } from "../../hooks";
 import "./PostCard.css";
 
 function PostCard({
@@ -18,17 +19,14 @@ function PostCard({
 
   const navigate = useNavigate();
 
+  const { userData: author } = useUserProfile(post.userId);
+
   const isInterested = Boolean(interestedDoc);
 
   const handleInterest = useCallback(async (event) => {
     event.stopPropagation();
-
     await onToggleInterested(post, interestedDoc);
-  }, [
-    onToggleInterested,
-    post,
-    interestedDoc
-  ]);
+  }, [onToggleInterested, post, interestedDoc]);
 
   const handleEdit = useCallback((event) => {
     event.stopPropagation();
@@ -50,27 +48,15 @@ function PostCard({
   }, [navigate, post.id]);
 
   const gameTitle = post.logo ? (
-    <img 
-      src={post.logo}
-      alt={post.game}
-      className="logo-game"
-    />
+    <img src={post.logo} alt={post.game} className="logo-game" />
   ) : (
     <h3>{post.game}</h3>
   );
 
   const interestButton = useMemo(() => (
     isInterested
-      ? {
-          label: "Ya no me interesa",
-          icon: "pi pi-times",
-          severity: "danger"
-        }
-      : {
-          label: "Quiero jugar",
-          icon: "pi pi-users",
-          severity: "success"
-        }
+      ? { label: "Ya no me interesa", icon: "pi pi-times", severity: "danger" }
+      : { label: "Quiero jugar", icon: "pi pi-users", severity: "success" }
   ), [isInterested]);
 
   const interestedBadgeText = "Te interesa esta publicación";
@@ -81,26 +67,17 @@ function PostCard({
 
   const imageSrc = post.image ?? "/imagenotfound.png";
 
-  const usernameInitial = post.username?.charAt(0)?.toUpperCase() || "?";
+  const usernameInitial = author?.username?.charAt(0)?.toUpperCase() || "?";
 
   return (
-    <Card 
-      className="rawg-card" 
-      onClick={handleOpenPost}
-    >
+    <Card className="rawg-card" onClick={handleOpenPost}>
       <div className="rawg-image-container">
         {showInterestedBadge && (
           <div className="interested-badge-container">
-            <span className="joined-badge">
-              {interestedBadgeText}
-            </span>
+            <span className="joined-badge">{interestedBadgeText}</span>
           </div>
         )}
-        <img
-          src={imageSrc}
-          alt={post.game}
-          className="rawg-image"
-        />
+        <img src={imageSrc} alt={post.game} className="rawg-image" />
       </div>
       <div>
         {gameTitle}
@@ -118,38 +95,22 @@ function PostCard({
           </div>
         </div>
         <div className="rawg-extra">
-          {post.comments && (
-            <p>{post.comments}</p>
-          )}
+          {post.comments && <p>{post.comments}</p>}
           <div className="user-row">
             <Avatar
-              image={post?.avatar}
+              image={author?.avatar}
               label={usernameInitial}
               shape="circle"
               className="clickable-avatar"
               onClick={handleShowProfile}
             />
-            <span>
-              {post.username}
-            </span>
+            <span>{author?.username}</span>
           </div>
           <div className="post-actions">
             {isOwner ? (
               <>
-                <Button
-                  label="Editar"
-                  icon="pi pi-pencil"
-                  severity="success"
-                  size="small"
-                  onClick={handleEdit}
-                />
-                <Button
-                  label="Eliminar"
-                  icon="pi pi-trash"
-                  severity="danger"
-                  size="small"
-                  onClick={handleDelete}
-                />
+                <Button label="Editar" icon="pi pi-pencil" severity="success" size="small" onClick={handleEdit} />
+                <Button label="Eliminar" icon="pi pi-trash" severity="danger" size="small" onClick={handleDelete} />
               </>
             ) : (
               <Button

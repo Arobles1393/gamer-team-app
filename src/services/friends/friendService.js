@@ -11,11 +11,7 @@ import {
 import { db } from "../../firebase/config";
 import { notificationService } from "../notifications";
 
-const sendFriendRequest = async (
-  sender,
-  senderData,
-  receiverId
-) => {
+const sendFriendRequest = async (sender, senderData, receiverId) => {
 
   const q = query(
     collection(db, "friend_requests"),
@@ -25,32 +21,20 @@ const sendFriendRequest = async (
   );
 
   const existing = await getDocs(q);
+  if (!existing.empty) return;
 
-  if (!existing.empty) {
-    return;
-  }
-
-  await addDoc(
-    collection(db, "friend_requests"),
-    {
-      senderId: sender.uid,
-      senderName: senderData.username,
-      senderAvatar: senderData.avatar || "",
-      receiverId,
-      status: "pending",
-      createdAt: serverTimestamp()
-    }
-  );
+  await addDoc(collection(db, "friend_requests"), {
+    senderId: sender.uid,
+    receiverId,
+    status: "pending",
+    createdAt: serverTimestamp()
+  });
 
   await notificationService.createNotification({
     userId: receiverId,
     senderId: sender.uid,
-    senderName: senderData.username,
-    senderAvatar: senderData.avatar || "",
     type: "friend_request",
     status: "pending",
-    title: "Solicitud de amistad",
-    text: `${senderData.username} quiere agregarte`,
     read: false,
     createdAt: serverTimestamp()
   });
@@ -112,11 +96,7 @@ const acceptFriendRequest = async (
   await notificationService.createNotification({
     userId: notification.senderId,
     senderId: user.uid,
-    senderName: userData.username,
-    senderAvatar: userData.avatar || null,
     type: "friend_accepted",
-    title: "Solicitud aceptada",
-    text: `${userData.username} aceptó tu solicitud de amistad`,
     read: false,
     createdAt: serverTimestamp()
   });

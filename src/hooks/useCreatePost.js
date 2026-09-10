@@ -69,8 +69,6 @@ export const useCreatePost = ({
 
       const gameName = game.value ?? game;
 
-      // Si el usuario seleccionó un juego nuevo del autocompletado (tiene id)
-      // y no estamos editando, pedimos su detalle (steamAppId, clip) una sola vez.
       let steamAppId = editingPost?.steamAppId ?? null;
       let gameClip = editingPost?.clip ?? null;
 
@@ -148,9 +146,6 @@ export const useCreatePost = ({
         await postService.createPost({
           ...postData,
           userId: user.uid,
-          username: userData?.username,
-          region: userData?.region,
-          phone: userData?.phone,
           createdAt: new Date()
         });
 
