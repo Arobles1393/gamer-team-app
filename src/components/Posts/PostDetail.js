@@ -4,11 +4,11 @@ import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
-import { platformIcons } from "../utils/platformIcons";
-import { UserProfile } from "./UserProfile";
+import { platformIcons } from "../../utils/platformIcons";
+import { UserProfile } from "../UserProfile";
 import { Dialog } from "primereact/dialog";
-import { chatService } from "../services/chat";
-import { friendService } from "../services/friends";
+import { chatService } from "../../services/chat";
+import { friendService } from "../../services/friends";
 import {
   collection,
   addDoc,
@@ -22,14 +22,14 @@ import {
   getDoc,
   getDocs
 } from "firebase/firestore";
-import { db } from "../firebase/config";
+import { db } from "../../firebase/config";
 import {
   getStorage,
   ref,
   uploadBytes,
   getDownloadURL
 } from "firebase/storage";
-import { formatDates } from "../utils";
+import { formatDates } from "../../utils";
 
 export default function PostDetail({ user, userData }) {
   const { id } = useParams();
@@ -245,13 +245,14 @@ export default function PostDetail({ user, userData }) {
       }
       setComment("");
     } catch (error) {
+      console.error("Error al publicar comentario:", error);
+
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo guardar la publicacion " + error + " user " + JSON.stringify(user),
+        detail: "No se pudo guardar el comentario. Intenta de nuevo.",
         life: 3000
       });
-      console.error("Error al eliminar:", error);
     }
   };
 
