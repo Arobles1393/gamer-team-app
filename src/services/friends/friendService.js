@@ -11,7 +11,7 @@ import {
 import { db } from "../../firebase/config";
 import { notificationService } from "../notifications";
 
-const sendFriendRequest = async (sender, senderData, receiverId) => {
+const sendFriendRequest = async (sender, receiverId) => {
 
   const q = query(
     collection(db, "friend_requests"),

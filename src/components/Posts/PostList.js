@@ -9,7 +9,7 @@ import { UserProfileDialog } from "../UserProfile";
 import { useFriendStatus, usePosts, useInterestedPosts, useFilteredPosts, usePostFilters, useProfileChat, usePostInterest,
   useFriendRequest } from "../../hooks";
 
-export default function PostList({ user, userData, setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
+export default function PostList({ user, setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
 
   const {
     posts,
@@ -86,7 +86,6 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
 
   const { handleInterested } = usePostInterest(
     user,
-    userData,
     () => {
       toast.current.show({
         severity: "error",
@@ -104,7 +103,6 @@ export default function PostList({ user, userData, setEditingPost, setShowCreate
 
   const { handleFriendRequest } = useFriendRequest(
     user,
-    userData,
     selectedUserId,
     () => setFriendStatus("pending")
   );

@@ -3,7 +3,6 @@ import { friendService } from "../services/friends";
 
 export const useFriendRequest = (
   user,
-  userData,
   selectedUserId,
   onSuccess
 ) => {
@@ -12,7 +11,6 @@ export const useFriendRequest = (
     try {
       await friendService.sendFriendRequest(
         user,
-        userData,
         selectedUserId
       );
 
@@ -30,7 +28,6 @@ export const useFriendRequest = (
     }
   }, [
     user,
-    userData,
     selectedUserId,
     onSuccess
   ]);

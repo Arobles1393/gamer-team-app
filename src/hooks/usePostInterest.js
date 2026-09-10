@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { interestService } from "../services/posts";
 
-export const usePostInterest = (user, userData, onError) => {
+export const usePostInterest = (user, onError) => {
 
   const handleInterested = useCallback(
     async (post, interestedDoc) => {
@@ -9,15 +9,14 @@ export const usePostInterest = (user, userData, onError) => {
         return await interestService.toggleInterested({
           post,
           interestedDoc,
-          user,
-          userData
+          user
         });
       } catch (error) {
         onError?.(error);
         return false;
       }
     },
-    [user, userData, onError]
+    [user, onError]
   );
 
   return {
