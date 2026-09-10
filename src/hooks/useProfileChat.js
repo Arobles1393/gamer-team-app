@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { createOrGetChat } from "../services/chatService";
+import { chatService } from "../services/chat";
 
 export const useProfileChat = (
   user,
@@ -9,7 +9,7 @@ export const useProfileChat = (
   const navigate = useNavigate();
 
   const handleChat = async () => {
-    const chatId = await createOrGetChat(
+    const chatId = await chatService.createOrGetChat(
       user,
       {
         uid: selectedUserId

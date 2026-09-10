@@ -7,7 +7,7 @@ import { Toast } from "primereact/toast";
 import { platformIcons } from "../utils/platformIcons";
 import { UserProfile } from "./UserProfile";
 import { Dialog } from "primereact/dialog";
-import { createOrGetChat } from "../services/chatService";
+import { chatService } from "../services/chat";
 import { friendService } from "../services/friends";
 import {
   collection,
@@ -360,7 +360,7 @@ export default function PostDetail({ user, userData }) {
   ];
 
   const handleChat = async () => {
-    const chatId = await createOrGetChat(user, {
+    const chatId = await chatService.createOrGetChat(user, {
       uid: selectedUserId
     });
 

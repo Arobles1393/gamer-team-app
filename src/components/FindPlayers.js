@@ -8,7 +8,7 @@ import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { friendService } from "../services/friends";
 import { useNavigate } from "react-router-dom";
-import { createOrGetChat } from "../services/chatService";
+import { chatService } from "../services/chat";
 import { UserProfile } from "./UserProfile";
 
 export default function FindPlayers({ user, userData }) {
@@ -53,7 +53,7 @@ export default function FindPlayers({ user, userData }) {
   );
 
   const handleChat = async () => {
-    const chatId = await createOrGetChat(user, {
+    const chatId = await chatService.createOrGetChat(user, {
       uid: selectedUserId
     });
   

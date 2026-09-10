@@ -8,7 +8,7 @@ import { Button } from "primereact/button";
 import { useNavigate } from "react-router-dom";
 import { UserProfile } from "./UserProfile";
 import { friendService } from "../services/friends";
-import { createOrGetChat } from "../services/chatService";
+import { chatService } from "../services/chat";
 
 export default function Friends({ user, userData }) {
   const [friends, setFriends] = useState([]);
@@ -64,7 +64,7 @@ export default function Friends({ user, userData }) {
   }
 
   const handleChat = async () => {
-    const chatId = await createOrGetChat(user, {
+    const chatId = await chatService.createOrGetChat(user, {
       uid: selectedUserId
     });
   

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { collection, query, where, onSnapshot, orderBy } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { Avatar } from "primereact/avatar";
+import { chatService } from "../../services/chat";
 
 export default function ChatList({ user, setActiveChat }) {
   const [chats, setChats] = useState([]);
