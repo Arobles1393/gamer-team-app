@@ -1,97 +1,105 @@
-const formatDate = (timestamp) => {
-  if (!timestamp) return "";
+const toDate = (timestamp) => {
+  if (!timestamp) return null;
 
-  const date =
-    timestamp.toDate
-      ? timestamp.toDate()
-      : new Date(timestamp);
+  let date;
 
-  return date.toLocaleDateString(
-    "es-MX",
-    {
-      day: "numeric",
-      month: "short",
-      year: "numeric"
-    }
-  );
+  if (timestamp.toDate) {
+    date = timestamp.toDate();
+  } else if (timestamp.seconds) {
+    date = new Date(timestamp.seconds * 1000);
+  } else {
+    date = new Date(timestamp);
+  }
+
+  return isNaN(date.getTime()) ? null : date;
 };
 
-const formatChatTime = (timestamp) => {
-  if (!timestamp?.seconds) return "";
+const getTimeDiff = (timestamp) => {
+  const date = toDate(timestamp);
+  if (!date) return null;
 
-  const diff =
-    Date.now() -
-    timestamp.seconds * 1000;
+  const diffMs = Date.now() - date.getTime();
 
-  const minutes =
-    Math.floor(diff / 60000);
+  return {
+    minutes: Math.floor(diffMs / 60000),
+    hours: Math.floor(diffMs / 3600000),
+    days: Math.floor(diffMs / 86400000),
+    weeks: Math.floor(diffMs / (86400000 * 7)),
+    months: Math.floor(diffMs / (86400000 * 30)),
+    years: Math.floor(diffMs / (86400000 * 365))
+  };
+};
 
-  if (minutes < 60) {
-    return `${minutes} min`;
-  }
+const formatDate = (timestamp) => {
+  const date = toDate(timestamp);
+  if (!date) return "";
 
-  const hours =
-    Math.floor(minutes / 60);
-
-  if (hours < 24) {
-    return `${hours} h`;
-  }
-
-  const days =
-    Math.floor(hours / 24);
-
-  return `${days} d`;
+  return date.toLocaleDateString("es-MX", {
+    day: "numeric",
+    month: "short",
+    year: "numeric"
+  });
 };
 
 const formatDateN = (timestamp) => {
+  const diff = getTimeDiff(timestamp);
+  if (!diff) return "";
 
-  if (!timestamp?.seconds) return "";
+  if (diff.minutes < 1) return "Hace unos segundos";
+  if (diff.minutes < 60) return `Hace ${diff.minutes} min`;
+  if (diff.hours < 24) return `Hace ${diff.hours} h`;
+  if (diff.days < 7) return `Hace ${diff.days} días`;
+  if (diff.weeks < 4) return `Hace ${diff.weeks} semanas`;
+  if (diff.months < 12) return `Hace ${diff.months} meses`;
+  return `Hace ${diff.years} años`;
+};
 
-  const diff =
-    Date.now() -
-    timestamp.seconds * 1000;
+const formatChatTime = (timestamp) => {
+  const diff = getTimeDiff(timestamp);
+  if (!diff) return "";
 
-  const minutes = Math.floor(diff / 60000);
+  if (diff.minutes < 1) return "ahora";
+  if (diff.minutes < 60) return `${diff.minutes} min`;
+  if (diff.hours < 24) return `${diff.hours} h`;
+  if (diff.days < 7) return `${diff.days} d`;
+  if (diff.weeks < 4) return `${diff.weeks} sem`;
+  if (diff.months < 12) return `${diff.months} mes`;
+  return `${diff.years} año${diff.years > 1 ? "s" : ""}`;
+};
 
-  if (minutes < 1) {
-    return "Hace unos segundos";
+const formatMessageTime = (timestamp) => {
+  const date = toDate(timestamp);
+  if (!date) return "";
+
+  const diff = getTimeDiff(timestamp);
+
+  if (diff.days === 0) {
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }
 
-  if (minutes < 60) {
-    return `Hace ${minutes} min`;
-  }
+  if (diff.days === 1) return "Ayer";
+  if (diff.days < 7) return `Hace ${diff.days} días`;
 
-  const hours = Math.floor(minutes / 60);
+  return date.toLocaleDateString();
+};
 
-  if (hours < 24) {
-    return `Hace ${hours} h`;
-  }
+const formatLastSeen = (timestamp) => {
+  const diff = getTimeDiff(timestamp);
+  if (!diff) return "⚫ Desconectado";
 
-  const days = Math.floor(hours / 24);
-
-  if (days < 7) {
-    return `Hace ${days} días`;
-  }
-
-  const weeks = Math.floor(days / 7);
-
-  if (weeks < 4) {
-    return `Hace ${weeks} semanas`;
-  }
-
-  const months = Math.floor(days / 30);
-
-  if (months < 12) {
-    return `Hace ${months} meses`;
-  }
-
-  const years = Math.floor(days / 365);
-
-  return `Hace ${years} años`;
-}
+  if (diff.minutes < 1) return "🟢 Activo ahora";
+  if (diff.minutes < 60) return `Última conexión: hace ${diff.minutes} min`;
+  if (diff.hours < 24) return `Última conexión: hace ${diff.hours} h`;
+  if (diff.days < 7) return `Última conexión: hace ${diff.days} día${diff.days > 1 ? "s" : ""}`;
+  if (diff.weeks < 4) return `Última conexión: hace ${diff.weeks} semana${diff.weeks > 1 ? "s" : ""}`;
+  if (diff.months < 12) return `Última conexión: hace ${diff.months} mes${diff.months > 1 ? "es" : ""}`;
+  return `Última conexión: hace ${diff.years} año${diff.years > 1 ? "s" : ""}`;
+};
 
 export const formatDates = {
   formatDate,
+  formatDateN,
   formatChatTime,
-  formatDateN
-}
+  formatMessageTime,
+  formatLastSeen
+};
