@@ -9,6 +9,7 @@ import { UserProfile } from "../UserProfile";
 import { Dialog } from "primereact/dialog";
 import { chatService } from "../../services/chat";
 import { friendService } from "../../services/friends";
+import CommentItem from "./CommentItem";
 import {
   collection,
   query,
@@ -21,14 +22,17 @@ import {
   usePost,
   usePostComments,
   usePostInterestStatus,
-  usePostInterest
+  usePostInterest,
+  useUserProfile
 } from "../../hooks";
 
-export default function PostDetail({ user, userData }) {
+export default function PostDetail({ user }) {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const { post } = usePost(id);
+
+  const { userData: postAuthor } = useUserProfile(post?.userId);
 
   const { comments, publishComment, removeComment } = usePostComments(
     id,
@@ -39,7 +43,7 @@ export default function PostDetail({ user, userData }) {
   const { interestedCount, isInterested, interestedDoc } =
     usePostInterestStatus(id, user.uid);
 
-  const { handleInterested } = usePostInterest(user, userData, (error) => {
+  const { handleInterested } = usePostInterest(user, (error) => {
     console.error("Error al actualizar interés:", error);
   });
 
@@ -215,15 +219,15 @@ export default function PostDetail({ user, userData }) {
           <div className="game-info-card">
             <div className="info-row">
               <Avatar
-                image={post?.avatar}
-                label={post.username?.charAt(0).toUpperCase()}
+                image={postAuthor?.avatar}
+                label={postAuthor?.username?.charAt(0).toUpperCase()}
                 shape="circle"
                 onClick={(e) => {
                   e.stopPropagation();
                   openProfile(post.userId);
                 }}
               />
-              <span>{post.username}</span>
+              <span>{postAuthor?.username}</span>
             </div>
 
             <div className="info-row">
@@ -233,7 +237,7 @@ export default function PostDetail({ user, userData }) {
 
             <div className="info-row">
               <i className="pi pi-globe"></i>
-              <span>{post.region}</span>
+              <span>{postAuthor?.region}</span>
             </div>
 
             <div className="info-row">
@@ -296,40 +300,13 @@ export default function PostDetail({ user, userData }) {
 
             <div className="comments-list">
               {comments.map((item) => (
-                <div key={item.id} className="comment-card">
-                  {item.userId === user.uid && (
-                    <Button
-                      icon="pi pi-times"
-                      className="p-button-rounded p-button-text p-button-danger delete-comment-btn"
-                      onClick={() => confirmDelete(item.id)}
-                    />
-                  )}
-
-                  <div className="comment-header">
-                    <Avatar
-                      image={item?.avatar}
-                      label={item.userName?.charAt(0).toUpperCase()}
-                      shape="circle"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openProfile(item.userId);
-                      }}
-                    />
-                    <span>{item.userName}</span>
-                  </div>
-
-                  {item.text && <p>{item.text}</p>}
-
-                  {item.mediaType === "image" && (
-                    <img src={item.mediaUrl} className="comment-image" />
-                  )}
-
-                  {item.mediaType === "video" && (
-                    <video controls className="comment-video">
-                      <source src={item.mediaUrl} />
-                    </video>
-                  )}
-                </div>
+                <CommentItem
+                  key={item.id}
+                  comment={item}
+                  currentUserId={user.uid}
+                  onDelete={confirmDelete}
+                  onOpenProfile={openProfile}
+                />
               ))}
             </div>
           </div>
@@ -358,7 +335,6 @@ export default function PostDetail({ user, userData }) {
                     onClick={async () => {
                       await friendService.sendFriendRequest(
                         user,
-                        userData,
                         selectedUserId
                       );
                       setFriendStatus("pending");
