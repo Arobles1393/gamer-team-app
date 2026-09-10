@@ -6,7 +6,8 @@ import {
   collection,
   where,
   getDocs,
-  addDoc
+  addDoc,
+  onSnapshot
 } from "firebase/firestore";
 import { db } from "../../firebase/config";
 
@@ -57,9 +58,20 @@ const updatePost = (postId, postData) => {
   );
 };
 
+const subscribeToPost = (postId, onSuccess, onError) => {
+  return onSnapshot(
+    doc(db, "posts", postId),
+    (snap) => {
+      onSuccess(snap.exists() ? { id: snap.id, ...snap.data() } : null);
+    },
+    onError
+  );
+};
+
 export const postService = {
   deletePost,
   getExistingMedia,
   createPost,
-  updatePost
+  updatePost,
+  subscribeToPost
 };
