@@ -1,7 +1,7 @@
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { useGamingNews } from "../../hooks";
-import { formatDate } from "../../utils";
+import { formatDates } from "../../utils";
 import "./GamingNews.css";
 
 export default function GamingNews() {
@@ -56,7 +56,7 @@ export default function GamingNews() {
                 <small>
                   {item.source}
                   {" • "}
-                  {formatDate(
+                  {formatDates.formatDate(
                     item.publishedAt
                   )}
                 </small>

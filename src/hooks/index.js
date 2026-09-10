@@ -16,3 +16,4 @@ export * from "./useSteamStats";
 export * from "./useProfileForm";
 export * from "./useProfileImages";
 export * from "./useGamingNews";
+export * from "./useChats";

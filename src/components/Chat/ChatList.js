@@ -1,60 +1,9 @@
-import { useEffect, useState } from "react";
-import { collection, query, where, onSnapshot, orderBy } from "firebase/firestore";
-import { db } from "../../firebase/config";
 import { Avatar } from "primereact/avatar";
-import { chatService } from "../../services/chat";
+import { useChats } from "../../hooks";
+import { formatDates } from "../../utils";
 
 export default function ChatList({ user, setActiveChat }) {
-  const [chats, setChats] = useState([]);
-
-  useEffect(() => {
-    if (!user) return;
-
-    const q = query(
-      collection(db, "chats"),
-      where("participants", "array-contains", user.uid),
-      orderBy("lastMessageAt","desc")
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-
-      setChats(data);
-    });
-
-    return () => unsubscribe();
-  }, [user]);
-
-  const formatChatTime = (timestamp) => {
-
-    if (!timestamp?.seconds) return "";
-
-    const diff =
-      Date.now() -
-      timestamp.seconds * 1000;
-
-    const minutes =
-      Math.floor(diff / 60000);
-
-    if (minutes < 60) {
-      return `${minutes} min`;
-    }
-
-    const hours =
-      Math.floor(minutes / 60);
-
-    if (hours < 24) {
-      return `${hours} h`;
-    }
-
-    const days =
-      Math.floor(hours / 24);
-
-    return `${days} d`;
-  };
+  const { chats } = useChats(user);
 
   return (
     <div className="chat-list">
@@ -93,7 +42,7 @@ export default function ChatList({ user, setActiveChat }) {
                 {chat.lastMessage}
               </p>
               <small>
-                {formatChatTime(chat.lastMessageAt)}
+                {formatDates.formatChatTime(chat.lastMessageAt)}
               </small>
             </div>
           </div>
