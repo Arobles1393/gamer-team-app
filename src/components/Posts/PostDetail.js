@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
@@ -11,184 +11,79 @@ import { chatService } from "../../services/chat";
 import { friendService } from "../../services/friends";
 import {
   collection,
-  addDoc,
   query,
   where,
-  orderBy,
-  onSnapshot,
-  serverTimestamp,
-  deleteDoc,
-  doc,
-  getDoc,
   getDocs
 } from "firebase/firestore";
 import { db } from "../../firebase/config";
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "firebase/storage";
 import { formatDates } from "../../utils";
+import {
+  usePost,
+  usePostComments,
+  usePostInterestStatus,
+  usePostInterest
+} from "../../hooks";
 
 export default function PostDetail({ user, userData }) {
   const { id } = useParams();
-  const [post, setPost] = useState(null);
+  const navigate = useNavigate();
+
+  const { post } = usePost(id);
+
+  const { comments, publishComment, removeComment } = usePostComments(
+    id,
+    post?.userId,
+    user.uid
+  );
+
+  const { interestedCount, isInterested, interestedDoc } =
+    usePostInterestStatus(id, user.uid);
+
+  const { handleInterested } = usePostInterest(user, userData, (error) => {
+    console.error("Error al actualizar interés:", error);
+  });
+
   const [comment, setComment] = useState("");
-  const [comments, setComments] = useState([]);
   const [file, setFile] = useState(null);
-  const [interestedCount, setInterestedCount] = useState(0);
-  const [isInterested, setIsInterested] = useState(false);
-  const [interestDocId, setInterestDocId] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
   const [friendStatus, setFriendStatus] = useState("none");
-  const storage = getStorage();
+
   const fileInputRef = useRef(null);
   const toast = useRef(null);
-  const navigate = useNavigate();
-  
-  useEffect(() => {
-    if (!id) return;
-    const q = query(
-      collection(db, "post_comments"),
-      where("postId", "==", id),
-      orderBy("createdAt", "desc")
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setComments(data);
-    });
-
-    return () => unsubscribe();
-
-  }, [id]);
-
-  useEffect(() => {
-
-    const q = query(
-      collection(db, "post_interested"),
-      where("postId", "==", id)
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-
-      setInterestedCount(snapshot.size);
-
-    });
-
-    return () => unsubscribe();
-
-  }, [id]);
-
-  useEffect(() => {
-
-    if (!user || !id) return;
-
-    const q = query(
-      collection(db, "post_interested"),
-      where("postId", "==", id),
-      where("userId", "==", user.uid)
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-
-      if (!snapshot.empty) {
-
-        setIsInterested(true);
-
-        setInterestDocId(
-          snapshot.docs[0].id
-        );
-
-      } else {
-
-        setIsInterested(false);
-
-        setInterestDocId(null);
-
-      }
-
-    });
-
-    return () => unsubscribe();
-
-  }, [id, user]);
-
-  useEffect(() => {
-
-    const loadPost = async () => {
-      const postRef = doc(db, "posts", id);
-      const postSnap = await getDoc(postRef);
-
-      if (!postSnap.exists()) {
-        navigate("/");
-        return;
-      }
-
-      setPost({
-        id: postSnap.id,
-        ...postSnap.data()
-      });
-    };
-
-    loadPost();
-
-  }, [id]);
-
-  useEffect(() => {
-    if (!user || !selectedUserId) return;
-
-    checkFriendStatus();
-  }, [user, selectedUserId]);
 
   if (!post) {
     return <div>Cargando...</div>;
   }
 
+  // Punto 4 pendiente: esto duplica useFriendStatus, se resuelve en el
+  // siguiente paso junto con el modal.
   const checkFriendStatus = async () => {
-
-    // Revisar amistad
 
     const friendsQuery = query(
       collection(db, "friends"),
       where("users", "array-contains", user.uid)
     );
 
-    const friendsSnap =
-      await getDocs(friendsQuery);
+    const friendsSnap = await getDocs(friendsQuery);
 
-    const isFriend =
-      friendsSnap.docs.some(doc =>
-        doc.data().users.includes(
-          selectedUserId
-        )
-      );
+    const isFriend = friendsSnap.docs.some((doc) =>
+      doc.data().users.includes(selectedUserId)
+    );
 
     if (isFriend) {
       setFriendStatus("friends");
       return;
     }
 
-    // Revisar solicitud pendiente
-
     const requestQuery = query(
       collection(db, "friend_requests"),
       where("senderId", "==", user.uid),
-      where(
-        "receiverId",
-        "==",
-        selectedUserId
-      ),
+      where("receiverId", "==", selectedUserId),
       where("status", "==", "pending")
     );
 
-    const requestSnap =
-      await getDocs(requestQuery);
+    const requestSnap = await getDocs(requestQuery);
 
     if (!requestSnap.empty) {
       setFriendStatus("pending");
@@ -198,52 +93,17 @@ export default function PostDetail({ user, userData }) {
     setFriendStatus("none");
   };
 
+  const openProfile = (userId) => {
+    setSelectedUserId(userId);
+    setShowProfile(true);
+    checkFriendStatus();
+  };
+
   const handlePublish = async () => {
-    if (!comment.trim()) return;
     try {
-      let mediaUrl = "";
-      let mediaType = "";
-
-      if (file) {
-
-        const fileRef = ref(
-          storage,
-          `comments/${Date.now()}_${file.name}`
-        );
-
-        await uploadBytes(fileRef, file);
-
-        mediaUrl = await getDownloadURL(fileRef);
-
-        mediaType = file.type.startsWith("image")
-          ? "image"
-          : "video";
-      }
-      await addDoc(collection(db, "post_comments"), {
-        postId: id,
-        text: comment,
-        userId: user.uid,
-        userName: userData.username,
-        avatar: userData.avatar || null,
-        mediaUrl,
-        mediaType,
-        createdAt: serverTimestamp()
-      });
-      if (post.userId !== user.uid) {
-        await addDoc(collection(db, "notifications"), {
-          userId: post.userId,
-          senderId: user.uid,
-          senderName: userData.username,
-          senderAvatar: userData.avatar || null,
-          type: "comment",
-          title: "Nuevo comentario",
-          text: `${userData.username} comentó tu publicación`,
-          read: false,
-          createdAt: serverTimestamp(),
-          relatedId: id
-        });
-      }
+      await publishComment(comment, file);
       setComment("");
+      setFile(null);
     } catch (error) {
       console.error("Error al publicar comentario:", error);
 
@@ -256,17 +116,7 @@ export default function PostDetail({ user, userData }) {
     }
   };
 
-  const handleDeleteComment = async (commentId) => {
-    try {
-      await deleteDoc(
-        doc(db, "post_comments", commentId)
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const confirmDelete = (id) => {
+  const confirmDelete = (commentId) => {
     confirmDialog({
       message: "¿Seguro que quieres eliminar este comentario?",
       header: "Advertencia",
@@ -274,82 +124,32 @@ export default function PostDetail({ user, userData }) {
       acceptLabel: "eliminar",
       rejectLabel: "Cancelar",
 
-      accept: () => {
-        handleDeleteComment(id);
-        toast.current.show({
-          severity: "success",
-          summary: "Eliminado",
-          detail: "Comentario eliminado correctamente",
-          life: 3000
-        });
+      accept: async () => {
+        try {
+          await removeComment(commentId);
+
+          toast.current.show({
+            severity: "success",
+            summary: "Eliminado",
+            detail: "Comentario eliminado correctamente",
+            life: 3000
+          });
+        } catch (error) {
+          console.error("Error al eliminar comentario:", error);
+        }
       },
       reject: () => {}
     });
   };
 
-  const handleInterested = async () => {
-
-    try {
-
-      if (isInterested && interestDocId) {
-
-        await deleteDoc(
-          doc(db, "post_interested", interestDocId)
-        );
-
-        return;
-      }
-
-      await addDoc(
-        collection(db, "post_interested"),
-        {
-          postId: id,
-          userId: user.uid,
-          userName: userData.username,
-          createdAt: serverTimestamp()
-        }
-      );
-
-      if (post.userId !== user.uid) {
-        await addDoc(collection(db, "notifications"), {
-          userId: post.userId,
-          senderId: user.uid,
-          senderName: userData.username,
-          senderAvatar: userData.avatar || null,
-          type: "interested",
-          title: "Nuevo interesado",
-          text: `${userData.username} esta interesado en tu partida`,
-          read: false,
-          createdAt: serverTimestamp(),
-          relatedId: id
-        });
-      }
-
-    } catch (error) {
-
-      console.error(error);
-
-    }
-
-  };
-
+  // Punto 5 pendiente: mover a utils/getPlatformKey
   const getPlatformKey = (platform) => {
     const name = platform.toLowerCase();
-    if (name.includes("xbox")) {
-      return "xbox";
-    }
-    if (name.includes("playstation")) {
-      return "playstation";
-    }
-    if (name.includes("switch")) {
-      return "switch";
-    }
-    if (name.includes("pc")) {
-      return "pc";
-    }
-    if (name.includes("mobile")) {
-      return "mobile";
-    }
+    if (name.includes("xbox")) return "xbox";
+    if (name.includes("playstation")) return "playstation";
+    if (name.includes("switch")) return "switch";
+    if (name.includes("pc")) return "pc";
+    if (name.includes("mobile")) return "mobile";
     return null;
   };
 
@@ -361,61 +161,58 @@ export default function PostDetail({ user, userData }) {
     )
   ];
 
+  // Punto 4 pendiente: duplica useProfileChat
   const handleChat = async () => {
     const chatId = await chatService.createOrGetChat(user, {
       uid: selectedUserId
     });
 
-    navigate("/chat", {
-      state: { chatId }
-    });
-
+    navigate("/chat", { state: { chatId } });
     setShowProfile(false);
   };
 
   return (
-    <div className="post-detail">  
-      <div className="hero">  
-        {post.gameClip ? (  
-          <video  
-            className="hero-video"  
-            src={post.gameClip}  
-            autoPlay  
-            loop  
-            muted  
-          />  
-        ) : (  
-          <div   
-            className="hero-video"  
-            style={{  
-              backgroundImage: `url(${post.image})`,  
-              backgroundSize: "cover"  
-            }}  
-          />  
-        )}  
-        <div className="hero-overlay" />  
-      </div>  
+    <div className="post-detail">
+      <div className="hero">
+        {post.gameClip ? (
+          <video
+            className="hero-video"
+            src={post.gameClip}
+            autoPlay
+            loop
+            muted
+          />
+        ) : (
+          <div
+            className="hero-video"
+            style={{
+              backgroundImage: `url(${post.image})`,
+              backgroundSize: "cover"
+            }}
+          />
+        )}
+        <div className="hero-overlay" />
+      </div>
+
       <div className="post-content">
         <div className="left-panel">
-          <img src={!post.portada ? post.image : post.portada} className="game-cover" />
-          {!post.portada && (
-            <h2>{post.game}</h2>
-          )}
-          <div className="meta-item">
-            {
-              post.multiplatform ? (
-                uniquePlatforms.map((platform) => (
-                  <span key={platform}>
-                    {platformIcons[platform]?.()}
-                  </span>
-                ))
-              ) : (
-                platformIcons[post.platform]?.()
-              )
-            }
-          </div>
-          <div className="game-info-card">
+          <img
+            src={!post.portada ? post.image : post.portada}
+            className="game-cover"
+          />
+          {!post.portada && <h2>{post.game}</h2>}
 
+          <div className="meta-item">
+            {post.multiplatform ? (
+              uniquePlatforms.map((platform) => (
+                <span key={platform}>{platformIcons[platform]?.()}</span>
+              ))
+            ) : (
+              platformIcons[post.platform]?.()
+            )}
+          </div>
+
+          <div className="game-info-card">
             <div className="info-row">
               <Avatar
                 image={post?.avatar}
@@ -423,13 +220,10 @@ export default function PostDetail({ user, userData }) {
                 shape="circle"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setSelectedUserId(post.userId);
-                  setShowProfile(true);
+                  openProfile(post.userId);
                 }}
               />
-              <span>
-                {post.username}
-              </span>
+              <span>{post.username}</span>
             </div>
 
             <div className="info-row">
@@ -452,34 +246,23 @@ export default function PostDetail({ user, userData }) {
               <span>{interestedCount} jugadores interesados</span>
             </div>
 
-            {
-              post.userId != user.uid && (
-                <Button
-                  label={
-                    isInterested
-                      ? "Ya no me interesa"
-                      : "Quiero jugar"
-                  }
-                  icon={
-                    isInterested
-                      ? "pi pi-times"
-                      : "pi pi-users"
-                  }
-                  className={
-                    isInterested
-                      ? "p-button-danger"
-                      : "p-button-success"
-                  }
-                  onClick={handleInterested}
-                />
-              )
-            }
-
+            {post.userId !== user.uid && (
+              <Button
+                label={isInterested ? "Ya no me interesa" : "Quiero jugar"}
+                icon={isInterested ? "pi pi-times" : "pi pi-users"}
+                className={
+                  isInterested ? "p-button-danger" : "p-button-success"
+                }
+                onClick={() => handleInterested(post, interestedDoc)}
+              />
+            )}
           </div>
         </div>
+
         <div className="right-panel">
           <div className="community-section">
             <h3>Publicaciones</h3>
+
             <div className="comment-input-card">
               <textarea
                 value={comment}
@@ -496,7 +279,6 @@ export default function PostDetail({ user, userData }) {
               />
 
               <div className="comment-footer">
-
                 <Button
                   icon="pi pi-image"
                   className="p-button-text upload-btn"
@@ -511,12 +293,10 @@ export default function PostDetail({ user, userData }) {
                 />
               </div>
             </div>
+
             <div className="comments-list">
               {comments.map((item) => (
-                <div
-                  key={item.id}
-                  className="comment-card"
-                >
+                <div key={item.id} className="comment-card">
                   {item.userId === user.uid && (
                     <Button
                       icon="pi pi-times"
@@ -524,6 +304,7 @@ export default function PostDetail({ user, userData }) {
                       onClick={() => confirmDelete(item.id)}
                     />
                   )}
+
                   <div className="comment-header">
                     <Avatar
                       image={item?.avatar}
@@ -531,28 +312,20 @@ export default function PostDetail({ user, userData }) {
                       shape="circle"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setSelectedUserId(item.userId);
-                        setShowProfile(true);
+                        openProfile(item.userId);
                       }}
                     />
-                    <span>
-                      {item.userName}
-                    </span>
+                    <span>{item.userName}</span>
                   </div>
-                  {item.text && (
-                    <p>{item.text}</p>
-                  )}
+
+                  {item.text && <p>{item.text}</p>}
+
                   {item.mediaType === "image" && (
-                    <img
-                      src={item.mediaUrl}
-                      className="comment-image"
-                    />
+                    <img src={item.mediaUrl} className="comment-image" />
                   )}
+
                   {item.mediaType === "video" && (
-                    <video
-                      controls
-                      className="comment-video"
-                    >
+                    <video controls className="comment-video">
                       <source src={item.mediaUrl} />
                     </video>
                   )}
@@ -562,10 +335,9 @@ export default function PostDetail({ user, userData }) {
           </div>
         </div>
       </div>
+
       <Dialog
-        pt={{
-          header: { style: { padding: 0 } }
-        }}
+        pt={{ header: { style: { padding: 0 } } }}
         visible={showProfile}
         style={{ width: "1100px" }}
         onHide={() => setShowProfile(false)}
@@ -576,6 +348,7 @@ export default function PostDetail({ user, userData }) {
         {selectedUserId && (
           <div className="profile-container">
             <UserProfile userId={selectedUserId} user={user} />
+
             {user.uid !== selectedUserId && (
               <>
                 {friendStatus === "none" && (
@@ -583,19 +356,16 @@ export default function PostDetail({ user, userData }) {
                     label="Agregar amigo"
                     icon="pi pi-user-plus"
                     onClick={async () => {
-
                       await friendService.sendFriendRequest(
                         user,
                         userData,
                         selectedUserId
                       );
-
-                      setFriendStatus(
-                        "pending"
-                      );
+                      setFriendStatus("pending");
                     }}
                   />
                 )}
+
                 {friendStatus === "pending" && (
                   <Button
                     label="Solicitud enviada"
@@ -603,6 +373,7 @@ export default function PostDetail({ user, userData }) {
                     disabled
                   />
                 )}
+
                 {friendStatus === "friends" && (
                   <Button
                     label="Amigos"
@@ -611,6 +382,7 @@ export default function PostDetail({ user, userData }) {
                     disabled
                   />
                 )}
+
                 <Button
                   icon="pi pi-comments"
                   className="chat-fab p-button-rounded p-button-success"
@@ -621,8 +393,9 @@ export default function PostDetail({ user, userData }) {
           </div>
         )}
       </Dialog>
+
       <ConfirmDialog />
-      <Toast ref={toast} />  
+      <Toast ref={toast} />
     </div>
   );
 }

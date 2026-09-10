@@ -20,3 +20,4 @@ export * from "./useChats";
 export * from "./useChatWindow";
 export * from "./usePost";
 export * from "./usePostComments";
+export * from "./usePostInterestStatus";

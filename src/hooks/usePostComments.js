@@ -19,10 +19,10 @@ export const usePostComments = (postId, postOwnerId, userId) => {
     return unsubscribe;
   }, [postId]);
 
-  const publishComment = async (text, file) => {
+  const publishComment = (text, file) => {
     if (!text.trim()) return;
 
-    await commentsService.addComment({
+    return commentsService.addComment({
       postId,
       postOwnerId,
       userId,
