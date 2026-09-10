@@ -5,7 +5,6 @@ const CreatePostDialog = ({
   visible,
   editingPost,
   user,
-  userData,
   onHide,
   onClose
 }) => {
@@ -18,7 +17,6 @@ const CreatePostDialog = ({
 		>
 			<CreatePost
 				user={user}
-				userData={userData}
 				editingPost={editingPost}
 				onClose={onClose}
 			/>

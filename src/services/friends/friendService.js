@@ -42,8 +42,7 @@ const sendFriendRequest = async (sender, senderData, receiverId) => {
 
 const acceptFriendRequest = async (
   notification,
-  user,
-  userData
+  user
 ) => {
   await addDoc(
     collection(db, "friends"),

@@ -119,7 +119,7 @@ function NotificationCard({
   );
 }
 
-export default function Notifications({ user, userData }) {
+export default function Notifications({ user }) {
 
   const navigate = useNavigate();
 
@@ -130,7 +130,7 @@ export default function Notifications({ user, userData }) {
   };
 
   const handleAcceptFriendRequest = (notification) => {
-    return friendService.acceptFriendRequest(notification, user, userData);
+    return friendService.acceptFriendRequest(notification, user);
   };
 
   const handleRejectFriendRequest = (notification) => {

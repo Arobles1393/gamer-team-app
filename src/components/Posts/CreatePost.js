@@ -11,7 +11,7 @@ import { useGameSearch, useCreatePost } from "../../hooks";
 import { platforms } from "../../constants";
 import "./CreatePost.css";
 
-export default function CreatePost({ user, userData, onClose, editingPost }) {
+export default function CreatePost({ user, onClose, editingPost }) {
 
   const toast = useRef(null);
 
@@ -31,7 +31,6 @@ export default function CreatePost({ user, userData, onClose, editingPost }) {
     handleSubmit
   } = useCreatePost({
     user,
-    userData,
     editingPost,
     onSuccess: (action) => {
       toast.current.show({

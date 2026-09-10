@@ -83,7 +83,6 @@ function App() {
         visible={showCreatePost}
         editingPost={editingPost}
         user={user}
-        userData={userData}
         onHide={handleCloseCreatePost}
         onClose={handleCloseCreatePost}
       />

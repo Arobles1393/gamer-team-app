@@ -57,7 +57,7 @@ const AppRoutes = ({
 			<Route
 				path="/chat"
 				element={
-					<ChatPage user={user} userData={userData}/>
+					<ChatPage user={user}/>
 				}
 			/>
 			<Route
@@ -68,7 +68,7 @@ const AppRoutes = ({
 			/>
 			<Route
 				path="/notifications"
-				element={<Notifications user={user} userData={userData}/>}
+				element={<Notifications user={user} />}
 			/>
 			<Route
 				path="/friends"

@@ -16,7 +16,6 @@ const getGamePortada = httpsCallable(
 
 export const useCreatePost = ({
   user,
-  userData,
   editingPost,
   onSuccess,
   onError
@@ -179,7 +178,6 @@ export const useCreatePost = ({
     multiplatform,
     editingPost,
     user,
-    userData,
     resetForm,
     onSuccess,
     onError

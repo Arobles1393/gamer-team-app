@@ -4,7 +4,7 @@ import ChatList from "./ChatList";
 import ChatWindow from "./ChatWindow";
 import './Chat.css'
 
-export default function ChatPage({ user, userData }) {
+export default function ChatPage({ user }) {
   const [activeChat, setActiveChat] = useState(null);
   const { state } = useLocation();
   const chatId = state?.chatId;
@@ -20,7 +20,7 @@ export default function ChatPage({ user, userData }) {
       <ChatList user={user} setActiveChat={setActiveChat} />
 
       {activeChat ? (
-        <ChatWindow user={user} chatId={activeChat} userData={userData}/>
+        <ChatWindow user={user} chatId={activeChat} />
       ) : (
         <div className="chat-empty">
           <p>Selecciona un chat</p>
