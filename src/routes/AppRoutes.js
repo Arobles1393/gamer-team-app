@@ -74,7 +74,7 @@ const AppRoutes = ({
 			/>
 			<Route
 				path="/findPlayers"
-				element={<FindPlayers user={user} userData={userData}/>}
+				element={<FindPlayers user={user} />}
 			/>
 			<Route
 				path="/news"
