@@ -32,14 +32,14 @@ export const createHeaderMenu = (
 	},
 	{
 		label: "Amigos",
-		icon: "pi pi-comments",
+		icon: "pi pi-users",
 		command: () => {
 			navigate("/friends");
 		}
 	},
 	{
 		label: "Buscar jugadores",
-		icon: "pi pi-comments",
+		icon: "pi pi-user-plus",
 		command: () => {
 			navigate("/findPlayers");
 		}

@@ -51,7 +51,7 @@ export default function PersonalInfo({
         </div>
 
         <div className="form-group">
-          <label>Region</label>
+          <label>Región</label>
           <Dropdown
             value={region}
             options={countries}
