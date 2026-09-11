@@ -10,17 +10,17 @@ const CreatePostDialog = ({
 }) => {
   return (
     <Dialog
-			header= { editingPost ? "✏️ Editar publicación" :"🎮 Crear publicación" }
-			visible={visible}
-			style={{ width: "1000px" }}
-			onHide={onHide}
-		>
-			<CreatePost
-				user={user}
-				editingPost={editingPost}
-				onClose={onClose}
-			/>
-		</Dialog>
+      header= { editingPost ? "✏️ Editar publicación" :"🎮 Crear publicación" }
+      visible={visible}
+      style={{ width: "1000px" }}
+      onHide={onHide}
+    >
+      <CreatePost
+        user={user}
+        editingPost={editingPost}
+        onClose={onClose}
+      />
+    </Dialog>
   );
 };
 
