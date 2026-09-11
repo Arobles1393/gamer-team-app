@@ -4,7 +4,6 @@ import { useState } from "react";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import { UserProfileDialog } from "../UserProfile";
-import { friendService } from "../../services/friends";
 import PostHero from "./PostHero";
 import PostInfoCard from "./PostInfoCard";
 import CommentInput from "./CommentInput";
@@ -16,7 +15,8 @@ import {
   usePostInterest,
   useUserProfile,
   useFriendStatus,
-  useProfileChat
+  useProfileChat,
+  useFriendRequest
 } from "../../hooks";
 
 export default function PostDetail({ user }) {
@@ -48,6 +48,12 @@ export default function PostDetail({ user }) {
 
   const { handleChat } = useProfileChat(user, selectedUserId, () =>
     setShowProfile(false)
+  );
+
+  const { handleFriendRequest } = useFriendRequest(
+    user,
+    selectedUserId,
+    () => setFriendStatus("pending")
   );
 
   const toast = useRef(null);
@@ -145,10 +151,7 @@ export default function PostDetail({ user }) {
         selectedUserId={selectedUserId}
         user={user}
         friendStatus={friendStatus}
-        onSendFriendRequest={async () => {
-          await friendService.sendFriendRequest(user, selectedUserId);
-          setFriendStatus("pending");
-        }}
+        onSendFriendRequest={handleFriendRequest}
         onChat={handleChat}
       />
 

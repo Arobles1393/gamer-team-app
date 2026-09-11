@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { UserProfileDialog } from "../UserProfile";
-import { friendService } from "../../services/friends";
 import FriendCard from "./FriendCard";
-import { useFriends, useFriendStatus, useProfileChat } from "../../hooks";
+import { useFriends, useFriendStatus, useProfileChat, useFriendRequest } from "../../hooks";
 
 export default function Friends({ user }) {
   const { friendIds, loading } = useFriends(user);
@@ -10,13 +9,16 @@ export default function Friends({ user }) {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
 
-  const { friendStatus, setFriendStatus } = useFriendStatus(
-    user,
-    selectedUserId
-  );
+  const { friendStatus, setFriendStatus } = useFriendStatus(user, selectedUserId);
 
   const { handleChat } = useProfileChat(user, selectedUserId, () =>
     setShowProfile(false)
+  );
+
+  const { handleFriendRequest } = useFriendRequest(
+    user,
+    selectedUserId,
+    () => setFriendStatus("pending")
   );
 
   if (loading) {
@@ -36,11 +38,7 @@ export default function Friends({ user }) {
         <p>Aún no tienes amigos.</p>
       ) : (
         friendIds.map((friendId) => (
-          <FriendCard
-            key={friendId}
-            friendId={friendId}
-            onClick={() => openProfile(friendId)}
-          />
+          <FriendCard key={friendId} friendId={friendId} onClick={() => openProfile(friendId)} />
         ))
       )}
 
@@ -53,10 +51,7 @@ export default function Friends({ user }) {
         selectedUserId={selectedUserId}
         user={user}
         friendStatus={friendStatus}
-        onSendFriendRequest={async () => {
-          await friendService.sendFriendRequest(user, selectedUserId);
-          setFriendStatus("pending");
-        }}
+        onSendFriendRequest={handleFriendRequest}
         onChat={handleChat}
       />
     </div>

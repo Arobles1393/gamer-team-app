@@ -4,9 +4,8 @@ import { db } from "../../firebase/config";
 import { InputText } from "primereact/inputtext";
 import { Card } from "primereact/card";
 import { Avatar } from "primereact/avatar";
-import { friendService } from "../../services/friends";
 import { UserProfileDialog } from "../UserProfile";
-import { useFriendStatus, useProfileChat } from "../../hooks";
+import { useFriendStatus, useProfileChat, useFriendRequest } from "../../hooks";
 
 export default function FindPlayers({ user }) {
   const [users, setUsers] = useState([]);
@@ -21,6 +20,12 @@ export default function FindPlayers({ user }) {
 
   const { handleChat } = useProfileChat(user, selectedUserId, () =>
     setShowProfile(false)
+  );
+
+  const { handleFriendRequest } = useFriendRequest(
+    user,
+    selectedUserId,
+    () => setFriendStatus("pending")
   );
 
   useEffect(() => {
@@ -87,10 +92,7 @@ export default function FindPlayers({ user }) {
         selectedUserId={selectedUserId}
         user={user}
         friendStatus={friendStatus}
-        onSendFriendRequest={async () => {
-          await friendService.sendFriendRequest(user, selectedUserId);
-          setFriendStatus("pending");
-        }}
+        onSendFriendRequest={handleFriendRequest}
         onChat={handleChat}
       />
     </div>
