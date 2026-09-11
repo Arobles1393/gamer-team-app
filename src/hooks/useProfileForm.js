@@ -15,6 +15,7 @@ export const useProfileForm = (user, userData) => {
 
   useEffect(() => {
     if (!userData) return;
+    if (isEditing) return;
 
     setEmail(userData.email || "");
     setUsername(userData.username || "");
@@ -23,7 +24,7 @@ export const useProfileForm = (user, userData) => {
     setLinks(userData.links || []);
     setGames(userData.games || []);
     setRegion(userData.region || "");
-  }, [userData]);
+  }, [userData, isEditing]);
 
   const isValidLink = (url) => {
     return url.startsWith("https://");
