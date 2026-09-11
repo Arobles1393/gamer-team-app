@@ -1,34 +1,27 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useState, useRef } from "react";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import { platformIcons } from "../../utils/platformIcons";
-import { UserProfile } from "../UserProfile";
-import { Dialog } from "primereact/dialog";
-import { chatService } from "../../services/chat";
+import { UserProfileDialog } from "../UserProfile";
 import { friendService } from "../../services/friends";
-import CommentItem from "./CommentItem";
-import {
-  collection,
-  query,
-  where,
-  getDocs
-} from "firebase/firestore";
-import { db } from "../../firebase/config";
 import { formatDates } from "../../utils";
+import CommentItem from "./CommentItem";
+import { getPlatformKey } from "../../utils/getPlatformKey";
 import {
   usePost,
   usePostComments,
   usePostInterestStatus,
   usePostInterest,
-  useUserProfile
+  useUserProfile,
+  useFriendStatus,
+  useProfileChat
 } from "../../hooks";
 
 export default function PostDetail({ user }) {
   const { id } = useParams();
-  const navigate = useNavigate();
 
   const { post } = usePost(id);
 
@@ -51,7 +44,15 @@ export default function PostDetail({ user }) {
   const [file, setFile] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
-  const [friendStatus, setFriendStatus] = useState("none");
+
+  const { friendStatus, setFriendStatus } = useFriendStatus(
+    user,
+    selectedUserId
+  );
+
+  const { handleChat } = useProfileChat(user, selectedUserId, () =>
+    setShowProfile(false)
+  );
 
   const fileInputRef = useRef(null);
   const toast = useRef(null);
@@ -60,47 +61,9 @@ export default function PostDetail({ user }) {
     return <div>Cargando...</div>;
   }
 
-  // Punto 4 pendiente: esto duplica useFriendStatus, se resuelve en el
-  // siguiente paso junto con el modal.
-  const checkFriendStatus = async () => {
-
-    const friendsQuery = query(
-      collection(db, "friends"),
-      where("users", "array-contains", user.uid)
-    );
-
-    const friendsSnap = await getDocs(friendsQuery);
-
-    const isFriend = friendsSnap.docs.some((doc) =>
-      doc.data().users.includes(selectedUserId)
-    );
-
-    if (isFriend) {
-      setFriendStatus("friends");
-      return;
-    }
-
-    const requestQuery = query(
-      collection(db, "friend_requests"),
-      where("senderId", "==", user.uid),
-      where("receiverId", "==", selectedUserId),
-      where("status", "==", "pending")
-    );
-
-    const requestSnap = await getDocs(requestQuery);
-
-    if (!requestSnap.empty) {
-      setFriendStatus("pending");
-      return;
-    }
-
-    setFriendStatus("none");
-  };
-
   const openProfile = (userId) => {
     setSelectedUserId(userId);
     setShowProfile(true);
-    checkFriendStatus();
   };
 
   const handlePublish = async () => {
@@ -146,17 +109,6 @@ export default function PostDetail({ user }) {
     });
   };
 
-  // Punto 5 pendiente: mover a utils/getPlatformKey
-  const getPlatformKey = (platform) => {
-    const name = platform.toLowerCase();
-    if (name.includes("xbox")) return "xbox";
-    if (name.includes("playstation")) return "playstation";
-    if (name.includes("switch")) return "switch";
-    if (name.includes("pc")) return "pc";
-    if (name.includes("mobile")) return "mobile";
-    return null;
-  };
-
   const uniquePlatforms = [
     ...new Set(
       (post.platforms || [])
@@ -164,16 +116,6 @@ export default function PostDetail({ user }) {
         .filter(Boolean)
     )
   ];
-
-  // Punto 4 pendiente: duplica useProfileChat
-  const handleChat = async () => {
-    const chatId = await chatService.createOrGetChat(user, {
-      uid: selectedUserId
-    });
-
-    navigate("/chat", { state: { chatId } });
-    setShowProfile(false);
-  };
 
   return (
     <div className="post-detail">
@@ -313,62 +255,18 @@ export default function PostDetail({ user }) {
         </div>
       </div>
 
-      <Dialog
-        pt={{ header: { style: { padding: 0 } } }}
+      <UserProfileDialog
         visible={showProfile}
-        style={{ width: "1100px" }}
         onHide={() => setShowProfile(false)}
-        breakpoints={{ "960px": "75vw", "640px": "90vw" }}
-        dismissableMask
-        draggable={false}
-      >
-        {selectedUserId && (
-          <div className="profile-container">
-            <UserProfile userId={selectedUserId} user={user} />
-
-            {user.uid !== selectedUserId && (
-              <>
-                {friendStatus === "none" && (
-                  <Button
-                    label="Agregar amigo"
-                    icon="pi pi-user-plus"
-                    onClick={async () => {
-                      await friendService.sendFriendRequest(
-                        user,
-                        selectedUserId
-                      );
-                      setFriendStatus("pending");
-                    }}
-                  />
-                )}
-
-                {friendStatus === "pending" && (
-                  <Button
-                    label="Solicitud enviada"
-                    icon="pi pi-clock"
-                    disabled
-                  />
-                )}
-
-                {friendStatus === "friends" && (
-                  <Button
-                    label="Amigos"
-                    icon="pi pi-check"
-                    severity="success"
-                    disabled
-                  />
-                )}
-
-                <Button
-                  icon="pi pi-comments"
-                  className="chat-fab p-button-rounded p-button-success"
-                  onClick={handleChat}
-                />
-              </>
-            )}
-          </div>
-        )}
-      </Dialog>
+        selectedUserId={selectedUserId}
+        user={user}
+        friendStatus={friendStatus}
+        onSendFriendRequest={async () => {
+          await friendService.sendFriendRequest(user, selectedUserId);
+          setFriendStatus("pending");
+        }}
+        onChat={handleChat}
+      />
 
       <ConfirmDialog />
       <Toast ref={toast} />
