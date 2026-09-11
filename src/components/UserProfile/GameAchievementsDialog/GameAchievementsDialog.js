@@ -1,5 +1,5 @@
 import { Dialog } from "primereact/dialog";
-import GameAchievements from "./GameArchievements";
+import GameAchievements from "./GameAchievements";
 
 export default function GameAchievementsDialog({
   game,
