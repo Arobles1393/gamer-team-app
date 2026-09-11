@@ -29,7 +29,7 @@ export default function Register({ onToggleMode }) {
 
   const handleRegister = async () => {
     if (!email || !password || !username || !region) {
-      toast.current.show({
+      toast.current?.show({
         severity: "warn",
         summary: "Campos incompletos",
         detail: "Completa todos los campos obligatorios",
@@ -55,7 +55,7 @@ export default function Register({ onToggleMode }) {
         createdAt: new Date()
       });
 
-      toast.current.show({
+      toast.current?.show({
         severity: "success",
         summary: "Cuenta creada",
         detail: "Bienvenido a GamerMatch 🎮",
@@ -63,7 +63,7 @@ export default function Register({ onToggleMode }) {
       });
 
     } catch (error) {
-      toast.current.show({
+      toast.current?.show({
         severity: "error",
         summary: "Error",
         detail: getAuthErrorMessage(error),
