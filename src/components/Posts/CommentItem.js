@@ -36,7 +36,7 @@ export default function CommentItem({
       {comment.text && <p>{comment.text}</p>}
 
       {comment.mediaType === "image" && (
-        <img src={comment.mediaUrl} className="comment-image" />
+        <img src={comment.mediaUrl} alt={comment.game} className="comment-image" />
       )}
 
       {comment.mediaType === "video" && (
