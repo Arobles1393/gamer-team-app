@@ -3,7 +3,7 @@ import { PostList, PostDetail } from "../components/Posts";
 import { Profile } from "../components/Profile";
 import { ChatPage } from "../components/Chat";
 import { Notifications } from "../components/Notifications";
-import Friends from "../components/Friends";
+import { Friends } from "../components/Friends";
 import FindPlayers from "../components/FindPlayers";
 import { GamingNews } from "../components/GamingNews";
 
