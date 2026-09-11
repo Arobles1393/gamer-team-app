@@ -20,9 +20,9 @@ export default function Auth() {
         {/* 🔐 CONTENIDO */}
         <div className="auth-content">
             {isLogin ? (
-                <Login setShowLogin={setIsLogin} />
+                <Login onToggleMode={() => setIsLogin(false)} />
             ) : (
-                <Register setShowLogin={setIsLogin} />
+                <Register onToggleMode={() => setIsLogin(true)} />
             )}
         </div>
     </div>

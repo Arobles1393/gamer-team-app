@@ -7,7 +7,7 @@ import { friendService } from "./services/friends";
 import { useNotifications, useUserPresence, useAuth } from "./hooks";
 import { AppRoutes } from "./routes";
 import { CreatePostDialog } from "./components/Posts";
-import Auth from "./components/Auth";
+import { Auth } from "./components/Auth";
 import { useNavigate } from "react-router-dom"
 import "./styles/variables.css";
 
