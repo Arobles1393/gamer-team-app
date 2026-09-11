@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs, query, where, } from "firebase/firestore";
-import { db } from "../firebase/config";
+import { db } from "../../firebase/config";
 import { InputText } from "primereact/inputtext";
 import { Card } from "primereact/card";
 import { Avatar } from "primereact/avatar";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
-import { friendService } from "../services/friends";
+import { friendService } from "../../services/friends";
 import { useNavigate } from "react-router-dom";
-import { chatService } from "../services/chat";
-import { UserProfile } from "./UserProfile";
+import { chatService } from "../../services/chat";
+import { UserProfile } from "../UserProfile";
 
 export default function FindPlayers({ user, userData }) {
   const [users, setUsers] = useState([]);

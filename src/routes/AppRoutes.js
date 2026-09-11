@@ -4,7 +4,7 @@ import { Profile } from "../components/Profile";
 import { ChatPage } from "../components/Chat";
 import { Notifications } from "../components/Notifications";
 import { Friends } from "../components/Friends";
-import FindPlayers from "../components/FindPlayers";
+import { FindPlayers } from "../components/FindPlayers";
 import { GamingNews } from "../components/GamingNews";
 
 const AppRoutes = ({
@@ -19,8 +19,7 @@ const AppRoutes = ({
 			<Route
 				path="/"
 				element={
-					<PostList user={user} 
-						userData={userData}
+					<PostList user={user}
 						setEditingPost={setEditingPost}
 						setShowCreatePost={setShowCreatePost}
 					/>
@@ -62,7 +61,7 @@ const AppRoutes = ({
 			<Route
 				path="/post/:id" 
 				element={
-					<PostDetail user={user} userData={userData}/>
+					<PostDetail user={user} />
 				}
 			/>
 			<Route
@@ -71,7 +70,7 @@ const AppRoutes = ({
 			/>
 			<Route
 				path="/friends"
-				element={<Friends user={user} userData={userData}/>}
+				element={<Friends user={user} />}
 			/>
 			<Route
 				path="/findPlayers"
