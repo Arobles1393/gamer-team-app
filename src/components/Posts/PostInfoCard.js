@@ -1,8 +1,6 @@
 import { Avatar } from "primereact/avatar";
 import { Button } from "primereact/button";
-import { platformIcons } from "../../utils/platformIcons";
-import { getPlatformKey } from "../../utils/getPlatformKey";
-import { formatDates } from "../../utils";
+import { formatDates, platformIcons, getPlatformKey } from "../../utils";
 
 export default function PostInfoCard({
   post,

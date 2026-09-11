@@ -18,7 +18,7 @@ export const createHeaderMenu = (
   },
   {
     label: "Mis partidas",
-    icon: "pi pi-users",
+    icon: "pi pi-flag",
     command: () => {
       navigate("/mypartys");
     }

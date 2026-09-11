@@ -4,3 +4,6 @@ export { platformIcons } from "./platformIcons";
 export { formatDates } from "./formatDates";
 export { confirmDeletePost } from "./confirmDeletePost";
 export { getAuthErrorMessage } from "./authErrors";
+export { getPlatform } from "./getPlatform";
+export { getLabel } from "./getLabel";
+export { searchGames, getGameDetail } from "./searchGames";

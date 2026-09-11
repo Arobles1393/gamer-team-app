@@ -1,7 +1,5 @@
 import "./SocialLinks.css";
-import { platformIcons } from "../../utils/platformIcons";
-import { getPlatform } from "../../utils/getPlatform";
-import { getLabel } from "../../utils/getLabel";
+import { getLabel, getPlatform, platformIcons } from "../../utils";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 

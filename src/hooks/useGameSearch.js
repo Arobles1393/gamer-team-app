@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { searchGames } from "../utils/searchGames";
+import { searchGames } from "../utils";
 
 export const useGameSearch = () => {
   const [suggestions, setSuggestions] = useState([]);

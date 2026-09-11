@@ -6,8 +6,7 @@ import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { notificationService } from "../../services/notifications";
 import { friendService } from "../../services/friends";
 import { useNotifications, useUserProfile } from "../../hooks";
-import { navigateNotification } from "../../utils";
-import { formatDates } from "../../utils";
+import { navigateNotification, formatDates } from "../../utils";
 import "./Notifications.css";
 
 const getNotificationText = (type, senderUsername) => {

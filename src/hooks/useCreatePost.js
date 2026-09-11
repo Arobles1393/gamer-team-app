@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { functions } from "../firebase/config";
 import { httpsCallable } from "firebase/functions";
 import { postService } from "../services/posts";
-import { getGameDetail } from "../utils/searchGames";
+import { getGameDetail } from "../utils";
 
 const getGameLogo = httpsCallable(
   functions,
