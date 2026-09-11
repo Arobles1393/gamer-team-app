@@ -6,30 +6,8 @@ import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { notificationService } from "../../services/notifications";
 import { friendService } from "../../services/friends";
 import { useNotifications, useUserProfile } from "../../hooks";
-import { navigateNotification, formatDates } from "../../utils";
+import { navigateNotification, formatDates, getNotificationText } from "../../utils";
 import "./Notifications.css";
-
-const getNotificationText = (type, senderUsername) => {
-  switch (type) {
-    case "friend_request":
-      return {
-        title: "Solicitud de amistad",
-        text: `${senderUsername} quiere agregarte`
-      };
-    case "friend_accepted":
-      return {
-        title: "Solicitud aceptada",
-        text: `${senderUsername} aceptó tu solicitud de amistad`
-      };
-    case "message":
-      return {
-        title: "Nuevo mensaje",
-        text: `${senderUsername} te envió un mensaje`
-      };
-    default:
-      return { title: "Notificación", text: "" };
-  }
-};
 
 function NotificationCard({
   notification,

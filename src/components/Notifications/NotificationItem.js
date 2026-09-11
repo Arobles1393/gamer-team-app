@@ -2,28 +2,7 @@ import { Button } from "primereact/button";
 import { useNavigate } from "react-router-dom";
 import { navigateNotification } from "../../utils";
 import { useUserProfile } from "../../hooks";
-
-const getNotificationText = (type, senderUsername) => {
-  switch (type) {
-    case "friend_request":
-      return {
-        title: "Solicitud de amistad",
-        text: `${senderUsername} quiere agregarte`
-      };
-    case "friend_accepted":
-      return {
-        title: "Solicitud aceptada",
-        text: `${senderUsername} aceptó tu solicitud de amistad`
-      };
-    case "message":
-      return {
-        title: "Nuevo mensaje",
-        text: `${senderUsername} te envió un mensaje`
-      };
-    default:
-      return { title: "Notificación", text: "" };
-  }
-};
+import { getNotificationText } from "../../utils";
 
 export default function NotificationItem({
   notification,

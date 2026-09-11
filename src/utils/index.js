@@ -7,3 +7,4 @@ export { getAuthErrorMessage } from "./authErrors";
 export { getPlatform } from "./getPlatform";
 export { getLabel } from "./getLabel";
 export { searchGames, getGameDetail } from "./searchGames";
+export { getNotificationText } from "./getNotificationText";
