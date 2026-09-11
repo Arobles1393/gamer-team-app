@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { onSnapshot, collection } from "firebase/firestore";
+import { onSnapshot, collection, query, where } from "firebase/firestore";
 import { db } from "../firebase/config";
 
 const mapInterestedPosts = (snapshot) =>
@@ -17,16 +17,18 @@ export const useInterestedPosts = (user) => {
       return;
     }
 
-    const unsubscribe = onSnapshot(
+    const q = query(
       collection(db, "post_interested"),
+      where("userId", "==", user.uid)
+    );
+
+    const unsubscribe = onSnapshot(
+      q,
       (snapshot) => {
         setInterestedPosts(mapInterestedPosts(snapshot));
       },
       (error) => {
-        console.error(
-          "Error obteniendo interesados:",
-          error
-        );
+        console.error("Error obteniendo interesados:", error);
         setInterestedPosts([]);
       }
     );
