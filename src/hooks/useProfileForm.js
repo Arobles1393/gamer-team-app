@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { updateEmail } from "firebase/auth";
 import { profileService } from "../services/profile";
 
-export const useProfileForm = (user, userData) => {
+export const useProfileForm = (user, userData, onError) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const [email, setEmail] = useState("");
@@ -37,13 +37,13 @@ export const useProfileForm = (user, userData) => {
       );
 
       if (invalid) {
-        alert("Todos los links deben comenzar con https://");
+        onError?.("Todos los links deben comenzar con https://");
         return;
       }
 
       if (email !== user.email) {
         if (!email.includes("@")) {
-          alert("Correo inválido");
+          onError?.("Correo inválido");
           return;
         }
 
@@ -62,6 +62,13 @@ export const useProfileForm = (user, userData) => {
       setIsEditing(false);
     } catch (error) {
       console.error("Error actualizando perfil:", error);
+
+      const message =
+        error.code === "auth/requires-recent-login"
+          ? "Por seguridad, vuelve a iniciar sesión para cambiar tu correo."
+          : "No se pudo guardar el perfil. Intenta de nuevo.";
+
+      onError?.(message);
     }
   };
 

@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
+import { Toast } from "primereact/toast";
 import { ProfileHeader } from "../ProfileHeader";
 import { FavoriteGames } from "../FavoriteGames";
 import { SocialLinks } from "../SocialLinks";
@@ -12,6 +13,7 @@ export default function Profile({ user, userData }) {
   const [gameQuery, setGameQuery] = useState("");
   const bannerInputRef = useRef(null);
   const fileInputRef = useRef(null);
+  const toast = useRef(null);
 
   const {
     isEditing,
@@ -34,7 +36,18 @@ export default function Profile({ user, userData }) {
     handleSave,
     handleCancel,
     hasChanges
-  } = useProfileForm(user, userData);
+  } = useProfileForm(
+    user,
+    userData,
+    (message) => {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: message,
+        life: 3000
+      });
+    }
+  );
 
   const {
     suggestions,
@@ -122,6 +135,7 @@ export default function Profile({ user, userData }) {
           />
         )}
       </div>
+      <Toast ref={toast} />
     </Card>
   );
 }
