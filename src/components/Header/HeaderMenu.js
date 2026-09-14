@@ -20,7 +20,7 @@ export const createHeaderMenu = (
     label: "Mis partidas",
     icon: "pi pi-flag",
     command: () => {
-      navigate("/mypartys");
+      navigate("/myparties");
     }
   },
   {
@@ -51,11 +51,6 @@ export const createHeaderMenu = (
       navigate("/news");
     }
   },
-  /*{ separator: true },
-  {
-    label: "Configuración",
-    icon: "pi pi-cog"
-  },*/
   { separator: true },
   {
     label: "Cerrar sesión",

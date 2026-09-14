@@ -44,7 +44,7 @@ const AppRoutes = ({
 				}
 			/>
 			<Route
-				path="/mypartys"
+				path="/myparties"
 				element={
 					<PostList user={user}
 						setShowCreatePost={setShowCreatePost}
