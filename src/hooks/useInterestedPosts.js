@@ -1,12 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { onSnapshot, collection, query, where } from "firebase/firestore";
-import { db } from "../firebase/config";
-
-const mapInterestedPosts = (snapshot) =>
-  snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }));
+import { interestService } from "../services/posts";
 
 export const useInterestedPosts = (user) => {
   const [interestedPosts, setInterestedPosts] = useState([]);
@@ -17,16 +10,9 @@ export const useInterestedPosts = (user) => {
       return;
     }
 
-    const q = query(
-      collection(db, "post_interested"),
-      where("userId", "==", user.uid)
-    );
-
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        setInterestedPosts(mapInterestedPosts(snapshot));
-      },
+    const unsubscribe = interestService.subscribeToUserInterests(
+      user.uid,
+      setInterestedPosts,
       (error) => {
         console.error("Error obteniendo interesados:", error);
         setInterestedPosts([]);
@@ -39,7 +25,7 @@ export const useInterestedPosts = (user) => {
   const interestedMap = useMemo(
     () =>
       new Map(
-        interestedPosts.map(item => [
+        interestedPosts.map((item) => [
           `${item.postId}_${item.userId}`,
           item
         ])

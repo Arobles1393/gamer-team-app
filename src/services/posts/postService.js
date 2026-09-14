@@ -68,10 +68,39 @@ const subscribeToPost = (postId, onSuccess, onError) => {
   );
 };
 
+const subscribeToPosts = (
+  { userId, onlyMine, joined },
+  onSuccess,
+  onError
+) => {
+  const base = collection(db, "posts");
+
+  let q;
+
+  if (onlyMine) {
+    q = query(base, where("userId", "==", userId));
+  } else if (joined) {
+    q = query(base, where("joinedUsers", "array-contains", userId));
+  } else {
+    q = base;
+  }
+
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      onSuccess(
+        snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+      );
+    },
+    onError
+  );
+};
+
 export const postService = {
   deletePost,
   getExistingMedia,
   createPost,
   updatePost,
-  subscribeToPost
+  subscribeToPost,
+  subscribeToPosts
 };

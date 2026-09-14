@@ -69,8 +69,26 @@ const subscribeToUserInterest = (postId, userId, onSuccess, onError) => {
   );
 };
 
+const subscribeToUserInterests = (userId, onSuccess, onError) => {
+  const q = query(
+    collection(db, "post_interested"),
+    where("userId", "==", userId)
+  );
+
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      onSuccess(
+        snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+      );
+    },
+    onError
+  );
+};
+
 export const interestService = {
   toggleInterested,
   subscribeToInterestCount,
-  subscribeToUserInterest
+  subscribeToUserInterest,
+  subscribeToUserInterests
 };
