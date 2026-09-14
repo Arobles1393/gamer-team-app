@@ -10,7 +10,7 @@ const PLATFORM_OPTIONS = [
 ];
 
 export const usePostFilters = (posts) => {
-  const [filterGame, setFilterGame] = useState(null); //Tentativo cambiar el null a "" en los 2
+  const [filterGame, setFilterGame] = useState(null);
   const [filterPlatform, setFilterPlatform] = useState(null);
 
   const gameOptions = useMemo(() => {

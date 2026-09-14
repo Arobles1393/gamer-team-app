@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import { profileImageService } from "../services/profile";
 
-export const useProfileImages = (user) => {
+export const useProfileImages = (user, onError) => {
   const [preview, setPreview] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
 
   const validateImage = (file) => {
     if (!file.type.startsWith("image/")) {
-      alert("Solo imágenes");
+      onError?.("Solo imágenes");
       return false;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      alert("Máximo 5MB");
+      onError?.("Máximo 5MB");
       return false;
     }
 
@@ -37,25 +37,17 @@ export const useProfileImages = (user) => {
     }
 
     try {
-      await profileImageService.uploadProfileImage(
-        user.uid,
-        file,
-        type
-      );
+      await profileImageService.uploadProfileImage(user.uid, file, type);
     } catch (error) {
       console.error(`Error subiendo ${type}:`, error);
+      onError?.(`No se pudo subir la imagen de ${type === "avatar" ? "perfil" : "portada"}.`);
     }
   };
 
   useEffect(() => {
     return () => {
-      if (preview) {
-        URL.revokeObjectURL(preview);
-      }
-
-      if (bannerPreview) {
-        URL.revokeObjectURL(bannerPreview);
-      }
+      if (preview) URL.revokeObjectURL(preview);
+      if (bannerPreview) URL.revokeObjectURL(bannerPreview);
     };
   }, [preview, bannerPreview]);
 

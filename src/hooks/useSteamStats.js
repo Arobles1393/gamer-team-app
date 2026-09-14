@@ -5,7 +5,6 @@ import { functions } from "../firebase/config";
 export const useSteamStats = (links) => {
 
   const [steamStats, setSteamStats] = useState(null);
-  const [steamID, setSteamId] = useState(null);
   const [loadingSteam, setLoadingSteam] = useState(false);
 
   const steamId = useMemo(
@@ -19,11 +18,9 @@ export const useSteamStats = (links) => {
     setSteamStats(null);
 
     if (!steamId) {
-      setSteamId(null);
       return;
     }
 
-    setSteamId(steamId);
     setLoadingSteam(true);
 
     const getSteamStats = httpsCallable(functions, "getSteamStats");
@@ -49,7 +46,7 @@ export const useSteamStats = (links) => {
 
   return {
     steamStats,
-    steamID,
+    steamID: steamId,
     loadingSteam
   };
 };

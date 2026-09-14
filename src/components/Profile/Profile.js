@@ -54,11 +54,17 @@ export default function Profile({ user, userData }) {
     handleSearch
   } = useGameSearch();
 
-  const {
-    preview,
-    bannerPreview,
-    handleImageChange
-  } = useProfileImages(user);
+  const { preview, bannerPreview, handleImageChange } = useProfileImages(
+    user,
+    (message) => {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: message,
+        life: 3000
+      });
+    }
+  );
 
   const handleAddGame = (game) => {
     addGame(game);
