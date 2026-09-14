@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "../firebase/config";
+import { friendService } from "../services/friends";
 
 export const useFriends = (user) => {
   const [friendIds, setFriendIds] = useState([]);
@@ -11,18 +10,7 @@ export const useFriends = (user) => {
 
     const loadFriends = async () => {
       try {
-        const q = query(
-          collection(db, "friends"),
-          where("users", "array-contains", user.uid)
-        );
-
-        const snapshot = await getDocs(q);
-
-        const ids = snapshot.docs.map((docSnap) => {
-          const users = docSnap.data().users;
-          return users.find((uid) => uid !== user.uid);
-        });
-
+        const ids = await friendService.getFriendIds(user.uid);
         setFriendIds(ids);
       } catch (error) {
         console.error("Error obteniendo amigos:", error);

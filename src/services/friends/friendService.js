@@ -140,8 +140,56 @@ const rejectFriendRequest = async (notification) => {
   );
 };
 
+const getFriendIds = async (userId) => {
+  const q = query(
+    collection(db, "friends"),
+    where("users", "array-contains", userId)
+  );
+
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs.map((docSnap) => {
+    const users = docSnap.data().users;
+    return users.find((uid) => uid !== userId);
+  });
+};
+
+const checkFriendStatus = async (userId, otherUserId) => {
+  const friendsQuery = query(
+    collection(db, "friends"),
+    where("users", "array-contains", userId)
+  );
+
+  const friendsSnap = await getDocs(friendsQuery);
+
+  const isFriend = friendsSnap.docs.some((doc) =>
+    doc.data().users.includes(otherUserId)
+  );
+
+  if (isFriend) {
+    return "friends";
+  }
+
+  const requestQuery = query(
+    collection(db, "friend_requests"),
+    where("senderId", "==", userId),
+    where("receiverId", "==", otherUserId),
+    where("status", "==", "pending")
+  );
+
+  const requestSnap = await getDocs(requestQuery);
+
+  if (!requestSnap.empty) {
+    return "pending";
+  }
+
+  return "none";
+};
+
 export const friendService = {
   sendFriendRequest,
   acceptFriendRequest,
-  rejectFriendRequest
+  rejectFriendRequest,
+  getFriendIds,
+  checkFriendStatus
 };

@@ -33,8 +33,7 @@ function App() {
   const handleAcceptFriendRequest = (notification) => {
     return friendService.acceptFriendRequest(
       notification,
-      user,
-      userData
+      user
     );
   };
 

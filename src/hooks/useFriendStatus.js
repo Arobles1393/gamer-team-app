@@ -1,16 +1,7 @@
 import { useEffect, useState } from "react";
-import {
-  collection,
-  getDocs,
-  query,
-  where
-} from "firebase/firestore";
-import { db } from "../firebase/config";
+import { friendService } from "../services/friends";
 
-export const useFriendStatus =(
-  user,
-  selectedUserId
-) => {
+export const useFriendStatus = (user, selectedUserId) => {
   const [friendStatus, setFriendStatus] = useState("none");
 
   useEffect(() => {
@@ -21,46 +12,16 @@ export const useFriendStatus =(
 
     let cancelled = false;
 
-    const checkFriendStatus = async () => {
+    const check = async () => {
       try {
-        const friendsQuery = query(
-          collection(db, "friends"),
-          where("users", "array-contains", user.uid)
+        const status = await friendService.checkFriendStatus(
+          user.uid,
+          selectedUserId
         );
-
-        const friendsSnap = await getDocs(friendsQuery);
-
-        const isFriend = friendsSnap.docs.some(doc =>
-          doc.data().users.includes(selectedUserId)
-        );
-
-        if (isFriend) {
-          if (!cancelled) {
-            setFriendStatus("friends");
-          }
-          return;
-        }
-
-        const requestQuery = query(
-          collection(db, "friend_requests"),
-          where("senderId", "==", user.uid),
-          where("receiverId", "==", selectedUserId),
-          where("status", "==", "pending")
-        );
-
-        const requestSnap = await getDocs(requestQuery);
-
-        if (!requestSnap.empty) {
-          if (!cancelled) {
-            setFriendStatus("pending");
-          }
-          return;
-        }
 
         if (!cancelled) {
-          setFriendStatus("none");
+          setFriendStatus(status);
         }
-
       } catch (error) {
         console.error(error);
 
@@ -70,16 +31,12 @@ export const useFriendStatus =(
       }
     };
 
-    checkFriendStatus();
+    check();
 
     return () => {
       cancelled = true;
     };
-
   }, [user, selectedUserId]);
 
-  return {
-    friendStatus,
-    setFriendStatus
-  };
-}
+  return { friendStatus, setFriendStatus };
+};
