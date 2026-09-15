@@ -15,6 +15,16 @@ export const getNotificationText = (type, senderUsername) => {
         title: "Nuevo mensaje",
         text: `${senderUsername} te envió un mensaje`
       };
+    case "comment":
+      return {
+        title: "Nuevo comentario",
+        text: `${senderUsername} comentó en tu publicación`
+      };
+    case "interested":
+      return {
+        title: "Nuevo interesado",
+        text: `${senderUsername} está interesado en tu publicación`
+      };
     default:
       return { title: "Notificación", text: "" };
   }

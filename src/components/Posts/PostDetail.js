@@ -22,7 +22,7 @@ import {
 export default function PostDetail({ user }) {
   const { id } = useParams();
 
-  const { post } = usePost(id);
+  const { post, loading, error } = usePost(id);
   const { userData: postAuthor } = useUserProfile(post?.userId);
 
   const { comments, publishComment, removeComment } = usePostComments(
@@ -58,8 +58,16 @@ export default function PostDetail({ user }) {
 
   const toast = useRef(null);
 
-  if (!post) {
+  if (loading) {
     return <div>Cargando...</div>;
+  }
+
+  if (error) {
+    return <div>No se pudo cargar la publicación.</div>;
+  }
+
+  if (!post) {
+    return null;
   }
 
   const openProfile = (userId) => {

@@ -5,6 +5,8 @@ import { postService } from "../services/posts";
 export const usePost = (postId) => {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,11 +19,13 @@ export const usePost = (postId) => {
           navigate("/");
           return;
         }
+
         setPost(data);
         setLoading(false);
       },
       (error) => {
         console.error("Error obteniendo el post:", error);
+        setError(error);
         setLoading(false);
       }
     );
@@ -29,5 +33,9 @@ export const usePost = (postId) => {
     return unsubscribe;
   }, [postId, navigate]);
 
-  return { post, loading };
+  return {
+    post,
+    loading,
+    error
+  };
 };
