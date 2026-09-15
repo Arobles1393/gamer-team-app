@@ -1,11 +1,13 @@
 import {
-  addDoc,
   collection,
   serverTimestamp,
   query,
   where,
   getDocs,
-  updateDoc
+  updateDoc,
+  writeBatch,
+  doc,
+  addDoc
 } from "firebase/firestore";
 
 import { db } from "../../firebase/config";
@@ -44,17 +46,6 @@ const acceptFriendRequest = async (
   notification,
   user
 ) => {
-  await addDoc(
-    collection(db, "friends"),
-    {
-      users: [
-        notification.senderId,
-        notification.userId
-      ],
-      createdAt: serverTimestamp()
-    }
-  );
-
   const q = query(
     collection(db, "friend_requests"),
     where(
@@ -80,25 +71,54 @@ const acceptFriendRequest = async (
     return;
   }
 
-  await updateDoc(
-    snapshot.docs[0].ref,
+  const friendRequestRef = snapshot.docs[0].ref;
+
+  const batch = writeBatch(db);
+
+  const friendRef = doc(collection(db, "friends"));
+
+  batch.set(
+    friendRef,
+    {
+      users: [
+        notification.senderId,
+        notification.userId
+      ],
+      createdAt: serverTimestamp()
+    }
+  );
+
+  batch.update(
+    friendRequestRef,
     {
       status: "accepted"
     }
   );
 
-  await notificationService.updateNotificationStatus(
-    notification.id,
-    "accepted"
+  batch.update(
+    doc(db, "notifications", notification.id),
+    {
+      status: "accepted",
+      read: true
+    }
   );
 
-  await notificationService.createNotification({
-    userId: notification.senderId,
-    senderId: user.uid,
-    type: "friend_accepted",
-    read: false,
-    createdAt: serverTimestamp()
-  });
+  const acceptedNotificationRef = doc(
+    collection(db, "notifications")
+  );
+
+  batch.set(
+    acceptedNotificationRef,
+    {
+      userId: notification.senderId,
+      senderId: user.uid,
+      type: "friend_accepted",
+      read: false,
+      createdAt: serverTimestamp()
+    }
+  );
+
+  await batch.commit();
 };
 
 const rejectFriendRequest = async (notification) => {
