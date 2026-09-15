@@ -1,18 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { functions } from "../firebase/config";
-import { httpsCallable } from "firebase/functions";
 import { postService } from "../services/posts";
 import { getGameDetail } from "../utils";
-
-const getGameLogo = httpsCallable(
-  functions,
-  "getGameLogo"
-);
-
-const getGamePortada = httpsCallable(
-  functions,
-  "getGamePortada"
-);
 
 export const useCreatePost = ({
   user,
@@ -98,21 +86,17 @@ export const useCreatePost = ({
       }
 
       if (!logo) {
-        const result = await getGameLogo({
+        logo = await postService.fetchGameLogo(
           steamAppId,
           gameName
-        });
-
-        logo = result?.data?.logo ?? null;
+        );
       }
 
       if (!portada) {
-        const result = await getGamePortada({
+        portada = await postService.fetchGamePortada(
           steamAppId,
           gameName
-        });
-
-        portada = result?.data?.portada ?? null;
+        );
       }
 
       const postData = {

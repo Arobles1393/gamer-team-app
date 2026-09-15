@@ -9,7 +9,8 @@ import {
   addDoc,
   onSnapshot
 } from "firebase/firestore";
-import { db } from "../../firebase/config";
+import { db, functions } from "../../firebase/config";
+import { httpsCallable } from "firebase/functions";
 
 const deletePost = (postId) => {
   return deleteDoc(doc(db, "posts", postId));
@@ -96,11 +97,47 @@ const subscribeToPosts = (
   );
 };
 
+const getGameLogo = httpsCallable(
+  functions,
+  "getGameLogo"
+);
+
+const getGamePortada = httpsCallable(
+  functions,
+  "getGamePortada"
+);
+
+const fetchGameLogo = async (
+  steamAppId,
+  gameName
+) => {
+  const result = await getGameLogo({
+    steamAppId,
+    gameName
+  });
+
+  return result?.data?.logo ?? null;
+};
+
+const fetchGamePortada = async (
+  steamAppId,
+  gameName
+) => {
+  const result = await getGamePortada({
+    steamAppId,
+    gameName
+  });
+
+  return result?.data?.portada ?? null;
+};
+
 export const postService = {
   deletePost,
   getExistingMedia,
   createPost,
   updatePost,
   subscribeToPost,
-  subscribeToPosts
+  subscribeToPosts,
+  fetchGameLogo,
+  fetchGamePortada
 };
