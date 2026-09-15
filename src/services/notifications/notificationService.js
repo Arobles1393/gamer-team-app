@@ -57,7 +57,6 @@ const markNotificationAsRead = (notificationId) => {
 };
 
 const markAllNotificationsAsRead = async (userId) => {
-
   const q = query(
     collection(db, "notifications"),
     where("userId", "==", userId),
@@ -66,22 +65,15 @@ const markAllNotificationsAsRead = async (userId) => {
 
   const snapshot = await getDocs(q);
 
-  const batch = writeBatch(db);
+  const operations = snapshot.docs.map((docSnap) => ({
+    type: "update",
+    ref: docSnap.ref
+  }));
 
-  snapshot.forEach((docSnap) => {
-    batch.update(
-      docSnap.ref,
-      {
-        read: true
-      }
-    );
-  });
-
-  await batch.commit();
+  await commitInBatches(operations);
 };
 
 const deleteAllNotifications = async (userId) => {
-
   const q = query(
     collection(db, "notifications"),
     where("userId", "==", userId)
@@ -89,13 +81,12 @@ const deleteAllNotifications = async (userId) => {
 
   const snapshot = await getDocs(q);
 
-  const batch = writeBatch(db);
+  const operations = snapshot.docs.map((docSnap) => ({
+    type: "delete",
+    ref: docSnap.ref
+  }));
 
-  snapshot.forEach((docSnap) => {
-    batch.delete(docSnap.ref);
-  });
-
-  await batch.commit();
+  await commitInBatches(operations);
 };
 
 const createNotification = (notificationData) => {
@@ -116,6 +107,39 @@ const updateNotificationStatus = (
       read: true
     }
   );
+};
+
+const commitInBatches = async (operations) => {
+  const batchSize = 500;
+
+  for (
+    let i = 0;
+    i < operations.length;
+    i += batchSize
+  ) {
+    const batch = writeBatch(db);
+
+    const currentOperations = operations.slice(
+      i,
+      i + batchSize
+    );
+
+    currentOperations.forEach(
+      ({ type, ref }) => {
+        if (type === "update") {
+          batch.update(ref, {
+            read: true
+          });
+        }
+
+        if (type === "delete") {
+          batch.delete(ref);
+        }
+      }
+    );
+
+    await batch.commit();
+  }
 };
 
 export const notificationService = {
