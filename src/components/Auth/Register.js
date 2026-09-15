@@ -50,6 +50,7 @@ export default function Register({ onToggleMode }) {
       await setDoc(doc(db, "users", userCredential.user.uid), {
         email,
         username,
+        usernameLower: username.trim().toLowerCase(),
         phone,
         region,
         createdAt: new Date()

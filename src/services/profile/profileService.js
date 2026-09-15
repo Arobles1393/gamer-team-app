@@ -6,6 +6,7 @@ const updateUserProfile = async (userId, profileData) => {
 
   await updateDoc(userRef, {
     username: profileData.username,
+    usernameLower: profileData.username.trim().toLowerCase(),
     phone: profileData.phone,
     links: profileData.links,
     description: profileData.description,

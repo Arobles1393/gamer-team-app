@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../firebase/config";
 import { InputText } from "primereact/inputtext";
 import { Card } from "primereact/card";
 import { Avatar } from "primereact/avatar";
 import { UserProfileDialog } from "../UserProfile";
+import { userService } from "../../services/users";
 import { useFriendStatus, useProfileChat, useFriendRequest } from "../../hooks";
 
 export default function FindPlayers({ user }) {
@@ -30,18 +29,25 @@ export default function FindPlayers({ user }) {
 
   useEffect(() => {
     const loadUsers = async () => {
-      const snapshot = await getDocs(collection(db, "users"));
+      if (!search.trim()) {
+        setUsers([]);
+        return;
+      }
 
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      try {
+        const data = await userService.searchUsers(search);
 
-      setUsers(data);
+        setUsers(data);
+      } catch (error) {
+        console.error("Error buscando jugadores:", error);
+        setUsers([]);
+      }
     };
 
-    loadUsers();
-  }, []);
+    const timeout = setTimeout(loadUsers, 300);
+
+    return () => clearTimeout(timeout);
+  }, [search]);
 
   const filteredUsers = users.filter(
     (player) =>
