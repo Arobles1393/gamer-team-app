@@ -5,7 +5,8 @@ import {
   where,
   onSnapshot,
   serverTimestamp,
-  runTransaction
+  deleteDoc,
+  addDoc
 } from "firebase/firestore";
 
 import { db } from "../../firebase/config";
@@ -16,45 +17,28 @@ const toggleInterested = async ({
   interestedDoc,
   user
 }) => {
-  const interestId =
-    `${post.id}_${user.uid}`;
+  if (interestedDoc) {
+    await deleteDoc(
+      doc(
+        db,
+        "post_interested",
+        interestedDoc.id
+      )
+    );
 
-  const interestRef = doc(
-    db,
-    "post_interested",
-    interestId
-  );
+    return true;
+  }
 
-  let created = false;
-
-  await runTransaction(
-    db,
-    async (transaction) => {
-      const interestSnap =
-        await transaction.get(interestRef);
-
-      if (interestSnap.exists()) {
-        transaction.delete(interestRef);
-        return;
-      }
-
-      transaction.set(
-        interestRef,
-        {
-          postId: post.id,
-          userId: user.uid,
-          createdAt: serverTimestamp()
-        }
-      );
-
-      created = true;
+  await addDoc(
+    collection(db, "post_interested"),
+    {
+      postId: post.id,
+      userId: user.uid,
+      createdAt: serverTimestamp()
     }
   );
 
-  if (
-    created &&
-    post.userId !== user.uid
-  ) {
+  if (post.userId !== user.uid) {
     await notificationService.createNotification({
       userId: post.userId,
       senderId: user.uid,
