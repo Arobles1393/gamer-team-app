@@ -1,6 +1,4 @@
 import { useRef, useState, useEffect } from "react";
-import { auth } from "../../firebase/config";
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { Card } from "primereact/card";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
@@ -8,6 +6,7 @@ import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { useNavigate } from "react-router-dom";
 import { getAuthErrorMessage } from "../../utils/authErrors";
+import { authService } from "../../services/auth";
 
 export default function Login({ onToggleMode }) {
   const [email, setEmail] = useState("");
@@ -25,10 +24,13 @@ export default function Login({ onToggleMode }) {
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await authService.login(
+        email,
+        password
+      );
       navigate("/");
     } catch (error) {
-      toast.current.show({
+      toast.current?.show({
         severity: "error",
         summary: "Error",
         detail: getAuthErrorMessage(error),
