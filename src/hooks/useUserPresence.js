@@ -1,23 +1,20 @@
 import { useEffect } from "react";
-import { doc, serverTimestamp, updateDoc} from "firebase/firestore";
-import { db } from "../firebase/config";
+import { userService } from "../services/users";
 
 export const useUserPresence = (user) => {
-
   useEffect(() => {
-
     if (!user) return;
 
     const updatePresence = async () => {
       try {
-        await updateDoc(
-          doc(db, "users", user.uid),
-          {
-            lastSeen: serverTimestamp()
-          }
+        await userService.updateUserPresence(
+          user.uid
         );
       } catch (error) {
-        console.error(error);
+        console.error(
+          "Error actualizando presencia:",
+          error
+        );
       }
     };
 
@@ -29,6 +26,5 @@ export const useUserPresence = (user) => {
     );
 
     return () => clearInterval(interval);
-
   }, [user]);
 };

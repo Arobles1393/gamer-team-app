@@ -7,7 +7,9 @@ import {
   startAt,
   endAt,
   doc,
-  onSnapshot
+  onSnapshot,
+  updateDoc,
+  serverTimestamp
 } from "firebase/firestore";
 import { db } from "../../firebase/config";
 
@@ -67,8 +69,18 @@ const subscribeToUserProfile = (
   );
 };
 
+const updateUserPresence = async (userId) => {
+  await updateDoc(
+    doc(db, "users", userId),
+    {
+      lastSeen: serverTimestamp()
+    }
+  );
+};
+
 export const userService = {
   getAllUsers,
   searchUsers,
-  subscribeToUserProfile
+  subscribeToUserProfile,
+  updateUserPresence
 };
