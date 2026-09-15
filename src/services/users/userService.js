@@ -5,7 +5,9 @@ import {
   orderBy,
   query,
   startAt,
-  endAt
+  endAt,
+  doc,
+  onSnapshot
 } from "firebase/firestore";
 import { db } from "../../firebase/config";
 
@@ -41,7 +43,32 @@ const searchUsers = async (search) => {
   }));
 };
 
+const subscribeToUserProfile = (
+  userId,
+  onSuccess,
+  onError
+) => {
+  const userRef = doc(
+    db,
+    "users",
+    userId
+  );
+
+  return onSnapshot(
+    userRef,
+    (docSnap) => {
+      if (docSnap.exists()) {
+        onSuccess(docSnap.data());
+      } else {
+        onSuccess(null);
+      }
+    },
+    onError
+  );
+};
+
 export const userService = {
   getAllUsers,
-  searchUsers
+  searchUsers,
+  subscribeToUserProfile
 };
