@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { httpsCallable } from "firebase/functions";
-import { functions } from "../../../firebase/config";
+import { steamStatsService } from "../../../services/steam";
 
 const getRarityClass = (percent) => {
   if (percent < 1) return "ultra-rare";
@@ -27,15 +26,16 @@ export default function GameAchievements({ game, steamId }) {
       setError(false);
 
       try {
-        const getSteamStats = httpsCallable(functions, "getSteamStats");
-
-        const res = await getSteamStats({
-          steamId: String(steamId),
-          appid: game.appid
-        });
+        const data =
+          await steamStatsService.getSteamStats(
+            steamId,
+            game.appid
+          );
 
         if (!cancelled) {
-          setAchievements(res.data.achievements || []);
+          setAchievements(
+            data.achievements || []
+          );
         }
       } catch (err) {
         console.error("Error obteniendo logros:", err);
