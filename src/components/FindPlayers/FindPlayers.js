@@ -11,6 +11,8 @@ export default function FindPlayers({ user }) {
   const [search, setSearch] = useState("");
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const { friendStatus, setFriendStatus } = useFriendStatus(
     user,
@@ -31,8 +33,13 @@ export default function FindPlayers({ user }) {
     const loadUsers = async () => {
       if (!search.trim()) {
         setUsers([]);
+        setLoading(false);
+        setError(false);
         return;
       }
+
+      setLoading(true);
+      setError(false);
 
       try {
         const data = await userService.searchUsers(search);
@@ -40,11 +47,18 @@ export default function FindPlayers({ user }) {
         setUsers(data);
       } catch (error) {
         console.error("Error buscando jugadores:", error);
+
         setUsers([]);
+        setError(true);
+      } finally {
+        setLoading(false);
       }
     };
 
-    const timeout = setTimeout(loadUsers, 300);
+    const timeout = setTimeout(
+      loadUsers,
+      300
+    );
 
     return () => clearTimeout(timeout);
   }, [search]);
@@ -70,6 +84,24 @@ export default function FindPlayers({ user }) {
         placeholder="Buscar usuario..."
         style={{ width: "100%", marginBottom: "1rem" }}
       />
+
+      {loading && (
+        <p>Buscando jugadores...</p>
+      )}
+
+      {error && (
+        <p>
+          No se pudieron cargar los jugadores.
+          Intenta de nuevo.
+        </p>
+      )}
+
+      {!loading &&
+        !error &&
+        search.trim() &&
+        filteredUsers.length === 0 && (
+          <p>No se encontraron jugadores.</p>
+        )}
 
       {filteredUsers.map((player) => (
         <Card key={player.id} style={{ marginBottom: "1rem" }}>
