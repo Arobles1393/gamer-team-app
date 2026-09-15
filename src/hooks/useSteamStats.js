@@ -1,17 +1,19 @@
-import { useEffect, useState, useMemo } from "react";
-import { httpsCallable } from "firebase/functions";
-import { functions } from "../firebase/config";
+import {
+  useEffect,
+  useState
+} from "react";
+import { steamStatsService } from "../services/steam";
 
 export const useSteamStats = (links) => {
 
   const [steamStats, setSteamStats] = useState(null);
   const [loadingSteam, setLoadingSteam] = useState(false);
 
-  const steamId = useMemo(
-    () => getSteamIdFromLinks(links),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [links?.find((link) => link.includes("steamcommunity"))]
+  const steamLink = links?.find(
+    (link) => link.includes("steamcommunity")
   );
+
+  const steamId = getSteamIdFromLinks(steamLink);
 
   useEffect(() => {
 
@@ -23,18 +25,33 @@ export const useSteamStats = (links) => {
 
     setLoadingSteam(true);
 
-    const getSteamStats = httpsCallable(functions, "getSteamStats");
-
     const fetchSteamStats = async () => {
       try {
-        const response = await getSteamStats({ steamId: String(steamId) });
-        setSteamStats(response.data);
+        const data =
+          await steamStatsService.getSteamStats(
+            steamId
+          );
+
+        setSteamStats(data);
+
       } catch (error) {
-        if (error.code === "functions/invalid-argument") {
-          console.log("Revisa el link de tu perfil de Steam");
+
+        if (
+          error.code ===
+          "functions/invalid-argument"
+        ) {
+          console.log(
+            "Revisa el link de tu perfil de Steam"
+          );
         }
-        console.error("Error al obtener estadísticas de Steam:", error);
+
+        console.error(
+          "Error al obtener estadísticas de Steam:",
+          error
+        );
+
         setSteamStats(null);
+
       } finally {
         setLoadingSteam(false);
       }
@@ -51,14 +68,16 @@ export const useSteamStats = (links) => {
   };
 };
 
-const getSteamIdFromLinks = (links) => {
-  const steamLink = links?.find((link) => link.includes("steamcommunity"));
-
+const getSteamIdFromLinks = (steamLink) => {
   if (!steamLink) {
     return null;
   }
 
   const parts = steamLink.split("/");
 
-  return parts[parts.length - 1] || parts[parts.length - 2] || null;
+  return (
+    parts[parts.length - 1] ||
+    parts[parts.length - 2] ||
+    null
+  );
 };
