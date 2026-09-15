@@ -6,22 +6,32 @@ export const useFriends = (user) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setFriendIds([]);
+      setLoading(false);
+      return;
+    }
 
-    const loadFriends = async () => {
-      try {
-        const ids = await friendService.getFriendIds(user.uid);
+    setLoading(true);
+
+    const unsubscribe = friendService.subscribeToFriends(
+      user.uid,
+      (ids) => {
         setFriendIds(ids);
-      } catch (error) {
+        setLoading(false);
+      },
+      (error) => {
         console.error("Error obteniendo amigos:", error);
         setFriendIds([]);
-      } finally {
         setLoading(false);
       }
-    };
+    );
 
-    loadFriends();
+    return unsubscribe;
   }, [user]);
 
-  return { friendIds, loading };
+  return {
+    friendIds,
+    loading
+  };
 };

@@ -7,7 +7,8 @@ import {
   updateDoc,
   writeBatch,
   doc,
-  addDoc
+  addDoc,
+  onSnapshot
 } from "firebase/firestore";
 
 import { db } from "../../firebase/config";
@@ -160,18 +161,29 @@ const rejectFriendRequest = async (notification) => {
   );
 };
 
-const getFriendIds = async (userId) => {
+const subscribeToFriends = (
+  userId,
+  onSuccess,
+  onError
+) => {
   const q = query(
     collection(db, "friends"),
     where("users", "array-contains", userId)
   );
 
-  const snapshot = await getDocs(q);
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const friendIds = snapshot.docs.map((docSnap) => {
+        const users = docSnap.data().users;
 
-  return snapshot.docs.map((docSnap) => {
-    const users = docSnap.data().users;
-    return users.find((uid) => uid !== userId);
-  });
+        return users.find((uid) => uid !== userId);
+      });
+
+      onSuccess(friendIds);
+    },
+    onError
+  );
 };
 
 const checkFriendStatus = async (userId, otherUserId) => {
@@ -210,6 +222,6 @@ export const friendService = {
   sendFriendRequest,
   acceptFriendRequest,
   rejectFriendRequest,
-  getFriendIds,
+  subscribeToFriends,
   checkFriendStatus
 };
