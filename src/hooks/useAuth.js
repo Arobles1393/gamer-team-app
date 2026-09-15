@@ -1,63 +1,55 @@
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "../firebase/config";
-import { doc, onSnapshot } from "firebase/firestore";
+import { auth } from "../firebase/config";
+import { userService } from "../services/users";
 
 export const useAuth = () => {
-
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-
     let unsubscribeUserDoc = null;
 
-    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribeAuth = onAuthStateChanged(
+      auth,
+      (currentUser) => {
+        if (unsubscribeUserDoc) {
+          unsubscribeUserDoc();
+          unsubscribeUserDoc = null;
+        }
 
-			setUser(currentUser);
+        setUser(currentUser);
 
-			if (currentUser) {
+        if (!currentUser) {
+          setUserData(null);
+          return;
+        }
 
-				const docRef = doc(
-					db,
-					"users",
-					currentUser.uid
-				);
+        unsubscribeUserDoc =
+          userService.subscribeToUserProfile(
+            currentUser.uid,
+            (data) => {
+              setUserData(data);
+            },
+            (error) => {
+              console.error(
+                "Error al obtener el perfil del usuario:",
+                error
+              );
 
-				unsubscribeUserDoc = onSnapshot(
-					docRef,
-					(docSnap) => {
+              setUserData(null);
+            }
+          );
+      }
+    );
 
-						if (docSnap.exists()) {
-							setUserData(docSnap.data());
-						}
+    return () => {
+      unsubscribeAuth();
 
-					}
-				);
-
-			} else {
-
-				setUserData(null);
-
-				if (unsubscribeUserDoc) {
-					unsubscribeUserDoc();
-				}
-
-			}
-
-		}
-	);
-
-	return () => {
-
-		unsubscribeAuth();
-
-		if (unsubscribeUserDoc) {
-			unsubscribeUserDoc();
-		}
-
-	};
-
+      if (unsubscribeUserDoc) {
+        unsubscribeUserDoc();
+      }
+    };
   }, []);
 
   return {
