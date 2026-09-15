@@ -1,5 +1,5 @@
 import { db } from "../../firebase/config";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, setDoc } from "firebase/firestore";
 
 const updateUserProfile = async (userId, profileData) => {
   const userRef = doc(db, "users", userId);
@@ -15,6 +15,24 @@ const updateUserProfile = async (userId, profileData) => {
   });
 };
 
+const createUserProfile = async (
+  userId,
+  profileData
+) => {
+  await setDoc(
+    doc(db, "users", userId),
+    {
+      ...profileData,
+      usernameLower:
+        profileData.username
+          .trim()
+          .toLowerCase(),
+      createdAt: new Date()
+    }
+  );
+};
+
 export const profileService = {
-  updateUserProfile
+  updateUserProfile,
+  createUserProfile
 };

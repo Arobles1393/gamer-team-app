@@ -1,7 +1,4 @@
 import { useRef, useState, useEffect } from "react";
-import { auth, db } from "../../firebase/config";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { setDoc, doc } from "firebase/firestore";
 import { Card } from "primereact/card";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
@@ -11,6 +8,8 @@ import { FloatLabel } from "primereact/floatlabel";
 import { Dropdown } from "primereact/dropdown";
 import { countries } from "../../data/countries";
 import { getAuthErrorMessage } from "../../utils/authErrors";
+import { authService } from "../../services/auth";
+import { profileService } from "../../services/profile";
 
 export default function Register({ onToggleMode }) {
   const [email, setEmail] = useState("");
@@ -41,20 +40,21 @@ export default function Register({ onToggleMode }) {
     setLoading(true);
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const userCredential =
+        await authService.register(
+          email,
+          password
+        );
 
-      await setDoc(doc(db, "users", userCredential.user.uid), {
-        email,
-        username,
-        usernameLower: username.trim().toLowerCase(),
-        phone,
-        region,
-        createdAt: new Date()
-      });
+      await profileService.createUserProfile(
+        userCredential.user.uid,
+        {
+          email,
+          username,
+          phone,
+          region
+        }
+      );
 
       toast.current?.show({
         severity: "success",
