@@ -77,16 +77,25 @@ export default function PostDetail({ user }) {
 
   const handlePublish = async (comment, file) => {
     try {
-      await publishComment(comment, file);
+      return await publishComment(
+        comment,
+        file
+      );
     } catch (error) {
-      console.error("Error al publicar comentario:", error);
+      console.error(
+        "Error al publicar comentario:",
+        error
+      );
 
-      toast.current.show({
+      toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo guardar el comentario. Intenta de nuevo.",
+        detail:
+          "No se pudo guardar el comentario. Intenta de nuevo.",
         life: 3000
       });
+
+      return false;
     }
   };
 

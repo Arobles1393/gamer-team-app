@@ -7,7 +7,15 @@ export default function CommentInput({ onPublish }) {
   const fileInputRef = useRef(null);
 
   const handlePublish = async () => {
-    await onPublish(comment, file);
+    const success = await onPublish(
+      comment,
+      file
+    );
+
+    if (!success) {
+      return;
+    }
+
     setComment("");
     setFile(null);
   };
