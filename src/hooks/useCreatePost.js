@@ -40,8 +40,13 @@ export const useCreatePost = ({
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
 
+    const gameName =
+      typeof game === "string"
+        ? game.trim()
+        : game?.value?.trim();
+
     if (
-      !game ||
+      !gameName ||
       !players ||
       !comments?.trim() ||
       (!multiplatform && !platform)
@@ -53,8 +58,6 @@ export const useCreatePost = ({
     setLoading(true);
 
     try {
-
-      const gameName = game.value ?? game;
 
       let steamAppId = editingPost?.steamAppId ?? null;
       let gameClip = editingPost?.clip ?? null;
