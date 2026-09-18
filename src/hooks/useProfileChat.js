@@ -4,23 +4,35 @@ import { chatService } from "../services/chat";
 export const useProfileChat = (
   user,
   selectedUserId,
-  onClose
+  onClose,
+  onError
 ) => {
   const navigate = useNavigate();
 
   const handleChat = async () => {
-    const chatId = await chatService.createOrGetChat(
-      user,
-      {
-        uid: selectedUserId
-      }
-    );
+    try {
+      const chatId = await chatService.createOrGetChat(
+        user,
+        {
+          uid: selectedUserId
+        }
+      );
 
-    navigate("/chat", {
-      state: { chatId }
-    });
+      navigate("/chat", {
+        state: { chatId }
+      });
 
-    onClose();
+      onClose();
+    } catch (error) {
+      console.error(
+        "Error creando u obteniendo el chat:",
+        error
+      );
+
+      onError?.(
+        "No se pudo abrir el chat. Intenta de nuevo."
+      );
+    }
   };
 
   return { handleChat };
