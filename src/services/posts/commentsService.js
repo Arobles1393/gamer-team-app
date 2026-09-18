@@ -33,24 +33,28 @@ const subscribeToComments = (postId, onSuccess, onError) => {
   );
 };
 
-const uploadCommentMedia = async (file) => {
-  const fileRef = ref(storage, `comments/${Date.now()}_${file.name}`);
+const uploadCommentMedia = async (file, userId) => {
+  const path = `comments/${userId}/${Date.now()}_${file.name}`;
+  const fileRef = ref(storage, path);
+
   await uploadBytes(fileRef, file);
 
   const mediaUrl = await getDownloadURL(fileRef);
   const mediaType = file.type.startsWith("image") ? "image" : "video";
 
-  return { mediaUrl, mediaType };
+  return { mediaUrl, mediaType, mediaPath: path };
 };
 
 const addComment = async ({ postId, postOwnerId, userId, text, file }) => {
   let mediaUrl = "";
   let mediaType = "";
+  let mediaPath = "";
 
   if (file) {
-    const uploaded = await uploadCommentMedia(file);
+    const uploaded = await uploadCommentMedia(file, userId);
     mediaUrl = uploaded.mediaUrl;
     mediaType = uploaded.mediaType;
+    mediaPath = uploaded.mediaPath;
   }
 
   await addDoc(collection(db, "post_comments"), {
@@ -59,6 +63,7 @@ const addComment = async ({ postId, postOwnerId, userId, text, file }) => {
     userId,
     mediaUrl,
     mediaType,
+    mediaPath,
     createdAt: serverTimestamp()
   });
 
