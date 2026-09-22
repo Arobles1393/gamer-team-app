@@ -13,14 +13,18 @@ export default function FindPlayers({ user }) {
   const [showProfile, setShowProfile] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [chatError, setChatError] = useState(false);
 
   const { friendStatus, setFriendStatus } = useFriendStatus(
     user,
     selectedUserId
   );
 
-  const { handleChat } = useProfileChat(user, selectedUserId, () =>
-    setShowProfile(false)
+  const { handleChat } = useProfileChat(
+    user,
+    selectedUserId,
+    () => setShowProfile(false),
+    () => setChatError(true)
   );
 
   const { handleFriendRequest } = useFriendRequest(
@@ -133,6 +137,12 @@ export default function FindPlayers({ user }) {
         onSendFriendRequest={handleFriendRequest}
         onChat={handleChat}
       />
+      {chatError && (
+        <p>
+          No se pudo abrir el chat.
+          Intenta de nuevo.
+        </p>
+      )}
     </div>
   );
 }
