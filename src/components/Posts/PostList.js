@@ -81,7 +81,15 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
   } = useProfileChat(
     user,
     selectedUserId,
-    () => setShowProfile(false)
+    () => setShowProfile(false),
+    () => {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudo abrir el chat. Intenta de nuevo.",
+        life: 3000
+      });
+    }
   );
 
   const { handleInterested } = usePostInterest(

@@ -41,13 +41,25 @@ export default function PostDetail({ user }) {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
 
+  const toast = useRef(null);
+
   const { friendStatus, setFriendStatus } = useFriendStatus(
     user,
     selectedUserId
   );
 
-  const { handleChat } = useProfileChat(user, selectedUserId, () =>
-    setShowProfile(false)
+  const { handleChat } = useProfileChat(
+    user,
+    selectedUserId,
+    () => setShowProfile(false),
+    () => {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudo abrir el chat. Intenta de nuevo.",
+        life: 3000
+      });
+    }
   );
 
   const { handleFriendRequest } = useFriendRequest(
@@ -55,8 +67,6 @@ export default function PostDetail({ user }) {
     selectedUserId,
     () => setFriendStatus("pending")
   );
-
-  const toast = useRef(null);
 
   if (loading) {
     return <div>Cargando...</div>;
