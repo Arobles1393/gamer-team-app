@@ -40,15 +40,16 @@ export const useSteamStats = (links) => {
           error.code ===
           "functions/invalid-argument"
         ) {
-          console.log(
-            "Revisa el link de tu perfil de Steam"
+          console.warn(
+            "Revisa el link de tu perfil de Steam:",
+            error.message
+          );
+        } else {
+          console.error(
+            "Error al obtener estadísticas de Steam:",
+            error
           );
         }
-
-        console.error(
-          "Error al obtener estadísticas de Steam:",
-          error
-        );
 
         setSteamStats(null);
 

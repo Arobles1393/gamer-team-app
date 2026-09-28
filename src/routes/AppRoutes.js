@@ -6,6 +6,7 @@ import { Notifications } from "../components/Notifications";
 import { Friends } from "../components/Friends";
 import { FindPlayers } from "../components/FindPlayers";
 import { GamingNews } from "../components/GamingNews";
+import { NotFound } from "../components/NotFound";
 
 const AppRoutes = ({
 	user,
@@ -79,6 +80,10 @@ const AppRoutes = ({
 			<Route
 				path="/news"
 				element={<GamingNews />}
+			/>
+			<Route
+				path="*"
+				element={<NotFound />}
 			/>
 		</Routes>
 	);
