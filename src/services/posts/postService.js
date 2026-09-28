@@ -70,21 +70,15 @@ const subscribeToPost = (postId, onSuccess, onError) => {
 };
 
 const subscribeToPosts = (
-  { userId, onlyMine, joined },
+  { userId, onlyMine },
   onSuccess,
   onError
 ) => {
   const base = collection(db, "posts");
 
-  let q;
-
-  if (onlyMine) {
-    q = query(base, where("userId", "==", userId));
-  } else if (joined) {
-    q = query(base, where("joinedUsers", "array-contains", userId));
-  } else {
-    q = base;
-  }
+  const q = onlyMine
+    ? query(base, where("userId", "==", userId))
+    : base;
 
   return onSnapshot(
     q,

@@ -17,7 +17,7 @@ export const usePosts = (user, onlyMine = false, joined = false) => {
     }
 
     const unsubscribe = postService.subscribeToPosts(
-      { userId: user?.uid, onlyMine, joined },
+      { userId: user?.uid, onlyMine },
       setPosts,
       (error) => {
         console.error("Error obteniendo publicaciones:", error);

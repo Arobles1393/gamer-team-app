@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import { postService } from "../../services/posts";
@@ -12,12 +12,22 @@ import { useFriendStatus, usePosts, useInterestedPosts, useFilteredPosts, usePos
 export default function PostList({ user, setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
 
   const {
-    posts,
+    posts: allPosts,
     title
   } = usePosts(
     user,
     onlyMine,
     joined
+  );
+
+  const { interestedMap } = useInterestedPosts(user);
+
+  // "Mis partidas": posts marcados con "me interesa" (colección post_interested)
+  const posts = useMemo(
+    () => joined
+      ? allPosts.filter((post) => interestedMap.has(`${post.id}_${user.uid}`))
+      : allPosts,
+    [allPosts, joined, interestedMap, user.uid]
   );
 
   const {
@@ -40,8 +50,6 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
       user,
       selectedUserId
   );
-
-  const { interestedMap } = useInterestedPosts(user);
 
   const handleDelete = async (id) => {
     try {
