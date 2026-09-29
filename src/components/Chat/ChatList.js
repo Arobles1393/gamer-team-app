@@ -1,7 +1,9 @@
 import { useChats } from "../../hooks";
 import ChatListItem from "./ChatListItem";
+import { useCurrentUser } from "../../context";
 
-export default function ChatList({ user, setActiveChat }) {
+export default function ChatList({ setActiveChat }) {
+  const user = useCurrentUser();
   const { chats } = useChats(user);
 
   return (
@@ -20,4 +22,4 @@ export default function ChatList({ user, setActiveChat }) {
       ))}
     </div>
   );
-}
+}

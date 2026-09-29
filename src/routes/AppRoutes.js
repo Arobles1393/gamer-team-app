@@ -9,8 +9,6 @@ import { GamingNews } from "../components/GamingNews";
 import { NotFound } from "../components/NotFound";
 
 const AppRoutes = ({
-	user,
-	userData,
 	setEditingPost,
 	setShowCreatePost
 }) => {
@@ -20,7 +18,7 @@ const AppRoutes = ({
 			<Route
 				path="/"
 				element={
-					<PostList user={user}
+					<PostList
 						setEditingPost={setEditingPost}
 						setShowCreatePost={setShowCreatePost}
 					/>
@@ -29,15 +27,13 @@ const AppRoutes = ({
 			<Route
 				path="/profile"
 				element={
-					<Profile user={user} 
-						userData={userData} 
-					/>
+					<Profile />
 				}
 			/>
 			<Route
 				path="/myposts"
 				element={
-					<PostList user={user} 
+					<PostList
 						setEditingPost={setEditingPost}
 						setShowCreatePost={setShowCreatePost}
 						onlyMine
@@ -47,7 +43,7 @@ const AppRoutes = ({
 			<Route
 				path="/myparties"
 				element={
-					<PostList user={user}
+					<PostList
 						setShowCreatePost={setShowCreatePost}
 						joined
 					/>
@@ -56,26 +52,26 @@ const AppRoutes = ({
 			<Route
 				path="/chat"
 				element={
-					<ChatPage user={user}/>
+					<ChatPage />
 				}
 			/>
 			<Route
 				path="/post/:id" 
 				element={
-					<PostDetail user={user} />
+					<PostDetail />
 				}
 			/>
 			<Route
 				path="/notifications"
-				element={<Notifications user={user} />}
+				element={<Notifications />}
 			/>
 			<Route
 				path="/friends"
-				element={<Friends user={user} />}
+				element={<Friends />}
 			/>
 			<Route
 				path="/findPlayers"
-				element={<FindPlayers user={user} />}
+				element={<FindPlayers />}
 			/>
 			<Route
 				path="/news"
@@ -90,4 +86,4 @@ const AppRoutes = ({
 
 };
 
-export default AppRoutes;
+export default AppRoutes;

@@ -4,7 +4,6 @@ import CreatePost from "./CreatePost";
 const CreatePostDialog = ({
   visible,
   editingPost,
-  user,
   onHide,
   onClose
 }) => {
@@ -16,7 +15,6 @@ const CreatePostDialog = ({
       onHide={onHide}
     >
       <CreatePost
-        user={user}
         editingPost={editingPost}
         onClose={onClose}
       />
@@ -24,4 +22,4 @@ const CreatePostDialog = ({
   );
 };
 
-export default CreatePostDialog; 
+export default CreatePostDialog; 

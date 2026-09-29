@@ -6,10 +6,10 @@ import { memo, useMemo, useCallback } from "react";
 import PostPlatforms from "./PostPlatforms";
 import { useUserProfile } from "../../hooks";
 import "./PostCard.css";
+import { useCurrentUser } from "../../context";
 
 function PostCard({
   post,
-  user,
   interestedDoc,
   onToggleInterested,
   onEdit,
@@ -18,6 +18,7 @@ function PostCard({
 }) {
 
   const navigate = useNavigate();
+  const user = useCurrentUser();
 
   const { userData: author } = useUserProfile(post.userId);
 
@@ -128,4 +129,4 @@ function PostCard({
   );
 }
 
-export default memo(PostCard);
+export default memo(PostCard);

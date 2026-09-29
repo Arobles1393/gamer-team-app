@@ -5,8 +5,10 @@ import { FavoriteGames } from "../FavoriteGames";
 import { SocialLinks } from "../SocialLinks";
 import SteamStatsSection from "./SteamStatsSection/SteamStatsSection";
 import GameAchievementsDialog from "./GameAchievementsDialog/GameAchievementsDialog";
+import { useCurrentUser } from "../../context";
 
-export default function UserProfile({ userId, user }) {
+export default function UserProfile({ userId }) {
+  const user = useCurrentUser();
   const { userData } = useUserProfile(userId);
   const {
     steamStats,
@@ -52,4 +54,4 @@ export default function UserProfile({ userId, user }) {
       />
     </>
   );
-}
+}

@@ -8,6 +8,7 @@ import { friendService } from "../../services/friends";
 import { useNotifications, useUserProfile } from "../../hooks";
 import { navigateNotification, formatDates, getNotificationText } from "../../utils";
 import "./Notifications.css";
+import { useCurrentUser } from "../../context";
 
 function NotificationCard({
   notification,
@@ -96,7 +97,8 @@ function NotificationCard({
   );
 }
 
-export default function Notifications({ user }) {
+export default function Notifications() {
+  const user = useCurrentUser();
 
   const navigate = useNavigate();
 
@@ -179,4 +181,4 @@ export default function Notifications({ user }) {
       <ConfirmDialog />
     </div>
   );
-}
+}

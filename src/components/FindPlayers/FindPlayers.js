@@ -5,8 +5,10 @@ import { Avatar } from "primereact/avatar";
 import { UserProfileDialog } from "../UserProfile";
 import { userService } from "../../services/users";
 import { useFriendStatus, useProfileChat, useFriendRequest } from "../../hooks";
+import { useCurrentUser } from "../../context";
 
-export default function FindPlayers({ user }) {
+export default function FindPlayers() {
+  const user = useCurrentUser();
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedUserId, setSelectedUserId] = useState(null);
@@ -132,7 +134,6 @@ export default function FindPlayers({ user }) {
           setSelectedUserId(null);
         }}
         selectedUserId={selectedUserId}
-        user={user}
         friendStatus={friendStatus}
         onSendFriendRequest={handleFriendRequest}
         onChat={handleChat}
@@ -145,4 +146,4 @@ export default function FindPlayers({ user }) {
       )}
     </div>
   );
-}
+}

@@ -8,8 +8,11 @@ import PostFilters from "./PostFilters";
 import { UserProfileDialog } from "../UserProfile";
 import { useFriendStatus, usePosts, useInterestedPosts, useFilteredPosts, usePostFilters, useProfileChat, usePostInterest,
   useFriendRequest } from "../../hooks";
+import { useCurrentUser } from "../../context";
 
-export default function PostList({ user, setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
+export default function PostList({ setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
+  const user = useCurrentUser();
+
 
   const {
     posts: allPosts,
@@ -145,7 +148,6 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
           <PostCard
             key={post.id}
             post={post}
-            user={user}
             interestedDoc={ interestedMap.get(`${post.id}_${user.uid}`) }
             onToggleInterested={handleInterested}
             onEdit={handleEditPost}
@@ -158,7 +160,6 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
         visible={showProfile}
         onHide={() => setShowProfile(false)}
         selectedUserId={selectedUserId}
-        user={user}
         friendStatus={friendStatus}
         onSendFriendRequest={handleFriendRequest}
         onChat={handleChat}
@@ -167,4 +168,4 @@ export default function PostList({ user, setEditingPost, setShowCreatePost, only
       <Toast ref={toast} />
     </div>
   );
-}
+}

@@ -2,6 +2,7 @@ import { Dialog } from "primereact/dialog";
 import { memo } from "react";
 import UserProfile from "./UserProfile";
 import UserProfileActions from "./UserProfileActions";
+import { useCurrentUser } from "../../context";
 
 const DIALOG_PT = {
   header: {
@@ -24,11 +25,11 @@ const UserProfileDialog = ({
   visible,
   onHide,
   selectedUserId,
-  user,
   friendStatus,
   onSendFriendRequest,
   onChat
 }) => {
+  const user = useCurrentUser();
 
   if (!selectedUserId) {
     return null;
@@ -43,7 +44,6 @@ const UserProfileDialog = ({
       <div className="profile-container">
         <UserProfile
           userId={selectedUserId}
-          user={user}
         />
         {user?.uid !== selectedUserId && (
           <UserProfileActions
@@ -57,4 +57,4 @@ const UserProfileDialog = ({
   );
 };
 
-export default memo(UserProfileDialog)
+export default memo(UserProfileDialog)

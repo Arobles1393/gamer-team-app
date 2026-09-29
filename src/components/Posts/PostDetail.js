@@ -18,8 +18,10 @@ import {
   useProfileChat,
   useFriendRequest
 } from "../../hooks";
+import { useCurrentUser } from "../../context";
 
-export default function PostDetail({ user }) {
+export default function PostDetail() {
+  const user = useCurrentUser();
   const { id } = useParams();
 
   const { post, loading, error } = usePost(id);
@@ -176,7 +178,6 @@ export default function PostDetail({ user }) {
         visible={showProfile}
         onHide={() => setShowProfile(false)}
         selectedUserId={selectedUserId}
-        user={user}
         friendStatus={friendStatus}
         onSendFriendRequest={handleFriendRequest}
         onChat={handleChat}
@@ -186,4 +187,4 @@ export default function PostDetail({ user }) {
       <Toast ref={toast} />
     </div>
   );
-}
+}

@@ -4,7 +4,8 @@ import { AppHeader, createHeaderMenu } from "./components/Header";
 import { NotificationOverlay } from "./components/Notifications";
 import { notificationService } from "./services/notifications";
 import { friendService } from "./services/friends";
-import { useNotifications, useUserPresence, useAuth } from "./hooks";
+import { useNotifications, useUserPresence } from "./hooks";
+import { useCurrentUser } from "./context";
 import { AppRoutes } from "./routes";
 import { CreatePostDialog } from "./components/Posts";
 import { Auth } from "./components/Auth";
@@ -23,7 +24,7 @@ function App() {
   const navigate = useNavigate();
 
   // Hooks
-  const { user, userData } = useAuth();
+  const user = useCurrentUser();
   const { notifications, unreadCount } = useNotifications(user, { limitCount: 10 });
   useUserPresence(user);
 
@@ -63,8 +64,6 @@ function App() {
   return (
     <>
       <AppHeader
-        user={user}
-        userData={userData}
         unreadCount={unreadCount}
         items={items}
         onToggleNotifications={handleToggleNotifications}
@@ -81,14 +80,11 @@ function App() {
       <CreatePostDialog
         visible={showCreatePost}
         editingPost={editingPost}
-        user={user}
         onHide={handleCloseCreatePost}
         onClose={handleCloseCreatePost}
       />
       <div className="app-content">
         <AppRoutes
-          user={user}
-          userData={userData}
           setEditingPost={setEditingPost}
           setShowCreatePost={setShowCreatePost}
         />
@@ -97,4 +93,4 @@ function App() {
   );
 }
 
-export default App;
+export default App;

@@ -8,8 +8,11 @@ import { SocialLinks } from "../SocialLinks";
 import PersonalInfo from "./PersonalInfo/PersonalInfo";
 import { useProfileForm, useGameSearch, useProfileImages } from "../../hooks";
 import { countries } from "../../data/countries";
+import { useCurrentUser, useCurrentUserData } from "../../context";
 
-export default function Profile({ user, userData }) {
+export default function Profile() {
+  const user = useCurrentUser();
+  const userData = useCurrentUserData();
   const [gameQuery, setGameQuery] = useState("");
   const bannerInputRef = useRef(null);
   const fileInputRef = useRef(null);

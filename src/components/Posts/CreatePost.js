@@ -10,8 +10,10 @@ import { Checkbox } from "primereact/checkbox";
 import { useGameSearch, useCreatePost } from "../../hooks";
 import { platforms } from "../../constants";
 import "./CreatePost.css";
+import { useCurrentUser } from "../../context";
 
-export default function CreatePost({ user, onClose, editingPost }) {
+export default function CreatePost({ onClose, editingPost }) {
+  const user = useCurrentUser();
 
   const toast = useRef(null);
 
@@ -157,4 +159,4 @@ export default function CreatePost({ user, onClose, editingPost }) {
       <Toast ref={toast} />
     </Card>
   );
-}
+}

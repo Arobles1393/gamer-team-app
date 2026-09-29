@@ -6,6 +6,7 @@ import {
   collection,
   where,
   getDocs,
+  limit,
   addDoc,
   onSnapshot
 } from "firebase/firestore";
@@ -20,7 +21,8 @@ const getExistingMedia = async (game) => {
 
   const q = query(
     collection(db, "posts"),
-    where("game", "==", game)
+    where("game", "==", game),
+    limit(1)
   );
 
   const snapshot = await getDocs(q);

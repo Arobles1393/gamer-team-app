@@ -2,11 +2,10 @@ import { Button } from "primereact/button";
 import { Menu } from "primereact/menu";
 import { Avatar } from "primereact/avatar";
 import { useRef } from "react";
+import { useCurrentUser, useCurrentUserData } from "../../context";
 import "./Header.css";
 
 export default function AppHeader({
-  user,
-  userData,
   unreadCount,
   items,
   onToggleNotifications,
@@ -14,6 +13,8 @@ export default function AppHeader({
   onHome
 }) {
   const menuRef = useRef(null);
+  const user = useCurrentUser();
+  const userData = useCurrentUserData();
 
   // Valores derivados
   const avatarLabel = !userData?.avatar ? userData?.username?.charAt(0).toUpperCase() : null;

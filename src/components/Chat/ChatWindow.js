@@ -4,8 +4,10 @@ import { Avatar } from "primereact/avatar";
 import { InputTextarea } from "primereact/inputtextarea";
 import { useChatWindow, useUserProfile } from "../../hooks";
 import { formatDates } from "../../utils";
+import { useCurrentUser } from "../../context";
 
-export default function ChatWindow({ user, chatId }) {
+export default function ChatWindow({ chatId }) {
+  const user = useCurrentUser();
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef(null);
 
@@ -83,4 +85,4 @@ export default function ChatWindow({ user, chatId }) {
       </div>
     </div>
   );
-}
+}
