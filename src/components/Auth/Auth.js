@@ -5,6 +5,10 @@ import Register from "./Register";
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
 
+  if (isLogin) {
+    return <Login onToggleMode={() => setIsLogin(false)} />;
+  }
+
   return (
     <div className="auth-container">
         <video
@@ -19,11 +23,7 @@ export default function Auth() {
         <div className="overlay"/>
         {/* 🔐 CONTENIDO */}
         <div className="auth-content">
-            {isLogin ? (
-                <Login onToggleMode={() => setIsLogin(false)} />
-            ) : (
-                <Register onToggleMode={() => setIsLogin(true)} />
-            )}
+            <Register onToggleMode={() => setIsLogin(true)} />
         </div>
     </div>
   );

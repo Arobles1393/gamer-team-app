@@ -1,26 +1,21 @@
-import { useRef, useState, useEffect } from "react";
-import { Card } from "primereact/card";
-import { InputText } from "primereact/inputtext";
-import { Password } from "primereact/password";
-import { Button } from "primereact/button";
+import { useRef, useState } from "react";
 import { Toast } from "primereact/toast";
 import { useNavigate } from "react-router-dom";
 import { getAuthErrorMessage } from "../../utils/authErrors";
 import { authService } from "../../services/auth";
+import "./Login.css";
 
 export default function Login({ onToggleMode }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [visible, setVisible] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const toast = useRef(null);
 
-  useEffect(() => {
-    setVisible(true);
-  }, []);
-
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    if (!email || !password || loading) return;
     setLoading(true);
 
     try {
@@ -42,59 +37,87 @@ export default function Login({ onToggleMode }) {
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-      <Card
-        title="GamerMatch"
-        style={{
-          opacity: visible ? 1 : 0,
-          transform: visible ? "translateY(0)" : "translateY(30px)",
-          transition: "all 1.0s ease",
-          background: "rgba(255,255,255,0.1)",
-          color: "#fff"
-        }}
-      >
-        <div className="p-fluid">
-          <span className="p-float-label" style={{ marginBottom: "1.5rem" }}>
-            <InputText
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <label htmlFor="email">Correo</label>
-          </span>
+    <div className="login">
+      <section className="login__media">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="login__video"
+        >
+          <source src="/video/vidControl.mp4" type="video/mp4" />
+        </video>
+        <div className="login__media-fade" />
 
-          <span className="p-float-label" style={{ marginBottom: "1.5rem" }}>
-            <Password
+        <div className="login__brand login__brand--media">
+          <span className="login__badge">GM</span>
+          <span className="login__brand-name">GAMERMATCH</span>
+        </div>
+
+        <p className="login__tagline">
+          Encuentra tu squad.<br />Cuando quieras jugar.
+        </p>
+      </section>
+
+      <section className="login__panel">
+        <div className="login__brand login__brand--panel">
+          <span className="login__badge">GM</span>
+          <span className="login__brand-name">GAMERMATCH</span>
+        </div>
+
+        <form className="login__form" onSubmit={handleLogin} noValidate>
+          <h1 className="login__title">Bienvenido de vuelta</h1>
+          <p className="login__subtitle">
+            Inicia sesión para encontrar tu próximo squad.
+          </p>
+
+          <label className="login__label" htmlFor="email">Correo</label>
+          <input
+            id="email"
+            type="email"
+            className="login__input"
+            placeholder="tucorreo@ejemplo.com"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
+          <label className="login__label" htmlFor="password">Contraseña</label>
+          <div className="login__password">
+            <input
               id="password"
+              type={showPassword ? "text" : "password"}
+              className="login__input"
+              placeholder="••••••••"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              feedback={false}
-              toggleMask
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleLogin();
-              }}
             />
-            <label htmlFor="password">Contraseña</label>
-          </span>
+            <button
+              type="button"
+              className="login__toggle"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            >
+              <i className={`pi ${showPassword ? "pi-eye-slash" : "pi-eye"}`} />
+            </button>
+          </div>
 
-          <Button
-            label="Iniciar sesión"
-            icon="pi pi-sign-in"
-            onClick={handleLogin}
-            disabled={!email || !password}
-            loading={loading}
-            className="p-button-success"
-            style={{ width: "100%", marginBottom: "1rem" }}
-          />
+          <button
+            type="submit"
+            className="login__submit"
+            disabled={!email || !password || loading}
+          >
+            {loading ? <i className="pi pi-spin pi-spinner" /> : "Iniciar sesión"}
+          </button>
 
-          <Button
-            label="Crear cuenta"
-            icon="pi pi-user-plus"
-            onClick={onToggleMode}
-            className="p-button-text"
-          />
-        </div>
-      </Card>
+          <p className="login__switch">
+            ¿No tienes cuenta?{" "}
+            <button type="button" onClick={onToggleMode}>Crear cuenta</button>
+          </p>
+        </form>
+      </section>
 
       <Toast ref={toast} />
     </div>
