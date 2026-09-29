@@ -84,6 +84,12 @@ function PostCard({
 
   const relativeTime = formatRelativeTime(post.createdAt);
 
+  const gameTitle = post.logo ? (
+    <img src={post.logo} alt={post.game} className="post-card__logo" />
+  ) : (
+    <h3 className="post-card__title">{post.game}</h3>
+  );
+
   return (
     <article
       className="post-card"
@@ -104,11 +110,12 @@ function PostCard({
           platforms={post.platforms}
           platform={post.platform}
         />
+        <div className="post-card__cover-title">
+          {gameTitle}
+        </div>
       </div>
 
       <div className="post-card__body">
-        <h3 className="post-card__title">{post.game}</h3>
-
         <p className="post-card__meta">
           <i className="pi pi-user" aria-hidden="true" />
           {formatPlayersNeeded(post.playersNeeded)}
