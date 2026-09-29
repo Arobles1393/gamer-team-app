@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { notificationService } from "../services/notifications";
 
 // Conteo de no leídas y si hay mensajes sin leer, sin el límite de la lista del overlay
@@ -23,8 +23,19 @@ export const useUnreadNotifications = (user) => {
     return unsubscribe;
   }, [user]);
 
+  // Chats con mensajes sin leer (para marcarlos en la lista de chats)
+  const unreadChatIds = useMemo(
+    () => new Set(
+      unread
+        .filter((notification) => notification.type === "message")
+        .map((notification) => notification.relatedId)
+    ),
+    [unread]
+  );
+
   return {
     unreadCount: unread.length,
-    hasUnreadMessages: unread.some((notification) => notification.type === "message")
+    hasUnreadMessages: unreadChatIds.size > 0,
+    unreadChatIds
   };
 };

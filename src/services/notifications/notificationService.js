@@ -95,6 +95,26 @@ const markAllNotificationsAsRead = async (userId) => {
   await commitInBatches(operations);
 };
 
+// Al abrir un chat: sus notificaciones de mensaje dejan de contar como no leídas
+const markChatNotificationsAsRead = async (userId, chatId) => {
+  const q = query(
+    collection(db, "notifications"),
+    where("userId", "==", userId),
+    where("type", "==", "message"),
+    where("relatedId", "==", chatId),
+    where("read", "==", false)
+  );
+
+  const snapshot = await getDocs(q);
+
+  const operations = snapshot.docs.map((docSnap) => ({
+    type: "update",
+    ref: docSnap.ref
+  }));
+
+  await commitInBatches(operations);
+};
+
 const deleteAllNotifications = async (userId) => {
   const q = query(
     collection(db, "notifications"),
@@ -169,6 +189,7 @@ export const notificationService = {
   subscribeToUnreadNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
+  markChatNotificationsAsRead,
   deleteAllNotifications,
   createNotification,
   updateNotificationStatus

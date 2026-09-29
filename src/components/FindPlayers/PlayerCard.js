@@ -2,23 +2,17 @@ import { memo } from "react";
 import { Avatar } from "primereact/avatar";
 import { Button } from "primereact/button";
 import { countries } from "../../data/countries";
-import { formatDates, getLastSeenMs, isOnline } from "../../utils";
+import { getPresenceLabel, isOnline } from "../../utils";
 
 const MAX_GAMES = 4;
 
 function PlayerStatus({ lastSeen }) {
   const online = isOnline(lastSeen);
 
-  const label = online
-    ? "En línea"
-    : getLastSeenMs(lastSeen)
-      ? `Visto hace ${formatDates.formatChatTime(lastSeen)}`
-      : "Desconectado";
-
   return (
     <span className={`player-card__status${online ? " player-card__status--online" : ""}`}>
       <span className="player-card__status-dot" aria-hidden="true" />
-      {label}
+      {getPresenceLabel(lastSeen)}
     </span>
   );
 }

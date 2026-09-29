@@ -9,4 +9,4 @@ export { getLabel } from "./getLabel";
 export { searchGames, getGameDetail } from "./searchGames";
 export { getNotificationText } from "./getNotificationText";
 export { platformLabels } from "./platformLabels";
-export { getLastSeenMs, isOnline } from "./presence";
+export { getLastSeenMs, isOnline, getPresenceLabel } from "./presence";

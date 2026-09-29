@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { userService } from "../services/users";
 
 // Perfiles en tiempo real de varios usuarios a la vez (p. ej. la lista de amigos),
-// para poder buscar, ordenar y contar sobre ellos. Un perfil inexistente queda en null.
+// para poder buscar, ordenar y contar sobre ellos. `profiles` los indexa por id;
+// un perfil inexistente queda en null.
 export const useUserProfiles = (userIds) => {
   const [profiles, setProfiles] = useState({});
 
@@ -45,5 +46,5 @@ export const useUserProfiles = (userIds) => {
     [userIds, profiles]
   );
 
-  return { users, loading };
+  return { users, profiles, loading };
 };
