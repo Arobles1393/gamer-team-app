@@ -1,21 +1,82 @@
-import { useRef } from "react";
-import { Card } from "primereact/card";
-import { Button } from "primereact/button";
-import { InputText } from "primereact/inputtext";
-import { InputTextarea } from "primereact/inputtextarea";
-import { Dropdown } from "primereact/dropdown";
+import { useState } from "react";
 import { AutoComplete } from "primereact/autocomplete";
-import { Toast } from "primereact/toast";
-import { Checkbox } from "primereact/checkbox";
+import { InputTextarea } from "primereact/inputtextarea";
+import { Button } from "primereact/button";
 import { useGameSearch, useCreatePost } from "../../hooks";
 import { platforms } from "../../constants";
-import "./CreatePost.css";
+import { getPlatformKey, platformIcons, platformLabels } from "../../utils";
 import { useCurrentUser } from "../../context";
+import "./CreatePost.css";
 
-export default function CreatePost({ onClose, editingPost }) {
+const MULTI = "multi";
+const MIN_PLAYERS = 1;
+const MAX_PLAYERS = 20;
+const MAX_DESCRIPTION = 300;
+
+const suggestionTemplate = (item) => (
+  <div className="create-post__suggestion">
+    {item.image ? (
+      <img src={item.image} alt="" className="create-post__suggestion-img" />
+    ) : (
+      <span className="create-post__suggestion-img" aria-hidden="true" />
+    )}
+    <span>{item.label}</span>
+  </div>
+);
+
+// "PC · PS5 · XBOX" a partir de los nombres de plataforma de RAWG
+const getAvailableLabel = (gamePlatforms) => {
+  const keys = [...new Set((gamePlatforms ?? []).map(getPlatformKey).filter(Boolean))];
+  return keys.map((key) => platformLabels[key]).join(" · ");
+};
+
+function Field({ id, label, error, hint, children }) {
+  return (
+    <div className="gm-field create-post__field">
+      <span className="gm-field__label" id={`${id}-label`}>{label}</span>
+      {children}
+      {hint && !error && <p className="gm-field__hint">{hint}</p>}
+      {error && <p className="gm-field__error" role="alert">{error}</p>}
+    </div>
+  );
+}
+
+function SelectedGame({ name, image, gamePlatforms, locked, onClear }) {
+  const available = getAvailableLabel(gamePlatforms);
+
+  return (
+    <div className="create-post__game">
+      <span className="create-post__game-cover">
+        {image && <img src={image} alt="" />}
+      </span>
+      <span className="create-post__game-info">
+        <span className="create-post__game-name">{name}</span>
+        <span className="create-post__game-meta">
+          {locked
+            ? "El juego no se puede cambiar al editar"
+            : available
+              ? `Disponible en: ${available}`
+              : "Juego seleccionado"}
+        </span>
+      </span>
+      {!locked && (
+        <button
+          type="button"
+          className="create-post__game-clear"
+          aria-label="Cambiar juego"
+          onClick={onClear}
+        >
+          <i className="pi pi-times" aria-hidden="true" />
+        </button>
+      )}
+    </div>
+  );
+}
+
+export default function CreatePost({ editingPost, onClose, onSuccess, onError }) {
   const user = useCurrentUser();
-
-  const toast = useRef(null);
+  const [submitted, setSubmitted] = useState(false);
+  const isEditing = Boolean(editingPost);
 
   const {
     game,
@@ -29,134 +90,180 @@ export default function CreatePost({ onClose, editingPost }) {
     multiplatform,
     setMultiplatform,
     loading,
-    resetForm,
     handleSubmit
   } = useCreatePost({
     user,
     editingPost,
-    onSuccess: (action) => {
-      toast.current.show({
-        severity: "success",
-        summary: action === "actualizar"
-          ? "Actualizada"
-          : "Creada",
-        detail: action === "actualizar"
-          ? "Publicación actualizada correctamente"
-          : "Publicación creada correctamente",
-        life: 3000
-      });
-
-      onClose();
-    },
-    onError: (message) => {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: message,
-        life: 3000
-      });
-    }
+    onSuccess,
+    onError
   });
 
-  const {
-    suggestions,
-    handleSearch
-  } = useGameSearch();
+  const { suggestions, handleSearch } = useGameSearch();
 
-  const itemTemplate = (item) => (
-    <div className="create-post__div-itemTemplate">
-      <img
-        src={item.image}
-        alt={item.label}
-        className="create-post__itemTemplate-image"
-      />
-      <span>{item.label}</span>
-    </div>
-  );
+  const gameName = (typeof game === "string" ? game : game?.value ?? "").trim();
 
-  const cancel = () => {
-    resetForm();
-    onClose();
-  }
+  // Juego elegido de la lista de RAWG (o el del post, al editar)
+  const selectedGame = isEditing
+    ? { name: editingPost.game, image: editingPost.image, platforms: editingPost.platforms }
+    : typeof game === "object" && game?.value
+      ? { name: game.value, image: game.image, platforms: game.platforms }
+      : null;
+
+  const playerCount = Number(players) || MIN_PLAYERS;
+  const selectedPlatform = multiplatform ? MULTI : platform;
+  const description = comments ?? "";
+
+  const errors = {
+    game: !gameName && "Elige el juego de la partida.",
+    platform: !selectedPlatform && "Elige una plataforma o marca Multiplataforma.",
+    description: !description.trim() && "Cuenta un poco de la partida."
+  };
+
+  const handleSelectPlatform = (value) => {
+    setMultiplatform(value === MULTI);
+    setPlatform(value === MULTI ? "" : value);
+  };
+
+  const onSubmit = (event) => {
+    event.preventDefault();
+    setSubmitted(true);
+
+    if (Object.values(errors).some(Boolean)) return;
+
+    handleSubmit(event);
+  };
+
+  const platformOptions = [
+    ...platforms,
+    { label: "Multiplataforma", value: MULTI }
+  ];
 
   return (
-    <Card className="create-post">
-      <div className="create-post__header">
-        <p className="create-post__description-text">
-          ¿Buscas equipo? Publica una partida y encuentra jugadores rapidamente.
-        </p>
-      </div>
-      <div className="p-fluid create-post__div-inputs">
-        {/* Inputs en fila */}
-        <div className="create-post__inputs">
+    <form className="gm-form create-post" onSubmit={onSubmit} noValidate>
+      <Field id="create-game" label="Juego" error={submitted && errors.game}>
+        {selectedGame ? (
+          <SelectedGame
+            name={selectedGame.name}
+            image={selectedGame.image}
+            gamePlatforms={selectedGame.platforms}
+            locked={isEditing}
+            onClear={() => setGame("")}
+          />
+        ) : (
           <AutoComplete
+            inputId="create-game"
             value={game}
             suggestions={suggestions}
             completeMethod={handleSearch}
             onChange={(e) => setGame(e.value)}
             field="value"
-            itemTemplate={itemTemplate}
-            placeholder="Nombre del juego"
-            className="create-post__autocomplete"
-            disabled={!!editingPost}
+            itemTemplate={suggestionTemplate}
+            placeholder="Busca el juego…"
+            aria-labelledby="create-game-label"
+            className="gm-autocomplete"
+            inputClassName={`gm-input${submitted && errors.game ? " gm-input--invalid" : ""}`}
+            panelClassName="gm-panel"
+            autoFocus
           />
-          <Checkbox
-            inputId="multiplatform"
-            checked={multiplatform}
-            className="create-post__multiplatform"
-            onChange={(e) => {
-              setMultiplatform(e.checked);
+        )}
+      </Field>
 
-              if (e.checked) {
-                setPlatform("");
-              }
-            }}
-          />
-          <label htmlFor="multiplatform" className="create-post__multiplatform">
-            Multiplataforma
-          </label>
-          {!multiplatform && (
-            <Dropdown
-              value={platform}
-              options={platforms}
-              onChange={(e) => setPlatform(e.value)}
-              placeholder="Selecciona plataforma"
-              className="create-post__platform"
-            />
-          )}
-          <InputText
-            placeholder="Cant. jugadores"
-            value={players}
-            onChange={(e) => setPlayers(e.target.value)}
-            className="create-post__players"
-          />
+      <Field id="create-platform" label="Plataforma" error={submitted && errors.platform}>
+        <div
+          className="create-post__platforms"
+          role="radiogroup"
+          aria-labelledby="create-platform-label"
+        >
+          {platformOptions.map(({ label, value }) => {
+            const active = selectedPlatform === value;
+
+            return (
+              <button
+                key={value}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                className={`create-post__platform${active ? " create-post__platform--active" : ""}`}
+                onClick={() => handleSelectPlatform(value)}
+              >
+                {value === MULTI ? (
+                  <i className="pi pi-th-large" aria-hidden="true" />
+                ) : (
+                  platformIcons[value]?.("create-post__platform-icon")
+                )}
+                {label}
+              </button>
+            );
+          })}
         </div>
-        {/* Descripción */}
+      </Field>
+
+      <Field
+        id="create-players"
+        label="Jugadores que buscas"
+        hint="Cuántos jugadores te faltan para completar la partida."
+      >
+        <div className="create-post__stepper" role="group" aria-labelledby="create-players-label">
+          <button
+            type="button"
+            className="create-post__stepper-btn"
+            aria-label="Menos jugadores"
+            disabled={playerCount <= MIN_PLAYERS}
+            onClick={() => setPlayers(playerCount - 1)}
+          >
+            <i className="pi pi-minus" aria-hidden="true" />
+          </button>
+          <span className="create-post__stepper-value" aria-live="polite">
+            {playerCount}
+            <span className="create-post__stepper-unit">
+              {playerCount === 1 ? "jugador" : "jugadores"}
+            </span>
+          </span>
+          <button
+            type="button"
+            className="create-post__stepper-btn"
+            aria-label="Más jugadores"
+            disabled={playerCount >= MAX_PLAYERS}
+            onClick={() => setPlayers(playerCount + 1)}
+          >
+            <i className="pi pi-plus" aria-hidden="true" />
+          </button>
+        </div>
+      </Field>
+
+      <Field id="create-description" label="Descripción" error={submitted && errors.description}>
         <InputTextarea
-          placeholder="Describe tu partida..."
-          value={comments}
+          id="create-description"
+          value={description}
           onChange={(e) => setComments(e.target.value)}
-          rows={3}
+          placeholder="Modo de juego, rango, horario, si usas micrófono…"
+          aria-labelledby="create-description-label"
+          rows={4}
           autoResize
-          className="create-post__description"
+          maxLength={MAX_DESCRIPTION}
+          className={`gm-input${submitted && errors.description ? " gm-input--invalid" : ""}`}
         />
-        {/* Botones */}
-        <div className="create-post__actions">
-          <Button
-            label={editingPost ? "Actualizar" : "Publicar"}
-            icon="pi pi-check"
-            onClick={handleSubmit}
-            loading={loading}
-            className="p-button-success"
-          />
-          <Button
-            label="Cancelar"
-            className="p-button-text"
-            onClick={cancel}
-          />
-        </div>
+        <p className="gm-field__hint create-post__counter">
+          {description.length}/{MAX_DESCRIPTION}
+        </p>
+      </Field>
+
+      <div className="create-post__footer">
+        <Button
+          type="button"
+          label="Cancelar"
+          className="gm-btn gm-btn--ghost"
+          onClick={onClose}
+          disabled={loading}
+        />
+        <Button
+          type="submit"
+          label={loading ? "Publicando…" : isEditing ? "Guardar cambios" : "Publicar partida"}
+          icon={isEditing ? "pi pi-check" : "pi pi-send"}
+          className="gm-btn gm-btn--primary"
+          loading={loading}
+        />
       </div>
-      <Toast ref={toast} />
-    </Card>
+    </form>
   );
-}
+}

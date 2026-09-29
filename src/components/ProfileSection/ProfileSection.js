@@ -4,7 +4,7 @@ import "./ProfileSection.css";
 // La usan el perfil propio y el diálogo de perfil de otros jugadores.
 export default function ProfileSection({ title, icon, action, className = "", children }) {
   return (
-    <section className={`gm-section ${className}`.trim()}>
+    <section className={`gm-section gm-form ${className}`.trim()}>
       <header className="gm-section__header">
         {icon && (
           <span className="gm-section__icon" aria-hidden="true">

@@ -16,6 +16,7 @@ import "./styles/layout.css";
 import "./styles/confirm.css";
 import "./styles/dialog.css";
 import "./styles/buttons.css";
+import "./styles/forms.css";
 
 function App() {
   // UI State

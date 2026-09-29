@@ -10,7 +10,8 @@ export const useCreatePost = ({
 }) => {
 
   const [game, setGame] = useState({});
-  const [players, setPlayers] = useState("");
+  // Jugadores que faltan: número (los posts viejos lo guardaban como texto)
+  const [players, setPlayers] = useState(1);
   const [comments, setComments] = useState("");
   const [platform, setPlatform] = useState("");
   const [multiplatform, setMultiplatform] = useState(false);
@@ -18,7 +19,7 @@ export const useCreatePost = ({
 
   const resetForm = useCallback(() => {
     setGame({});
-    setPlayers("");
+    setPlayers(1);
     setComments("");
     setPlatform("");
     setMultiplatform(false);
@@ -32,7 +33,7 @@ export const useCreatePost = ({
 
     setGame(editingPost.game || "");
     setPlatform(editingPost.platform || "");
-    setPlayers(editingPost.playersNeeded || "");
+    setPlayers(Number(editingPost.playersNeeded) || 1);
     setComments(editingPost.comments || "");
     setMultiplatform(editingPost.multiplatform ?? false);
   }, [editingPost, resetForm]);
