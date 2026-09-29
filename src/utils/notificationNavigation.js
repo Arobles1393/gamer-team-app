@@ -5,6 +5,9 @@ const notificationRoutes = {
   interested: (notification, navigate) =>
     navigate(`/post/${notification.relatedId}`),
 
+  friend_accepted: (_notification, navigate) =>
+    navigate("/friends"),
+
   message: (notification, navigate) =>
     navigate("/chat", {
       state: {

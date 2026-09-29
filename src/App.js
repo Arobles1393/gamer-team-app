@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom"
 import "./styles/variables.css";
 import "./styles/theme.css";
 import "./styles/layout.css";
+import "./styles/confirm.css";
 
 function App() {
   // UI State
@@ -27,7 +28,7 @@ function App() {
 
   // Hooks
   const user = useCurrentUser();
-  const { notifications } = useNotifications(user, { limitCount: 10 });
+  const { notifications, loading: loadingNotifications } = useNotifications(user, { limitCount: 10 });
   // Badge y punto rosa en "Chats" del rail: cuentan todas las no leídas, no solo las 10 del overlay
   const { unreadCount, hasUnreadMessages } = useUnreadNotifications(user);
   useUserPresence(user);
@@ -54,6 +55,12 @@ function App() {
     );
   };
 
+  const handleMarkAllNotificationsAsRead = () => {
+    return notificationService.markAllNotificationsAsRead(
+      user.uid
+    );
+  };
+
   if (!user) {
     return (
       <Auth/>
@@ -76,9 +83,12 @@ function App() {
       <NotificationOverlay
         notificationRef={notificationRef}
         notifications={notifications}
+        loading={loadingNotifications}
+        unreadCount={unreadCount}
         onAccept={handleAcceptFriendRequest}
         onReject={handleRejectFriendRequest}
         onMarkAsRead={handleMarkNotificationAsRead}
+        onMarkAllAsRead={handleMarkAllNotificationsAsRead}
       />
       <CreatePostDialog
         visible={showCreatePost}

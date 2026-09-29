@@ -1,184 +1,211 @@
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Avatar } from "primereact/avatar";
-import { Card } from "primereact/card";
-import { Button } from "primereact/button";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { Toast } from "primereact/toast";
+import NotificationItem from "./NotificationItem";
+import NotificationItemSkeleton from "./NotificationItemSkeleton";
+import NotificationsHeader from "./NotificationsHeader";
+import NotificationsFilters from "./NotificationsFilters";
+import NotificationsEmptyState from "./NotificationsEmptyState";
 import { notificationService } from "../../services/notifications";
 import { friendService } from "../../services/friends";
-import { useNotifications, useUserProfile } from "../../hooks";
-import { navigateNotification, formatDates, getNotificationText } from "../../utils";
-import "./Notifications.css";
+import { useNotifications } from "../../hooks";
+import { navigateNotification, formatDates } from "../../utils";
 import { useCurrentUser } from "../../context";
+import "../Posts/Feed.css";
+import "./Notifications.css";
 
-function NotificationCard({
-  notification,
-  onClick,
-  onAccept,
-  onReject
-}) {
-  const { userData: sender } = useUserProfile(notification.senderId);
+const DAY_MS = 24 * 60 * 60 * 1000;
 
-  const { title, text } = getNotificationText(
-    notification.type,
-    sender?.username || "Alguien"
-  );
+const isPendingRequest = (notification) =>
+  notification.type === "friend_request" && notification.status === "pending";
 
-  return (
-    <Card
-      className={`notifications__card ${
-        notification.read
-          ? "notifications__card--read"
-          : ""
-      }`}
-      onClick={() => onClick(notification)}
-    >
-      <div className="notifications__content">
-        <div className="notifications__sender">
-          <Avatar
-            image={sender?.avatar}
-            label={sender?.username?.charAt(0)}
-            shape="circle"
-          />
+const FILTER_FNS = {
+  all: () => true,
+  unread: (notification) => !notification.read,
+  requests: isPendingRequest
+};
 
-          <div className="notifications__info">
-            <strong className="notifications__title">
-              {title}
-            </strong>
+const getSectionLabel = (timestamp) => {
+  const date = formatDates.toDate(timestamp);
+  if (!date) return "Anteriores";
 
-            <p className="notifications__text">
-              {text}
-            </p>
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
 
-            <small className="notifications__date">
-              {formatDates.formatDateN(notification.createdAt)}
-            </small>
-          </div>
-        </div>
+  const diff = startOfToday - date;
 
-        {notification.type === "friend_request" &&
-          notification.status === "pending" && (
-          <div className="notifications__notification-actions">
-            <Button
-              label="Aceptar"
-              icon="pi pi-check"
-              onClick={(e) => {
-                e.stopPropagation();
-                onAccept(notification);
-              }}
-            />
+  if (diff <= 0) return "Hoy";
+  if (diff <= DAY_MS) return "Ayer";
+  if (diff <= 6 * DAY_MS) return "Esta semana";
+  return "Anteriores";
+};
 
-            <Button
-              label="Rechazar"
-              icon="pi pi-times"
-              severity="danger"
-              onClick={(e) => {
-                e.stopPropagation();
-                onReject(notification);
-              }}
-            />
-          </div>
-        )}
+// Vienen ordenadas por fecha desc: basta con cortar cuando cambia la sección
+const groupBySection = (notifications) =>
+  notifications.reduce((sections, notification) => {
+    const label = getSectionLabel(notification.createdAt);
+    const last = sections[sections.length - 1];
 
-        {notification.type === "friend_request" &&
-          notification.status === "accepted" && (
-          <span className="notifications__status notifications__status--accepted">
-            ✅ Aceptada
-          </span>
-        )}
+    if (last?.label === label) {
+      last.items.push(notification);
+    } else {
+      sections.push({ label, items: [notification] });
+    }
 
-        {notification.type === "friend_request" &&
-          notification.status === "rejected" && (
-          <span className="notifications__status notifications__status--rejected">
-            ❌ Rechazada
-          </span>
-        )}
-      </div>
-    </Card>
-  );
-}
+    return sections;
+  }, []);
 
 export default function Notifications() {
   const user = useCurrentUser();
-
   const navigate = useNavigate();
+  const toast = useRef(null);
+  const [filter, setFilter] = useState("all");
+  const [markingAll, setMarkingAll] = useState(false);
 
-  const { notifications } = useNotifications(user, { limitCount: null });
+  const { notifications, loading, error, retry } = useNotifications(user, { limitCount: null });
 
-  const handleMarkAllAsRead = () => {
-    return notificationService.markAllNotificationsAsRead(user.uid);
-  };
+  const counts = useMemo(() => ({
+    all: notifications.length,
+    unread: notifications.filter(FILTER_FNS.unread).length,
+    requests: notifications.filter(FILTER_FNS.requests).length
+  }), [notifications]);
 
-  const handleAcceptFriendRequest = (notification) => {
-    return friendService.acceptFriendRequest(notification, user);
-  };
+  const sections = useMemo(
+    () => groupBySection(notifications.filter(FILTER_FNS[filter])),
+    [notifications, filter]
+  );
 
-  const handleRejectFriendRequest = (notification) => {
-    return friendService.rejectFriendRequest(notification);
-  };
+  const showError = useCallback((detail) => {
+    toast.current?.show({
+      severity: "error",
+      summary: "Error",
+      detail,
+      life: 3000
+    });
+  }, []);
 
-  const handleNotificationClick = async (notification) => {
-
-    if (notification.type === "friend_request") {
-      return;
-    }
-
+  const handleOpenNotification = useCallback((notification) => {
     if (!notification.read) {
-      await notificationService.markNotificationAsRead(notification.id);
+      notificationService.markNotificationAsRead(notification.id).catch((error) => {
+        console.error("Error marcando la notificación como leída:", error);
+      });
     }
 
     navigateNotification(notification, navigate);
+  }, [navigate]);
+
+  const handleAcceptFriendRequest = useCallback((notification) => {
+    return friendService.acceptFriendRequest(notification, user);
+  }, [user]);
+
+  const handleRejectFriendRequest = useCallback((notification) => {
+    return friendService.rejectFriendRequest(notification);
+  }, []);
+
+  const handleMarkAllAsRead = async () => {
+    setMarkingAll(true);
+
+    try {
+      await notificationService.markAllNotificationsAsRead(user.uid);
+    } catch (error) {
+      console.error("Error marcando todas como leídas:", error);
+      showError("No se pudieron marcar como leídas. Intenta de nuevo.");
+    } finally {
+      setMarkingAll(false);
+    }
   };
 
-  const handleDeleteAllNotifications = () => {
-    return notificationService.deleteAllNotifications(user.uid);
+  const handleDeleteAll = async () => {
+    try {
+      await notificationService.deleteAllNotifications(user.uid);
+      setFilter("all");
+    } catch (error) {
+      console.error("Error eliminando notificaciones:", error);
+      showError("No se pudieron eliminar las notificaciones. Intenta de nuevo.");
+    }
   };
 
   const confirmDeleteAll = () => {
     confirmDialog({
-      message: "¿Eliminar todas las notificaciones?",
-      header: "Confirmar",
-      icon: "pi pi-exclamation-triangle",
-      accept: handleDeleteAllNotifications
+      header: "Eliminar notificaciones",
+      message: "Se eliminarán todas tus notificaciones. Esta acción no se puede deshacer.",
+      icon: "pi pi-trash",
+      acceptLabel: "Eliminar todas",
+      rejectLabel: "Cancelar",
+      defaultFocus: "reject",
+      className: "gm-confirm",
+      acceptClassName: "gm-confirm__accept",
+      rejectClassName: "gm-confirm__reject",
+      style: { width: "440px" },
+      breakpoints: { "640px": "92vw" },
+      accept: handleDeleteAll
     });
   };
 
-  return (
-    <div className="notifications">
-      <h2>Notificaciones</h2>
+  const renderResults = () => {
+    if (error) {
+      return <NotificationsEmptyState variant="error" onAction={retry} />;
+    }
 
-      {notifications.length === 0 ? (
-        <p>No tienes notificaciones</p>
-      ) : (
-        <>
-          <div className="notifications__actions">
-            <Button
-              label="Marcar todas como leídas"
-              icon="pi pi-check"
-              outlined
-              onClick={handleMarkAllAsRead}
-            />
+    if (loading) {
+      return (
+        <ul className="notif-list notif-list--card" aria-busy="true" aria-label="Cargando notificaciones">
+          {Array.from({ length: 5 }, (_, i) => <NotificationItemSkeleton key={i} />)}
+        </ul>
+      );
+    }
 
-            <Button
-              label="Eliminar todas"
-              icon="pi pi-trash"
-              severity="danger"
-              outlined
-              onClick={confirmDeleteAll}
-            />
-          </div>
+    if (notifications.length === 0) {
+      return <NotificationsEmptyState variant="empty" />;
+    }
 
-          {notifications.map((notification) => (
-            <NotificationCard
+    if (sections.length === 0) {
+      return <NotificationsEmptyState variant={filter} onAction={() => setFilter("all")} />;
+    }
+
+    return sections.map((section) => (
+      <section key={section.label} className="notif-section">
+        <h2 className="notif-section__title">{section.label}</h2>
+        <ul className="notif-list notif-list--card">
+          {section.items.map((notification) => (
+            <NotificationItem
               key={notification.id}
               notification={notification}
-              onClick={handleNotificationClick}
+              onOpen={handleOpenNotification}
               onAccept={handleAcceptFriendRequest}
               onReject={handleRejectFriendRequest}
             />
           ))}
-        </>
+        </ul>
+      </section>
+    ));
+  };
+
+  const hasNotifications = !loading && !error && notifications.length > 0;
+
+  return (
+    <div className="feed notifications">
+      <NotificationsHeader
+        unreadCount={counts.unread}
+        hasNotifications={hasNotifications}
+        markingAll={markingAll}
+        onMarkAllAsRead={handleMarkAllAsRead}
+        onDeleteAll={confirmDeleteAll}
+      />
+
+      {hasNotifications && (
+        <NotificationsFilters
+          filter={filter}
+          onFilterChange={setFilter}
+          counts={counts}
+        />
       )}
+
+      {renderResults()}
+
       <ConfirmDialog />
+      <Toast ref={toast} />
     </div>
   );
-}
+}

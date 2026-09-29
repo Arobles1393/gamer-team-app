@@ -1,107 +1,122 @@
+import { useState } from "react";
+import { Avatar } from "primereact/avatar";
 import { Button } from "primereact/button";
-import { useNavigate } from "react-router-dom";
-import { navigateNotification } from "../../utils";
 import { useUserProfile } from "../../hooks";
-import { getNotificationText } from "../../utils";
+import { formatDates, getNotificationMeta } from "../../utils";
 
+const STATUS = {
+  accepted: { label: "Aceptada", icon: "pi-check" },
+  rejected: { label: "Rechazada", icon: "pi-times" }
+};
+
+/**
+ * Notificación de la página y del overlay (`compact`).
+ * Las solicitudes de amistad no navegan: se responden con Aceptar / Rechazar.
+ */
 export default function NotificationItem({
   notification,
+  compact = false,
+  onOpen,
   onAccept,
-  onReject,
-  onMarkAsRead,
-  closeOverlay
+  onReject
 }) {
-  const navigate = useNavigate();
-
   const { userData: sender } = useUserProfile(notification.senderId);
+  const [responding, setResponding] = useState(null);
 
-  const { title, text } = getNotificationText(
-    notification.type,
-    sender?.username || "Alguien"
+  const { icon, action } = getNotificationMeta(notification.type);
+  const username = sender?.username || "Alguien";
+  const unread = !notification.read;
+
+  const isFriendRequest = notification.type === "friend_request";
+  const isPending = isFriendRequest && notification.status === "pending";
+  const status = isFriendRequest ? STATUS[notification.status] : null;
+
+  const respond = async (kind, handler) => {
+    setResponding(kind);
+
+    try {
+      await handler(notification);
+    } catch (error) {
+      console.error("Error respondiendo la solicitud de amistad:", error);
+    } finally {
+      setResponding(null);
+    }
+  };
+
+  const className = [
+    "notif",
+    compact && "notif--compact",
+    unread && "notif--unread",
+    !isFriendRequest && "notif--clickable"
+  ].filter(Boolean).join(" ");
+
+  const content = (
+    <>
+      <span className="notif__avatar">
+        <Avatar
+          image={sender?.avatar}
+          label={sender?.avatar ? undefined : username.charAt(0).toUpperCase()}
+          shape="circle"
+          className="notif__avatar-img"
+        />
+        <span className={`notif__badge notif__badge--${notification.type}`} aria-hidden="true">
+          <i className={`pi ${icon}`} />
+        </span>
+      </span>
+
+      <span className="notif__body">
+        <span className="notif__text">
+          <strong className="notif__user">{username}</strong> {action}
+        </span>
+        <span className="notif__time">
+          {formatDates.formatDateN(notification.createdAt)}
+        </span>
+      </span>
+
+      {unread && (
+        <>
+          <span className="notif__dot" aria-hidden="true" />
+          <span className="notif__sr">(sin leer)</span>
+        </>
+      )}
+    </>
   );
 
-  const status = notification.status;
-
-  const isPendingFriendRequest =
-    notification.type === "friend_request" &&
-    status === "pending";
-
-  const isAccepted =
-    notification.type === "friend_request" &&
-    status === "accepted";
-
-  const isRejected =
-    notification.type === "friend_request" &&
-    status === "rejected";
-
-  const handleNotificationClick = async () => {
-    if (notification.type === "friend_request") return;
-
-    await onMarkAsRead(notification.id);
-
-    closeOverlay();
-
-    navigateNotification(notification, navigate);
-  };
-
-  const handleAccept = (event) => {
-    event.stopPropagation();
-    onAccept(notification);
-  };
-
-  const handleReject = (event) => {
-    event.stopPropagation();
-    onReject(notification);
-  };
-
   return (
-    <div
-      className="notification-item"
-      onClick={handleNotificationClick}
-    >
-      <div className="notification-item-content">
+    <li className={className}>
+      {isFriendRequest ? (
+        <div className="notif__main">{content}</div>
+      ) : (
+        <button type="button" className="notif__main" onClick={() => onOpen(notification)}>
+          {content}
+        </button>
+      )}
 
-        <div className="notification-content">
-          <strong>{title}</strong>
-
-          <p className="notification-text">
-            {text}
-          </p>
+      {isPending && (
+        <div className="notif__actions">
+          <Button
+            label="Aceptar"
+            className="notif__btn notif__btn--primary"
+            loading={responding === "accept"}
+            disabled={Boolean(responding)}
+            onClick={() => respond("accept", onAccept)}
+          />
+          <Button
+            label="Rechazar"
+            className="notif__btn notif__btn--ghost"
+            loading={responding === "reject"}
+            disabled={Boolean(responding)}
+            onClick={() => respond("reject", onReject)}
+          />
         </div>
+      )}
 
-        {isPendingFriendRequest && (
-          <div className="notification-actions">
-            <Button
-              icon="pi pi-check"
-              rounded
-              text
-              severity="success"
-              onClick={handleAccept}
-            />
-
-            <Button
-              icon="pi pi-times"
-              rounded
-              text
-              severity="danger"
-              onClick={handleReject}
-            />
-          </div>
-        )}
-
-        {isAccepted && (
-          <span className="notification-status notification-status-success">
-            ✅ Aceptada
-          </span>
-        )}
-
-        {isRejected && (
-          <span className="notification-status notification-status-danger">
-            ❌ Rechazada
-          </span>
-        )}
-
-      </div>
-    </div>
+      {status && (
+        <span className={`notif__status notif__status--${notification.status}`}>
+          <i className={`pi ${status.icon}`} aria-hidden="true" />
+          {status.label}
+        </span>
+      )}
+    </li>
   );
 }

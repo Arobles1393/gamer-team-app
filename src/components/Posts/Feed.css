@@ -160,6 +160,27 @@
   color: var(--gm-accent-text);
 }
 
+/* Contador dentro del chip (Amigos, Notificaciones) */
+.feed-chip__count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  margin-left: 10px;
+  padding: 0 7px;
+  border-radius: var(--gm-radius-pill);
+  background: rgba(124, 58, 237, 0.18);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--gm-label);
+}
+
+.feed-chip--active .feed-chip__count {
+  background: rgba(244, 63, 94, 0.22);
+  color: var(--gm-accent-text);
+}
+
 /* Chip-dropdown "Todos los juegos" (PrimeReact Dropdown) */
 .feed .feed-chip--select.p-dropdown {
   display: inline-flex;

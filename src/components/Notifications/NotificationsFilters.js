@@ -1,11 +1,12 @@
 const FILTERS = [
-  { value: "all", label: "Todos" },
-  { value: "online", label: "En línea" }
+  { value: "all", label: "Todas" },
+  { value: "unread", label: "Sin leer" },
+  { value: "requests", label: "Solicitudes" }
 ];
 
-export default function FriendsFilters({ filter, onFilterChange, counts }) {
+export default function NotificationsFilters({ filter, onFilterChange, counts }) {
   return (
-    <div className="feed-filters" role="group" aria-label="Filtrar amigos">
+    <div className="feed-filters" role="group" aria-label="Filtrar notificaciones">
       {FILTERS.map(({ value, label }) => {
         const active = filter === value;
 

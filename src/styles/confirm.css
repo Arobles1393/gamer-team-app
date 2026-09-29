@@ -1,0 +1,146 @@
+/* =====================================================
+   CONFIRMACIÓN — ConfirmDialog de PrimeReact con el tema GamerMatch.
+   Uso: confirmDialog({ className: "gm-confirm",
+                        acceptClassName: "gm-confirm__accept",
+                        rejectClassName: "gm-confirm__reject", ... })
+   Se monta en <body>: los selectores llevan .gm-confirm.p-dialog
+   para ganar al tema y a las reglas globales de index.css.
+   ===================================================== */
+.gm-confirm.p-dialog {
+  overflow: hidden;
+  border: 1px solid var(--gm-border);
+  border-radius: var(--gm-radius-card);
+  background: var(--gm-popover-bg);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.8), var(--gm-glow);
+  font-family: var(--gm-font-body);
+  color: var(--gm-text);
+}
+
+.gm-confirm.p-dialog .p-dialog-header {
+  padding: 22px 24px 8px;
+  border: none;
+  background: transparent;
+  color: var(--gm-text);
+}
+
+.gm-confirm.p-dialog .p-dialog-title {
+  font-family: var(--gm-font-display);
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.gm-confirm.p-dialog .p-dialog-header-icon {
+  color: var(--gm-muted);
+}
+
+.gm-confirm.p-dialog .p-dialog-header-icon:enabled:hover {
+  background: rgba(124, 58, 237, 0.14);
+  color: var(--gm-text);
+}
+
+.gm-confirm.p-dialog .p-dialog-header-icon:focus-visible {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+.gm-confirm.p-dialog .p-dialog-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 8px 24px 22px;
+  background: transparent;
+  color: var(--gm-muted);
+}
+
+.gm-confirm.p-dialog .p-confirm-dialog-icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--gm-accent-soft);
+  font-size: 18px;
+  color: var(--gm-accent-text);
+}
+
+.gm-confirm.p-dialog .p-confirm-dialog-message {
+  margin: 0;
+  align-self: center;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.gm-confirm.p-dialog .p-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 0 24px 22px;
+  border: none;
+  background: transparent;
+}
+
+.gm-confirm.p-dialog .p-dialog-footer .p-button {
+  width: auto;
+  height: 42px;
+  margin: 0;
+  padding: 0 20px;
+  border-radius: var(--gm-radius-pill);
+  font-family: var(--gm-font-body);
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: none;
+  transition: filter 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.gm-confirm.p-dialog .p-dialog-footer .p-button .p-button-label {
+  font-weight: 600;
+}
+
+/* index.css escala todos los .p-button en hover: aquí no */
+.gm-confirm.p-dialog .p-dialog-footer .p-button:hover {
+  transform: none;
+}
+
+.gm-confirm.p-dialog .p-dialog-footer .p-button:focus-visible {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 2px;
+}
+
+.gm-confirm.p-dialog .gm-confirm__reject.p-button {
+  border: 1px solid var(--gm-border);
+  background: transparent;
+  color: var(--gm-label);
+}
+
+.gm-confirm.p-dialog .gm-confirm__reject.p-button:enabled:hover {
+  border-color: var(--gm-label);
+  background: rgba(124, 58, 237, 0.14);
+  color: var(--gm-text);
+}
+
+.gm-confirm.p-dialog .gm-confirm__accept.p-button,
+.gm-confirm.p-dialog .gm-confirm__accept.p-button:enabled:hover {
+  border: none;
+  background: var(--gm-accent);
+  color: #fff;
+}
+
+.gm-confirm.p-dialog .gm-confirm__accept.p-button {
+  box-shadow: var(--gm-cta-shadow);
+}
+
+.gm-confirm.p-dialog .gm-confirm__accept.p-button:enabled:hover {
+  filter: brightness(1.1);
+}
+
+@media (max-width: 767px) {
+  .gm-confirm.p-dialog .p-dialog-footer .p-button {
+    flex: 1;
+  }
+}

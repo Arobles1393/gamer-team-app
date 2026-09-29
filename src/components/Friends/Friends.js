@@ -11,7 +11,6 @@ import { isOnline } from "../../utils";
 import { useCurrentUser } from "../../context";
 import "../Posts/Feed.css";
 import "../FindPlayers/FindPlayers.css";
-import "./Friends.css";
 
 // Primero los que están en línea, luego por nombre
 const compareFriends = (a, b) =>
