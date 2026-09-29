@@ -38,6 +38,7 @@ export default function AppHeader({
         <RailButton to="/findPlayers" icon="pi-search" label="Buscar jugadores" />
         <RailButton to="/friends" icon="pi-users" label="Amigos" />
         <RailButton to="/chat" icon="pi-comments" label="Chats" dot={hasUnreadMessages} />
+        <RailButton to="/news" icon="pi-megaphone" label="Noticias" />
         <RailButton
           icon="pi-bell"
           label="Notificaciones"

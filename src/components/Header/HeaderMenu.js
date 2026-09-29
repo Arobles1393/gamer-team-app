@@ -1,5 +1,5 @@
 // Menú del avatar: solo lo que no está ya en el rail
-// (Inicio, Buscar jugadores, Amigos, Chats y Notificaciones van en el rail).
+// (Inicio, Buscar jugadores, Amigos, Chats, Noticias y Notificaciones van en el rail).
 export const createHeaderMenu = (
     navigate,
     onLogout
@@ -23,13 +23,6 @@ export const createHeaderMenu = (
     icon: "pi pi-flag",
     command: () => {
       navigate("/myparties");
-    }
-  },
-  {
-    label: "Noticias Gamer",
-    icon: "pi pi-megaphone",
-    command: () => {
-      navigate("/news");
     }
   },
   { separator: true },

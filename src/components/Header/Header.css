@@ -246,6 +246,29 @@
   }
 }
 
+/* Pantallas muy angostas: 7 elementos en la barra inferior */
+@media (max-width: 374px) {
+  .app-rail {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .rail-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .rail-btn .pi {
+    font-size: 18px;
+  }
+
+  .app-rail .app-rail__avatar.p-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .rail-btn,
   .app-rail .app-rail__avatar.p-avatar {
