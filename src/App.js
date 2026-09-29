@@ -11,6 +11,8 @@ import { CreatePostDialog } from "./components/Posts";
 import { Auth } from "./components/Auth";
 import { useNavigate } from "react-router-dom"
 import "./styles/variables.css";
+import "./styles/theme.css";
+import "./styles/layout.css";
 
 function App() {
   // UI State
@@ -27,6 +29,11 @@ function App() {
   const user = useCurrentUser();
   const { notifications, unreadCount } = useNotifications(user, { limitCount: 10 });
   useUserPresence(user);
+
+  // Punto rosa en "Chats" del rail: hay notificaciones de mensaje sin leer
+  const hasUnreadMessages = notifications.some(
+    (notification) => notification.type === "message" && !notification.read
+  );
 
   // UI Handlers
   const handleToggleNotifications = (e) => { notificationRef.current?.toggle(e); }
@@ -65,10 +72,9 @@ function App() {
     <>
       <AppHeader
         unreadCount={unreadCount}
+        hasUnreadMessages={hasUnreadMessages}
         items={items}
         onToggleNotifications={handleToggleNotifications}
-        onCreatePost={() => setShowCreatePost(true)}
-        onHome={() => navigate("/")}
       />
       <NotificationOverlay
         notificationRef={notificationRef}
@@ -83,14 +89,14 @@ function App() {
         onHide={handleCloseCreatePost}
         onClose={handleCloseCreatePost}
       />
-      <div className="app-content">
+      <main className="app-content">
         <AppRoutes
           setEditingPost={setEditingPost}
           setShowCreatePost={setShowCreatePost}
         />
-      </div>
+      </main>
     </>
   );
 }
 
-export default App;
+export default App;

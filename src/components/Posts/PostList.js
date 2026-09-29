@@ -5,6 +5,10 @@ import { postService } from "../../services/posts";
 import { confirmDeletePost } from "../../utils/confirmDeletePost";
 import PostCard from "./PostCard";
 import PostFilters from "./PostFilters";
+import FeedHeader from "./FeedHeader";
+import PostCardSkeleton from "./PostCardSkeleton";
+import FeedEmptyState from "./FeedEmptyState";
+import "./Feed.css";
 import { UserProfileDialog } from "../UserProfile";
 import { useFriendStatus, usePosts, useInterestedPosts, useFilteredPosts, usePostFilters, useProfileChat, usePostInterest,
   useFriendRequest } from "../../hooks";
@@ -16,7 +20,8 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
 
   const {
     posts: allPosts,
-    title
+    title,
+    loading
   } = usePosts(
     user,
     onlyMine,
@@ -38,10 +43,10 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
     setFilterGame,
     filterPlatform,
     setFilterPlatform,
-    gameOptions,
-    platformOptions
+    gameOptions
   } = usePostFilters(posts);
 
+  const [search, setSearch] = useState("");
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
   const toast = useRef(null);
@@ -86,6 +91,21 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
     filterGame,
     filterPlatform
   );
+
+  // Búsqueda por nombre de juego desde la top bar
+  const visiblePosts = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (!term) return filteredPosts;
+    return filteredPosts.filter((post) => post.game?.toLowerCase().includes(term));
+  }, [filteredPosts, search]);
+
+  const hasFilters = Boolean(filterGame || filterPlatform || search.trim());
+
+  const handleClearFilters = () => {
+    setFilterGame(null);
+    setFilterPlatform(null);
+    setSearch("");
+  };
 
   const {
     handleChat
@@ -132,30 +152,44 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
   };
 
   return (
-    <div>
-      <PostFilters
+    <div className="feed">
+      <FeedHeader
         title={title}
-        total={filteredPosts.length}
+        search={search}
+        onSearchChange={setSearch}
+        onCreatePost={() => setShowCreatePost(true)}
+      />
+      <PostFilters
         filterGame={filterGame}
         onGameChange={setFilterGame}
         filterPlatform={filterPlatform}
         onPlatformChange={setFilterPlatform}
         gameOptions={gameOptions}
-        platformOptions={platformOptions}
       />
-      <div className="post-grid">
-        {filteredPosts.map((post) => (
-          <PostCard
-            key={post.id}
-            post={post}
-            interestedDoc={ interestedMap.get(`${post.id}_${user.uid}`) }
-            onToggleInterested={handleInterested}
-            onEdit={handleEditPost}
-            onDelete={confirmDelete}
-            onShowProfile={handleShowProfile}
-          />
-        ))}
-      </div>
+      {loading ? (
+        <div className="post-grid" aria-busy="true" aria-label="Cargando partidas">
+          {Array.from({ length: 6 }, (_, i) => <PostCardSkeleton key={i} />)}
+        </div>
+      ) : visiblePosts.length === 0 ? (
+        <FeedEmptyState
+          hasFilters={hasFilters}
+          onClearFilters={handleClearFilters}
+        />
+      ) : (
+        <div className="post-grid">
+          {visiblePosts.map((post) => (
+            <PostCard
+              key={post.id}
+              post={post}
+              interestedDoc={ interestedMap.get(`${post.id}_${user.uid}`) }
+              onToggleInterested={handleInterested}
+              onEdit={handleEditPost}
+              onDelete={confirmDelete}
+              onShowProfile={handleShowProfile}
+            />
+          ))}
+        </div>
+      )}
       <UserProfileDialog
         visible={showProfile}
         onHide={() => setShowProfile(false)}
@@ -168,4 +202,4 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
       <Toast ref={toast} />
     </div>
   );
-}
+}

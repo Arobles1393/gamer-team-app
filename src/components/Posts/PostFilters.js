@@ -1,63 +1,53 @@
 import { Dropdown } from "primereact/dropdown";
+import { platformLabels } from "../../utils";
+
+function FilterChip({ label, active, onClick }) {
+  return (
+    <button
+      type="button"
+      className={`feed-chip${active ? " feed-chip--active" : ""}`}
+      aria-pressed={active}
+      onClick={onClick}
+    >
+      {label}
+    </button>
+  );
+}
 
 export default function PostFilters({
-  title,
-  total,
   filterGame,
   onGameChange,
   filterPlatform,
   onPlatformChange,
-  gameOptions,
-  platformOptions
+  gameOptions
 }) {
+  // Clic en el chip activo lo desactiva (vuelve a "todas las plataformas")
+  const handlePlatformClick = (value) => {
+    onPlatformChange(filterPlatform === value ? null : value);
+  };
+
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: "1rem"
-      }}
-    >
-      <h2 style={{ margin: 0 }}>
-        {title}
+    <div className="feed-filters" role="group" aria-label="Filtros">
+      <Dropdown
+        value={filterGame}
+        options={gameOptions}
+        onChange={(e) => onGameChange(e.value)}
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Todos los juegos"
+        className="feed-chip feed-chip--select"
+        panelClassName="feed-select-panel"
+        aria-label="Filtrar por juego"
+      />
 
-        <span
-          style={{
-            marginLeft: "8px",
-            color: "#666",
-            fontSize: "16px"
-          }}
-        >
-          ({total})
-        </span>
-      </h2>
-
-      <div
-        style={{
-          display: "flex",
-          gap: "1rem",
-          marginBottom: "1rem"
-        }}
-      >
-        <Dropdown
-          value={filterGame}
-          options={gameOptions}
-          onChange={(e) => onGameChange(e.value)}
-          optionLabel="label"
-          optionValue="value"
-          placeholder="🎮 Juego"
+      {Object.entries(platformLabels).map(([value, label]) => (
+        <FilterChip
+          key={value}
+          label={label}
+          active={filterPlatform === value}
+          onClick={() => handlePlatformClick(value)}
         />
-
-        <Dropdown
-          value={filterPlatform}
-          options={platformOptions}
-          onChange={(e) => onPlatformChange(e.value)}
-          optionLabel="label"
-          optionValue="value"
-          placeholder="🕹 Plataforma"
-        />
-      </div>
+      ))}
     </div>
   );
 }

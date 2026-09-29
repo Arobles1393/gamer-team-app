@@ -1,22 +1,23 @@
 /* =====================================================
    AUTH — layout y controles compartidos por Login y Register.
+   Los colores base vienen de src/styles/theme.css (--gm-*).
    Los selectores llevan el prefijo .auth porque el tema de
    PrimeReact se carga después y ganaría a igual especificidad.
    ===================================================== */
 .auth {
-  --auth-bg: #0F0F23;
-  --auth-primary: #7C3AED;
-  --auth-accent: #F43F5E;
-  --auth-text: #E2E8F0;
-  --auth-muted: #94A3B8;
-  --auth-label: #A78BFA;
-  --auth-hint: #5E5C78;
-  --auth-icon: #7C7A94;
-  --auth-border: rgba(124, 58, 237, 0.35);
-  --auth-input-bg: rgba(30, 28, 53, 0.6);
-  --auth-focus-ring: 0 0 0 3px rgba(124, 58, 237, 0.25);
+  --auth-bg: var(--gm-bg);
+  --auth-primary: var(--gm-primary);
+  --auth-accent: var(--gm-accent);
+  --auth-text: var(--gm-text);
+  --auth-muted: var(--gm-muted);
+  --auth-label: var(--gm-label);
+  --auth-hint: var(--gm-hint);
+  --auth-icon: var(--gm-subtle);
+  --auth-border: var(--gm-border);
+  --auth-input-bg: var(--gm-surface);
+  --auth-focus-ring: var(--gm-focus-ring);
   --auth-placeholder: rgba(148, 163, 184, 0.6);
-  --auth-gradient: linear-gradient(135deg, var(--auth-primary), var(--auth-accent));
+  --auth-gradient: var(--gm-gradient);
 
   --auth-control-h: 46px;
   --auth-field-gap: 20px;

@@ -1,12 +1,34 @@
 import { useNavigate } from "react-router-dom";
-import { Card } from "primereact/card";
 import { Avatar } from "primereact/avatar";
 import { Button } from "primereact/button";
-import { memo, useMemo, useCallback } from "react";
+import { memo, useCallback } from "react";
 import PostPlatforms from "./PostPlatforms";
 import { useUserProfile } from "../../hooks";
+import { formatDates } from "../../utils";
 import "./PostCard.css";
 import { useCurrentUser } from "../../context";
+
+// Portadas decorativas para posts sin imagen; se elige una fija por post
+const COVER_VARIANTS = 4;
+
+const getCoverVariant = (id = "") => {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash + id.charCodeAt(i)) % COVER_VARIANTS;
+  }
+  return hash;
+};
+
+const formatPlayersNeeded = (count) => (
+  Number(count) === 1
+    ? "1 jugador necesario"
+    : `${count} jugadores necesarios`
+);
+
+const formatRelativeTime = (timestamp) => {
+  const text = formatDates.formatDateN(timestamp);
+  return text.charAt(0).toLowerCase() + text.slice(1);
+};
 
 function PostCard({
   post,
@@ -48,85 +70,94 @@ function PostCard({
     navigate(`/post/${post.id}`);
   }, [navigate, post.id]);
 
-  const gameTitle = post.logo ? (
-    <img src={post.logo} alt={post.game} className="logo-game" />
-  ) : (
-    <h3>{post.game}</h3>
-  );
-
-  const interestButton = useMemo(() => (
-    isInterested
-      ? { label: "Ya no me interesa", icon: "pi pi-times", severity: "danger" }
-      : { label: "Quiero jugar", icon: "pi pi-users", severity: "success" }
-  ), [isInterested]);
-
-  const interestedBadgeText = "Te interesa esta publicación";
+  const handleKeyDown = useCallback((event) => {
+    if (event.target === event.currentTarget && event.key === "Enter") {
+      handleOpenPost();
+    }
+  }, [handleOpenPost]);
 
   const isOwner = post.userId === user.uid;
 
   const showInterestedBadge = !isOwner && isInterested;
 
-  const imageSrc = post.image ?? "/imagenotfound.png";
-
   const usernameInitial = author?.username?.charAt(0)?.toUpperCase() || "?";
 
+  const relativeTime = formatRelativeTime(post.createdAt);
+
   return (
-    <Card className="rawg-card" onClick={handleOpenPost}>
-      <div className="rawg-image-container">
-        {showInterestedBadge && (
-          <div className="interested-badge-container">
-            <span className="joined-badge">{interestedBadgeText}</span>
-          </div>
+    <article
+      className="post-card"
+      onClick={handleOpenPost}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      aria-label={`Ver partida de ${post.game}`}
+    >
+      <div className={`post-card__cover post-card__cover--${getCoverVariant(post.id)}`}>
+        {post.image && (
+          <img src={post.image} alt="" className="post-card__image" loading="lazy" />
         )}
-        <img src={imageSrc} alt={post.game} className="rawg-image" />
+        {showInterestedBadge && (
+          <span className="post-card__interested">Te interesa</span>
+        )}
+        <PostPlatforms
+          multiplatform={post.multiplatform}
+          platforms={post.platforms}
+          platform={post.platform}
+        />
       </div>
-      <div>
-        {gameTitle}
-        <div className="rawg-meta">
-          <div className="meta-item">
-            <PostPlatforms
-              multiplatform={post.multiplatform}
-              platforms={post.platforms}
-              platform={post.platform}
-            />
-          </div>
-          <div className="meta-item meta-item-right">
-            <i className="pi pi-users"></i>
-            <span>{post.playersNeeded} jugadores</span>
-          </div>
-        </div>
-        <div className="rawg-extra">
-          {post.comments && <p>{post.comments}</p>}
-          <div className="user-row">
+
+      <div className="post-card__body">
+        <h3 className="post-card__title">{post.game}</h3>
+
+        <p className="post-card__meta">
+          <i className="pi pi-user" aria-hidden="true" />
+          {formatPlayersNeeded(post.playersNeeded)}
+        </p>
+
+        <div className="post-card__author">
+          <button
+            type="button"
+            className="post-card__author-btn"
+            onClick={handleShowProfile}
+          >
             <Avatar
               image={author?.avatar}
-              label={usernameInitial}
+              label={author?.avatar ? null : usernameInitial}
               shape="circle"
-              className="clickable-avatar"
-              onClick={handleShowProfile}
+              className="post-card__avatar"
             />
-            <span>{author?.username}</span>
-          </div>
-          <div className="post-actions">
-            {isOwner ? (
-              <>
-                <Button label="Editar" icon="pi pi-pencil" severity="success" size="small" onClick={handleEdit} />
-                <Button label="Eliminar" icon="pi pi-trash" severity="danger" size="small" onClick={handleDelete} />
-              </>
-            ) : (
+            <span className="post-card__username">{author?.username}</span>
+          </button>
+          {relativeTime && (
+            <span className="post-card__time">· {relativeTime}</span>
+          )}
+        </div>
+
+        <div className="post-card__actions">
+          {isOwner ? (
+            <>
               <Button
-                label={interestButton.label}
-                icon={interestButton.icon}
-                severity={interestButton.severity}
-                size="small"
-                onClick={handleInterest}
+                label="Editar"
+                className="post-card__btn post-card__btn--outline"
+                onClick={handleEdit}
               />
-            )}
-          </div>
+              <Button
+                label="Eliminar"
+                className="post-card__btn post-card__btn--danger"
+                onClick={handleDelete}
+              />
+            </>
+          ) : (
+            <Button
+              label={isInterested ? "Ya no me interesa" : "Quiero jugar"}
+              className={`post-card__btn ${isInterested ? "post-card__btn--leave" : "post-card__btn--primary"}`}
+              onClick={handleInterest}
+            />
+          )}
         </div>
       </div>
-    </Card>
+    </article>
   );
 }
 
-export default memo(PostCard);
+export default memo(PostCard);

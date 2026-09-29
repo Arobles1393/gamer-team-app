@@ -1,0 +1,48 @@
+/* =====================================================
+   GamerMatch — tokens del tema dark/neon.
+   Compartidos por Auth, el rail de navegación y el feed.
+   ===================================================== */
+:root {
+  /* fondos */
+  --gm-bg: #0F0F23;
+  --gm-surface: rgba(30, 28, 53, 0.6);
+  --gm-surface-strong: rgba(30, 28, 53, 0.9);
+  --gm-rail-bg: rgba(20, 18, 40, 0.65);
+  --gm-popover-bg: #16152E;
+
+  /* marca */
+  --gm-primary: #7C3AED;
+  --gm-primary-soft: rgba(124, 58, 237, 0.22);
+  --gm-accent: #F43F5E;
+  --gm-accent-soft: rgba(244, 63, 94, 0.14);
+  --gm-accent-text: #FDA4AF;
+  --gm-danger: #EF4444;
+  --gm-gradient: linear-gradient(135deg, var(--gm-primary), var(--gm-accent));
+
+  /* texto */
+  --gm-text: #E2E8F0;
+  --gm-muted: #94A3B8;
+  --gm-subtle: #7C7A94;
+  --gm-hint: #5E5C78;
+  --gm-label: #A78BFA;
+
+  /* bordes y efectos */
+  --gm-border: rgba(124, 58, 237, 0.35);
+  --gm-border-soft: rgba(124, 58, 237, 0.2);
+  --gm-focus-ring: 0 0 0 3px rgba(124, 58, 237, 0.25);
+  --gm-glow: 0 18px 40px -18px rgba(124, 58, 237, 0.55);
+  --gm-cta-shadow: 0 10px 30px -10px rgba(244, 63, 94, 0.55);
+
+  /* tipografía */
+  --gm-font-display: "Russo One", sans-serif;
+  --gm-font-body: "Chakra Petch", sans-serif;
+
+  /* radios */
+  --gm-radius-control: 10px;
+  --gm-radius-card: 16px;
+  --gm-radius-pill: 999px;
+
+  /* layout */
+  --gm-rail-width: 88px;
+  --gm-bottom-bar-height: 68px;
+}

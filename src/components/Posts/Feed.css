@@ -1,0 +1,400 @@
+/* =====================================================
+   FEED — top bar, chips de filtro, grid y estados.
+   Prefijo .feed para ganar al tema de PrimeReact y a index.css.
+   ===================================================== */
+.feed {
+  font-family: var(--gm-font-body);
+  color: var(--gm-text);
+}
+
+/* ---------- TOP BAR ---------- */
+.feed-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 8px 0 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--gm-border-soft);
+}
+
+.feed-header__titles {
+  min-width: 0;
+}
+
+.feed-header__eyebrow {
+  display: block;
+  margin-bottom: 6px;
+  font-family: var(--gm-font-display);
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gm-label);
+}
+
+.feed .feed-header__title {
+  margin: 0;
+  font-family: var(--gm-font-display);
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: var(--gm-text);
+}
+
+.feed-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+/* Búsqueda (IconField + InputText) */
+.feed .feed-search {
+  width: 300px;
+}
+
+.feed .feed-search.p-icon-field-left > .p-input-icon:first-of-type {
+  left: 18px;
+  color: var(--gm-subtle);
+}
+
+.feed .feed-search .feed-search__input.p-inputtext {
+  width: 100%;
+  height: 48px;
+  padding: 0 18px 0 46px;
+  border: 1px solid var(--gm-border);
+  border-radius: var(--gm-radius-pill);
+  background: var(--gm-surface);
+  color: var(--gm-text);
+  font-family: var(--gm-font-body);
+  font-size: 15px;
+  box-shadow: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feed .feed-search .feed-search__input.p-inputtext::placeholder {
+  color: var(--gm-subtle);
+}
+
+.feed .feed-search .feed-search__input.p-inputtext:enabled:hover {
+  border-color: var(--gm-border);
+}
+
+.feed .feed-search .feed-search__input.p-inputtext:enabled:focus {
+  border-color: var(--gm-primary);
+  box-shadow: var(--gm-focus-ring);
+}
+
+/* Botón Publicar */
+.feed .feed-publish.p-button {
+  height: 48px;
+  padding: 0 26px;
+  border: none;
+  border-radius: var(--gm-radius-pill);
+  background: var(--gm-gradient);
+  color: #fff;
+  box-shadow: var(--gm-cta-shadow);
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.feed .feed-publish.p-button .p-button-label {
+  font-family: var(--gm-font-display);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.feed .feed-publish.p-button:enabled:hover {
+  background: var(--gm-gradient);
+  color: #fff;
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.feed .feed-publish.p-button:focus-visible {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 3px;
+  box-shadow: var(--gm-cta-shadow);
+}
+
+/* ---------- CHIPS DE FILTRO ---------- */
+.feed-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.feed-chip {
+  height: 42px;
+  padding: 0 22px;
+  border: 1px solid var(--gm-border-soft);
+  border-radius: var(--gm-radius-pill);
+  background: transparent;
+  font-family: var(--gm-font-body);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--gm-muted);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.feed-chip:hover {
+  border-color: var(--gm-border);
+  color: var(--gm-text);
+}
+
+.feed-chip:focus-visible {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 2px;
+}
+
+.feed-chip--active,
+.feed-chip--active:hover {
+  border-color: var(--gm-accent);
+  background: var(--gm-accent-soft);
+  color: var(--gm-accent-text);
+}
+
+/* Chip-dropdown "Todos los juegos" (PrimeReact Dropdown) */
+.feed .feed-chip--select.p-dropdown {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 8px 0 22px;
+  border: 1px solid var(--gm-border);
+  border-radius: var(--gm-radius-pill);
+  background: transparent;
+  box-shadow: none;
+}
+
+.feed .feed-chip--select.p-dropdown:not(.p-disabled):hover {
+  border-color: var(--gm-border);
+}
+
+.feed .feed-chip--select.p-dropdown:not(.p-disabled).p-focus {
+  border-color: var(--gm-primary);
+  box-shadow: var(--gm-focus-ring);
+}
+
+.feed .feed-chip--select .p-dropdown-label {
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: var(--gm-font-body);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  color: var(--gm-text);
+}
+
+.feed .feed-chip--select .p-dropdown-label.p-placeholder {
+  color: var(--gm-text);
+}
+
+.feed .feed-chip--select .p-dropdown-trigger {
+  width: 32px;
+  color: var(--gm-muted);
+}
+
+.feed .feed-chip--select .p-dropdown-trigger svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Panel del dropdown (se monta en <body>) */
+.feed-select-panel.p-dropdown-panel {
+  min-width: 220px;
+  border: 1px solid var(--gm-border);
+  border-radius: 12px;
+  background: var(--gm-popover-bg);
+  font-family: var(--gm-font-body);
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.7);
+}
+
+.feed-select-panel.p-dropdown-panel .p-dropdown-items {
+  padding: 6px;
+}
+
+.feed-select-panel.p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+  border-radius: 8px;
+  color: var(--gm-text);
+}
+
+.feed-select-panel.p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover,
+.feed-select-panel.p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled).p-focus {
+  background: rgba(124, 58, 237, 0.18);
+  color: var(--gm-text);
+}
+
+.feed-select-panel.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight,
+.feed-select-panel.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight.p-focus {
+  background: rgba(124, 58, 237, 0.35);
+  color: #fff;
+}
+
+/* ---------- GRID ---------- */
+.feed .post-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+}
+
+/* ---------- SKELETON ---------- */
+.post-card--skeleton {
+  cursor: default;
+}
+
+.post-card--skeleton:hover {
+  transform: none;
+  border-color: var(--gm-border-soft);
+  box-shadow: var(--gm-glow);
+}
+
+.post-card--skeleton .post-card__body {
+  gap: 14px;
+}
+
+.feed .feed-skeleton.p-skeleton {
+  background: rgba(124, 58, 237, 0.12);
+}
+
+.feed .feed-skeleton.p-skeleton::after {
+  background: linear-gradient(90deg, transparent, rgba(167, 139, 250, 0.12), transparent);
+}
+
+/* ---------- VACÍO ---------- */
+.feed-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 72px 24px;
+  border: 1px dashed var(--gm-border-soft);
+  border-radius: var(--gm-radius-card);
+  text-align: center;
+}
+
+.feed-empty__icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 18px;
+  border-radius: 16px;
+  background: var(--gm-primary-soft);
+  color: var(--gm-label);
+}
+
+.feed-empty__icon .pi {
+  font-size: 22px;
+}
+
+.feed-empty__title {
+  margin: 0 0 6px;
+  font-family: var(--gm-font-display);
+  font-size: 18px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: var(--gm-text);
+}
+
+.feed-empty__text {
+  margin: 0;
+  font-size: 15px;
+  color: var(--gm-muted);
+}
+
+.feed .feed-empty__btn.p-button {
+  margin-top: 22px;
+  height: 42px;
+  padding: 0 22px;
+  border: 1px solid var(--gm-border);
+  border-radius: var(--gm-radius-pill);
+  background: transparent;
+  color: var(--gm-label);
+  font-family: var(--gm-font-body);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.feed .feed-empty__btn.p-button:hover {
+  transform: none;
+}
+
+.feed .feed-empty__btn.p-button:enabled:hover {
+  border-color: var(--gm-label);
+  background: rgba(124, 58, 237, 0.14);
+  color: var(--gm-text);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 1279px) {
+  .feed .post-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .feed .feed-search {
+    width: 240px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .feed-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .feed .feed-search {
+    flex: 1;
+    width: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .feed-header {
+    gap: 16px;
+    padding-bottom: 18px;
+    margin-bottom: 18px;
+  }
+
+  .feed .feed-header__title {
+    font-size: 24px;
+  }
+
+  .feed .feed-publish.p-button {
+    padding: 0 18px;
+  }
+
+  /* Chips en una sola fila con scroll horizontal */
+  .feed-filters {
+    flex-wrap: nowrap;
+    margin: 0 -16px 22px;
+    padding: 0 16px 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .feed-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .feed-chip {
+    flex-shrink: 0;
+    padding: 0 18px;
+  }
+
+  .feed .post-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feed .feed-publish.p-button:enabled:hover {
+    transform: none;
+  }
+}
