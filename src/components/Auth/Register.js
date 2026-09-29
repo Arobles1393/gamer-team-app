@@ -1,32 +1,31 @@
-import { useRef, useState, useEffect } from "react";
-import { Card } from "primereact/card";
-import { InputText } from "primereact/inputtext";
-import { Password } from "primereact/password";
-import { Button } from "primereact/button";
+import { useRef, useState } from "react";
 import { Toast } from "primereact/toast";
-import { FloatLabel } from "primereact/floatlabel";
-import { Dropdown } from "primereact/dropdown";
 import { countries } from "../../data/countries";
 import { getAuthErrorMessage } from "../../utils/authErrors";
 import { authService } from "../../services/auth";
 import { profileService } from "../../services/profile";
+import {
+  AuthLayout,
+  AuthInput,
+  PasswordInput,
+  AuthSelect,
+  GradientButton,
+  AuthSwitch
+} from "./ui";
 
 export default function Register({ onToggleMode }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [phone, setPhone] = useState("");
-  const [visible, setVisible] = useState(false);
   const [region, setRegion] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const toast = useRef(null);
 
-  useEffect(() => {
-    setVisible(true);
-  }, []);
-
   const handleRegister = async () => {
+    if (loading) return;
+
     if (!email || !password || !username || !region) {
       toast.current?.show({
         severity: "warn",
@@ -76,77 +75,77 @@ export default function Register({ onToggleMode }) {
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-      <Card
-        title="Crear cuenta"
-        style={{
-          opacity: visible ? 1 : 0,
-          transform: visible ? "translateY(0)" : "translateY(30px)",
-          transition: "all 1.0s ease",
-          background: "rgba(255,255,255,0.1)",
-          color: "#fff"
-        }}
+    <>
+      <AuthLayout
+        compact
+        title="Crea tu cuenta"
+        subtitle="Únete a la comunidad y encuentra jugadores como tú."
+        tagline={"Tu próxima partida\nempieza aquí."}
+        onSubmit={handleRegister}
       >
-        <div className="p-fluid">
-          <FloatLabel style={{ marginBottom: "1.5rem" }}>
-            <InputText id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-            <label htmlFor="email">Correo</label>
-          </FloatLabel>
+        <AuthInput
+          id="email"
+          label="Correo"
+          type="email"
+          placeholder="tucorreo@ejemplo.com"
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-          <FloatLabel style={{ marginBottom: "1.5rem" }}>
-            <Password
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              feedback={false}
-              toggleMask
-            />
-            <label htmlFor="password">Contraseña</label>
-          </FloatLabel>
+        <PasswordInput
+          id="password"
+          label="Contraseña"
+          autoComplete="new-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-          <FloatLabel style={{ marginBottom: "1.5rem" }}>
-            <InputText id="username" value={username} onChange={(e) => setUsername(e.target.value)} />
-            <label htmlFor="username">Nickname</label>
-          </FloatLabel>
+        <AuthInput
+          id="username"
+          label="Nickname"
+          placeholder="Cómo te van a reconocer"
+          autoComplete="nickname"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
 
-          <FloatLabel style={{ marginBottom: "1.5rem" }}>
-            <InputText id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
-            <label htmlFor="phone">Teléfono (opcional)</label>
-          </FloatLabel>
+        <AuthInput
+          id="phone"
+          label="Teléfono"
+          hint="(opcional)"
+          type="tel"
+          placeholder="55 1234 5678"
+          autoComplete="tel"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+        />
 
-          <FloatLabel style={{ marginBottom: "1.5rem" }}>
-            <Dropdown
-              id="region"
-              value={region}
-              options={countries}
-              onChange={(e) => setRegion(e.value)}
-              optionLabel="label"
-              placeholder="Selecciona tu región"
-              filter
-            />
-            <label htmlFor="region">Región</label>
-          </FloatLabel>
+        <AuthSelect
+          id="region"
+          label="Región"
+          value={region}
+          options={countries}
+          onChange={(e) => setRegion(e.value)}
+          optionLabel="label"
+          placeholder="Selecciona tu región"
+          filter
+        />
 
-          <Button
-            label="Registrarse"
-            icon="pi pi-user-plus"
-            onClick={handleRegister}
-            disabled={!email || !password || !username || !region}
-            loading={loading}
-            className="p-button-success"
-            style={{ width: "100%", marginBottom: "1rem" }}
-          />
+        <GradientButton
+          label="Crear cuenta"
+          loading={loading}
+          disabled={!email || !password || !username || !region}
+        />
 
-          <Button
-            label="Ya tengo cuenta"
-            icon="pi pi-sign-in"
-            onClick={onToggleMode}
-            className="p-button-text"
-          />
-        </div>
-      </Card>
+        <AuthSwitch
+          question="¿Ya tienes cuenta?"
+          action="Iniciar sesión"
+          onClick={onToggleMode}
+        />
+      </AuthLayout>
 
       <Toast ref={toast} />
-    </div>
+    </>
   );
 }
