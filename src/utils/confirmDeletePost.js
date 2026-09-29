@@ -1,12 +1,10 @@
-import { confirmDialog } from "primereact/confirmdialog";
+import { confirmDestructive } from "./confirmDestructive";
 
 export const confirmDeletePost = ({ onAccept }) => {
-  confirmDialog({
-    message: "¿Seguro que quieres eliminar esta publicación?",
-    header: "Advertencia",
-    icon: "pi pi-exclamation-triangle",
-    acceptLabel: "Eliminar",
-    rejectLabel: "Cancelar",
-    accept: onAccept
+  confirmDestructive({
+    header: "Eliminar publicación",
+    message: "Se eliminará la partida y ya no aparecerá en el feed. Esta acción no se puede deshacer.",
+    acceptLabel: "Eliminar partida",
+    onAccept
   });
 };

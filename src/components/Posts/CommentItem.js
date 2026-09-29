@@ -1,49 +1,85 @@
+import { memo } from "react";
 import { Avatar } from "primereact/avatar";
-import { Button } from "primereact/button";
 import { useUserProfile } from "../../hooks";
+import { formatDates } from "../../utils";
 
-export default function CommentItem({
+function CommentItem({
   comment,
-  currentUserId,
+  isOwn,
+  isHost,
   onDelete,
   onOpenProfile
 }) {
   const { userData: author } = useUserProfile(comment.userId);
+  const username = author?.username || "Jugador";
+
+  const openProfile = () => onOpenProfile(comment.userId);
 
   return (
-    <div className="comment-card">
-      {comment.userId === currentUserId && (
-        <Button
-          icon="pi pi-times"
-          className="p-button-rounded p-button-text p-button-danger delete-comment-btn"
-          onClick={() => onDelete(comment.id)}
-        />
-      )}
-
-      <div className="comment-header">
+    <li className="comment">
+      <button
+        type="button"
+        className="comment__avatar-btn"
+        aria-label={`Ver perfil de ${username}`}
+        onClick={openProfile}
+      >
         <Avatar
           image={author?.avatar}
-          label={author?.username?.charAt(0).toUpperCase()}
+          label={author?.avatar ? undefined : username.charAt(0).toUpperCase()}
           shape="circle"
-          onClick={(e) => {
-            e.stopPropagation();
-            onOpenProfile(comment.userId);
-          }}
+          className="comment__avatar"
         />
-        <span>{author?.username}</span>
+      </button>
+
+      <div className="comment__body">
+        <div className="comment__header">
+          <button type="button" className="comment__author" onClick={openProfile}>
+            {username}
+          </button>
+          {isHost && <span className="comment__badge">Anfitrión</span>}
+          <span className="comment__time">
+            {formatDates.formatDateN(comment.createdAt)}
+          </span>
+
+          {isOwn && (
+            <button
+              type="button"
+              className="comment__delete"
+              aria-label="Eliminar comentario"
+              onClick={() => onDelete(comment.id)}
+            >
+              <i className="pi pi-trash" aria-hidden="true" />
+            </button>
+          )}
+        </div>
+
+        {comment.text && <p className="comment__text">{comment.text}</p>}
+
+        {comment.mediaType === "image" && (
+          <a
+            href={comment.mediaUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="comment__media-link"
+            aria-label="Abrir imagen en otra pestaña"
+          >
+            <img
+              src={comment.mediaUrl}
+              alt={`Imagen compartida por ${username}`}
+              loading="lazy"
+              className="comment__media"
+            />
+          </a>
+        )}
+
+        {comment.mediaType === "video" && (
+          <video controls preload="metadata" className="comment__media">
+            <source src={comment.mediaUrl} />
+          </video>
+        )}
       </div>
-
-      {comment.text && <p>{comment.text}</p>}
-
-      {comment.mediaType === "image" && (
-        <img src={comment.mediaUrl} alt={comment.game} className="comment-image" />
-      )}
-
-      {comment.mediaType === "video" && (
-        <video controls className="comment-video">
-          <source src={comment.mediaUrl} />
-        </video>
-      )}
-    </div>
+    </li>
   );
 }
+
+export default memo(CommentItem);

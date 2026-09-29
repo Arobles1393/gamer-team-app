@@ -3,6 +3,7 @@ export { getPlatformKey } from "./getPlatformKey";
 export { platformIcons } from "./platformIcons";
 export { formatDates } from "./formatDates";
 export { confirmDeletePost } from "./confirmDeletePost";
+export { confirmDestructive } from "./confirmDestructive";
 export { getAuthErrorMessage } from "./authErrors";
 export { getPlatform } from "./getPlatform";
 export { getLabel } from "./getLabel";

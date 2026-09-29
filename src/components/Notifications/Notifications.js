@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { ConfirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import NotificationItem from "./NotificationItem";
 import NotificationItemSkeleton from "./NotificationItemSkeleton";
@@ -10,7 +10,7 @@ import NotificationsEmptyState from "./NotificationsEmptyState";
 import { notificationService } from "../../services/notifications";
 import { friendService } from "../../services/friends";
 import { useNotifications } from "../../hooks";
-import { navigateNotification, formatDates } from "../../utils";
+import { navigateNotification, formatDates, confirmDestructive } from "../../utils";
 import { useCurrentUser } from "../../context";
 import "../Posts/Feed.css";
 import "./Notifications.css";
@@ -127,19 +127,11 @@ export default function Notifications() {
   };
 
   const confirmDeleteAll = () => {
-    confirmDialog({
+    confirmDestructive({
       header: "Eliminar notificaciones",
       message: "Se eliminarán todas tus notificaciones. Esta acción no se puede deshacer.",
-      icon: "pi pi-trash",
       acceptLabel: "Eliminar todas",
-      rejectLabel: "Cancelar",
-      defaultFocus: "reject",
-      className: "gm-confirm",
-      acceptClassName: "gm-confirm__accept",
-      rejectClassName: "gm-confirm__reject",
-      style: { width: "440px" },
-      breakpoints: { "640px": "92vw" },
-      accept: handleDeleteAll
+      onAccept: handleDeleteAll
     });
   };
 

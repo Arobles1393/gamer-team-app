@@ -52,7 +52,8 @@ const toggleInterested = async ({
   return true;
 };
 
-const subscribeToInterestCount = (postId, onSuccess, onError) => {
+// Ids de los usuarios interesados en un post, del primero al último en unirse
+const subscribeToPostInterested = (postId, onSuccess, onError) => {
   const q = query(
     collection(db, "post_interested"),
     where("postId", "==", postId)
@@ -60,7 +61,13 @@ const subscribeToInterestCount = (postId, onSuccess, onError) => {
 
   return onSnapshot(
     q,
-    (snapshot) => onSuccess(snapshot.size),
+    (snapshot) => {
+      const interested = snapshot.docs
+        .map((doc) => doc.data({ serverTimestamps: "estimate" }))
+        .sort((a, b) => (a.createdAt?.toMillis?.() ?? 0) - (b.createdAt?.toMillis?.() ?? 0));
+
+      onSuccess(interested.map((item) => item.userId));
+    },
     onError
   );
 };
@@ -101,7 +108,7 @@ const subscribeToUserInterests = (userId, onSuccess, onError) => {
 
 export const interestService = {
   toggleInterested,
-  subscribeToInterestCount,
+  subscribeToPostInterested,
   subscribeToUserInterest,
   subscribeToUserInterests
 };

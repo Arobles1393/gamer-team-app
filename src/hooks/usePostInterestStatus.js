@@ -2,18 +2,18 @@ import { useEffect, useState } from "react";
 import { interestService } from "../services/posts";
 
 export const usePostInterestStatus = (postId, userId) => {
-  const [interestedCount, setInterestedCount] = useState(0);
+  const [interestedUserIds, setInterestedUserIds] = useState([]);
   const [interestedDoc, setInterestedDoc] = useState(null);
 
   useEffect(() => {
     if (!postId) return;
 
-    const unsubscribe = interestService.subscribeToInterestCount(
+    const unsubscribe = interestService.subscribeToPostInterested(
       postId,
-      setInterestedCount,
+      setInterestedUserIds,
       (error) => {
-        console.error("Error obteniendo conteo de interesados:", error);
-        setInterestedCount(0);
+        console.error("Error obteniendo interesados:", error);
+        setInterestedUserIds([]);
       }
     );
 
@@ -37,7 +37,8 @@ export const usePostInterestStatus = (postId, userId) => {
   }, [postId, userId]);
 
   return {
-    interestedCount,
+    interestedUserIds,
+    interestedCount: interestedUserIds.length,
     isInterested: Boolean(interestedDoc),
     interestedDoc
   };

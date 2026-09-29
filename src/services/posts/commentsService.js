@@ -27,7 +27,11 @@ const subscribeToComments = (postId, onSuccess, onError) => {
   return onSnapshot(
     q,
     (snapshot) => {
-      onSuccess(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+      // "estimate": el comentario recién publicado ya trae hora aunque el servidor no haya respondido
+      onSuccess(snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data({ serverTimestamps: "estimate" })
+      })));
     },
     onError
   );

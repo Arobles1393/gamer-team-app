@@ -58,7 +58,10 @@ const AppRoutes = ({
 			<Route
 				path="/post/:id" 
 				element={
-					<PostDetail />
+					<PostDetail
+						setEditingPost={setEditingPost}
+						setShowCreatePost={setShowCreatePost}
+					/>
 				}
 			/>
 			<Route

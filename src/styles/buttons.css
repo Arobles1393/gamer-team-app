@@ -1,7 +1,7 @@
 /* =====================================================
    BOTONES — PrimeReact Button con el tema GamerMatch.
    Uso: className="gm-btn gm-btn--primary" | "gm-btn gm-btn--ghost"
-        | "gm-btn gm-btn--icon" (icono, acción destructiva)
+        | "gm-btn gm-btn--danger" | "gm-btn gm-btn--icon" (icono, acción destructiva)
    ===================================================== */
 .gm-btn.p-button {
   justify-content: center;
@@ -73,6 +73,19 @@
 }
 
 .gm-btn--icon.p-button:enabled:hover {
+  border-color: var(--gm-accent);
+  background: var(--gm-accent-soft);
+  color: #fff;
+}
+
+/* Acción destructiva o de salir (Eliminar, Ya no me interesa) */
+.gm-btn--danger.p-button {
+  border: 1px solid rgba(244, 63, 94, 0.45);
+  background: transparent;
+  color: var(--gm-accent-text);
+}
+
+.gm-btn--danger.p-button:enabled:hover {
   border-color: var(--gm-accent);
   background: var(--gm-accent-soft);
   color: #fff;
