@@ -1,6 +1,6 @@
 /* =====================================================
    FEED — top bar, chips de filtro, grid y estados.
-   Prefijo .feed para ganar al tema de PrimeReact y a index.css.
+   Prefijo .feed para ganar al tema de PrimeReact.
    ===================================================== */
 .feed {
   font-family: var(--gm-font-body);
@@ -339,10 +339,6 @@
   font-family: var(--gm-font-body);
   font-weight: 600;
   box-shadow: none;
-}
-
-.feed .feed-empty__btn.p-button:hover {
-  transform: none;
 }
 
 .feed .feed-empty__btn.p-button:enabled:hover {

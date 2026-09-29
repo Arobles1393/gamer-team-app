@@ -3,7 +3,7 @@
    Uso: <Dialog className="gm-dialog" maskClassName="gm-dialog-mask" …>
    `gm-dialog--bare`: sin header ni padding (el contenido pone los suyos).
    Se monta en <body>: los selectores llevan .gm-dialog.p-dialog
-   para ganar al tema y a las reglas globales de index.css.
+   para ganar al tema de PrimeReact, que se carga al final.
    ===================================================== */
 .gm-dialog-mask.p-component-overlay {
   background: rgba(8, 8, 20, 0.72);

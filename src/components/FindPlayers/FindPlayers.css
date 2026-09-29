@@ -81,12 +81,6 @@
   object-fit: cover;
 }
 
-/* index.css escala todos los .p-button / .p-avatar en hover: aquí no */
-.player-card .player-card__avatar.p-avatar:hover,
-.player-card .player-card__btn.p-button:hover {
-  transform: none;
-}
-
 .player-card__name {
   max-width: 100%;
   margin: 0;

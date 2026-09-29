@@ -2,7 +2,7 @@
    FORMULARIOS — campos y controles de PrimeReact con el tema.
    Van dentro de un contenedor .gm-form (las secciones de perfil
    ya lo son): el prefijo gana al tema de PrimeReact, que se carga
-   al final, y a las reglas globales de index.css.
+   al final.
    Clases: gm-field (+ __label, __hint, __error), gm-input
    (InputText / InputTextarea / input de AutoComplete), gm-select
    (Dropdown), gm-autocomplete y gm-panel (panel en <body>).

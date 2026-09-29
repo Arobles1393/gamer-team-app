@@ -80,12 +80,6 @@ button.notif__main:focus-visible {
   color: #fff;
 }
 
-/* index.css escala todos los .p-avatar / .p-button en hover: aquí no */
-.notif .notif__avatar-img.p-avatar:hover,
-.notif .p-button:hover {
-  transform: none;
-}
-
 .notif .notif__avatar-img.p-avatar img {
   width: 100%;
   height: 100%;
@@ -450,10 +444,6 @@ button.notif__main:focus-visible {
 
 .notifications .notifications__action.p-button .p-button-label {
   font-weight: 600;
-}
-
-.notifications .notifications__action.p-button:hover {
-  transform: none;
 }
 
 .notifications .notifications__action.p-button:enabled:hover {

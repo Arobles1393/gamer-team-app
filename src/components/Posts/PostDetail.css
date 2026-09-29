@@ -2,7 +2,7 @@
    DETALLE DE PARTIDA — hero con clip, columna principal
    (descripción + comentarios) y lateral (detalles + interesados).
    Las cards son ProfileSection; campos en forms.css, botones en buttons.css.
-   Prefijo .post-detail para ganar al tema de PrimeReact y a index.css.
+   Prefijo .post-detail para ganar al tema de PrimeReact.
    ===================================================== */
 .post-detail {
   font-family: var(--gm-font-body);
@@ -274,11 +274,6 @@
   font-size: 16px;
   line-height: 1;
   color: #fff;
-}
-
-/* index.css escala todos los .p-avatar en hover: aquí no */
-.post-detail .p-avatar:hover {
-  transform: none;
 }
 
 .post-detail .p-avatar img {

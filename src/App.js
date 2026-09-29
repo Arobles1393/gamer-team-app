@@ -10,7 +10,6 @@ import { AppRoutes } from "./routes";
 import { CreatePostDialog } from "./components/Posts";
 import { Auth } from "./components/Auth";
 import { useNavigate } from "react-router-dom"
-import "./styles/variables.css";
 import "./styles/theme.css";
 import "./styles/layout.css";
 import "./styles/confirm.css";

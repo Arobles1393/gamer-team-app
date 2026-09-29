@@ -1,7 +1,7 @@
 /* =====================================================
    CHATS — dos paneles (lista + conversación) a toda la altura.
    Reutiliza búsqueda, skeleton y estados vacíos de Feed.css.
-   Prefijo .chat para ganar al tema de PrimeReact y a index.css.
+   Prefijo .chat para ganar al tema de PrimeReact.
    ===================================================== */
 .chat {
   /* Alto de la pantalla menos el padding vertical de main.app-content */
@@ -45,12 +45,6 @@
   width: 42px;
   height: 42px;
   font-size: 16px;
-}
-
-/* index.css escala todos los .p-avatar / .p-button en hover: aquí no */
-.chat .chat-avatar .chat-avatar__img.p-avatar:hover,
-.chat .p-button:hover {
-  transform: none;
 }
 
 .chat .chat-avatar__img.p-avatar img {

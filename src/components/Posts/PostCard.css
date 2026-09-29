@@ -225,12 +225,6 @@
   transition: filter 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-/* index.css escala todos los .p-button / .p-avatar en hover: aquí no */
-.post-card .post-card__btn.p-button:hover,
-.post-card .post-card__avatar.p-avatar:hover {
-  transform: none;
-}
-
 .post-card .post-card__btn.p-button .p-button-label {
   font-weight: 400;
 }

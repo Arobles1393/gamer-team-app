@@ -1,7 +1,7 @@
 /* =====================================================
    HERO DE PERFIL — portada + avatar encimado + identidad.
    Lo usan Mi perfil y el diálogo de perfil de otros jugadores.
-   Prefijo .profile-hero para ganar al tema de PrimeReact y a index.css.
+   Prefijo .profile-hero para ganar al tema de PrimeReact.
    ===================================================== */
 .profile-hero {
   overflow: hidden;
@@ -93,12 +93,6 @@
   font-size: 44px;
   line-height: 1;
   color: #fff;
-}
-
-/* index.css escala todos los .p-avatar / .p-button en hover: aquí no */
-.profile-hero .profile-hero__avatar.p-avatar:hover,
-.profile-hero .p-button:hover {
-  transform: none;
 }
 
 .profile-hero .profile-hero__avatar.p-avatar img {

@@ -146,7 +146,6 @@
 }
 
 .app-rail .app-rail__avatar-btn:hover .app-rail__avatar.p-avatar {
-  transform: none;
   box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.25);
 }
 

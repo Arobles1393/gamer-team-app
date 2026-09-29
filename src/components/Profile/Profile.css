@@ -1,7 +1,7 @@
 /* =====================================================
    MI PERFIL — acciones del hero, grid de secciones y barra de guardar.
    El hero viene de ProfileHero.css y las secciones de ProfileSection.css.
-   Prefijo .profile-page para ganar al tema de PrimeReact y a index.css.
+   Prefijo .profile-page para ganar al tema de PrimeReact.
    ===================================================== */
 .profile-page {
   font-family: var(--gm-font-body);

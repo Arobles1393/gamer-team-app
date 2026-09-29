@@ -18,11 +18,6 @@
   font-weight: 600;
 }
 
-/* index.css escala todos los .p-button en hover: aquí no */
-.gm-btn.p-button:hover {
-  transform: none;
-}
-
 .gm-btn.p-button:focus-visible {
   outline: 2px solid var(--gm-label);
   outline-offset: 2px;
