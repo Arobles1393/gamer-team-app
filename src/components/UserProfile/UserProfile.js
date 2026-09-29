@@ -24,7 +24,7 @@ function UserProfileSkeleton() {
  * Perfil de solo lectura de un jugador (se abre en UserProfileDialog).
  * `actions` son los botones de amistad / mensaje que van en el hero.
  */
-export default function UserProfile({ userId, isOwnProfile = false, actions, onClose }) {
+export default function UserProfile({ userId, actions, onClose }) {
   const { userData } = useUserProfile(userId);
 
   if (!userData) {
@@ -38,7 +38,7 @@ export default function UserProfile({ userId, isOwnProfile = false, actions, onC
       <ProfileHero
         userData={userData}
         country={country}
-        eyebrow={isOwnProfile ? "Así ven tu perfil" : "Perfil de jugador"}
+        eyebrow="Perfil de jugador"
         presence={getPresenceLabel(userData.lastSeen)}
         online={isOnline(userData.lastSeen)}
         actions={actions}
@@ -62,7 +62,7 @@ export default function UserProfile({ userId, isOwnProfile = false, actions, onC
             </ProfileSection>
           )}
 
-          <SteamSection links={userData.links} isOwnProfile={isOwnProfile} />
+          <SteamSection links={userData.links} />
 
           <FavoriteGames games={userData.games} />
         </div>

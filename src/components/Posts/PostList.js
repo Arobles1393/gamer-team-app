@@ -11,7 +11,7 @@ import FeedEmptyState from "./FeedEmptyState";
 import "./Feed.css";
 import { UserProfileDialog } from "../UserProfile";
 import { useFriendStatus, usePosts, useInterestedPosts, useFilteredPosts, usePostFilters, useProfileChat, usePostInterest,
-  useFriendRequest } from "../../hooks";
+  useFriendRequest, useProfileDialog } from "../../hooks";
 import { useCurrentUser } from "../../context";
 
 export default function PostList({ setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
@@ -47,9 +47,14 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
   } = usePostFilters(posts);
 
   const [search, setSearch] = useState("");
-  const [selectedUserId, setSelectedUserId] = useState(null);
-  const [showProfile, setShowProfile] = useState(false);
   const toast = useRef(null);
+
+  const {
+    selectedUserId,
+    visible: showProfile,
+    openProfile,
+    closeProfile
+  } = useProfileDialog(user);
 
   const {
     friendStatus,
@@ -112,7 +117,7 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
   } = useProfileChat(
     user,
     selectedUserId,
-    () => setShowProfile(false),
+    closeProfile,
     () => {
       toast.current?.show({
         severity: "error",
@@ -145,11 +150,6 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
     selectedUserId,
     setFriendStatus
   );
-
-  const handleShowProfile = (userId) => {
-    setSelectedUserId(userId);
-    setShowProfile(true);
-  };
 
   return (
     <div className="feed">
@@ -185,14 +185,14 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
               onToggleInterested={handleInterested}
               onEdit={handleEditPost}
               onDelete={confirmDelete}
-              onShowProfile={handleShowProfile}
+              onShowProfile={openProfile}
             />
           ))}
         </div>
       )}
       <UserProfileDialog
         visible={showProfile}
-        onHide={() => setShowProfile(false)}
+        onHide={closeProfile}
         selectedUserId={selectedUserId}
         friendStatus={friendStatus}
         onSendFriendRequest={handleFriendRequest}

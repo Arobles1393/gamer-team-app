@@ -15,24 +15,11 @@ const FRIEND_BADGES = {
 
 function UserProfileActions({
   friendStatus,
-  isOwnProfile = false,
   onSendFriendRequest,
-  onChat,
-  onEditProfile
+  onChat
 }) {
   const [sendingRequest, setSendingRequest] = useState(false);
   const [openingChat, setOpeningChat] = useState(false);
-
-  if (isOwnProfile) {
-    return (
-      <Button
-        label="Editar mi perfil"
-        icon="pi pi-pencil"
-        className="gm-btn gm-btn--primary"
-        onClick={onEditProfile}
-      />
-    );
-  }
 
   const action = FRIEND_ACTIONS[friendStatus];
   const badge = FRIEND_BADGES[friendStatus];

@@ -1,6 +1,5 @@
 import { useParams } from "react-router-dom";
 import { useRef } from "react";
-import { useState } from "react";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import { UserProfileDialog } from "../UserProfile";
@@ -16,7 +15,8 @@ import {
   useUserProfile,
   useFriendStatus,
   useProfileChat,
-  useFriendRequest
+  useFriendRequest,
+  useProfileDialog
 } from "../../hooks";
 import { useCurrentUser } from "../../context";
 
@@ -40,8 +40,12 @@ export default function PostDetail() {
     console.error("Error al actualizar interés:", error);
   });
 
-  const [selectedUserId, setSelectedUserId] = useState(null);
-  const [showProfile, setShowProfile] = useState(false);
+  const {
+    selectedUserId,
+    visible: showProfile,
+    openProfile,
+    closeProfile
+  } = useProfileDialog(user);
 
   const toast = useRef(null);
 
@@ -53,7 +57,7 @@ export default function PostDetail() {
   const { handleChat } = useProfileChat(
     user,
     selectedUserId,
-    () => setShowProfile(false),
+    closeProfile,
     () => {
       toast.current?.show({
         severity: "error",
@@ -81,11 +85,6 @@ export default function PostDetail() {
   if (!post) {
     return null;
   }
-
-  const openProfile = (userId) => {
-    setSelectedUserId(userId);
-    setShowProfile(true);
-  };
 
   const handlePublish = async (comment, file) => {
     try {
@@ -176,7 +175,7 @@ export default function PostDetail() {
 
       <UserProfileDialog
         visible={showProfile}
-        onHide={() => setShowProfile(false)}
+        onHide={closeProfile}
         selectedUserId={selectedUserId}
         friendStatus={friendStatus}
         onSendFriendRequest={handleFriendRequest}
@@ -187,4 +186,4 @@ export default function PostDetail() {
       <Toast ref={toast} />
     </div>
   );
-}
+}

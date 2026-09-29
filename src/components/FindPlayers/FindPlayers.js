@@ -1,11 +1,11 @@
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Toast } from "primereact/toast";
 import { UserProfileDialog } from "../UserProfile";
 import PlayersHeader from "./PlayersHeader";
 import PlayerCard from "./PlayerCard";
 import PlayerCardSkeleton from "./PlayerCardSkeleton";
 import PlayersEmptyState from "./PlayersEmptyState";
-import { useFriendStatus, useProfileChat, useFriendRequest, usePlayerSearch } from "../../hooks";
+import { useFriendStatus, useProfileChat, useFriendRequest, usePlayerSearch, useProfileDialog } from "../../hooks";
 import { useCurrentUser } from "../../context";
 import "../Posts/Feed.css";
 import "./FindPlayers.css";
@@ -13,11 +13,16 @@ import "./FindPlayers.css";
 export default function FindPlayers() {
   const user = useCurrentUser();
   const [search, setSearch] = useState("");
-  const [selectedUserId, setSelectedUserId] = useState(null);
-  const [showProfile, setShowProfile] = useState(false);
   const toast = useRef(null);
 
   const { players, loading, error, retry } = usePlayerSearch(search, user?.uid);
+
+  const {
+    selectedUserId,
+    visible: showProfile,
+    openProfile,
+    closeProfile
+  } = useProfileDialog(user);
 
   const { friendStatus, setFriendStatus } = useFriendStatus(
     user,
@@ -27,7 +32,7 @@ export default function FindPlayers() {
   const { handleChat } = useProfileChat(
     user,
     selectedUserId,
-    () => setShowProfile(false),
+    closeProfile,
     () => {
       toast.current?.show({
         severity: "error",
@@ -43,11 +48,6 @@ export default function FindPlayers() {
     selectedUserId,
     setFriendStatus
   );
-
-  const openProfile = useCallback((playerId) => {
-    setSelectedUserId(playerId);
-    setShowProfile(true);
-  }, []);
 
   const hasSearch = Boolean(search.trim());
 
@@ -100,10 +100,7 @@ export default function FindPlayers() {
 
       <UserProfileDialog
         visible={showProfile}
-        onHide={() => {
-          setShowProfile(false);
-          setSelectedUserId(null);
-        }}
+        onHide={closeProfile}
         selectedUserId={selectedUserId}
         friendStatus={friendStatus}
         onSendFriendRequest={handleFriendRequest}

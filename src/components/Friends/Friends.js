@@ -6,7 +6,7 @@ import { PlayerCard, PlayerCardSkeleton } from "../FindPlayers";
 import FriendsHeader from "./FriendsHeader";
 import FriendsFilters from "./FriendsFilters";
 import FriendsEmptyState from "./FriendsEmptyState";
-import { useFriends, useUserProfiles, useFriendStatus, useProfileChat, useFriendRequest } from "../../hooks";
+import { useFriends, useUserProfiles, useFriendStatus, useProfileChat, useFriendRequest, useProfileDialog } from "../../hooks";
 import { isOnline } from "../../utils";
 import { useCurrentUser } from "../../context";
 import "../Posts/Feed.css";
@@ -22,16 +22,19 @@ export default function Friends() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
-  const [selectedUserId, setSelectedUserId] = useState(null);
-  const [showProfile, setShowProfile] = useState(false);
   const toast = useRef(null);
 
   const { friendIds, loading: loadingIds, error, retry } = useFriends(user);
   const { users: friends, loading: loadingProfiles } = useUserProfiles(friendIds);
 
-  const { friendStatus, setFriendStatus } = useFriendStatus(user, selectedUserId);
+  const {
+    selectedUserId,
+    visible: showProfile,
+    openProfile,
+    closeProfile
+  } = useProfileDialog(user);
 
-  const closeProfile = useCallback(() => setShowProfile(false), []);
+  const { friendStatus, setFriendStatus } = useFriendStatus(user, selectedUserId);
 
   const showChatError = useCallback((message) => {
     toast.current?.show({
@@ -54,11 +57,6 @@ export default function Friends() {
     selectedUserId,
     setFriendStatus
   );
-
-  const openProfile = useCallback((friendId) => {
-    setSelectedUserId(friendId);
-    setShowProfile(true);
-  }, []);
 
   const sortedFriends = useMemo(() => [...friends].sort(compareFriends), [friends]);
 
@@ -146,10 +144,7 @@ export default function Friends() {
 
       <UserProfileDialog
         visible={showProfile}
-        onHide={() => {
-          setShowProfile(false);
-          setSelectedUserId(null);
-        }}
+        onHide={closeProfile}
         selectedUserId={selectedUserId}
         friendStatus={friendStatus}
         onSendFriendRequest={handleFriendRequest}
