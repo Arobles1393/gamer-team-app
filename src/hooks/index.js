@@ -24,3 +24,4 @@ export * from "./usePostInterestStatus";
 export * from "./useFriends";
 export * from "./usePlayerSearch";
 export * from "./useUnreadNotifications";
+export * from "./useUserProfiles";

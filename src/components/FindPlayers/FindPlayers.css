@@ -184,12 +184,19 @@
   color: var(--gm-hint);
 }
 
-/* ---------- BOTÓN ---------- */
-.player-card .player-card__btn.p-button {
-  justify-content: center;
+/* ---------- BOTONES ---------- */
+.player-card__actions {
+  display: flex;
+  gap: 10px;
   width: 100%;
-  height: 44px;
   margin-top: auto;
+}
+
+.player-card .player-card__btn.p-button {
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+  height: 44px;
   border: 1px solid var(--gm-border);
   border-radius: var(--gm-radius-control);
   background: transparent;
@@ -210,6 +217,22 @@
   border-color: transparent;
   background: var(--gm-gradient);
   color: #fff;
+}
+
+/* Acción principal (Mensaje en Amigos) */
+.player-card .player-card__btn--primary.p-button,
+.player-card .player-card__btn--primary.p-button:enabled:hover {
+  border-color: transparent;
+  background: var(--gm-gradient);
+  color: #fff;
+}
+
+.player-card .player-card__btn--primary.p-button {
+  box-shadow: var(--gm-cta-shadow);
+}
+
+.player-card .player-card__btn--primary.p-button:enabled:hover {
+  filter: brightness(1.1);
 }
 
 .player-card .player-card__btn.p-button:focus-visible {

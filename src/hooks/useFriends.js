@@ -4,6 +4,8 @@ import { friendService } from "../services/friends";
 export const useFriends = (user) => {
   const [friendIds, setFriendIds] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
     if (!user) {
@@ -13,6 +15,7 @@ export const useFriends = (user) => {
     }
 
     setLoading(true);
+    setError(false);
 
     const unsubscribe = friendService.subscribeToFriends(
       user.uid,
@@ -23,15 +26,20 @@ export const useFriends = (user) => {
       (error) => {
         console.error("Error obteniendo amigos:", error);
         setFriendIds([]);
+        setError(true);
         setLoading(false);
       }
     );
 
     return unsubscribe;
-  }, [user]);
+  }, [user, retryKey]);
+
+  const retry = () => setRetryKey((key) => key + 1);
 
   return {
     friendIds,
-    loading
+    loading,
+    error,
+    retry
   };
 };

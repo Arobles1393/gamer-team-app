@@ -2,26 +2,16 @@ import { memo } from "react";
 import { Avatar } from "primereact/avatar";
 import { Button } from "primereact/button";
 import { countries } from "../../data/countries";
-import { formatDates } from "../../utils";
+import { formatDates, getLastSeenMs, isOnline } from "../../utils";
 
 const MAX_GAMES = 4;
-// La presencia se actualiza cada 30 s: 2 min de margen para "en línea"
-const ONLINE_WINDOW_MS = 2 * 60 * 1000;
-
-const getLastSeenMs = (lastSeen) => {
-  if (!lastSeen) return null;
-  if (lastSeen.toMillis) return lastSeen.toMillis();
-  if (lastSeen.seconds) return lastSeen.seconds * 1000;
-  return new Date(lastSeen).getTime() || null;
-};
 
 function PlayerStatus({ lastSeen }) {
-  const lastSeenMs = getLastSeenMs(lastSeen);
-  const online = lastSeenMs !== null && Date.now() - lastSeenMs < ONLINE_WINDOW_MS;
+  const online = isOnline(lastSeen);
 
   const label = online
     ? "En línea"
-    : lastSeenMs
+    : getLastSeenMs(lastSeen)
       ? `Visto hace ${formatDates.formatChatTime(lastSeen)}`
       : "Desconectado";
 
@@ -55,9 +45,11 @@ function PlayerGames({ games }) {
   );
 }
 
-function PlayerCard({ player, onShowProfile }) {
+// Con `onChat` (p. ej. en Amigos) muestra también el botón de mensaje
+function PlayerCard({ player, onShowProfile, onChat }) {
   const country = countries.find((c) => c.value === player.region);
   const openProfile = () => onShowProfile(player.id);
+  const openChat = () => onChat(player.id);
 
   return (
     <article className="player-card">
@@ -85,12 +77,22 @@ function PlayerCard({ player, onShowProfile }) {
 
         <PlayerGames games={player.games} />
 
-        <Button
-          label="Ver perfil"
-          className="player-card__btn"
-          aria-label={`Ver perfil de ${player.username}`}
-          onClick={openProfile}
-        />
+        <div className="player-card__actions">
+          {onChat && (
+            <Button
+              label="Mensaje"
+              className="player-card__btn player-card__btn--primary"
+              aria-label={`Enviar mensaje a ${player.username}`}
+              onClick={openChat}
+            />
+          )}
+          <Button
+            label="Ver perfil"
+            className="player-card__btn"
+            aria-label={`Ver perfil de ${player.username}`}
+            onClick={openProfile}
+          />
+        </div>
       </div>
     </article>
   );

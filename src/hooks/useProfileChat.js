@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { chatService } from "../services/chat";
 
@@ -9,12 +10,13 @@ export const useProfileChat = (
 ) => {
   const navigate = useNavigate();
 
-  const handleChat = async () => {
+  // Abre (o crea) el chat con cualquier usuario, p. ej. desde una card de amigo
+  const openChatWith = useCallback(async (otherUserId) => {
     try {
       const chatId = await chatService.createOrGetChat(
         user,
         {
-          uid: selectedUserId
+          uid: otherUserId
         }
       );
 
@@ -22,7 +24,7 @@ export const useProfileChat = (
         state: { chatId }
       });
 
-      onClose();
+      onClose?.();
     } catch (error) {
       console.error(
         "Error creando u obteniendo el chat:",
@@ -33,7 +35,10 @@ export const useProfileChat = (
         "No se pudo abrir el chat. Intenta de nuevo."
       );
     }
-  };
+  }, [user, navigate, onClose, onError]);
 
-  return { handleChat };
+  // Chat con el usuario del diálogo de perfil
+  const handleChat = () => openChatWith(selectedUserId);
+
+  return { handleChat, openChatWith };
 };
