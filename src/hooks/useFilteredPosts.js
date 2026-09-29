@@ -1,4 +1,19 @@
 import { useMemo } from "react";
+import { getPlatformKey } from "../utils";
+
+// Un post multiplataforma aparece en cada plataforma del juego según RAWG.
+// Si no tiene esa lista (juego escrito a mano), aparece en todas.
+const matchesPlatform = (post, platform) => {
+  if (!post.multiplatform) {
+    return post.platform === platform;
+  }
+
+  if (!post.platforms?.length) {
+    return true;
+  }
+
+  return post.platforms.some((name) => getPlatformKey(name) === platform);
+};
 
 export const useFilteredPosts = (
   posts,
@@ -11,7 +26,7 @@ export const useFilteredPosts = (
         !game || post.game === game;
 
       const matchPlatform =
-        !platform || post.platform === platform;
+        !platform || matchesPlatform(post, platform);
 
       return matchGame && matchPlatform;
     });
