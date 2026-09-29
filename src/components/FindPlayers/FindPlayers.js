@@ -1,21 +1,23 @@
-import { useEffect, useState } from "react";
-import { InputText } from "primereact/inputtext";
-import { Card } from "primereact/card";
-import { Avatar } from "primereact/avatar";
+import { useCallback, useRef, useState } from "react";
+import { Toast } from "primereact/toast";
 import { UserProfileDialog } from "../UserProfile";
-import { userService } from "../../services/users";
-import { useFriendStatus, useProfileChat, useFriendRequest } from "../../hooks";
+import PlayersHeader from "./PlayersHeader";
+import PlayerCard from "./PlayerCard";
+import PlayerCardSkeleton from "./PlayerCardSkeleton";
+import PlayersEmptyState from "./PlayersEmptyState";
+import { useFriendStatus, useProfileChat, useFriendRequest, usePlayerSearch } from "../../hooks";
 import { useCurrentUser } from "../../context";
+import "../Posts/Feed.css";
+import "./FindPlayers.css";
 
 export default function FindPlayers() {
   const user = useCurrentUser();
-  const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [chatError, setChatError] = useState(false);
+  const toast = useRef(null);
+
+  const { players, loading, error, retry } = usePlayerSearch(search, user?.uid);
 
   const { friendStatus, setFriendStatus } = useFriendStatus(
     user,
@@ -26,7 +28,14 @@ export default function FindPlayers() {
     user,
     selectedUserId,
     () => setShowProfile(false),
-    () => setChatError(true)
+    () => {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudo abrir el chat. Intenta de nuevo.",
+        life: 3000
+      });
+    }
   );
 
   const { handleFriendRequest } = useFriendRequest(
@@ -35,97 +44,59 @@ export default function FindPlayers() {
     () => setFriendStatus("pending")
   );
 
-  useEffect(() => {
-    const loadUsers = async () => {
-      if (!search.trim()) {
-        setUsers([]);
-        setLoading(false);
-        setError(false);
-        return;
-      }
-
-      setLoading(true);
-      setError(false);
-
-      try {
-        const data = await userService.searchUsers(search);
-
-        setUsers(data);
-      } catch (error) {
-        console.error("Error buscando jugadores:", error);
-
-        setUsers([]);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const timeout = setTimeout(
-      loadUsers,
-      300
-    );
-
-    return () => clearTimeout(timeout);
-  }, [search]);
-
-  const filteredUsers = users.filter(
-    (player) =>
-      player.id !== user?.uid &&
-      player.username?.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const openProfile = (playerId) => {
+  const openProfile = useCallback((playerId) => {
     setSelectedUserId(playerId);
     setShowProfile(true);
+  }, []);
+
+  const hasSearch = Boolean(search.trim());
+
+  const renderResults = () => {
+    if (!hasSearch) {
+      return <PlayersEmptyState variant="idle" search={search} />;
+    }
+
+    if (loading) {
+      return (
+        <div className="players-grid" aria-busy="true" aria-label="Buscando jugadores">
+          {Array.from({ length: 6 }, (_, i) => <PlayerCardSkeleton key={i} />)}
+        </div>
+      );
+    }
+
+    if (error) {
+      return <PlayersEmptyState variant="error" search={search} onAction={retry} />;
+    }
+
+    if (players.length === 0) {
+      return (
+        <PlayersEmptyState variant="empty" search={search} onAction={() => setSearch("")} />
+      );
+    }
+
+    return (
+      <>
+        <p className="players-count" role="status">
+          {players.length} {players.length === 1 ? "jugador encontrado" : "jugadores encontrados"}
+        </p>
+        <div className="players-grid">
+          {players.map((player) => (
+            <PlayerCard
+              key={player.id}
+              player={player}
+              onShowProfile={openProfile}
+            />
+          ))}
+        </div>
+      </>
+    );
   };
 
   return (
-    <div>
-      <h2>Buscar jugadores</h2>
+    <div className="feed players">
+      <PlayersHeader search={search} onSearchChange={setSearch} />
 
-      <InputText
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Buscar usuario..."
-        style={{ width: "100%", marginBottom: "1rem" }}
-      />
-
-      {loading && (
-        <p>Buscando jugadores...</p>
-      )}
-
-      {error && (
-        <p>
-          No se pudieron cargar los jugadores.
-          Intenta de nuevo.
-        </p>
-      )}
-
-      {!loading &&
-        !error &&
-        search.trim() &&
-        filteredUsers.length === 0 && (
-          <p>No se encontraron jugadores.</p>
-        )}
-
-      {filteredUsers.map((player) => (
-        <Card key={player.id} style={{ marginBottom: "1rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <Avatar
-              image={player.avatar}
-              label={player.username?.charAt(0)}
-              shape="circle"
-              onClick={() => openProfile(player.id)}
-            />
-
-            <div>
-              <strong>{player.username}</strong>
-              <p>{player.region}</p>
-            </div>
-          </div>
-        </Card>
-      ))}
+      {renderResults()}
 
       <UserProfileDialog
         visible={showProfile}
@@ -138,12 +109,7 @@ export default function FindPlayers() {
         onSendFriendRequest={handleFriendRequest}
         onChat={handleChat}
       />
-      {chatError && (
-        <p>
-          No se pudo abrir el chat.
-          Intenta de nuevo.
-        </p>
-      )}
+      <Toast ref={toast} />
     </div>
   );
-}
+}

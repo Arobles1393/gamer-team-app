@@ -1,0 +1,250 @@
+/* =====================================================
+   BUSCAR JUGADORES — reutiliza header, búsqueda, skeleton y
+   estados vacíos de Feed.css; aquí solo el grid y la player card.
+   ===================================================== */
+.players .players-search {
+  width: 360px;
+}
+
+.players-count {
+  margin: 0 0 18px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gm-subtle);
+}
+
+/* ---------- GRID ---------- */
+.players-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+/* ---------- CARD ---------- */
+.player-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--gm-border-soft);
+  border-radius: var(--gm-radius-card);
+  background: linear-gradient(180deg, var(--gm-surface-strong), rgba(22, 21, 46, 0.85));
+  box-shadow: var(--gm-glow);
+  font-family: var(--gm-font-body);
+  color: var(--gm-text);
+  transition: border-color 0.25s ease;
+}
+
+.player-card:hover {
+  border-color: var(--gm-border);
+}
+
+.player-card__banner {
+  height: 64px;
+  flex-shrink: 0;
+  background:
+    radial-gradient(120px 60px at 85% 20%, rgba(244, 63, 94, 0.45), transparent 70%),
+    linear-gradient(135deg, rgba(124, 58, 237, 0.75), rgba(76, 29, 149, 0.55));
+}
+
+.player-card__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  gap: 12px;
+  padding: 0 20px 20px;
+  text-align: center;
+}
+
+/* Avatar solapado con el banner */
+.player-card .player-card__avatar.p-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  margin-top: -36px;
+  border: 3px solid var(--gm-popover-bg);
+  box-shadow: 0 0 0 2px var(--gm-primary);
+  background: var(--gm-gradient);
+  font-family: var(--gm-font-display);
+  font-size: 26px;
+  color: #fff;
+}
+
+.player-card .player-card__avatar.p-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* index.css escala todos los .p-button / .p-avatar en hover: aquí no */
+.player-card .player-card__avatar.p-avatar:hover,
+.player-card .player-card__btn.p-button:hover {
+  transform: none;
+}
+
+.player-card__name {
+  max-width: 100%;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--gm-font-display);
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+
+.player-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 14px;
+  margin-top: -4px;
+  font-size: 13px;
+  color: var(--gm-muted);
+}
+
+.player-card__region {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.player-card__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--gm-subtle);
+}
+
+.player-card__status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gm-hint);
+}
+
+.player-card__status--online {
+  color: #86EFAC;
+}
+
+.player-card__status--online .player-card__status-dot {
+  background: #22C55E;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+}
+
+/* ---------- JUEGOS FAVORITOS ---------- */
+.player-card__games {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.player-card__game {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 1px solid var(--gm-border-soft);
+  border-radius: 8px;
+  background: var(--gm-primary-soft);
+}
+
+.player-card__game img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.player-card__game--more {
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gm-label);
+}
+
+.player-card__no-games {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 48px;
+  margin: 4px 0 0;
+  border: 1px dashed var(--gm-border-soft);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--gm-hint);
+}
+
+/* ---------- BOTÓN ---------- */
+.player-card .player-card__btn.p-button {
+  justify-content: center;
+  width: 100%;
+  height: 44px;
+  margin-top: auto;
+  border: 1px solid var(--gm-border);
+  border-radius: var(--gm-radius-control);
+  background: transparent;
+  color: var(--gm-label);
+  box-shadow: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.player-card .player-card__btn.p-button .p-button-label {
+  font-family: var(--gm-font-display);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.player-card .player-card__btn.p-button:enabled:hover {
+  border-color: transparent;
+  background: var(--gm-gradient);
+  color: #fff;
+}
+
+.player-card .player-card__btn.p-button:focus-visible {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* ---------- SKELETON ---------- */
+.player-card--skeleton:hover {
+  border-color: var(--gm-border-soft);
+}
+
+.players .player-card__avatar-skeleton.p-skeleton {
+  margin-top: -36px;
+  border: 3px solid var(--gm-popover-bg);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 1279px) {
+  .players .players-search {
+    width: 280px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .players .players-search {
+    flex: 1;
+    width: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .players-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}

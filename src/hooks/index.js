@@ -22,3 +22,4 @@ export * from "./usePost";
 export * from "./usePostComments";
 export * from "./usePostInterestStatus";
 export * from "./useFriends";
+export * from "./usePlayerSearch";
