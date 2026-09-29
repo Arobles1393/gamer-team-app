@@ -1,5 +1,6 @@
 /* =====================================================
-   SECCIÓN DE PERFIL — card + controles de formulario del tema.
+   SECCIÓN DE PERFIL — card + controles de formulario del tema
+   (los botones gm-btn están en src/styles/buttons.css).
    Los controles llevan el prefijo .gm-section para ganar al tema
    de PrimeReact y a las reglas globales de index.css.
    ===================================================== */
@@ -230,83 +231,6 @@
 .gm-panel.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight.p-focus,
 .gm-panel.p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item.p-highlight {
   background: rgba(124, 58, 237, 0.35);
-  color: #fff;
-}
-
-/* ---------- BOTONES ---------- */
-.gm-section .gm-btn.p-button,
-.gm-btn.p-button {
-  justify-content: center;
-  height: 42px;
-  padding: 0 20px;
-  border-radius: var(--gm-radius-pill);
-  font-family: var(--gm-font-body);
-  font-size: 14px;
-  box-shadow: none;
-  transition: filter 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-
-.gm-btn.p-button .p-button-label {
-  font-weight: 600;
-}
-
-/* index.css escala todos los .p-button en hover: aquí no */
-.gm-btn.p-button:hover {
-  transform: none;
-}
-
-.gm-btn.p-button:focus-visible {
-  outline: 2px solid var(--gm-label);
-  outline-offset: 2px;
-}
-
-.gm-btn--primary.p-button,
-.gm-btn--primary.p-button:enabled:hover {
-  border: none;
-  background: var(--gm-gradient);
-  color: #fff;
-}
-
-.gm-btn--primary.p-button {
-  box-shadow: var(--gm-cta-shadow);
-}
-
-.gm-btn--primary.p-button:enabled:hover {
-  filter: brightness(1.1);
-}
-
-.gm-btn--primary.p-button:disabled {
-  opacity: 0.5;
-  box-shadow: none;
-}
-
-.gm-btn--ghost.p-button {
-  border: 1px solid var(--gm-border);
-  background: transparent;
-  color: var(--gm-label);
-}
-
-.gm-btn--ghost.p-button:enabled:hover {
-  border-color: var(--gm-label);
-  background: rgba(124, 58, 237, 0.14);
-  color: var(--gm-text);
-}
-
-/* Botón de icono pequeño (quitar link, etc.) */
-.gm-btn--icon.p-button {
-  flex-shrink: 0;
-  width: 46px;
-  height: 46px;
-  padding: 0;
-  border: 1px solid rgba(244, 63, 94, 0.35);
-  border-radius: var(--gm-radius-control);
-  background: transparent;
-  color: var(--gm-accent-text);
-}
-
-.gm-btn--icon.p-button:enabled:hover {
-  border-color: var(--gm-accent);
-  background: var(--gm-accent-soft);
   color: #fff;
 }
 

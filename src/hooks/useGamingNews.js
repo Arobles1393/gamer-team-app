@@ -4,8 +4,13 @@ import { gamingNewsService } from "../services/gamingNews/gamingNewsService";
 export const useGamingNews = () => {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
+    setLoading(true);
+    setError(false);
+
     const unsubscribe = gamingNewsService.subscribeToGamingNews(
       (data) => {
         setNews(data);
@@ -14,15 +19,20 @@ export const useGamingNews = () => {
       (error) => {
         console.error("Error obteniendo noticias gamer:", error);
         setNews([]);
+        setError(true);
         setLoading(false);
       }
     );
 
     return unsubscribe;
-  }, []);
+  }, [retryKey]);
+
+  const retry = () => setRetryKey((key) => key + 1);
 
   return {
     news,
-    loading
+    loading,
+    error,
+    retry
   };
 };
