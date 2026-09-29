@@ -143,7 +143,7 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
   const { handleFriendRequest } = useFriendRequest(
     user,
     selectedUserId,
-    () => setFriendStatus("pending")
+    setFriendStatus
   );
 
   const handleShowProfile = (userId) => {

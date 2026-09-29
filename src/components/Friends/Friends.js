@@ -20,7 +20,7 @@ export default function Friends() {
   const { handleFriendRequest } = useFriendRequest(
     user,
     selectedUserId,
-    () => setFriendStatus("pending")
+    setFriendStatus
   );
 
   if (loading) {

@@ -67,7 +67,7 @@ export default function PostDetail() {
   const { handleFriendRequest } = useFriendRequest(
     user,
     selectedUserId,
-    () => setFriendStatus("pending")
+    setFriendStatus
   );
 
   if (loading) {

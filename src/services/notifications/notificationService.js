@@ -47,6 +47,28 @@ const subscribeToNotifications = (
   );
 };
 
+// Todas las no leídas (sin límite), para el badge y el punto de chats del rail
+const subscribeToUnreadNotifications = (userId, onChange, onError) => {
+  const q = query(
+    collection(db, "notifications"),
+    where("userId", "==", userId),
+    where("read", "==", false)
+  );
+
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      onChange(
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+      );
+    },
+    onError
+  );
+};
+
 const markNotificationAsRead = (notificationId) => {
   return updateDoc(
     doc(db, "notifications", notificationId),
@@ -144,6 +166,7 @@ const commitInBatches = async (operations) => {
 
 export const notificationService = {
   subscribeToNotifications,
+  subscribeToUnreadNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
   deleteAllNotifications,

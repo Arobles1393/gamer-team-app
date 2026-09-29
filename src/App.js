@@ -4,7 +4,7 @@ import { AppHeader, createHeaderMenu } from "./components/Header";
 import { NotificationOverlay } from "./components/Notifications";
 import { notificationService } from "./services/notifications";
 import { friendService } from "./services/friends";
-import { useNotifications, useUserPresence } from "./hooks";
+import { useNotifications, useUnreadNotifications, useUserPresence } from "./hooks";
 import { useCurrentUser } from "./context";
 import { AppRoutes } from "./routes";
 import { CreatePostDialog } from "./components/Posts";
@@ -27,13 +27,10 @@ function App() {
 
   // Hooks
   const user = useCurrentUser();
-  const { notifications, unreadCount } = useNotifications(user, { limitCount: 10 });
+  const { notifications } = useNotifications(user, { limitCount: 10 });
+  // Badge y punto rosa en "Chats" del rail: cuentan todas las no leídas, no solo las 10 del overlay
+  const { unreadCount, hasUnreadMessages } = useUnreadNotifications(user);
   useUserPresence(user);
-
-  // Punto rosa en "Chats" del rail: hay notificaciones de mensaje sin leer
-  const hasUnreadMessages = notifications.some(
-    (notification) => notification.type === "message" && !notification.read
-  );
 
   // UI Handlers
   const handleToggleNotifications = (e) => { notificationRef.current?.toggle(e); }

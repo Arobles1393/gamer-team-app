@@ -6,6 +6,10 @@ const FRIEND_BUTTONS = {
     label: "Agregar amigo",
     icon: "pi pi-user-plus"
   },
+  received: {
+    label: "Aceptar solicitud",
+    icon: "pi pi-user-plus"
+  },
   pending: {
     label: "Solicitud enviada",
     icon: "pi pi-clock",
@@ -32,7 +36,7 @@ function UserProfileActions({
         <Button
           {...button}
           onClick={
-            friendStatus === "none"
+            friendStatus === "none" || friendStatus === "received"
               ? onSendFriendRequest
               : undefined
           }

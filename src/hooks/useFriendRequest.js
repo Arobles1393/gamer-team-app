@@ -9,12 +9,13 @@ export const useFriendRequest = (
 
   const handleFriendRequest = useCallback(async () => {
     try {
-      await friendService.sendFriendRequest(
+      // "pending", o "friends" si se aceptó una solicitud que ya nos habían enviado
+      const status = await friendService.sendFriendRequest(
         user,
         selectedUserId
       );
 
-      onSuccess?.();
+      onSuccess?.(status);
 
       return true;
 

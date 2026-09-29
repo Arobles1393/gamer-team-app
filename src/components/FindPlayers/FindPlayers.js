@@ -41,7 +41,7 @@ export default function FindPlayers() {
   const { handleFriendRequest } = useFriendRequest(
     user,
     selectedUserId,
-    () => setFriendStatus("pending")
+    setFriendStatus
   );
 
   const openProfile = useCallback((playerId) => {

@@ -1,10 +1,10 @@
 export default function PostHero({ post }) {
   return (
     <div className="hero">
-      {post.gameClip ? (
+      {post.clip ? (
         <video
           className="hero-video"
-          src={post.gameClip}
+          src={post.clip}
           autoPlay
           loop
           muted
