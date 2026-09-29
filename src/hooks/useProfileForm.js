@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { updateEmail } from "firebase/auth";
 import { profileService } from "../services/profile";
 
-export const useProfileForm = (user, userData, onError) => {
+export const useProfileForm = (user, userData, onError, onSuccess) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -31,9 +32,16 @@ export const useProfileForm = (user, userData, onError) => {
   };
 
   const handleSave = async () => {
+    if (!username.trim()) {
+      onError?.("El nickname no puede quedar vacío");
+      return;
+    }
+
+    setSaving(true);
+
     try {
       const invalid = links.some(
-        (link) => link && !isValidLink(link)
+        (link) => link.trim() && !isValidLink(link.trim())
       );
 
       if (invalid) {
@@ -51,15 +59,17 @@ export const useProfileForm = (user, userData, onError) => {
       }
 
       await profileService.updateUserProfile(user.uid, {
-        username,
+        username: username.trim(),
         phone,
-        links,
+        // Los renglones vacíos no se guardan
+        links: links.map((link) => link.trim()).filter(Boolean),
         description,
         games,
         region
       });
 
       setIsEditing(false);
+      onSuccess?.("Perfil actualizado");
     } catch (error) {
       console.error("Error actualizando perfil:", error);
 
@@ -69,6 +79,8 @@ export const useProfileForm = (user, userData, onError) => {
           : "No se pudo guardar el perfil. Intenta de nuevo.";
 
       onError?.(message);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -121,6 +133,7 @@ export const useProfileForm = (user, userData, onError) => {
   return {
     isEditing,
     setIsEditing,
+    saving,
 
     email,
     username,

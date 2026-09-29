@@ -1,26 +1,50 @@
-import { useState, useRef } from "react";
-import { Card } from "primereact/card";
-import { Button } from "primereact/button";
+import { useCallback, useRef, useState } from "react";
+import { Skeleton } from "primereact/skeleton";
 import { Toast } from "primereact/toast";
-import { ProfileHeader } from "../ProfileHeader";
 import { FavoriteGames } from "../FavoriteGames";
 import { SocialLinks } from "../SocialLinks";
 import PersonalInfo from "./PersonalInfo/PersonalInfo";
+import ProfileHero from "./ProfileHero";
+import ProfileAbout from "./ProfileAbout";
+import ProfileSaveBar from "./ProfileSaveBar";
 import { useProfileForm, useGameSearch, useProfileImages } from "../../hooks";
 import { countries } from "../../data/countries";
 import { useCurrentUser, useCurrentUserData } from "../../context";
+import "../Posts/Feed.css";
+import "./Profile.css";
+
+function ProfileSkeleton() {
+  return (
+    <div className="profile-page" aria-busy="true" aria-label="Cargando perfil">
+      <Skeleton height="220px" borderRadius="16px" className="profile-skeleton" />
+      <div className="profile-page__grid">
+        <Skeleton height="260px" borderRadius="16px" className="profile-skeleton" />
+        <Skeleton height="260px" borderRadius="16px" className="profile-skeleton" />
+      </div>
+    </div>
+  );
+}
 
 export default function Profile() {
   const user = useCurrentUser();
   const userData = useCurrentUserData();
   const [gameQuery, setGameQuery] = useState("");
   const bannerInputRef = useRef(null);
-  const fileInputRef = useRef(null);
+  const avatarInputRef = useRef(null);
   const toast = useRef(null);
+
+  const showError = useCallback((detail) => {
+    toast.current?.show({ severity: "error", summary: "Error", detail, life: 3000 });
+  }, []);
+
+  const showSuccess = useCallback((detail) => {
+    toast.current?.show({ severity: "success", summary: "Listo", detail, life: 2500 });
+  }, []);
 
   const {
     isEditing,
     setIsEditing,
+    saving,
     email,
     username,
     phone,
@@ -39,112 +63,114 @@ export default function Profile() {
     handleSave,
     handleCancel,
     hasChanges
-  } = useProfileForm(
-    user,
-    userData,
-    (message) => {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: message,
-        life: 3000
-      });
-    }
-  );
+  } = useProfileForm(user, userData, showError, showSuccess);
 
-  const {
-    suggestions,
-    handleSearch
-  } = useGameSearch();
+  const { suggestions, handleSearch } = useGameSearch();
 
-  const { preview, bannerPreview, handleImageChange } = useProfileImages(
+  const { preview, bannerPreview, uploading, handleImageChange } = useProfileImages(
     user,
-    (message) => {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: message,
-        life: 3000
-      });
-    }
+    showError,
+    showSuccess
   );
 
   const handleAddGame = (game) => {
     addGame(game);
     setGameQuery("");
   };
-  
+
+  const handleCancelEdit = () => {
+    handleCancel();
+    setGameQuery("");
+  };
+
+  if (!userData) {
+    return <ProfileSkeleton />;
+  }
+
+  const country = countries.find((c) => c.value === userData.region);
+
   return (
-    <Card style={{ borderRadius: "8px" }}>
+    <div className={`profile-page${isEditing ? " profile-page--editing" : ""}`}>
       <input
         type="file"
         accept="image/*"
-        ref={fileInputRef}
-        style={{ display: "none" }}
+        ref={avatarInputRef}
+        hidden
         onChange={(e) => handleImageChange(e, "avatar")}
       />
       <input
         type="file"
         accept="image/*"
         ref={bannerInputRef}
-        style={{ display: "none" }}
+        hidden
         onChange={(e) => handleImageChange(e, "banner")}
       />
-      <ProfileHeader
+
+      <ProfileHero
         userData={userData}
-        isEditing={isEditing}
+        country={country}
         avatarPreview={preview}
         bannerPreview={bannerPreview}
-        onAvatarEdit={() => fileInputRef.current?.click()}
+        uploading={uploading}
+        isEditing={isEditing}
+        onEdit={() => setIsEditing(true)}
+        onAvatarEdit={() => avatarInputRef.current?.click()}
         onBannerEdit={() => bannerInputRef.current?.click()}
-        showUsername={false}
       />
-      <PersonalInfo
-        email={email}
-        username={username}
-        phone={phone}
-        region={region}
-        description={description}
-        countries={countries}
-        isEditing={isEditing}
-        onEmailChange={setEmail}
-        onUsernameChange={setUsername}
-        onPhoneChange={setPhone}
-        onRegionChange={setRegion}
-        onDescriptionChange={setDescription}
-      />
-      <FavoriteGames
-        games={games}
-        isEditing={isEditing}
-        gameQuery={gameQuery}
-        suggestions={suggestions}
-        onSearch={handleSearch}
-        onGameQueryChange={setGameQuery}
-        onAddGame={handleAddGame}
-        onRemoveGame={removeGame}
-      />
-      <SocialLinks
-        links={links}
-        isEditing={isEditing}
-        onLinksChange={setLinks}
-      />
-      <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
-        <Button
-          label={isEditing ? "Guardar" : "Editar perfil"}
-          icon={isEditing ? "pi pi-check" : "pi pi-pencil"}
-          onClick={isEditing ? handleSave : () => setIsEditing(true)}
-          disabled={isEditing ? !hasChanges() : false} // 👈 clave
-        />
-        {isEditing && (
-          <Button
-            label="Cancelar"
-            icon="pi pi-times"
-            className="p-button-text"
-            onClick={handleCancel}
+
+      <div className="profile-page__grid">
+        <div className="profile-page__column">
+          <ProfileAbout
+            description={description}
+            isEditing={isEditing}
+            onDescriptionChange={setDescription}
           />
-        )}
+          <FavoriteGames
+            games={games}
+            isEditing={isEditing}
+            gameQuery={gameQuery}
+            suggestions={suggestions}
+            onSearch={handleSearch}
+            onGameQueryChange={setGameQuery}
+            onAddGame={handleAddGame}
+            onRemoveGame={removeGame}
+            emptyText="Aún no agregas juegos favoritos."
+            onEmptyAction={() => setIsEditing(true)}
+          />
+        </div>
+
+        <div className="profile-page__column">
+          <PersonalInfo
+            email={email}
+            username={username}
+            phone={phone}
+            region={region}
+            countries={countries}
+            isEditing={isEditing}
+            onEmailChange={setEmail}
+            onUsernameChange={setUsername}
+            onPhoneChange={setPhone}
+            onRegionChange={setRegion}
+          />
+          <SocialLinks
+            links={links}
+            isEditing={isEditing}
+            onLinksChange={setLinks}
+            emptyText="Aún no agregas tus redes."
+          />
+        </div>
       </div>
+
+      {isEditing && (
+        <ProfileSaveBar
+          hasChanges={hasChanges()}
+          saving={saving}
+          onCancel={handleCancelEdit}
+          onSave={handleSave}
+        />
+      )}
+
       <Toast ref={toast} />
-    </Card>
+    </div>
   );
 }

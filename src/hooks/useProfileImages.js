@@ -1,18 +1,30 @@
 import { useEffect, useState } from "react";
 import { profileImageService } from "../services/profile";
 
-export const useProfileImages = (user, onError) => {
+const SUCCESS_MESSAGES = {
+  avatar: "Foto de perfil actualizada",
+  banner: "Portada actualizada"
+};
+
+// Las imágenes se suben en cuanto se eligen (no dependen de Guardar del formulario)
+export const useProfileImages = (user, onError, onSuccess) => {
   const [preview, setPreview] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
+  const [uploading, setUploading] = useState({ avatar: false, banner: false });
+
+  const setPreviewFor = (type, url) => {
+    if (type === "avatar") setPreview(url);
+    if (type === "banner") setBannerPreview(url);
+  };
 
   const validateImage = (file) => {
     if (!file.type.startsWith("image/")) {
-      onError?.("Solo imágenes");
+      onError?.("Solo se permiten imágenes");
       return false;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      onError?.("Máximo 5MB");
+      onError?.("La imagen debe pesar máximo 5 MB");
       return false;
     }
 
@@ -22,25 +34,26 @@ export const useProfileImages = (user, onError) => {
   const handleImageChange = async (e, type) => {
     const file = e.target.files[0];
 
+    // Permite volver a elegir el mismo archivo después
+    e.target.value = "";
+
     if (!file) return;
 
     if (!validateImage(file)) return;
 
-    const previewUrl = URL.createObjectURL(file);
-
-    if (type === "avatar") {
-      setPreview(previewUrl);
-    }
-
-    if (type === "banner") {
-      setBannerPreview(previewUrl);
-    }
+    setPreviewFor(type, URL.createObjectURL(file));
+    setUploading((prev) => ({ ...prev, [type]: true }));
 
     try {
       await profileImageService.uploadProfileImage(user.uid, file, type);
+      onSuccess?.(SUCCESS_MESSAGES[type]);
     } catch (error) {
       console.error(`Error subiendo ${type}:`, error);
+      // Vuelve a la imagen guardada
+      setPreviewFor(type, null);
       onError?.(`No se pudo subir la imagen de ${type === "avatar" ? "perfil" : "portada"}.`);
+    } finally {
+      setUploading((prev) => ({ ...prev, [type]: false }));
     }
   };
 
@@ -54,6 +67,7 @@ export const useProfileImages = (user, onError) => {
   return {
     preview,
     bannerPreview,
+    uploading,
     handleImageChange
   };
 };

@@ -1,38 +1,120 @@
-.social-links {
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background: rgba(15, 23, 42, 0.6);
-  border-radius: 8px;
-}
-
-.social-links-edit-row {
+/* =====================================================
+   REDES SOCIALES — lista de links con icono de plataforma.
+   La card y los controles vienen de ProfileSection.css.
+   ===================================================== */
+.social-links__list,
+.social-links__edit-list {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.gamer-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.gamer-link {
+/* ---------- VER ---------- */
+.gm-section .social-link {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 0.6rem;
-  border-radius: 6px;
-  background: rgba(56, 189, 248, 0.1);
-  color: #38bdf8;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--gm-border-soft);
+  border-radius: 12px;
+  color: var(--gm-text);
   text-decoration: none;
-  transition: 0.2s;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.gamer-link:hover {
-  background: rgba(168, 85, 247, 0.2);
+.gm-section .social-link:hover {
+  border-color: var(--gm-border);
+  background: rgba(124, 58, 237, 0.12);
+  color: var(--gm-text);
 }
 
-.social-links-empty {
-  color: #888;
+.gm-section .social-link:focus-visible {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 2px;
+}
+
+.social-link__icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--gm-primary-soft);
+  color: var(--gm-label);
+}
+
+.social-link__svg {
+  width: 18px;
+  height: 18px;
+}
+
+.social-link__text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 2px;
+  min-width: 0;
+}
+
+.social-link__label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.social-link__url {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--gm-subtle);
+}
+
+.social-link__external {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--gm-subtle);
+}
+
+.gm-section .social-link:hover .social-link__external {
+  color: var(--gm-label);
+}
+
+/* ---------- EDITAR ---------- */
+.social-links__edit-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.social-links__edit-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.social-links__edit-row .social-link__icon {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--gm-radius-control);
+}
+
+.social-links__edit-item .gm-field__error {
+  padding-left: 56px;
+}
+
+.gm-section .social-links__add.p-button {
+  margin-top: 14px;
+}
+
+.social-links__hint {
+  margin-top: 12px;
+}
+
+.social-links__edit-row .gm-input.p-inputtext {
+  flex: 1;
+  min-width: 0;
 }
