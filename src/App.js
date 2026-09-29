@@ -14,6 +14,7 @@ import "./styles/variables.css";
 import "./styles/theme.css";
 import "./styles/layout.css";
 import "./styles/confirm.css";
+import "./styles/dialog.css";
 
 function App() {
   // UI State

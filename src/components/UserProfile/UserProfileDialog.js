@@ -1,24 +1,24 @@
 import { Dialog } from "primereact/dialog";
 import { memo } from "react";
+import { useNavigate } from "react-router-dom";
 import UserProfile from "./UserProfile";
 import UserProfileActions from "./UserProfileActions";
 import { useCurrentUser } from "../../context";
-
-const DIALOG_PT = {
-  header: {
-    style: { padding: 0 }
-  }
-};
+import "./UserProfile.css";
 
 const DIALOG_PROPS = {
-  pt: DIALOG_PT,
-  style: { width: "1100px" },
+  className: "gm-dialog gm-dialog--bare gm-profile-dialog",
+  maskClassName: "gm-dialog-mask",
+  // El hero trae su propio botón de cerrar
+  showHeader: false,
+  style: { width: "1000px" },
   breakpoints: {
-    "960px": "75vw",
-    "640px": "90vw"
+    "1100px": "94vw",
+    "767px": "100vw"
   },
   dismissableMask: true,
-  draggable: false
+  draggable: false,
+  blockScroll: true
 };
 
 const UserProfileDialog = ({
@@ -30,31 +30,42 @@ const UserProfileDialog = ({
   onChat
 }) => {
   const user = useCurrentUser();
+  const navigate = useNavigate();
 
   if (!selectedUserId) {
     return null;
   }
+
+  const isOwnProfile = user?.uid === selectedUserId;
+
+  const handleEditProfile = () => {
+    onHide();
+    navigate("/profile");
+  };
 
   return (
     <Dialog
       {...DIALOG_PROPS}
       visible={visible}
       onHide={onHide}
+      aria-label="Perfil de jugador"
     >
-      <div className="profile-container">
-        <UserProfile
-          userId={selectedUserId}
-        />
-        {user?.uid !== selectedUserId && (
+      <UserProfile
+        userId={selectedUserId}
+        isOwnProfile={isOwnProfile}
+        onClose={onHide}
+        actions={
           <UserProfileActions
             friendStatus={friendStatus}
+            isOwnProfile={isOwnProfile}
             onSendFriendRequest={onSendFriendRequest}
             onChat={onChat}
+            onEditProfile={handleEditProfile}
           />
-        )}
-      </div>
+        }
+      />
     </Dialog>
   );
 };
 
-export default memo(UserProfileDialog)
+export default memo(UserProfileDialog);

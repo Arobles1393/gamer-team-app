@@ -1,6 +1,6 @@
 import { Avatar } from "primereact/avatar";
-import { Button } from "primereact/button";
 import { formatDates } from "../../utils";
+import "./ProfileHero.css";
 
 const formatMemberSince = (createdAt) => {
   const date = formatDates.toDate(createdAt);
@@ -9,14 +9,27 @@ const formatMemberSince = (createdAt) => {
   return date.toLocaleDateString("es-MX", { month: "long", year: "numeric" });
 };
 
+const NOT_UPLOADING = { avatar: false, banner: false };
+
+/**
+ * Portada + avatar + identidad de un perfil.
+ * - Mi perfil: `editable` muestra los botones para cambiar foto y portada.
+ * - Diálogo de otro jugador: `presence` y `online` muestran su estado,
+ *   `bannerAction` va sobre la portada (p. ej. cerrar).
+ * `actions` se dibuja a la derecha (Editar perfil, Agregar amigo, Mensaje…).
+ */
 export default function ProfileHero({
   userData,
   country,
-  avatarPreview,
-  bannerPreview,
-  uploading,
-  isEditing,
-  onEdit,
+  eyebrow,
+  presence,
+  online = false,
+  actions,
+  bannerAction,
+  editable = false,
+  avatarPreview = null,
+  bannerPreview = null,
+  uploading = NOT_UPLOADING,
   onAvatarEdit,
   onBannerEdit
 }) {
@@ -31,18 +44,22 @@ export default function ProfileHero({
         className="profile-hero__banner"
         style={bannerImage ? { backgroundImage: `url(${bannerImage})` } : undefined}
       >
-        <button
-          type="button"
-          className="profile-hero__banner-btn"
-          onClick={onBannerEdit}
-          disabled={uploading.banner}
-        >
-          <i
-            className={`pi ${uploading.banner ? "pi-spin pi-spinner" : "pi-camera"}`}
-            aria-hidden="true"
-          />
-          <span>{uploading.banner ? "Subiendo…" : "Cambiar portada"}</span>
-        </button>
+        {editable ? (
+          <button
+            type="button"
+            className="profile-hero__banner-btn"
+            onClick={onBannerEdit}
+            disabled={uploading.banner}
+          >
+            <i
+              className={`pi ${uploading.banner ? "pi-spin pi-spinner" : "pi-camera"}`}
+              aria-hidden="true"
+            />
+            <span>{uploading.banner ? "Subiendo…" : "Cambiar portada"}</span>
+          </button>
+        ) : (
+          bannerAction
+        )}
       </div>
 
       <div className="profile-hero__info">
@@ -53,27 +70,41 @@ export default function ProfileHero({
             shape="circle"
             className="profile-hero__avatar"
           />
+
+          {online && !editable && (
+            <span className="profile-hero__online" aria-hidden="true" />
+          )}
+
           {uploading.avatar && (
             <span className="profile-hero__avatar-loading" aria-hidden="true">
               <i className="pi pi-spin pi-spinner" />
             </span>
           )}
-          <button
-            type="button"
-            className="profile-hero__avatar-btn"
-            aria-label="Cambiar foto de perfil"
-            onClick={onAvatarEdit}
-            disabled={uploading.avatar}
-          >
-            <i className="pi pi-camera" aria-hidden="true" />
-          </button>
+
+          {editable && (
+            <button
+              type="button"
+              className="profile-hero__avatar-btn"
+              aria-label="Cambiar foto de perfil"
+              onClick={onAvatarEdit}
+              disabled={uploading.avatar}
+            >
+              <i className="pi pi-camera" aria-hidden="true" />
+            </button>
+          )}
         </div>
 
         <div className="profile-hero__identity">
-          <span className="feed-header__eyebrow">Mi perfil</span>
+          {eyebrow && <span className="profile-hero__eyebrow">{eyebrow}</span>}
           <h1 className="profile-hero__name">{username}</h1>
 
           <div className="profile-hero__meta">
+            {presence && (
+              <span className={`profile-hero__meta-item profile-hero__presence${online ? " profile-hero__presence--online" : ""}`}>
+                <span className="profile-hero__presence-dot" aria-hidden="true" />
+                {presence}
+              </span>
+            )}
             {userData?.region && (
               <span className="profile-hero__meta-item">
                 {country?.flag && <span aria-hidden="true">{country.flag}</span>}
@@ -89,21 +120,7 @@ export default function ProfileHero({
           </div>
         </div>
 
-        <div className="profile-hero__actions">
-          {isEditing ? (
-            <span className="profile-hero__editing">
-              <i className="pi pi-pencil" aria-hidden="true" />
-              Editando perfil
-            </span>
-          ) : (
-            <Button
-              label="Editar perfil"
-              icon="pi pi-pencil"
-              className="gm-btn gm-btn--primary profile-hero__edit"
-              onClick={onEdit}
-            />
-          )}
-        </div>
+        {actions && <div className="profile-hero__actions">{actions}</div>}
       </div>
     </section>
   );

@@ -1,0 +1,80 @@
+/* =====================================================
+   DIÁLOGO — Dialog de PrimeReact con el tema GamerMatch.
+   Uso: <Dialog className="gm-dialog" maskClassName="gm-dialog-mask" …>
+   `gm-dialog--bare`: sin header ni padding (el contenido pone los suyos).
+   Se monta en <body>: los selectores llevan .gm-dialog.p-dialog
+   para ganar al tema y a las reglas globales de index.css.
+   ===================================================== */
+.gm-dialog-mask.p-component-overlay {
+  background: rgba(8, 8, 20, 0.72);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.gm-dialog.p-dialog {
+  overflow: hidden;
+  border: 1px solid var(--gm-border);
+  border-radius: var(--gm-radius-card);
+  background: var(--gm-popover-bg);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.8), var(--gm-glow);
+  font-family: var(--gm-font-body);
+  color: var(--gm-text);
+}
+
+.gm-dialog.p-dialog .p-dialog-header {
+  padding: 18px 20px 18px 24px;
+  border-bottom: 1px solid var(--gm-border-soft);
+  background: transparent;
+  color: var(--gm-text);
+}
+
+.gm-dialog.p-dialog .p-dialog-title {
+  font-family: var(--gm-font-display);
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.gm-dialog.p-dialog .p-dialog-header-icon {
+  color: var(--gm-muted);
+}
+
+.gm-dialog.p-dialog .p-dialog-header-icon:enabled:hover {
+  background: rgba(124, 58, 237, 0.14);
+  color: var(--gm-text);
+}
+
+.gm-dialog.p-dialog .p-dialog-header-icon:focus-visible {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+.gm-dialog.p-dialog .p-dialog-content {
+  padding: 20px 24px 24px;
+  background: transparent;
+  color: var(--gm-text);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(124, 58, 237, 0.35) transparent;
+}
+
+.gm-dialog--bare.p-dialog .p-dialog-content {
+  padding: 0;
+}
+
+@media (max-width: 767px) {
+  .gm-dialog.p-dialog .p-dialog-header {
+    padding: 14px 14px 14px 18px;
+  }
+
+  .gm-dialog.p-dialog .p-dialog-content {
+    padding: 16px 16px 20px;
+  }
+
+  .gm-dialog--bare.p-dialog .p-dialog-content {
+    padding: 0;
+  }
+}

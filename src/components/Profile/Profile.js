@@ -1,16 +1,17 @@
 import { useCallback, useRef, useState } from "react";
+import { Button } from "primereact/button";
 import { Skeleton } from "primereact/skeleton";
 import { Toast } from "primereact/toast";
+import { ProfileHero } from "../ProfileHero";
 import { FavoriteGames } from "../FavoriteGames";
 import { SocialLinks } from "../SocialLinks";
+import { SteamSection } from "../Steam";
 import PersonalInfo from "./PersonalInfo/PersonalInfo";
-import ProfileHero from "./ProfileHero";
 import ProfileAbout from "./ProfileAbout";
 import ProfileSaveBar from "./ProfileSaveBar";
 import { useProfileForm, useGameSearch, useProfileImages } from "../../hooks";
 import { countries } from "../../data/countries";
 import { useCurrentUser, useCurrentUserData } from "../../context";
-import "../Posts/Feed.css";
 import "./Profile.css";
 
 function ProfileSkeleton() {
@@ -109,13 +110,28 @@ export default function Profile() {
       <ProfileHero
         userData={userData}
         country={country}
+        eyebrow="Mi perfil"
+        editable
         avatarPreview={preview}
         bannerPreview={bannerPreview}
         uploading={uploading}
-        isEditing={isEditing}
-        onEdit={() => setIsEditing(true)}
         onAvatarEdit={() => avatarInputRef.current?.click()}
         onBannerEdit={() => bannerInputRef.current?.click()}
+        actions={
+          isEditing ? (
+            <span className="profile-hero__editing">
+              <i className="pi pi-pencil" aria-hidden="true" />
+              Editando perfil
+            </span>
+          ) : (
+            <Button
+              label="Editar perfil"
+              icon="pi pi-pencil"
+              className="gm-btn gm-btn--primary profile-hero__edit"
+              onClick={() => setIsEditing(true)}
+            />
+          )
+        }
       />
 
       <div className="profile-page__grid">
@@ -136,6 +152,12 @@ export default function Profile() {
             onRemoveGame={removeGame}
             emptyText="Aún no agregas juegos favoritos."
             onEmptyAction={() => setIsEditing(true)}
+          />
+          {/* Usa los links guardados, no los que se están editando */}
+          <SteamSection
+            links={userData.links}
+            isOwnProfile
+            onConnect={() => setIsEditing(true)}
           />
         </div>
 

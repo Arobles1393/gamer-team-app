@@ -8,6 +8,8 @@ export const useSteamStats = (links) => {
 
   const [steamStats, setSteamStats] = useState(null);
   const [loadingSteam, setLoadingSteam] = useState(false);
+  // Hay link de Steam pero no se pudo leer (perfil privado, link inválido, emulador apagado…)
+  const [steamError, setSteamError] = useState(false);
 
   const steamLink = links?.find(
     (link) => link.includes("steamcommunity")
@@ -18,12 +20,17 @@ export const useSteamStats = (links) => {
   useEffect(() => {
 
     setSteamStats(null);
+    setSteamError(false);
 
     if (!steamId) {
+      setLoadingSteam(false);
       return;
     }
 
     setLoadingSteam(true);
+
+    // Evita que una respuesta de un steamId anterior pise la actual
+    let cancelled = false;
 
     const fetchSteamStats = async () => {
       try {
@@ -32,7 +39,9 @@ export const useSteamStats = (links) => {
             steamId
           );
 
-        setSteamStats(data);
+        if (!cancelled) {
+          setSteamStats(data);
+        }
 
       } catch (error) {
 
@@ -51,21 +60,31 @@ export const useSteamStats = (links) => {
           );
         }
 
-        setSteamStats(null);
+        if (!cancelled) {
+          setSteamStats(null);
+          setSteamError(true);
+        }
 
       } finally {
-        setLoadingSteam(false);
+        if (!cancelled) {
+          setLoadingSteam(false);
+        }
       }
     };
 
     fetchSteamStats();
+
+    return () => {
+      cancelled = true;
+    };
 
   }, [steamId]);
 
   return {
     steamStats,
     steamID: steamId,
-    loadingSteam
+    loadingSteam,
+    steamError
   };
 };
 

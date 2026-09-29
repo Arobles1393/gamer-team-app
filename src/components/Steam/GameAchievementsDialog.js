@@ -11,13 +11,20 @@ export default function GameAchievementsDialog({
     <Dialog
       header={game?.name}
       visible={visible}
-      style={{ width: "700px" }}
       onHide={onHide}
+      className="gm-dialog"
+      maskClassName="gm-dialog-mask"
+      style={{ width: "640px" }}
+      breakpoints={{ "767px": "94vw" }}
+      dismissableMask
+      draggable={false}
     >
-      <GameAchievements
-        game={game}
-        steamId={steamId}
-      />
+      {game && (
+        <GameAchievements
+          game={game}
+          steamId={steamId}
+        />
+      )}
     </Dialog>
   );
 }

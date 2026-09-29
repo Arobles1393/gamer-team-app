@@ -1,0 +1,307 @@
+/* =====================================================
+   HERO DE PERFIL — portada + avatar encimado + identidad.
+   Lo usan Mi perfil y el diálogo de perfil de otros jugadores.
+   Prefijo .profile-hero para ganar al tema de PrimeReact y a index.css.
+   ===================================================== */
+.profile-hero {
+  overflow: hidden;
+  border: 1px solid var(--gm-border-soft);
+  border-radius: var(--gm-radius-card);
+  background: linear-gradient(180deg, var(--gm-surface-strong), rgba(22, 21, 46, 0.85));
+  box-shadow: var(--gm-glow);
+  font-family: var(--gm-font-body);
+  color: var(--gm-text);
+}
+
+.profile-hero__banner {
+  position: relative;
+  height: 220px;
+  background:
+    radial-gradient(420px 200px at 85% 20%, rgba(244, 63, 94, 0.45), transparent 70%),
+    linear-gradient(135deg, rgba(124, 58, 237, 0.85), rgba(76, 29, 149, 0.6));
+  background-position: center;
+  background-size: cover;
+}
+
+/* Botón sobre la portada: "Cambiar portada" o cerrar el diálogo */
+.profile-hero__banner-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 38px;
+  height: 38px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--gm-radius-pill);
+  background: rgba(15, 15, 35, 0.6);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.profile-hero__banner-btn--icon {
+  padding: 0;
+}
+
+.profile-hero__banner-btn:enabled:hover {
+  background: rgba(15, 15, 35, 0.85);
+}
+
+.profile-hero__banner-btn:disabled {
+  cursor: progress;
+}
+
+.profile-hero__banner-btn:focus-visible,
+.profile-hero__avatar-btn:focus-visible {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 2px;
+}
+
+.profile-hero__info {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  padding: 0 28px 24px;
+}
+
+/* ---------- AVATAR ---------- */
+.profile-hero__avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+  margin-top: -60px;
+}
+
+.profile-hero .profile-hero__avatar.p-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 128px;
+  height: 128px;
+  border: 4px solid var(--gm-popover-bg);
+  box-shadow: 0 0 0 2px var(--gm-primary);
+  background: var(--gm-gradient);
+  font-family: var(--gm-font-display);
+  font-size: 44px;
+  line-height: 1;
+  color: #fff;
+}
+
+/* index.css escala todos los .p-avatar / .p-button en hover: aquí no */
+.profile-hero .profile-hero__avatar.p-avatar:hover,
+.profile-hero .p-button:hover {
+  transform: none;
+}
+
+.profile-hero .profile-hero__avatar.p-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-hero__online {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 20px;
+  height: 20px;
+  border: 4px solid var(--gm-popover-bg);
+  border-radius: 50%;
+  background: #22C55E;
+  box-sizing: border-box;
+}
+
+.profile-hero__avatar-loading {
+  position: absolute;
+  inset: 4px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(15, 15, 35, 0.6);
+  color: #fff;
+}
+
+.profile-hero__avatar-loading .pi {
+  font-size: 24px;
+}
+
+.profile-hero__avatar-btn {
+  position: absolute;
+  right: 2px;
+  bottom: 6px;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 3px solid var(--gm-popover-bg);
+  border-radius: 50%;
+  background: var(--gm-gradient);
+  color: #fff;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+.profile-hero__avatar-btn:enabled:hover {
+  filter: brightness(1.15);
+}
+
+.profile-hero__avatar-btn:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.profile-hero__avatar-btn .pi {
+  font-size: 14px;
+}
+
+/* ---------- IDENTIDAD ---------- */
+.profile-hero__identity {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 4px;
+}
+
+.profile-hero__eyebrow {
+  display: block;
+  margin-bottom: 6px;
+  font-family: var(--gm-font-display);
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gm-label);
+}
+
+.profile-hero .profile-hero__name {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--gm-font-display);
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  line-height: 1.15;
+  color: var(--gm-text);
+}
+
+.profile-hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--gm-muted);
+}
+
+.profile-hero__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.profile-hero__meta-item .pi {
+  font-size: 13px;
+  color: var(--gm-subtle);
+}
+
+.profile-hero__presence-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gm-hint);
+}
+
+.profile-hero__presence--online {
+  color: #86EFAC;
+}
+
+.profile-hero__presence--online .profile-hero__presence-dot {
+  background: #22C55E;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+}
+
+/* ---------- ACCIONES ---------- */
+.profile-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-shrink: 0;
+  padding-bottom: 4px;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 767px) {
+  .profile-hero__banner {
+    height: 150px;
+  }
+
+  .profile-hero__banner-btn {
+    top: 10px;
+    right: 10px;
+    width: 38px;
+    padding: 0;
+  }
+
+  /* En mobile el botón de portada queda solo con el icono */
+  .profile-hero__banner-btn span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .profile-hero__info {
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 0 16px 20px;
+    text-align: center;
+  }
+
+  .profile-hero__avatar-wrap {
+    margin-top: -56px;
+  }
+
+  .profile-hero .profile-hero__avatar.p-avatar {
+    width: 108px;
+    height: 108px;
+    font-size: 38px;
+  }
+
+  .profile-hero .profile-hero__name {
+    font-size: 24px;
+    white-space: normal;
+  }
+
+  .profile-hero__meta {
+    justify-content: center;
+  }
+
+  .profile-hero__actions {
+    width: 100%;
+  }
+
+  .profile-hero__actions .p-button {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-hero__banner-btn,
+  .profile-hero__avatar-btn {
+    transition: none;
+  }
+}
