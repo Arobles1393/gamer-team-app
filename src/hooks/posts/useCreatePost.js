@@ -4,6 +4,7 @@ import { getGameDetail } from "../../utils";
 
 export const useCreatePost = ({
   user,
+  authorRegion,
   editingPost,
   onSuccess,
   onError
@@ -133,6 +134,12 @@ export const useCreatePost = ({
         await postService.createPost({
           ...postData,
           userId: user.uid,
+          // Excepción intencional a "resolver en vivo": como createdAt, es
+          // el contexto de dónde publicó el autor, no su identidad actual
+          // (username/avatar sí se leen siempre del perfil). Si después
+          // cambia de región, este post sigue en "Cerca de ti" de la
+          // región desde la que se publicó.
+          authorRegion: authorRegion ?? null,
           createdAt: new Date()
         });
 
@@ -166,6 +173,7 @@ export const useCreatePost = ({
     multiplatform,
     editingPost,
     user,
+    authorRegion,
     resetForm,
     onSuccess,
     onError

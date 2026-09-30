@@ -8,6 +8,8 @@ export * from "./posts/useInterestedPosts";
 export * from "./posts/usePostInterest";
 export * from "./posts/usePostInterestStatus";
 export * from "./posts/usePostComments";
+export * from "./posts/usePostCategories";
+export * from "./posts/usePostListActions";
 
 // Perfil
 export * from "./profile/useUserProfile";
@@ -42,3 +44,5 @@ export * from "./auth/useRequireAuth";
 // Juegos
 export * from "./games/useGameSearch";
 export * from "./games/useGamingNews";
+export * from "./games/useGames";
+export * from "./games/useGameSearchLog";

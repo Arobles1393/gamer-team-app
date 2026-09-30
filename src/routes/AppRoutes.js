@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import { PostList, PostDetail } from "../components/Posts";
+import { PostList, PostFeed, PostDetail } from "../components/Posts";
 import { Profile } from "../components/Profile";
 import { ChatPage } from "../components/Chat";
 import { Notifications } from "../components/Notifications";
@@ -19,7 +19,7 @@ const AppRoutes = ({
 			<Route
 				path="/"
 				element={
-					<PostList
+					<PostFeed
 						setEditingPost={setEditingPost}
 						setShowCreatePost={setShowCreatePost}
 					/>

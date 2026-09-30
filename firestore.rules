@@ -11,6 +11,14 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == uid;
     }
 
+    // Solo cambia `field` y en exactamente ±1 (contadores que actualizan
+    // usuarios que no son dueños del documento)
+    function onlyStepsCounter(field) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly([field])
+             && (request.resource.data[field] == resource.data.get(field, 0) + 1
+                 || request.resource.data[field] == resource.data.get(field, 0) - 1);
+    }
+
     // ===== users =====
     match /users/{userId} {
       allow read: if isSignedIn();
@@ -33,9 +41,32 @@ service cloud.firestore {
     match /posts/{postId} {
       allow read: if true;
       allow create: if isSignedIn()
-                    && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isSignedIn()
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.get('interestedCount', 0) == 0;
+      // El dueño edita su post (sin tocar el contador ni el autor); cualquiera
+      // con sesión solo mueve interestedCount ±1 ("Me interesa")
+      allow update: if isSignedIn()
+                    && ((resource.data.userId == request.auth.uid
+                         && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['interestedCount', 'userId']))
+                        || onlyStepsCounter('interestedCount'));
+      allow delete: if isSignedIn()
                     && resource.data.userId == request.auth.uid;
+    }
+
+    // ===== game_stats (tendencias del feed; id = encodeURIComponent(game)) =====
+    // postCount lo mueve el cliente al crear/borrar posts (±1);
+    // searchCount solo la Cloud Function logGameSearch (Admin SDK)
+    match /game_stats/{gameId} {
+      allow read: if true;
+      allow create: if isSignedIn()
+                    && request.resource.data.keys().hasOnly(['game', 'postCount', 'updatedAt'])
+                    && request.resource.data.game is string
+                    && request.resource.data.postCount == 1;
+      allow update: if isSignedIn()
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['postCount', 'updatedAt'])
+                    && (request.resource.data.postCount == resource.data.get('postCount', 0) + 1
+                        || request.resource.data.postCount == resource.data.get('postCount', 0) - 1);
+      allow delete: if false;
     }
 
     // ===== post_comments (lectura pública) =====

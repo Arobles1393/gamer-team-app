@@ -8,13 +8,50 @@ import {
   getDocs,
   limit,
   addDoc,
-  onSnapshot
+  onSnapshot,
+  getDoc,
+  setDoc,
+  orderBy,
+  increment,
+  serverTimestamp
 } from "firebase/firestore";
 import { db, functions } from "../../firebase/config";
 import { httpsCallable } from "firebase/functions";
+import { gameStatsRef } from "../games/gameStats";
 
-const deletePost = (postId) => {
-  return deleteDoc(doc(db, "posts", postId));
+// Límite del operador "in" de Firestore
+const MAX_IN_VALUES = 30;
+
+// Contador de publicaciones por juego (tendencia por volumen). Si falla no
+// se revierte el post: la tendencia es secundaria y se corrige con el script
+// de backfill.
+const stepGamePostCount = async (game, step) => {
+  if (!game) return;
+
+  try {
+    await setDoc(
+      gameStatsRef(game),
+      {
+        game,
+        postCount: increment(step),
+        updatedAt: serverTimestamp()
+      },
+      { merge: true }
+    );
+  } catch (error) {
+    console.error("Error actualizando game_stats:", error);
+  }
+};
+
+const deletePost = async (postId) => {
+  const postRef = doc(db, "posts", postId);
+
+  // Se lee antes de borrar para saber de qué juego descontar
+  const snapshot = await getDoc(postRef);
+  const game = snapshot.data()?.game;
+
+  await deleteDoc(postRef);
+  await stepGamePostCount(game, -1);
 };
 
 const getExistingMedia = async (game) => {
@@ -46,11 +83,18 @@ const getExistingMedia = async (game) => {
   };
 };
 
-const createPost = (postData) => {
-  return addDoc(
+const createPost = async (postData) => {
+  const postRef = await addDoc(
     collection(db, "posts"),
-    postData
+    {
+      ...postData,
+      interestedCount: 0
+    }
   );
+
+  await stepGamePostCount(postData.game, 1);
+
+  return postRef;
 };
 
 
@@ -71,16 +115,43 @@ const subscribeToPost = (postId, onSuccess, onError) => {
   );
 };
 
+// Filtros:
+// - onlyMine + userId: posts de un usuario (Mis publicaciones)
+// - userIds: posts de varios autores (De tus amigos), máximo 30 por el "in"
+// - authorRegion: posts publicados desde una región (Cerca de ti)
+// sortBy: "recent" (createdAt) o "mostInterested" (interestedCount); sin
+// sortBy no se ordena (vistas planas que ordenan en el cliente).
+// Algunas combinaciones necesitan índice compuesto (firestore.indexes.json).
 const subscribeToPosts = (
-  { userId, onlyMine },
+  { userId, onlyMine, userIds, authorRegion, sortBy, limitCount },
   onSuccess,
   onError
 ) => {
-  const base = collection(db, "posts");
+  const constraints = [];
 
-  const q = onlyMine
-    ? query(base, where("userId", "==", userId))
-    : base;
+  if (onlyMine) {
+    constraints.push(where("userId", "==", userId));
+  }
+
+  if (userIds) {
+    constraints.push(where("userId", "in", userIds.slice(0, MAX_IN_VALUES)));
+  }
+
+  if (authorRegion) {
+    constraints.push(where("authorRegion", "==", authorRegion));
+  }
+
+  if (sortBy === "recent") {
+    constraints.push(orderBy("createdAt", "desc"));
+  } else if (sortBy === "mostInterested") {
+    constraints.push(orderBy("interestedCount", "desc"));
+  }
+
+  if (limitCount) {
+    constraints.push(limit(limitCount));
+  }
+
+  const q = query(collection(db, "posts"), ...constraints);
 
   return onSnapshot(
     q,

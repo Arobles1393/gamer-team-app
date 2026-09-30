@@ -306,6 +306,88 @@
   gap: 28px;
 }
 
+/* ---------- CATEGORÍAS (feed principal) ---------- */
+.feed-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.feed-section__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.feed .feed-section__title {
+  margin: 0;
+  font-family: var(--gm-font-display);
+  font-size: 19px;
+  font-weight: 400;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--gm-text);
+}
+
+.feed-section__more {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 6px;
+  padding: 4px 0;
+  border: none;
+  background: none;
+  font-family: var(--gm-font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gm-label);
+  cursor: pointer;
+}
+
+.feed-section__more .pi {
+  font-size: 11px;
+}
+
+.feed-section__more:hover {
+  color: var(--gm-text);
+}
+
+.feed-section__more:focus-visible {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Fila horizontal: 3 cards visibles en desktop, el resto con scroll.
+   El padding deja espacio al hover (translate) y al glow de la card,
+   que el overflow recortaría. */
+.feed-row {
+  --feed-row-gap: 28px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 2 * var(--feed-row-gap)) / 3);
+  gap: var(--feed-row-gap);
+  margin: -8px 0 -8px;
+  padding: 8px 0 28px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gm-border) transparent;
+}
+
+.feed-row__item {
+  display: flex;
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.feed-row__item > * {
+  flex: 1;
+  min-width: 0;
+}
+
 /* ---------- SKELETON ---------- */
 .post-card--skeleton {
   cursor: default;
@@ -396,6 +478,11 @@
     gap: 22px;
   }
 
+  .feed-row {
+    --feed-row-gap: 22px;
+    grid-auto-columns: calc((100% - var(--feed-row-gap)) / 2);
+  }
+
   .feed .feed-search {
     width: 240px;
   }
@@ -463,6 +550,16 @@
   .feed .post-grid {
     grid-template-columns: 1fr;
     gap: 18px;
+  }
+
+  /* Se asoma la siguiente card para indicar que hay scroll */
+  .feed-row {
+    --feed-row-gap: 14px;
+    grid-auto-columns: 85%;
+  }
+
+  .feed .feed-section__title {
+    font-size: 17px;
   }
 }
 

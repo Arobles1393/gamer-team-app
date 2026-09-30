@@ -9,12 +9,14 @@ const PLATFORM_OPTIONS = [
   { label: "Mobile", value: "mobile" }
 ];
 
-export const usePostFilters = (posts) => {
+// gameNames: juegos para el filtro (los de la lista en vistas planas, o
+// todos los de game_stats en el feed por categorías)
+export const usePostFilters = (gameNames) => {
   const [filterGame, setFilterGame] = useState(null);
   const [filterPlatform, setFilterPlatform] = useState(null);
 
   const gameOptions = useMemo(() => {
-    const games = [...new Set(posts.map(post => post.game))];
+    const games = [...new Set(gameNames)].filter(Boolean);
 
     return [
       { label: "Todos", value: "" },
@@ -23,7 +25,7 @@ export const usePostFilters = (posts) => {
         value: game
       }))
     ];
-  }, [posts]);
+  }, [gameNames]);
 
   return {
     filterGame,

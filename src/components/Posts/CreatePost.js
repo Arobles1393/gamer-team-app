@@ -5,7 +5,7 @@ import { Button } from "primereact/button";
 import { useGameSearch, useCreatePost } from "../../hooks";
 import { platforms } from "../../constants";
 import { getPlatformKey, platformIcons, platformLabels } from "../../utils";
-import { useCurrentUser } from "../../context";
+import { useCurrentUser, useCurrentUserData } from "../../context";
 import "./CreatePost.css";
 
 const MULTI = "multi";
@@ -75,6 +75,7 @@ function SelectedGame({ name, image, gamePlatforms, locked, onClear }) {
 
 export default function CreatePost({ editingPost, onClose, onSuccess, onError }) {
   const user = useCurrentUser();
+  const userData = useCurrentUserData();
   const [submitted, setSubmitted] = useState(false);
   const isEditing = Boolean(editingPost);
 
@@ -93,6 +94,7 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
     handleSubmit
   } = useCreatePost({
     user,
+    authorRegion: userData?.region,
     editingPost,
     onSuccess,
     onError

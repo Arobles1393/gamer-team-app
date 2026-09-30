@@ -13,6 +13,7 @@ const { getGameLogo, getGamePortada } = require("./steamgrid/steamgrid.functions
 const { syncGamingNews } = require("./gamingNews/gamingNews.functions");
 const { cleanupCommentMedia } = require("./postComments/postComments.functions");
 const { loginWithSteam } = require("./steamAuth/steamAuth.functions");
+const { logGameSearch } = require("./games/games.functions");
 
 exports.getSteamStats = getSteamStats;
 exports.getSteamPresence = getSteamPresence;
@@ -21,3 +22,4 @@ exports.getGamePortada = getGamePortada;
 exports.syncGamingNews = syncGamingNews;
 exports.cleanupCommentMedia = cleanupCommentMedia;
 exports.loginWithSteam = loginWithSteam;
+exports.logGameSearch = logGameSearch;
