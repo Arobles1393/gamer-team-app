@@ -76,6 +76,17 @@
   color: var(--gm-text);
 }
 
+/* Visitante sin sesión: ocupa el lugar del avatar, con el gradiente de marca */
+.rail-btn--login,
+.rail-btn--login:hover {
+  background: var(--gm-gradient);
+  color: #fff;
+}
+
+.rail-btn--login:hover {
+  box-shadow: var(--gm-cta-shadow);
+}
+
 .rail-btn:focus-visible,
 .app-rail__logo:focus-visible,
 .app-rail__avatar-btn:focus-visible {

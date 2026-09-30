@@ -5,14 +5,17 @@ import { useAuth } from "../hooks";
 // cada vez que cambia `userData` (por ejemplo, el lastSeen de presencia).
 const AuthUserContext = createContext(null);
 const UserDataContext = createContext(null);
+const AuthReadyContext = createContext(false);
 
 export const AuthProvider = ({ children }) => {
-  const { user, userData } = useAuth();
+  const { user, userData, ready } = useAuth();
 
   return (
     <AuthUserContext.Provider value={user}>
       <UserDataContext.Provider value={userData}>
-        {children}
+        <AuthReadyContext.Provider value={ready}>
+          {children}
+        </AuthReadyContext.Provider>
       </UserDataContext.Provider>
     </AuthUserContext.Provider>
   );
@@ -23,3 +26,6 @@ export const useCurrentUser = () => useContext(AuthUserContext);
 
 // Documento del usuario en Firestore (username, avatar, links...)
 export const useCurrentUserData = () => useContext(UserDataContext);
+
+// true cuando ya se sabe si hay sesión o no
+export const useAuthReady = () => useContext(AuthReadyContext);

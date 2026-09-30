@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { userService } from "../../services/users";
 
-export const useUserProfile = (userId) => {
+// publicOnly: para visitantes sin sesión (lee publicProfiles)
+export const useUserProfile = (userId, { publicOnly = false } = {}) => {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
@@ -23,11 +24,12 @@ export const useUserProfile = (userId) => {
           );
 
           setUserData(null);
-        }
+        },
+        { publicOnly }
       );
 
     return unsubscribe;
-  }, [userId]);
+  }, [userId, publicOnly]);
 
   return {
     userData

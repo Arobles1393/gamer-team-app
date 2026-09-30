@@ -1,5 +1,6 @@
 import { db, storage } from "../../firebase/config";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, writeBatch } from "firebase/firestore";
+import { publicProfileRef, pickPublicFields } from "./publicProfileService";
 import {
   ref,
   uploadBytes,
@@ -16,9 +17,19 @@ const uploadProfileImage = async (userId, file, type) => {
 
   const url = await getDownloadURL(storageRef);
 
-  await updateDoc(doc(db, "users", userId), {
-    [type]: url
-  });
+  const data = { [type]: url };
+
+  // El avatar también es público; el banner no
+  const publicData = pickPublicFields(data);
+
+  const batch = writeBatch(db);
+  batch.update(doc(db, "users", userId), data);
+
+  if (Object.keys(publicData).length) {
+    batch.set(publicProfileRef(userId), publicData, { merge: true });
+  }
+
+  await batch.commit();
 
   return url;
 };

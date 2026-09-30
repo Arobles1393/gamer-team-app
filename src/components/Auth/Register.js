@@ -15,7 +15,7 @@ import {
   AuthProviders
 } from "./ui";
 
-export default function Register({ onToggleMode }) {
+export default function Register({ onToggleMode, onBack }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
@@ -93,6 +93,7 @@ export default function Register({ onToggleMode }) {
         subtitle="Únete a la comunidad y encuentra jugadores como tú."
         tagline={"Tu próxima partida\nempieza aquí."}
         onSubmit={handleRegister}
+        onBack={onBack}
       >
         <AuthInput
           id="email"

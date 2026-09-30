@@ -2,6 +2,7 @@ import { memo } from "react";
 import { UserAvatar } from "../UserAvatar";
 import { useUserProfile } from "../../hooks";
 import { formatDates } from "../../utils";
+import { useCurrentUser } from "../../context";
 
 function CommentItem({
   comment,
@@ -10,7 +11,8 @@ function CommentItem({
   onDelete,
   onOpenProfile
 }) {
-  const { userData: author } = useUserProfile(comment.userId);
+  const user = useCurrentUser();
+  const { userData: author } = useUserProfile(comment.userId, { publicOnly: !user });
   const username = author?.username || "Jugador";
 
   const openProfile = () => onOpenProfile(comment.userId);

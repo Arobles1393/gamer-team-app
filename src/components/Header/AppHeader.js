@@ -8,13 +8,15 @@ import "./Header.css";
 
 /**
  * Navegación principal: rail vertical fijo a la izquierda en desktop,
- * barra inferior fija en mobile.
+ * barra inferior fija en mobile. Sin sesión (onLogin) muestra el botón de
+ * iniciar sesión en lugar del avatar.
  */
 export default function AppHeader({
   unreadCount,
   hasUnreadMessages,
   items,
-  onToggleNotifications
+  onToggleNotifications,
+  onLogin
 }) {
   const menuRef = useRef(null);
   const userData = useCurrentUserData();
@@ -46,20 +48,31 @@ export default function AppHeader({
 
       <div className="app-rail__spacer" />
 
-      <Menu ref={menuRef} model={items} popup className="gm-menu" />
-      <button
-        type="button"
-        className="app-rail__avatar-btn"
-        aria-label="Menú de cuenta"
-        aria-haspopup="menu"
-        onClick={handleToggleMenu}
-      >
-        <UserAvatar
-          image={userData?.avatar}
-          username={userData?.username}
-          className="app-rail__avatar"
+      {onLogin ? (
+        <RailButton
+          icon="pi-sign-in"
+          label="Iniciar sesión"
+          className="rail-btn--login"
+          onClick={onLogin}
         />
-      </button>
+      ) : (
+        <>
+          <Menu ref={menuRef} model={items} popup className="gm-menu" />
+          <button
+            type="button"
+            className="app-rail__avatar-btn"
+            aria-label="Menú de cuenta"
+            aria-haspopup="menu"
+            onClick={handleToggleMenu}
+          >
+            <UserAvatar
+              image={userData?.avatar}
+              username={userData?.username}
+              className="app-rail__avatar"
+            />
+          </button>
+        </>
+      )}
     </nav>
   );
 }

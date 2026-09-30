@@ -11,6 +11,7 @@ import PostInfoCard from "./PostInfoCard";
 import PostInterested from "./PostInterested";
 import CommentInput from "./CommentInput";
 import CommentItem from "./CommentItem";
+import CommentLoginPrompt from "./CommentLoginPrompt";
 import { postService } from "../../services/posts";
 import {
   usePost,
@@ -21,7 +22,8 @@ import {
   useFriendStatus,
   useProfileChat,
   useFriendRequest,
-  useProfileDialog
+  useProfileDialog,
+  useRequireAuth
 } from "../../hooks";
 import { confirmDeletePost, confirmDestructive } from "../../utils";
 import { useCurrentUser, useCurrentUserData } from "../../context";
@@ -55,17 +57,19 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
   const [togglingInterest, setTogglingInterest] = useState(false);
   const [openingChat, setOpeningChat] = useState(false);
 
+  const requireAuth = useRequireAuth(user);
+
   const { post, loading, error } = usePost(id);
-  const { userData: postAuthor } = useUserProfile(post?.userId);
+  const { userData: postAuthor } = useUserProfile(post?.userId, { publicOnly: !user });
 
   const { comments, publishComment, removeComment } = usePostComments(
     id,
     post?.userId,
-    user.uid
+    user?.uid
   );
 
   const { interestedUserIds, interestedCount, isInterested, interestedDoc } =
-    usePostInterestStatus(id, user.uid);
+    usePostInterestStatus(id, user?.uid);
 
   const showError = useCallback((detail) => {
     toast.current?.show({ severity: "error", summary: "Error", detail, life: 3000 });
@@ -132,7 +136,7 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
     return null;
   }
 
-  const isOwner = post.userId === user.uid;
+  const isOwner = post.userId === user?.uid;
 
   const handleBack = () => {
     // Sin historial (link directo) se regresa al feed
@@ -231,11 +235,15 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
               <span className="post-detail__count">{comments.length}</span>
             )}
           >
-            <CommentInput
-              currentUser={currentUserData}
-              onPublish={handlePublish}
-              onError={showError}
-            />
+            {user ? (
+              <CommentInput
+                currentUser={currentUserData}
+                onPublish={handlePublish}
+                onError={showError}
+              />
+            ) : (
+              <CommentLoginPrompt onLogin={requireAuth} />
+            )}
 
             {comments.length > 0 ? (
               <ul className="post-comments__list">
@@ -243,7 +251,7 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
                   <CommentItem
                     key={item.id}
                     comment={item}
-                    isOwn={item.userId === user.uid}
+                    isOwn={item.userId === user?.uid}
                     isHost={item.userId === post.userId}
                     onDelete={confirmDeleteComment}
                     onOpenProfile={openProfile}

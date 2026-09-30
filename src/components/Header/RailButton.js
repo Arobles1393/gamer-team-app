@@ -11,7 +11,8 @@ export default function RailButton({
   label,
   onClick,
   dot = false,
-  badge = 0
+  badge = 0,
+  className = ""
 }) {
   const content = (
     <>
@@ -34,7 +35,7 @@ export default function RailButton({
         end={end}
         title={label}
         aria-label={accessibleLabel}
-        className={({ isActive }) => `rail-btn${isActive ? " rail-btn--active" : ""}`}
+        className={({ isActive }) => `rail-btn${isActive ? " rail-btn--active" : ""} ${className}`.trim()}
       >
         {content}
       </NavLink>
@@ -44,7 +45,7 @@ export default function RailButton({
   return (
     <button
       type="button"
-      className="rail-btn"
+      className={`rail-btn ${className}`.trim()}
       title={label}
       aria-label={accessibleLabel}
       onClick={onClick}

@@ -3,10 +3,13 @@ import { Skeleton } from "primereact/skeleton";
 import { ProfileSection } from "../ProfileSection";
 import { useUserProfiles } from "../../hooks";
 import { getPresenceLabel, isOnline } from "../../utils";
+import { useCurrentUser } from "../../context";
 
 // Jugadores que tocaron "Quiero jugar": el anfitrión puede abrir su perfil y escribirles
 export default function PostInterested({ userIds, isOwner, onOpenProfile }) {
-  const { users, loading } = useUserProfiles(userIds);
+  const user = useCurrentUser();
+  // Sin sesión solo hay perfil público: sin presencia (lastSeen)
+  const { users, loading } = useUserProfiles(userIds, { publicOnly: !user });
 
   const renderBody = () => {
     if (loading) {
@@ -54,9 +57,11 @@ export default function PostInterested({ userIds, isOwner, onOpenProfile }) {
                 </span>
                 <span className="post-interested__text">
                   <span className="post-interested__name">{player.username}</span>
-                  <span className={`post-interested__status${online ? " post-interested__status--online" : ""}`}>
-                    {getPresenceLabel(player.lastSeen)}
-                  </span>
+                  {user && (
+                    <span className={`post-interested__status${online ? " post-interested__status--online" : ""}`}>
+                      {getPresenceLabel(player.lastSeen)}
+                    </span>
+                  )}
                 </span>
                 <i className="pi pi-chevron-right post-interested__arrow" aria-hidden="true" />
               </button>

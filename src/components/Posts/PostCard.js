@@ -42,7 +42,7 @@ function PostCard({
   const navigate = useNavigate();
   const user = useCurrentUser();
 
-  const { userData: author } = useUserProfile(post.userId);
+  const { userData: author } = useUserProfile(post.userId, { publicOnly: !user });
 
   const isInterested = Boolean(interestedDoc);
 
@@ -76,7 +76,7 @@ function PostCard({
     }
   }, [handleOpenPost]);
 
-  const isOwner = post.userId === user.uid;
+  const isOwner = post.userId === user?.uid;
 
   const showInterestedBadge = !isOwner && isInterested;
 

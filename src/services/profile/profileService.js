@@ -1,15 +1,17 @@
 import { db } from "../../firebase/config";
-import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, writeBatch } from "firebase/firestore";
+import { publicProfileRef, pickPublicFields } from "./publicProfileService";
 
 const userProfileExists = async (userId) => {
   const snapshot = await getDoc(doc(db, "users", userId));
   return snapshot.exists();
 };
 
+// users y publicProfiles se escriben juntos para que no se desincronicen
 const updateUserProfile = async (userId, profileData) => {
   const userRef = doc(db, "users", userId);
 
-  await updateDoc(userRef, {
+  const data = {
     username: profileData.username,
     usernameLower: profileData.username.trim().toLowerCase(),
     phone: profileData.phone,
@@ -17,14 +19,21 @@ const updateUserProfile = async (userId, profileData) => {
     description: profileData.description,
     games: profileData.games,
     region: profileData.region
-  });
+  };
+
+  const batch = writeBatch(db);
+  batch.update(userRef, data);
+  batch.set(publicProfileRef(userId), pickPublicFields(data), { merge: true });
+  await batch.commit();
 };
 
 const createUserProfile = async (
   userId,
   profileData
 ) => {
-  await setDoc(
+  const batch = writeBatch(db);
+
+  batch.set(
     doc(db, "users", userId),
     {
       ...profileData,
@@ -35,6 +44,17 @@ const createUserProfile = async (
       createdAt: new Date()
     }
   );
+
+  batch.set(
+    publicProfileRef(userId),
+    pickPublicFields({
+      avatar: null,
+      region: null,
+      ...profileData
+    })
+  );
+
+  await batch.commit();
 };
 
 export const profileService = {

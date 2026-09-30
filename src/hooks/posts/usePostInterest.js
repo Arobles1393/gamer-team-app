@@ -1,10 +1,15 @@
 import { useCallback } from "react";
 import { interestService } from "../../services/posts";
+import { useRequireAuth } from "../auth/useRequireAuth";
 
 export const usePostInterest = (user, onError) => {
+  const requireAuth = useRequireAuth(user);
+
 
   const handleInterested = useCallback(
     async (post, interestedDoc) => {
+      if (!requireAuth()) return false;
+
       try {
         return await interestService.toggleInterested({
           post,
@@ -16,7 +21,7 @@ export const usePostInterest = (user, onError) => {
         return false;
       }
     },
-    [user, onError]
+    [user, onError, requireAuth]
   );
 
   return {

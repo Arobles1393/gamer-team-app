@@ -6,6 +6,8 @@ import { userService } from "../../services/users";
 export const useAuth = () => {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
+  // false hasta que Firebase confirma si hay sesión (evita redirigir al login al recargar)
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     let unsubscribeUserDoc = null;
@@ -19,6 +21,7 @@ export const useAuth = () => {
         }
 
         setUser(currentUser);
+        setReady(true);
 
         if (!currentUser) {
           setUserData(null);
@@ -54,6 +57,7 @@ export const useAuth = () => {
 
   return {
     user,
-    userData
+    userData,
+    ready
   };
 };

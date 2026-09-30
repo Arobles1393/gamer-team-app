@@ -12,12 +12,13 @@ import ProfileNudge from "./ProfileNudge";
 import "./Feed.css";
 import { UserProfileDialog } from "../UserProfile";
 import { useFriendStatus, usePosts, useInterestedPosts, useFilteredPosts, usePostFilters, useProfileChat, usePostInterest,
-  useFriendRequest, useProfileDialog } from "../../hooks";
+  useFriendRequest, useProfileDialog, useRequireAuth } from "../../hooks";
 import { useCurrentUser, useCurrentUserData } from "../../context";
 
 export default function PostList({ setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
   const user = useCurrentUser();
   const userData = useCurrentUserData();
+  const requireAuth = useRequireAuth(user);
 
 
   const {
@@ -35,9 +36,9 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
   // "Mis partidas": posts marcados con "me interesa" (colección post_interested)
   const posts = useMemo(
     () => joined
-      ? allPosts.filter((post) => interestedMap.has(`${post.id}_${user.uid}`))
+      ? allPosts.filter((post) => interestedMap.has(`${post.id}_${user?.uid}`))
       : allPosts,
-    [allPosts, joined, interestedMap, user.uid]
+    [allPosts, joined, interestedMap, user?.uid]
   );
 
   const {
@@ -159,7 +160,7 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
         title={title}
         search={search}
         onSearchChange={setSearch}
-        onCreatePost={() => setShowCreatePost(true)}
+        onCreatePost={() => requireAuth() && setShowCreatePost(true)}
       />
       {userData && !userData.region && <ProfileNudge />}
       <PostFilters
@@ -184,7 +185,7 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
             <PostCard
               key={post.id}
               post={post}
-              interestedDoc={ interestedMap.get(`${post.id}_${user.uid}`) }
+              interestedDoc={ interestedMap.get(`${post.id}_${user?.uid}`) }
               onToggleInterested={handleInterested}
               onEdit={handleEditPost}
               onDelete={confirmDelete}

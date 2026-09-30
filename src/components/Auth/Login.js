@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { Toast } from "primereact/toast";
-import { useNavigate } from "react-router-dom";
 import { getAuthErrorMessage } from "../../utils/authErrors";
 import { authService } from "../../services/auth";
 import { useProviderLogin } from "../../hooks";
@@ -13,11 +12,10 @@ import {
   AuthProviders
 } from "./ui";
 
-export default function Login({ onToggleMode }) {
+export default function Login({ onToggleMode, onBack }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const toast = useRef(null);
 
   const { loadingProvider, loginWith } = useProviderLogin((message) => {
@@ -34,11 +32,11 @@ export default function Login({ onToggleMode }) {
     setLoading(true);
 
     try {
+      // LoginPage redirige al detectar la sesión
       await authService.login(
         email,
         password
       );
-      navigate("/");
     } catch (error) {
       toast.current?.show({
         severity: "error",
@@ -58,6 +56,7 @@ export default function Login({ onToggleMode }) {
         subtitle="Inicia sesión para encontrar tu próximo squad."
         tagline={"Encuentra tu squad.\nCuando quieras jugar."}
         onSubmit={handleLogin}
+        onBack={onBack}
       >
         <AuthInput
           id="email"

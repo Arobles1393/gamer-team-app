@@ -7,6 +7,7 @@ import { Friends } from "../components/Friends";
 import { FindPlayers } from "../components/FindPlayers";
 import { GamingNews } from "../components/GamingNews";
 import { NotFound } from "../components/NotFound";
+import RequireAuth from "./RequireAuth";
 
 const AppRoutes = ({
 	setEditingPost,
@@ -27,32 +28,40 @@ const AppRoutes = ({
 			<Route
 				path="/profile"
 				element={
-					<Profile />
+					<RequireAuth>
+						<Profile />
+					</RequireAuth>
 				}
 			/>
 			<Route
 				path="/myposts"
 				element={
-					<PostList
-						setEditingPost={setEditingPost}
-						setShowCreatePost={setShowCreatePost}
-						onlyMine
-					/>
+					<RequireAuth>
+						<PostList
+							setEditingPost={setEditingPost}
+							setShowCreatePost={setShowCreatePost}
+							onlyMine
+						/>
+					</RequireAuth>
 				}
 			/>
 			<Route
 				path="/myparties"
 				element={
-					<PostList
-						setShowCreatePost={setShowCreatePost}
-						joined
-					/>
+					<RequireAuth>
+						<PostList
+							setShowCreatePost={setShowCreatePost}
+							joined
+						/>
+					</RequireAuth>
 				}
 			/>
 			<Route
 				path="/chat"
 				element={
-					<ChatPage />
+					<RequireAuth>
+						<ChatPage />
+					</RequireAuth>
 				}
 			/>
 			<Route
@@ -66,15 +75,27 @@ const AppRoutes = ({
 			/>
 			<Route
 				path="/notifications"
-				element={<Notifications />}
+				element={
+					<RequireAuth>
+						<Notifications />
+					</RequireAuth>
+				}
 			/>
 			<Route
 				path="/friends"
-				element={<Friends />}
+				element={
+					<RequireAuth>
+						<Friends />
+					</RequireAuth>
+				}
 			/>
 			<Route
 				path="/findPlayers"
-				element={<FindPlayers />}
+				element={
+					<RequireAuth>
+						<FindPlayers />
+					</RequireAuth>
+				}
 			/>
 			<Route
 				path="/news"

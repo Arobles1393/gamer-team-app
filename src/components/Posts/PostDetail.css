@@ -451,6 +451,29 @@
 }
 
 /* ---------- COMPOSER ---------- */
+/* Visitante sin sesión: en lugar del composer */
+.comment-login {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  padding: 14px 16px;
+  border: 1px dashed var(--gm-border);
+  border-radius: 12px;
+}
+
+.comment-login__text {
+  margin: 0;
+  font-size: 14px;
+  color: var(--gm-muted);
+}
+
+.post-detail .comment-login__btn.p-button {
+  flex-shrink: 0;
+  height: 38px;
+}
+
 .comment-composer {
   display: flex;
   gap: 14px;
