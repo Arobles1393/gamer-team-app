@@ -1,88 +1,63 @@
-import { useEffect, useRef, useState } from "react";
-import { Button } from "primereact/button";
-import { Avatar } from "primereact/avatar";
-import { InputTextarea } from "primereact/inputtextarea";
+import ChatAvatar from "./ChatAvatar";
+import MessageList from "./MessageList";
+import MessageComposer from "./MessageComposer";
 import { useChatWindow, useUserProfile } from "../../hooks";
-import { formatDates } from "../../utils";
+import { getPresenceLabel, isOnline } from "../../utils";
 import { useCurrentUser } from "../../context";
 
-export default function ChatWindow({ chatId }) {
+export default function ChatWindow({ chatId, onBack, onError }) {
   const user = useCurrentUser();
-  const [newMessage, setNewMessage] = useState("");
-  const messagesEndRef = useRef(null);
 
-  const { messages, otherUserId, sendMessage } = useChatWindow(
+  const { messages, loading, otherUserId, sendMessage } = useChatWindow(
     chatId,
     user.uid
   );
 
   const { userData: otherUser } = useUserProfile(otherUserId);
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  const online = isOnline(otherUser?.lastSeen);
 
-  if (!chatId) return null;
-
-  const handleSend = async () => {
-    if (!newMessage.trim()) return;
-
-    await sendMessage(newMessage);
-    setNewMessage("");
+  const handleSend = async (text) => {
+    try {
+      await sendMessage(text);
+    } catch (error) {
+      console.error("Error enviando mensaje:", error);
+      onError?.("No se pudo enviar el mensaje. Intenta de nuevo.");
+      // El composer devuelve el texto al input
+      throw error;
+    }
   };
 
   return (
-    <div className="chat-window">
-      <div className="chat-header">
-        <Avatar
-          image={otherUser?.avatar}
-          label={otherUser?.username?.charAt(0)?.toUpperCase()}
-          shape="circle"
-        />
+    <section className="chat-window" aria-label={`Chat con ${otherUser?.username || "usuario"}`}>
+      <header className="chat-window__header">
+        <button
+          type="button"
+          className="chat-window__back"
+          aria-label="Volver a los chats"
+          onClick={onBack}
+        >
+          <i className="pi pi-arrow-left" aria-hidden="true" />
+        </button>
 
-        <div>
-          <strong>{otherUser?.username || "Usuario"}</strong>
-          <small>{formatDates.formatLastSeen(otherUser?.lastSeen)}</small>
+        <ChatAvatar user={otherUser} size="sm" />
+
+        <div className="chat-window__who">
+          <h2 className="chat-window__name">{otherUser?.username || "Usuario"}</h2>
+          <span className={`chat-window__status${online ? " chat-window__status--online" : ""}`}>
+            {getPresenceLabel(otherUser?.lastSeen)}
+          </span>
         </div>
-      </div>
+      </header>
 
-      <div className="chat-messages">
-        {messages.length === 0 && (
-          <div className="chat-empty-messages">
-            Inicia la conversación 🎮
-          </div>
-        )}
+      <MessageList
+        messages={messages}
+        loading={loading}
+        currentUserId={user.uid}
+        otherUsername={otherUser?.username}
+      />
 
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={msg.senderId === user.uid ? "my-msg" : "other-msg"}
-          >
-            <div>{msg.text}</div>
-            <small>{formatDates.formatMessageTime(msg.createdAt)}</small>
-          </div>
-        ))}
-
-        <div ref={messagesEndRef}></div>
-      </div>
-
-      <div className="chat-input">
-        <InputTextarea
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Escribe un mensaje..."
-          autoResize
-          rows={1}
-          style={{ width: "100%" }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleSend();
-            }
-          }}
-        />
-        <Button icon="pi pi-send" rounded text onClick={handleSend} />
-      </div>
-    </div>
+      <MessageComposer onSend={handleSend} disabled={!otherUserId} />
+    </section>
   );
-}
+}

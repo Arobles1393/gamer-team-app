@@ -1,0 +1,189 @@
+import { useCallback, useEffect, useState } from "react";
+import { postService } from "../../services/posts";
+import { getGameDetail } from "../../utils";
+
+export const useCreatePost = ({
+  user,
+  editingPost,
+  onSuccess,
+  onError
+}) => {
+
+  const [game, setGame] = useState({});
+  // Jugadores que faltan: número (los posts viejos lo guardaban como texto)
+  const [players, setPlayers] = useState(1);
+  const [comments, setComments] = useState("");
+  const [platform, setPlatform] = useState("");
+  const [multiplatform, setMultiplatform] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const resetForm = useCallback(() => {
+    setGame({});
+    setPlayers(1);
+    setComments("");
+    setPlatform("");
+    setMultiplatform(false);
+  }, []);
+
+  useEffect(() => {
+    if (!editingPost) {
+      resetForm();
+      return;
+    }
+
+    setGame(editingPost.game || "");
+    setPlatform(editingPost.platform || "");
+    setPlayers(Number(editingPost.playersNeeded) || 1);
+    setComments(editingPost.comments || "");
+    setMultiplatform(editingPost.multiplatform ?? false);
+  }, [editingPost, resetForm]);
+
+  const handleSubmit = useCallback(async (e) => {
+    e.preventDefault();
+
+    const gameName =
+      typeof game === "string"
+        ? game.trim()
+        : game?.value?.trim();
+
+    if (
+      !gameName ||
+      !players ||
+      !comments?.trim() ||
+      (!multiplatform && !platform)
+    ) {
+      onError?.("Completa todos los campos");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+
+      let steamAppId = editingPost?.steamAppId ?? null;
+      let gameClip = editingPost?.clip ?? null;
+
+      if (game.id && !editingPost) {
+        const detail = await getGameDetail(game.id);
+        steamAppId = detail.steamAppId ?? steamAppId;
+        gameClip = detail.clip ?? gameClip;
+      }
+
+      const media = await postService.getExistingMedia(
+        gameName
+      );
+
+      let image = media.image;
+      let clip = media.clip;
+      let logo = media.logo;
+      let portada = media.portada;
+
+      if (!image) {
+        image =
+          game.image ??
+          editingPost?.image ??
+          null;
+      }
+
+      if (!clip) {
+        clip = gameClip;
+      }
+
+      if (!logo) {
+        logo = await postService.fetchGameLogo(
+          steamAppId,
+          gameName
+        );
+      }
+
+      if (!portada) {
+        portada = await postService.fetchGamePortada(
+          steamAppId,
+          gameName
+        );
+      }
+
+      const postData = {
+        game: gameName,
+        platform,
+        playersNeeded: players,
+        comments,
+        image,
+        logo: logo ?? editingPost?.logo ?? null,
+        clip,
+        portada: portada ?? editingPost?.portada ?? null,
+        platforms:
+          game.platforms ??
+          editingPost?.platforms ??
+          null,
+        multiplatform
+      };
+
+      if (editingPost) {
+
+        await postService.updatePost(
+          editingPost.id,
+          postData
+        );
+
+        onSuccess?.("actualizar");
+
+      } else {
+
+        await postService.createPost({
+          ...postData,
+          userId: user.uid,
+          createdAt: new Date()
+        });
+
+        onSuccess?.("guardar");
+      }
+
+      resetForm();
+
+    } catch (error) {
+
+      console.error(
+        "Error al guardar publicación:",
+        error
+      );
+
+      onError?.(
+        editingPost
+          ? "No se pudo actualizar la publicación"
+          : "No se pudo guardar la publicación"
+      );
+
+    } finally {
+      setLoading(false);
+    }
+
+  }, [
+    game,
+    players,
+    comments,
+    platform,
+    multiplatform,
+    editingPost,
+    user,
+    resetForm,
+    onSuccess,
+    onError
+  ]);
+
+  return {
+    game,
+    setGame,
+    players,
+    setPlayers,
+    comments,
+    setComments,
+    platform,
+    setPlatform,
+    multiplatform,
+    setMultiplatform,
+    loading,
+    resetForm,
+    handleSubmit
+  };
+};

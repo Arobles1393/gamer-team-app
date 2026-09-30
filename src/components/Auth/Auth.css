@@ -1,0 +1,686 @@
+/* =====================================================
+   AUTH — layout y controles compartidos por Login y Register.
+   Los colores base vienen de src/styles/theme.css (--gm-*).
+   Los selectores llevan el prefijo .auth porque el tema de
+   PrimeReact se carga después y ganaría a igual especificidad.
+   ===================================================== */
+.auth {
+  --auth-bg: var(--gm-bg);
+  --auth-primary: var(--gm-primary);
+  --auth-accent: var(--gm-accent);
+  --auth-text: var(--gm-text);
+  --auth-muted: var(--gm-muted);
+  --auth-label: var(--gm-label);
+  --auth-hint: var(--gm-hint);
+  --auth-icon: var(--gm-subtle);
+  --auth-border: var(--gm-border);
+  --auth-input-bg: var(--gm-surface);
+  --auth-focus-ring: var(--gm-focus-ring);
+  --auth-placeholder: rgba(148, 163, 184, 0.6);
+  --auth-gradient: var(--gm-gradient);
+
+  --auth-control-h: 46px;
+  --auth-field-gap: 20px;
+  --auth-title-size: 32px;
+  --auth-media-h: 220px;
+  --auth-badge-size: 34px;
+
+  display: flex;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--auth-bg);
+  color: var(--auth-text);
+  font-family: "Chakra Petch", sans-serif;
+}
+
+/* Variante compacta (Register): más campos, menos aire */
+.auth--compact {
+  --auth-control-h: 44px;
+  --auth-field-gap: 14px;
+  --auth-title-size: 30px;
+  --auth-media-h: 150px;
+}
+
+/* ---------- MARCA ---------- */
+.auth__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.auth__brand--media {
+  display: none;
+}
+
+.auth__badge {
+  display: grid;
+  place-items: center;
+  width: var(--auth-badge-size);
+  height: var(--auth-badge-size);
+  border-radius: 8px;
+  background: var(--auth-gradient);
+  font-family: "Russo One", sans-serif;
+  font-size: calc(var(--auth-badge-size) * 0.38);
+  color: #fff;
+}
+
+.auth__brand-name {
+  font-family: "Russo One", sans-serif;
+  font-size: 15px;
+  letter-spacing: 2px;
+  color: var(--auth-label);
+}
+
+/* ---------- PANEL FORMULARIO ---------- */
+.auth__panel {
+  order: 0;
+  flex: 0 0 560px;
+  display: flex;
+  flex-direction: column;
+  padding: 64px 80px;
+  overflow-y: auto;
+  /* Sigue haciendo scroll si hace falta, pero sin mostrar la barra */
+  scrollbar-width: none;
+}
+
+.auth__panel::-webkit-scrollbar {
+  display: none;
+}
+
+.auth__form {
+  display: flex;
+  flex-direction: column;
+  margin: auto 0;
+  padding: 48px 0;
+}
+
+/* Arriba, no centrado: 5 campos no caben centrados en todas las alturas */
+.auth--compact .auth__panel {
+  padding-top: 32px;
+  padding-bottom: 24px;
+}
+
+.auth--compact .auth__form {
+  margin: 0;
+  padding: 24px 0 0;
+}
+
+.auth--compact .auth__label {
+  margin-bottom: 6px;
+}
+
+.auth--compact .auth__switch {
+  margin-top: 18px;
+}
+
+.auth .auth__title {
+  margin: 0 0 12px;
+  font-family: "Russo One", sans-serif;
+  font-size: var(--auth-title-size);
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  line-height: 1.15;
+  text-transform: uppercase;
+  color: var(--auth-text);
+}
+
+.auth__subtitle {
+  margin: 0 0 36px;
+  font-size: 16px;
+  color: var(--auth-muted);
+}
+
+.auth--compact .auth__subtitle {
+  margin-bottom: 22px;
+}
+
+/* ---------- CAMPO ---------- */
+.auth__field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--auth-field-gap);
+}
+
+.auth__label {
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--auth-label);
+}
+
+.auth__label-hint {
+  margin-left: 4px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--auth-hint);
+}
+
+/* ---------- INPUT (InputText / input de Password) ---------- */
+.auth .auth__input.p-inputtext {
+  width: 100%;
+  height: var(--auth-control-h);
+  padding: 0 16px;
+  border: 1px solid var(--auth-border);
+  border-radius: 10px;
+  background: var(--auth-input-bg);
+  color: var(--auth-text);
+  font-family: "Chakra Petch", sans-serif;
+  font-size: 15px;
+  box-shadow: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth .auth__input.p-inputtext::placeholder {
+  color: var(--auth-placeholder);
+}
+
+.auth .auth__input.p-inputtext:enabled:hover {
+  border-color: var(--auth-border);
+}
+
+.auth .auth__input.p-inputtext:enabled:focus {
+  border-color: var(--auth-primary);
+  box-shadow: var(--auth-focus-ring);
+  outline: none;
+}
+
+/* ---------- PASSWORD ---------- */
+.auth .auth__password.p-password {
+  display: block;
+  position: relative;
+  width: 100%;
+}
+
+.auth .auth__password .auth__input.p-inputtext {
+  padding-right: 48px;
+}
+
+/* Oculta el botón nativo de mostrar contraseña de Edge */
+.auth .auth__password .auth__input::-ms-reveal,
+.auth .auth__password .auth__input::-ms-clear {
+  display: none;
+}
+
+.auth .auth__password .p-input-icon {
+  position: absolute;
+  top: 0;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 100%;
+  margin: 0;
+  color: var(--auth-muted);
+}
+
+.auth .auth__password .p-input-icon:hover {
+  color: var(--auth-text);
+}
+
+.auth .auth__password .p-password-show-icon,
+.auth .auth__password .p-password-hide-icon {
+  position: static;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  transform: none;
+  cursor: pointer;
+}
+
+/* ---------- SELECT (Dropdown) ---------- */
+.auth .auth__select.p-dropdown {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: var(--auth-control-h);
+  border: 1px solid var(--auth-border);
+  border-radius: 10px;
+  background: var(--auth-input-bg);
+  box-shadow: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth .auth__select.p-dropdown:not(.p-disabled):hover {
+  border-color: var(--auth-border);
+}
+
+.auth .auth__select.p-dropdown:not(.p-disabled).p-focus {
+  border-color: var(--auth-primary);
+  box-shadow: var(--auth-focus-ring);
+}
+
+.auth .auth__select .p-dropdown-label {
+  padding: 0 16px;
+  border: none;
+  background: transparent;
+  font-family: "Chakra Petch", sans-serif;
+  font-size: 15px;
+  color: var(--auth-text);
+}
+
+.auth .auth__select .p-dropdown-label.p-placeholder {
+  color: var(--auth-placeholder);
+}
+
+.auth .auth__select .p-dropdown-trigger {
+  width: 44px;
+  color: var(--auth-icon);
+}
+
+/* El panel se monta en <body>, fuera de .auth: colores directos */
+.auth__select-panel.p-dropdown-panel {
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  border-radius: 10px;
+  background: #16152E;
+  font-family: "Chakra Petch", sans-serif;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.7);
+}
+
+.auth__select-panel.p-dropdown-panel .p-dropdown-header {
+  border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+  background: transparent;
+}
+
+.auth__select-panel.p-dropdown-panel .p-dropdown-filter.p-inputtext {
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  border-radius: 8px;
+  background: rgba(30, 28, 53, 0.6);
+  color: #E2E8F0;
+  font-family: inherit;
+}
+
+.auth__select-panel.p-dropdown-panel .p-dropdown-filter.p-inputtext:focus {
+  border-color: #7C3AED;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25);
+}
+
+.auth__select-panel.p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+  color: #E2E8F0;
+}
+
+.auth__select-panel.p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover,
+.auth__select-panel.p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled).p-focus {
+  background: rgba(124, 58, 237, 0.18);
+  color: #E2E8F0;
+}
+
+.auth__select-panel.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight,
+.auth__select-panel.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight.p-focus {
+  background: rgba(124, 58, 237, 0.35);
+  color: #fff;
+}
+
+/* ---------- BOTÓN ---------- */
+.auth .auth__submit.p-button {
+  justify-content: center;
+  width: 100%;
+  height: 48px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 10px;
+  background: var(--auth-gradient);
+  color: #fff;
+  box-shadow: 0 10px 30px -10px rgba(244, 63, 94, 0.55);
+  transition: filter 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+}
+
+.auth .auth__submit.p-button .p-button-label {
+  flex: 0 0 auto;
+  font-family: "Russo One", sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.auth .auth__submit.p-button:not(:disabled):hover {
+  background: var(--auth-gradient);
+  color: #fff;
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.auth .auth__submit.p-button:focus-visible {
+  outline: 2px solid var(--auth-label);
+  outline-offset: 3px;
+  box-shadow: 0 10px 30px -10px rgba(244, 63, 94, 0.55);
+}
+
+.auth .auth__submit.p-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- SEPARADOR "O CONTINÚA CON" ---------- */
+.auth__divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 24px 0 16px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--auth-icon);
+}
+
+.auth__divider::before,
+.auth__divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--gm-border-soft);
+}
+
+.auth--compact .auth__divider {
+  margin: 18px 0 12px;
+}
+
+/* ---------- BOTÓN GOOGLE ----------
+   Variante oscura oficial de "Sign in with Google" (colores y tipografía
+   de las guías de marca de Google); solo el radio y el alto siguen al
+   resto de botones del formulario. */
+.auth .auth__google.p-button {
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid #8E918F;
+  border-radius: 10px;
+  background: #131314;
+  color: #E3E3E3;
+  box-shadow: none;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.auth .auth__google.p-button .p-button-label {
+  flex: 0 0 auto;
+  font-family: "Roboto", "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.25px;
+}
+
+.auth .auth__google.p-button .p-button-icon {
+  margin: 0;
+}
+
+.auth__google-logo {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.auth .auth__google.p-button:not(:disabled):hover {
+  border-color: #8E918F;
+  background: #1F1F1F;
+  color: #E3E3E3;
+}
+
+.auth .auth__google.p-button:focus-visible {
+  outline: 2px solid var(--auth-label);
+  outline-offset: 3px;
+  box-shadow: none;
+}
+
+.auth .auth__google.p-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- BOTONES DE PROVEEDORES ---------- */
+.auth__providers {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auth--compact .auth__providers {
+  gap: 10px;
+}
+
+/* ---------- BOTÓN STEAM ----------
+   Colores del botón oficial "Sign in through Steam" de Valve; como con
+   Google, solo el radio y el alto siguen al resto del formulario. */
+.auth .auth__steam.p-button {
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid #2A475E;
+  border-radius: 10px;
+  background: #171A21;
+  color: #FFFFFF;
+  box-shadow: none;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.auth .auth__steam.p-button .p-button-label {
+  flex: 0 0 auto;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.25px;
+}
+
+.auth .auth__steam.p-button .p-button-icon {
+  margin: 0;
+}
+
+.auth__steam-logo {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.auth .auth__steam.p-button:not(:disabled):hover {
+  border-color: #66C0F4;
+  background: #1B2838;
+  color: #FFFFFF;
+}
+
+.auth .auth__steam.p-button:focus-visible {
+  outline: 2px solid var(--auth-label);
+  outline-offset: 3px;
+  box-shadow: none;
+}
+
+.auth .auth__steam.p-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- RETORNO DE STEAM (popup) ---------- */
+.auth-return {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 16px;
+  background: var(--gm-bg);
+  color: var(--gm-muted);
+  font-family: "Chakra Petch", sans-serif;
+  font-size: 15px;
+  text-align: center;
+}
+
+/* ---------- CAMBIO DE MODO ---------- */
+.auth__switch {
+  margin: 24px 0 0;
+  text-align: center;
+  font-size: 15px;
+  color: var(--auth-muted);
+}
+
+.auth__switch button {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: 700;
+  color: var(--auth-label);
+  cursor: pointer;
+}
+
+.auth__switch button:hover,
+.auth__switch button:focus-visible {
+  color: var(--auth-text);
+  text-decoration: underline;
+}
+
+/* ---------- PANEL VIDEO ---------- */
+.auth__media {
+  order: 1;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: var(--auth-gradient);
+}
+
+.auth__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.auth__media-fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--auth-bg) 0%, rgba(15, 15, 35, 0) 22%);
+  pointer-events: none;
+}
+
+.auth__tagline {
+  position: absolute;
+  left: 64px;
+  bottom: 64px;
+  margin: 0;
+  font-family: "Russo One", sans-serif;
+  font-size: 26px;
+  letter-spacing: 1px;
+  line-height: 1.35;
+  text-transform: uppercase;
+  white-space: pre-line;
+  color: var(--auth-text);
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.7);
+}
+
+.auth__tagline::before {
+  content: "";
+  display: block;
+  width: 56px;
+  height: 3px;
+  margin-bottom: 20px;
+  background: var(--auth-text);
+  opacity: 0.6;
+}
+
+/* ---------- LAPTOPS ESTRECHOS ---------- */
+@media (max-width: 1024px) and (min-width: 768px) {
+  .auth__panel {
+    flex-basis: 460px;
+    padding-left: 48px;
+    padding-right: 48px;
+  }
+}
+
+/* ---------- MOBILE ---------- */
+@media (max-width: 767px) {
+  .auth {
+    --auth-control-h: 50px;
+    --auth-title-size: 26px;
+    flex-direction: column;
+  }
+
+  .auth--compact {
+    --auth-control-h: 46px;
+    --auth-title-size: 22px;
+    --auth-badge-size: 28px;
+  }
+
+  .auth__media {
+    order: 0;
+    flex: 0 0 var(--auth-media-h);
+  }
+
+  .auth__media-fade {
+    background: linear-gradient(0deg, var(--auth-bg) 0%, rgba(15, 15, 35, 0) 55%);
+  }
+
+  .auth__brand--media {
+    display: flex;
+    position: absolute;
+    top: 20px;
+    left: 16px;
+  }
+
+  .auth--compact .auth__brand--media {
+    top: 16px;
+  }
+
+  .auth__brand--media .auth__brand-name {
+    color: #fff;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+  }
+
+  .auth__tagline,
+  .auth__brand--panel {
+    display: none;
+  }
+
+  .auth__panel,
+  .auth--compact .auth__panel {
+    order: 1;
+    flex: 1;
+    min-height: 0;
+    padding: 8px 16px 32px;
+  }
+
+  .auth__form,
+  .auth--compact .auth__form {
+    margin: 0;
+    padding: 16px 0 0;
+  }
+
+  .auth--compact .auth__form {
+    padding-top: 12px;
+  }
+
+  .auth__subtitle {
+    margin-bottom: 28px;
+  }
+
+  .auth--compact .auth__subtitle {
+    margin-bottom: 22px;
+    font-size: 15px;
+  }
+
+  /* 16px evita el zoom automático de iOS al enfocar */
+  .auth .auth__input.p-inputtext,
+  .auth .auth__select .p-dropdown-label {
+    font-size: 16px;
+  }
+
+  .auth .auth__submit.p-button,
+  .auth .auth__google.p-button,
+  .auth .auth__steam.p-button {
+    height: 50px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth .auth__submit.p-button {
+    transition: none;
+  }
+
+  .auth .auth__submit.p-button:not(:disabled):hover {
+    transform: none;
+  }
+}

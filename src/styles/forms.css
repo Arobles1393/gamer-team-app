@@ -1,0 +1,189 @@
+/* =====================================================
+   FORMULARIOS — campos y controles de PrimeReact con el tema.
+   Van dentro de un contenedor .gm-form (las secciones de perfil
+   ya lo son): el prefijo gana al tema de PrimeReact, que se carga
+   al final.
+   Clases: gm-field (+ __label, __hint, __error), gm-input
+   (InputText / InputTextarea / input de AutoComplete), gm-select
+   (Dropdown), gm-autocomplete y gm-panel (panel en <body>).
+   ===================================================== */
+/* ---------- CAMPO ---------- */
+.gm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gm-field + .gm-field {
+  margin-top: 16px;
+}
+
+.gm-field__label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--gm-label);
+}
+
+.gm-field__hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--gm-hint);
+}
+
+.gm-field__error {
+  margin: 0;
+  font-size: 12px;
+  color: var(--gm-accent-text);
+}
+
+/* ---------- INPUT / TEXTAREA / AUTOCOMPLETE ---------- */
+.gm-form .gm-input.p-inputtext {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 16px;
+  border: 1px solid var(--gm-border);
+  border-radius: var(--gm-radius-control);
+  background: var(--gm-surface);
+  font-family: var(--gm-font-body);
+  font-size: 15px;
+  color: var(--gm-text);
+  box-shadow: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gm-form .gm-input.p-inputtextarea {
+  padding: 12px 16px;
+  line-height: 1.5;
+  resize: none;
+}
+
+.gm-form .gm-input.p-inputtext::placeholder {
+  color: rgba(148, 163, 184, 0.6);
+}
+
+.gm-form .gm-input.p-inputtext:enabled:hover {
+  border-color: var(--gm-border);
+}
+
+.gm-form .gm-input.p-inputtext:enabled:focus {
+  border-color: var(--gm-primary);
+  box-shadow: var(--gm-focus-ring);
+  outline: none;
+}
+
+.gm-form .gm-input--invalid.p-inputtext,
+.gm-form .gm-input--invalid.p-inputtext:enabled:hover {
+  border-color: rgba(244, 63, 94, 0.7);
+}
+
+.gm-form .gm-autocomplete.p-autocomplete {
+  display: flex;
+  width: 100%;
+}
+
+/* ---------- SELECT (Dropdown) ---------- */
+.gm-form .gm-select.p-dropdown {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 46px;
+  border: 1px solid var(--gm-border);
+  border-radius: var(--gm-radius-control);
+  background: var(--gm-surface);
+  box-shadow: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gm-form .gm-select.p-dropdown:not(.p-disabled):hover {
+  border-color: var(--gm-border);
+}
+
+.gm-form .gm-select.p-dropdown:not(.p-disabled).p-focus {
+  border-color: var(--gm-primary);
+  box-shadow: var(--gm-focus-ring);
+}
+
+.gm-form .gm-select .p-dropdown-label {
+  padding: 0 16px;
+  border: none;
+  background: transparent;
+  font-family: var(--gm-font-body);
+  font-size: 15px;
+  color: var(--gm-text);
+}
+
+.gm-form .gm-select .p-dropdown-label.p-placeholder {
+  color: rgba(148, 163, 184, 0.6);
+}
+
+.gm-form .gm-select .p-dropdown-trigger {
+  width: 44px;
+  color: var(--gm-subtle);
+}
+
+/* ---------- PANEL (Dropdown / AutoComplete, se monta en <body>) ---------- */
+.gm-panel.p-dropdown-panel,
+.gm-panel.p-autocomplete-panel {
+  border: 1px solid var(--gm-border);
+  border-radius: 12px;
+  background: var(--gm-popover-bg);
+  font-family: var(--gm-font-body);
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.7);
+}
+
+.gm-panel.p-dropdown-panel .p-dropdown-header {
+  border-bottom: 1px solid var(--gm-border-soft);
+  background: transparent;
+}
+
+.gm-panel.p-dropdown-panel .p-dropdown-filter.p-inputtext {
+  border: 1px solid var(--gm-border);
+  border-radius: 8px;
+  background: var(--gm-surface);
+  font-family: inherit;
+  color: var(--gm-text);
+}
+
+.gm-panel.p-dropdown-panel .p-dropdown-filter.p-inputtext:focus {
+  border-color: var(--gm-primary);
+  box-shadow: var(--gm-focus-ring);
+}
+
+.gm-panel.p-dropdown-panel .p-dropdown-items,
+.gm-panel.p-autocomplete-panel .p-autocomplete-items {
+  padding: 6px;
+}
+
+.gm-panel.p-dropdown-panel .p-dropdown-items .p-dropdown-item,
+.gm-panel.p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item {
+  border-radius: 8px;
+  background: transparent;
+  font-family: inherit;
+  color: var(--gm-text);
+}
+
+.gm-panel.p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover,
+.gm-panel.p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled).p-focus,
+.gm-panel.p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item:hover,
+.gm-panel.p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item.p-focus {
+  background: rgba(124, 58, 237, 0.18);
+  color: var(--gm-text);
+  box-shadow: none;
+}
+
+.gm-panel.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight,
+.gm-panel.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight.p-focus,
+.gm-panel.p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item.p-highlight {
+  background: rgba(124, 58, 237, 0.35);
+  color: #fff;
+}
+
+@media (max-width: 767px) {
+  /* 16px evita el zoom automático de iOS al enfocar */
+  .gm-form .gm-input.p-inputtext,
+  .gm-form .gm-select .p-dropdown-label {
+    font-size: 16px;
+  }
+}

@@ -1,1 +1,1 @@
-export { default as SteamStats } from "./SteamStats";
+export { default as SteamSection } from "./SteamSection";

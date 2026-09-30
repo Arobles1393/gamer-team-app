@@ -9,10 +9,12 @@ export const getPlatformKey = (platform) => {
   if (name.includes("switch")) {
     return "switch";
   }
-  if (name.includes("pc")) {
+  // macOS y Linux cuentan como PC (algunos indies solo listan esas)
+  if (name.includes("pc") || name === "macos" || name === "linux") {
     return "pc";
   }
-  if (name.includes("mobile")) {
+  // RAWG no usa "Mobile": los juegos de celular vienen como iOS o Android
+  if (name.includes("mobile") || name === "ios" || name === "android") {
     return "mobile";
   }
   return null;

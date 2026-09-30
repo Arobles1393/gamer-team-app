@@ -1,0 +1,101 @@
+/* =====================================================
+   DIÁLOGO DE PERFIL — hero a todo el ancho + secciones.
+   Base del diálogo en styles/dialog.css, hero en ProfileHero.css
+   y secciones en ProfileSection.css. Se monta en <body>.
+   ===================================================== */
+.gm-profile-dialog.p-dialog {
+  max-height: 92vh;
+}
+
+/* El hero ocupa la parte de arriba del diálogo: sin card propia */
+.gm-profile-dialog .profile-hero {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.user-profile {
+  font-family: var(--gm-font-body);
+  color: var(--gm-text);
+}
+
+.user-profile__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  padding: 4px 28px 28px;
+}
+
+.user-profile__column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.user-profile__about {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Amigos / Solicitud enviada */
+.user-profile__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 18px;
+  border-radius: var(--gm-radius-pill);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.user-profile__badge .pi {
+  font-size: 12px;
+}
+
+.user-profile__badge--friends {
+  background: rgba(34, 197, 94, 0.14);
+  color: #86EFAC;
+}
+
+.user-profile__badge--pending {
+  background: rgba(148, 163, 184, 0.12);
+  color: var(--gm-muted);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 1023px) {
+  .user-profile__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  /* Pantalla completa en mobile */
+  .gm-profile-dialog.p-dialog {
+    max-height: 100dvh;
+    border: none;
+    border-radius: 0;
+  }
+
+  .user-profile__grid {
+    gap: 16px;
+    padding: 0 12px 20px;
+  }
+
+  .user-profile__column {
+    gap: 16px;
+  }
+
+  .user-profile__badge {
+    flex: 1 1 100%;
+  }
+}

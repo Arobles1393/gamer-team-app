@@ -1,22 +1,16 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { Button } from "primereact/button";
 
-const FRIEND_BUTTONS = {
-  none: {
-    label: "Agregar amigo",
-    icon: "pi pi-user-plus"
-  },
-  pending: {
-    label: "Solicitud enviada",
-    icon: "pi pi-clock",
-    disabled: true
-  },
-  friends: {
-    label: "Amigos",
-    icon: "pi pi-check",
-    severity: "success",
-    disabled: true
-  }
+// Acción principal según la relación de amistad
+const FRIEND_ACTIONS = {
+  none: { label: "Agregar amigo", icon: "pi pi-user-plus" },
+  received: { label: "Aceptar solicitud", icon: "pi pi-user-plus" }
+};
+
+// Estados que no tienen acción: se muestran como etiqueta
+const FRIEND_BADGES = {
+  pending: { label: "Solicitud enviada", icon: "pi-clock" },
+  friends: { label: "Amigos", icon: "pi-check" }
 };
 
 function UserProfileActions({
@@ -24,25 +18,58 @@ function UserProfileActions({
   onSendFriendRequest,
   onChat
 }) {
-  const button = FRIEND_BUTTONS[friendStatus];
+  const [sendingRequest, setSendingRequest] = useState(false);
+  const [openingChat, setOpeningChat] = useState(false);
+
+  const action = FRIEND_ACTIONS[friendStatus];
+  const badge = FRIEND_BADGES[friendStatus];
+
+  const handleFriendRequest = async () => {
+    setSendingRequest(true);
+
+    try {
+      await onSendFriendRequest();
+    } finally {
+      setSendingRequest(false);
+    }
+  };
+
+  const handleChat = async () => {
+    setOpeningChat(true);
+
+    try {
+      await onChat();
+    } finally {
+      setOpeningChat(false);
+    }
+  };
 
   return (
     <>
-      {button && (
+      {badge && (
+        <span className={`user-profile__badge user-profile__badge--${friendStatus}`}>
+          <i className={`pi ${badge.icon}`} aria-hidden="true" />
+          {badge.label}
+        </span>
+      )}
+
+      {action && (
         <Button
-          {...button}
-          onClick={
-            friendStatus === "none"
-              ? onSendFriendRequest
-              : undefined
-          }
+          label={action.label}
+          icon={action.icon}
+          className="gm-btn gm-btn--primary"
+          loading={sendingRequest}
+          onClick={handleFriendRequest}
         />
       )}
 
+      {/* Si ya no hay nada que hacer con la amistad, Mensaje pasa a ser la acción principal */}
       <Button
+        label="Mensaje"
         icon="pi pi-comments"
-        className="chat-fab p-button-rounded p-button-success"
-        onClick={onChat}
+        className={`gm-btn ${action ? "gm-btn--ghost" : "gm-btn--primary"}`}
+        loading={openingChat}
+        onClick={handleChat}
       />
     </>
   );

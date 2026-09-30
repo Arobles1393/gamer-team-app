@@ -14,17 +14,50 @@ import {
 import { db } from "../../firebase/config";
 import { notificationService } from "../notifications";
 
-const sendFriendRequest = async (sender, receiverId) => {
-
+const getPendingRequest = async (senderId, receiverId) => {
   const q = query(
     collection(db, "friend_requests"),
-    where("senderId", "==", sender.uid),
+    where("senderId", "==", senderId),
     where("receiverId", "==", receiverId),
     where("status", "==", "pending")
   );
 
-  const existing = await getDocs(q);
-  if (!existing.empty) return;
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs[0] ?? null;
+};
+
+// Devuelve el nuevo estado de amistad: "pending" o "friends"
+const sendFriendRequest = async (sender, receiverId) => {
+
+  // Si el otro ya nos envió una solicitud, se acepta en vez de crear otra al revés
+  const incoming = await getPendingRequest(receiverId, sender.uid);
+
+  if (incoming) {
+    const notificationQuery = query(
+      collection(db, "notifications"),
+      where("userId", "==", sender.uid),
+      where("senderId", "==", receiverId),
+      where("type", "==", "friend_request"),
+      where("status", "==", "pending")
+    );
+
+    const notificationSnap = await getDocs(notificationQuery);
+
+    await acceptFriendRequest(
+      {
+        id: notificationSnap.docs[0]?.id,
+        senderId: receiverId,
+        userId: sender.uid
+      },
+      sender
+    );
+
+    return "friends";
+  }
+
+  const existing = await getPendingRequest(sender.uid, receiverId);
+  if (existing) return "pending";
 
   await addDoc(collection(db, "friend_requests"), {
     senderId: sender.uid,
@@ -41,6 +74,8 @@ const sendFriendRequest = async (sender, receiverId) => {
     read: false,
     createdAt: serverTimestamp()
   });
+
+  return "pending";
 };
 
 const acceptFriendRequest = async (
@@ -96,13 +131,16 @@ const acceptFriendRequest = async (
     }
   );
 
-  batch.update(
-    doc(db, "notifications", notification.id),
-    {
-      status: "accepted",
-      read: true
-    }
-  );
+  // La notificación puede no existir (p. ej. si se borraron todas)
+  if (notification.id) {
+    batch.update(
+      doc(db, "notifications", notification.id),
+      {
+        status: "accepted",
+        read: true
+      }
+    );
+  }
 
   const acceptedNotificationRef = doc(
     collection(db, "notifications")
@@ -202,17 +240,12 @@ const checkFriendStatus = async (userId, otherUserId) => {
     return "friends";
   }
 
-  const requestQuery = query(
-    collection(db, "friend_requests"),
-    where("senderId", "==", userId),
-    where("receiverId", "==", otherUserId),
-    where("status", "==", "pending")
-  );
-
-  const requestSnap = await getDocs(requestQuery);
-
-  if (!requestSnap.empty) {
+  if (await getPendingRequest(userId, otherUserId)) {
     return "pending";
+  }
+
+  if (await getPendingRequest(otherUserId, userId)) {
+    return "received";
   }
 
   return "none";

@@ -1,0 +1,67 @@
+/* =====================================================
+   SECCIÓN DE PERFIL — card con título e icono.
+   Los controles (gm-field, gm-input…) están en src/styles/forms.css
+   y los botones (gm-btn) en src/styles/buttons.css.
+   ===================================================== */
+.gm-section {
+  padding: 22px 24px 24px;
+  border: 1px solid var(--gm-border-soft);
+  border-radius: var(--gm-radius-card);
+  background: linear-gradient(180deg, var(--gm-surface-strong), rgba(22, 21, 46, 0.85));
+  box-shadow: var(--gm-glow);
+  font-family: var(--gm-font-body);
+  color: var(--gm-text);
+}
+
+.gm-section__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 36px;
+  margin-bottom: 18px;
+}
+
+.gm-section__icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--gm-primary-soft);
+  color: var(--gm-label);
+}
+
+.gm-section__icon .pi {
+  font-size: 15px;
+}
+
+.gm-section .gm-section__title {
+  flex: 1;
+  margin: 0;
+  font-family: var(--gm-font-display);
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 1.5px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--gm-text);
+}
+
+.gm-section__action {
+  flex-shrink: 0;
+}
+
+/* Texto de "no hay nada" dentro de una sección */
+.gm-section__empty {
+  margin: 0;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--gm-hint);
+}
+
+@media (max-width: 767px) {
+  .gm-section {
+    padding: 18px 16px 20px;
+  }
+}

@@ -1,0 +1,87 @@
+/* =====================================================
+   BOTONES — PrimeReact Button con el tema GamerMatch.
+   Uso: className="gm-btn gm-btn--primary" | "gm-btn gm-btn--ghost"
+        | "gm-btn gm-btn--danger" | "gm-btn gm-btn--icon" (icono, acción destructiva)
+   ===================================================== */
+.gm-btn.p-button {
+  justify-content: center;
+  height: 42px;
+  padding: 0 20px;
+  border-radius: var(--gm-radius-pill);
+  font-family: var(--gm-font-body);
+  font-size: 14px;
+  box-shadow: none;
+  transition: filter 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.gm-btn.p-button .p-button-label {
+  font-weight: 600;
+}
+
+.gm-btn.p-button:focus-visible {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 2px;
+}
+
+.gm-btn--primary.p-button,
+.gm-btn--primary.p-button:enabled:hover {
+  border: none;
+  background: var(--gm-gradient);
+  color: #fff;
+}
+
+.gm-btn--primary.p-button {
+  box-shadow: var(--gm-cta-shadow);
+}
+
+.gm-btn--primary.p-button:enabled:hover {
+  filter: brightness(1.1);
+}
+
+.gm-btn--primary.p-button:disabled {
+  opacity: 0.5;
+  box-shadow: none;
+}
+
+.gm-btn--ghost.p-button {
+  border: 1px solid var(--gm-border);
+  background: transparent;
+  color: var(--gm-label);
+}
+
+.gm-btn--ghost.p-button:enabled:hover {
+  border-color: var(--gm-label);
+  background: rgba(124, 58, 237, 0.14);
+  color: var(--gm-text);
+}
+
+/* Botón de icono pequeño (quitar link, etc.) */
+.gm-btn--icon.p-button {
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  border-radius: var(--gm-radius-control);
+  background: transparent;
+  color: var(--gm-accent-text);
+}
+
+.gm-btn--icon.p-button:enabled:hover {
+  border-color: var(--gm-accent);
+  background: var(--gm-accent-soft);
+  color: #fff;
+}
+
+/* Acción destructiva o de salir (Eliminar, Ya no me interesa) */
+.gm-btn--danger.p-button {
+  border: 1px solid rgba(244, 63, 94, 0.45);
+  background: transparent;
+  color: var(--gm-accent-text);
+}
+
+.gm-btn--danger.p-button:enabled:hover {
+  border-color: var(--gm-accent);
+  background: var(--gm-accent-soft);
+  color: #fff;
+}

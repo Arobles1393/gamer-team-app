@@ -1,81 +1,114 @@
-import "./PersonalInfo.css";
-
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
-import { InputTextarea } from "primereact/inputtextarea";
+import { ProfileSection } from "../../ProfileSection";
+import "./PersonalInfo.css";
+
+function InfoRow({ icon, label, children }) {
+  return (
+    <div className="personal-info__row">
+      <i className={`pi ${icon} personal-info__row-icon`} aria-hidden="true" />
+      <dt className="personal-info__label">{label}</dt>
+      <dd className="personal-info__value">{children}</dd>
+    </div>
+  );
+}
+
+function Field({ id, label, hint, children }) {
+  return (
+    <div className="gm-field">
+      <label className="gm-field__label" htmlFor={id}>{label}</label>
+      {children}
+      {hint && <p className="gm-field__hint">{hint}</p>}
+    </div>
+  );
+}
+
+const countryTemplate = (option) =>
+  option ? `${option.flag} ${option.label}` : null;
 
 export default function PersonalInfo({
   email,
   username,
   phone,
   region,
-  description,
   countries,
   isEditing,
   onEmailChange,
   onUsernameChange,
   onPhoneChange,
-  onRegionChange,
-  onDescriptionChange
+  onRegionChange
 }) {
+  const country = countries.find((c) => c.value === region);
+  const missing = <span className="personal-info__missing">Sin agregar</span>;
+
   return (
-    <section className="personal-info profile-section">
-      <h4>Datos personales</h4>
+    <ProfileSection title="Datos personales" icon="pi-id-card" className="personal-info">
+      {isEditing ? (
+        <>
+          <Field id="profile-username" label="Nickname">
+            <InputText
+              id="profile-username"
+              value={username}
+              onChange={(e) => onUsernameChange(e.target.value)}
+              autoComplete="nickname"
+              className="gm-input"
+            />
+          </Field>
 
-      <div className="form-row">
-        <div className="form-group">
-          <label>Correo</label>
-          <InputText
-            value={email}
-            onChange={(e) => onEmailChange(e.target.value)}
-            disabled={!isEditing}
-          />
-        </div>
+          <Field
+            id="profile-email"
+            label="Correo"
+            hint="Si lo cambias, puede pedirte volver a iniciar sesión."
+          >
+            <InputText
+              id="profile-email"
+              type="email"
+              value={email}
+              onChange={(e) => onEmailChange(e.target.value)}
+              autoComplete="email"
+              className="gm-input"
+            />
+          </Field>
 
-        <div className="form-group">
-          <label>NickName</label>
-          <InputText
-            value={username}
-            onChange={(e) => onUsernameChange(e.target.value)}
-            disabled={!isEditing}
-          />
-        </div>
+          <Field id="profile-phone" label="Teléfono">
+            <InputText
+              id="profile-phone"
+              type="tel"
+              value={phone}
+              onChange={(e) => onPhoneChange(e.target.value)}
+              placeholder="55 1234 5678"
+              autoComplete="tel"
+              className="gm-input"
+            />
+          </Field>
 
-        <div className="form-group">
-          <label>Teléfono</label>
-          <InputText
-            value={phone}
-            onChange={(e) => onPhoneChange(e.target.value)}
-            disabled={!isEditing}
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Región</label>
-          <Dropdown
-            value={region}
-            options={countries}
-            onChange={(e) => onRegionChange(e.value)}
-            optionLabel="label"
-            placeholder="Selecciona tu región"
-            filter
-            disabled={!isEditing}
-          />
-        </div>
-      </div>
-
-      <div className="personal-info-description">
-        <div className="form-group">
-          <InputTextarea
-            placeholder="Cuéntanos sobre ti..."
-            value={description}
-            onChange={(e) => onDescriptionChange(e.target.value)}
-            rows={3}
-            autoResize
-            disabled={!isEditing}
-          />
-        </div>
-      </div>
-    </section>
+          <Field id="profile-region" label="Región">
+            <Dropdown
+              inputId="profile-region"
+              value={region}
+              options={countries}
+              onChange={(e) => onRegionChange(e.value)}
+              optionLabel="label"
+              optionValue="value"
+              itemTemplate={countryTemplate}
+              valueTemplate={(option, props) => countryTemplate(option) ?? props.placeholder}
+              placeholder="Selecciona tu región"
+              filter
+              className="gm-select"
+              panelClassName="gm-panel"
+            />
+          </Field>
+        </>
+      ) : (
+        <dl className="personal-info__list">
+          <InfoRow icon="pi-user" label="Nickname">{username || missing}</InfoRow>
+          <InfoRow icon="pi-envelope" label="Correo">{email || missing}</InfoRow>
+          <InfoRow icon="pi-phone" label="Teléfono">{phone || missing}</InfoRow>
+          <InfoRow icon="pi-globe" label="Región">
+            {region ? `${country?.flag ?? ""} ${region}`.trim() : missing}
+          </InfoRow>
+        </dl>
+      )}
+    </ProfileSection>
   );
 }

@@ -1,57 +1,76 @@
-import { useState } from "react";
-import { useUserProfile, useSteamStats } from "../../hooks";
-import { ProfileHeader } from "../ProfileHeader";
+import { Skeleton } from "primereact/skeleton";
+import { useUserProfile } from "../../hooks";
+import { ProfileHero } from "../ProfileHero";
+import { ProfileSection } from "../ProfileSection";
 import { FavoriteGames } from "../FavoriteGames";
 import { SocialLinks } from "../SocialLinks";
-import SteamStatsSection from "./SteamStatsSection/SteamStatsSection";
-import GameAchievementsDialog from "./GameAchievementsDialog/GameAchievementsDialog";
-import { useCurrentUser } from "../../context";
+import { SteamSection } from "../Steam";
+import { countries } from "../../data/countries";
+import { getPresenceLabel, isOnline } from "../../utils";
 
-export default function UserProfile({ userId }) {
-  const user = useCurrentUser();
+function UserProfileSkeleton() {
+  return (
+    <div className="user-profile" aria-busy="true" aria-label="Cargando perfil">
+      <Skeleton height="220px" borderRadius="0" className="steam-skeleton" />
+      <div className="user-profile__grid">
+        <Skeleton height="240px" borderRadius="16px" className="steam-skeleton" />
+        <Skeleton height="240px" borderRadius="16px" className="steam-skeleton" />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Perfil de solo lectura de un jugador (se abre en UserProfileDialog).
+ * `actions` son los botones de amistad / mensaje que van en el hero.
+ */
+export default function UserProfile({ userId, actions, onClose }) {
   const { userData } = useUserProfile(userId);
-  const {
-    steamStats,
-    steamID,
-    loadingSteam
-  } = useSteamStats(userData?.links);
-  const [selectedGame, setSelectedGame] = useState(null);
-  const [showAchievements, setShowAchievements] = useState(false);
 
-  const handleSelectGame = (game) => {
-    setSelectedGame(game);
-    setShowAchievements(true);
-  };
+  if (!userData) {
+    return <UserProfileSkeleton />;
+  }
 
-  const handleCloseAchievements = () => {
-    setShowAchievements(false);
-    setSelectedGame(null);
-  };
-
-  if (!userData) return <p>Cargando...</p>;
+  const country = countries.find((c) => c.value === userData.region);
 
   return (
-    <>
-      <ProfileHeader userData={userData} />
-      <div style={{ marginTop: "1rem" }}>
-        <p>{userData?.description}</p>
+    <div className="user-profile">
+      <ProfileHero
+        userData={userData}
+        country={country}
+        eyebrow="Perfil de jugador"
+        presence={getPresenceLabel(userData.lastSeen)}
+        online={isOnline(userData.lastSeen)}
+        actions={actions}
+        bannerAction={
+          <button
+            type="button"
+            className="profile-hero__banner-btn profile-hero__banner-btn--icon"
+            aria-label="Cerrar perfil"
+            onClick={onClose}
+          >
+            <i className="pi pi-times" aria-hidden="true" />
+          </button>
+        }
+      />
+
+      <div className="user-profile__grid">
+        <div className="user-profile__column">
+          {userData.description && (
+            <ProfileSection title="Sobre mí" icon="pi-user">
+              <p className="user-profile__about">{userData.description}</p>
+            </ProfileSection>
+          )}
+
+          <SteamSection links={userData.links} />
+
+          <FavoriteGames games={userData.games} />
+        </div>
+
+        <div className="user-profile__column">
+          <SocialLinks links={userData.links} />
+        </div>
       </div>
-      {!steamStats && (
-        <FavoriteGames games={userData.games} />
-      )}
-      <SteamStatsSection
-        steamStats={steamStats}
-        loadingSteam={loadingSteam}
-        isOwnProfile={user.uid === userId}
-        onSelectGame={handleSelectGame}
-      />
-      <SocialLinks links={userData.links} />
-      <GameAchievementsDialog
-        game={selectedGame}
-        steamId={steamID}
-        visible={showAchievements}
-        onHide={handleCloseAchievements}
-      />
-    </>
+    </div>
   );
-}
+}

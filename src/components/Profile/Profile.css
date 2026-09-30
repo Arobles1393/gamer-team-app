@@ -1,0 +1,170 @@
+/* =====================================================
+   MI PERFIL — acciones del hero, grid de secciones y barra de guardar.
+   El hero viene de ProfileHero.css y las secciones de ProfileSection.css.
+   Prefijo .profile-page para ganar al tema de PrimeReact.
+   ===================================================== */
+.profile-page {
+  font-family: var(--gm-font-body);
+  color: var(--gm-text);
+}
+
+/* ---------- ACCIONES DEL HERO ---------- */
+.profile-page .profile-hero {
+  margin-bottom: 24px;
+}
+
+.profile-page .profile-hero__edit.p-button {
+  height: 46px;
+  padding: 0 24px;
+}
+
+.profile-page .profile-hero__edit.p-button .p-button-label {
+  font-family: var(--gm-font-display);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.profile-hero__editing {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: var(--gm-radius-pill);
+  background: var(--gm-accent-soft);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--gm-accent-text);
+}
+
+.profile-hero__editing .pi {
+  font-size: 11px;
+}
+
+/* ---------- SECCIONES ---------- */
+.profile-page__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.profile-page__column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.profile-about__text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--gm-text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.profile-about__counter {
+  align-self: flex-end;
+}
+
+.profile-page .profile-skeleton.p-skeleton {
+  background: rgba(124, 58, 237, 0.12);
+}
+
+.profile-page .profile-skeleton.p-skeleton::after {
+  background: linear-gradient(90deg, transparent, rgba(167, 139, 250, 0.12), transparent);
+}
+
+.profile-page > .profile-skeleton {
+  margin-bottom: 24px;
+}
+
+/* ---------- BARRA DE GUARDAR ---------- */
+.profile-savebar {
+  position: sticky;
+  bottom: 20px;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  margin-top: 24px;
+  padding: 14px 16px 14px 22px;
+  border: 1px solid var(--gm-border);
+  border-radius: var(--gm-radius-card);
+  background: rgba(22, 21, 46, 0.92);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.8);
+}
+
+.profile-savebar__text {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gm-muted);
+}
+
+.profile-savebar__text .pi {
+  font-size: 14px;
+}
+
+.profile-savebar__dot.pi {
+  font-size: 9px;
+  color: var(--gm-accent);
+}
+
+.profile-savebar__actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 1023px) {
+  .profile-page__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .profile-page .profile-hero {
+    margin-bottom: 18px;
+  }
+
+  .profile-page .profile-hero__edit.p-button {
+    width: 100%;
+  }
+
+  .profile-page__grid,
+  .profile-page__column {
+    gap: 18px;
+  }
+
+  /* Por encima de la barra de navegación inferior */
+  .profile-savebar {
+    bottom: calc(var(--gm-bottom-bar-height) + 12px);
+    padding: 12px;
+  }
+
+  .profile-savebar__text {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .profile-savebar__actions {
+    width: 100%;
+  }
+
+  .profile-savebar__actions .gm-btn.p-button {
+    flex: 1;
+  }
+}

@@ -1,28 +1,115 @@
+/* =====================================================
+   404 — card centrada con el código en gradiente.
+   ===================================================== */
 .not-found {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  min-height: 60vh;
-  padding: 2rem 1rem;
+  display: grid;
+  place-items: center;
+  min-height: calc(100vh - 76px);
+  min-height: calc(100dvh - 76px);
+  font-family: var(--gm-font-body);
+  color: var(--gm-text);
+}
+
+.not-found__card {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  padding: 48px 40px 44px;
+  overflow: hidden;
+  border: 1px solid var(--gm-border-soft);
+  border-radius: 20px;
+  background:
+    radial-gradient(360px 200px at 50% 0%, rgba(124, 58, 237, 0.28), transparent 70%),
+    linear-gradient(180deg, var(--gm-surface-strong), rgba(22, 21, 46, 0.85));
+  box-shadow: var(--gm-glow);
   text-align: center;
-  color: var(--text-main);
+  box-sizing: border-box;
 }
 
-.not-found-code {
-  margin: 0;
-  font-size: 6rem;
+.not-found__eyebrow {
+  display: block;
+  font-family: var(--gm-font-display);
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gm-label);
+}
+
+.not-found__code {
+  margin: 6px 0 4px;
+  font-family: var(--gm-font-display);
+  font-size: 128px;
   line-height: 1;
-  color: var(--primary);
-  text-shadow: 0 0 20px var(--glow-blue);
+  letter-spacing: 4px;
+  background: var(--gm-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 12px 32px rgba(244, 63, 94, 0.35));
+  animation: not-found-glow 3s ease-in-out infinite alternate;
 }
 
-.not-found-title {
-  margin: 0;
+/* Brillo que "respira", como una pantalla de game over */
+@keyframes not-found-glow {
+  from { filter: drop-shadow(0 12px 32px rgba(244, 63, 94, 0.25)); }
+  to { filter: drop-shadow(0 12px 40px rgba(124, 58, 237, 0.6)); }
 }
 
-.not-found-text {
-  margin: 0 0 1rem;
-  color: var(--text-muted);
+.not-found .not-found__title {
+  margin: 0 0 10px;
+  font-family: var(--gm-font-display);
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  line-height: 1.25;
+  text-transform: uppercase;
+  color: var(--gm-text);
+}
+
+.not-found__text {
+  max-width: 400px;
+  margin: 0 auto 28px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--gm-muted);
+}
+
+.not-found__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.not-found__actions .gm-btn.p-button {
+  height: 46px;
+  padding: 0 24px;
+}
+
+@media (max-width: 767px) {
+  .not-found {
+    min-height: calc(100dvh - 16px - var(--gm-bottom-bar-height) - 24px);
+  }
+
+  .not-found__card {
+    padding: 36px 20px 28px;
+  }
+
+  .not-found__code {
+    font-size: 96px;
+  }
+
+  .not-found .not-found__title {
+    font-size: 19px;
+  }
+
+  .not-found__actions .gm-btn.p-button {
+    flex: 1 1 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .not-found__code {
+    animation: none;
+  }
 }

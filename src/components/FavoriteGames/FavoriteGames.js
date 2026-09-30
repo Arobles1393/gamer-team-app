@@ -1,6 +1,23 @@
 import { AutoComplete } from "primereact/autocomplete";
+import { Button } from "primereact/button";
+import { ProfileSection } from "../ProfileSection";
 import "./FavoriteGames.css";
 
+const suggestionTemplate = (item) => (
+  <div className="fav-games__suggestion">
+    {item.image ? (
+      <img src={item.image} alt="" className="fav-games__suggestion-img" />
+    ) : (
+      <span className="fav-games__suggestion-img" aria-hidden="true" />
+    )}
+    <span>{item.label}</span>
+  </div>
+);
+
+/**
+ * Juegos favoritos. En el perfil propio se editan (buscador de RAWG + quitar);
+ * en el diálogo de otros jugadores solo se muestran.
+ */
 export default function FavoriteGames({
   games,
   isEditing = false,
@@ -9,78 +26,73 @@ export default function FavoriteGames({
   onSearch,
   onGameQueryChange,
   onAddGame,
-  onRemoveGame
+  onRemoveGame,
+  emptyText = "Este jugador aún no tiene juegos favoritos.",
+  onEmptyAction
 }) {
-
-  const itemTemplate = (item) => (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "0.5rem"
-      }}
-    >
-      <img
-        src={item.image}
-        alt={item.label}
-        style={{
-          width: "40px",
-          borderRadius: "6px"
-        }}
-      />
-      <span>{item.label}</span>
-    </div>
-  );
+  const hasGames = games?.length > 0;
 
   return (
-    <section className="favorite-games">
-      <h4>Juegos favoritos</h4>
+    <ProfileSection
+      title="Juegos favoritos"
+      icon="pi-star"
+      className="fav-games"
+      action={hasGames && <span className="fav-games__count">{games.length}</span>}
+    >
       {isEditing && (
-        <AutoComplete
-          value={gameQuery}
-          suggestions={suggestions}
-          completeMethod={onSearch}
-          onChange={(e) => onGameQueryChange(e.value)}
-          onSelect={(e) => onAddGame(e.value)}
-          field="label"
-          itemTemplate={itemTemplate}
-          placeholder="Nombre del juego"
-          style={{
-            flex: 1,
-            marginBottom: "2rem"
-          }}
-        />
+        <div className="gm-field fav-games__search">
+          <AutoComplete
+            value={gameQuery}
+            suggestions={suggestions}
+            completeMethod={onSearch}
+            onChange={(e) => onGameQueryChange(e.value)}
+            onSelect={(e) => onAddGame(e.value)}
+            field="label"
+            itemTemplate={suggestionTemplate}
+            placeholder="Busca un juego para agregarlo…"
+            aria-label="Buscar juego para agregar a favoritos"
+            className="gm-autocomplete"
+            inputClassName="gm-input"
+            panelClassName="gm-panel"
+          />
+        </div>
       )}
-      {games?.length > 0 ? (
-        <div className="games-grid">
+
+      {hasGames ? (
+        <ul className="fav-games__grid">
           {games.map((game) => (
-            <div
-              key={game.id}
-              className="game-card"
-            >
-              <img
-                src={game.image}
-                alt={game.name}
-              />
-              <div className="game-card-overlay">
-                {game.name}
-              </div>
+            <li key={game.id} className="fav-game" title={game.name}>
+              {game.image && <img src={game.image} alt="" loading="lazy" />}
+              <span className="fav-game__name">{game.name}</span>
+
               {isEditing && (
                 <button
-                  className="remove-btn"
+                  type="button"
+                  className="fav-game__remove"
+                  aria-label={`Quitar ${game.name} de favoritos`}
                   onClick={() => onRemoveGame(game.id)}
                 >
-                  ✕
+                  <i className="pi pi-times" aria-hidden="true" />
                 </button>
               )}
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       ) : (
-        <p className="favorite-games-empty">
-          No hay juegos que mostrar
-        </p>
+        !isEditing && (
+          <div className="fav-games__empty">
+            <p className="gm-section__empty">{emptyText}</p>
+            {onEmptyAction && (
+              <Button
+                label="Agregar juegos"
+                icon="pi pi-plus"
+                className="gm-btn gm-btn--ghost"
+                onClick={onEmptyAction}
+              />
+            )}
+          </div>
+        )
       )}
-    </section>
+    </ProfileSection>
   );
 }

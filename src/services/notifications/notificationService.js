@@ -47,6 +47,28 @@ const subscribeToNotifications = (
   );
 };
 
+// Todas las no leídas (sin límite), para el badge y el punto de chats del rail
+const subscribeToUnreadNotifications = (userId, onChange, onError) => {
+  const q = query(
+    collection(db, "notifications"),
+    where("userId", "==", userId),
+    where("read", "==", false)
+  );
+
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      onChange(
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+      );
+    },
+    onError
+  );
+};
+
 const markNotificationAsRead = (notificationId) => {
   return updateDoc(
     doc(db, "notifications", notificationId),
@@ -60,6 +82,26 @@ const markAllNotificationsAsRead = async (userId) => {
   const q = query(
     collection(db, "notifications"),
     where("userId", "==", userId),
+    where("read", "==", false)
+  );
+
+  const snapshot = await getDocs(q);
+
+  const operations = snapshot.docs.map((docSnap) => ({
+    type: "update",
+    ref: docSnap.ref
+  }));
+
+  await commitInBatches(operations);
+};
+
+// Al abrir un chat: sus notificaciones de mensaje dejan de contar como no leídas
+const markChatNotificationsAsRead = async (userId, chatId) => {
+  const q = query(
+    collection(db, "notifications"),
+    where("userId", "==", userId),
+    where("type", "==", "message"),
+    where("relatedId", "==", chatId),
     where("read", "==", false)
   );
 
@@ -144,8 +186,10 @@ const commitInBatches = async (operations) => {
 
 export const notificationService = {
   subscribeToNotifications,
+  subscribeToUnreadNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
+  markChatNotificationsAsRead,
   deleteAllNotifications,
   createNotification,
   updateNotificationStatus

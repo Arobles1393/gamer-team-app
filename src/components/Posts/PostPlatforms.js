@@ -1,6 +1,7 @@
 import { memo, useMemo } from "react";
-import { getPlatformKey, platformIcons } from "../../utils";
+import { getPlatformKey, platformLabels } from "../../utils";
 
+// Badge de plataforma de la card: "PC", "PS5", ... o "MULTI"
 function PostPlatforms({
   multiplatform,
   platforms,
@@ -17,24 +18,18 @@ function PostPlatforms({
     [platforms]
   );
 
-  const PlatformIcon = platformIcons[platform];
+  const label = multiplatform ? "MULTI" : platformLabels[platform];
 
-  if (!multiplatform) {
-    return PlatformIcon?.() ?? null;
-  }
+  if (!label) return null;
+
+  const title = multiplatform
+    ? uniquePlatforms.map((key) => platformLabels[key]).join(" · ")
+    : undefined;
 
   return (
-    <>
-      {uniquePlatforms.map((key) => {
-        const Icon = platformIcons[key];
-
-        return (
-          <span key={key}>
-            {Icon?.()}
-          </span>
-        );
-      })}
-    </>
+    <span className="post-card__platform" title={title}>
+      {label}
+    </span>
   );
 }
 

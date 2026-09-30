@@ -1,90 +1,380 @@
-.steam-container {
-  margin-top: 1rem;
+/* =====================================================
+   STEAM — resumen, grid de juegos más jugados y logros.
+   La card viene de ProfileSection.css. El diálogo de logros se
+   monta en <body>: sus estilos no dependen de .gm-section.
+   ===================================================== */
+.gm-section .steam-section__external {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--gm-label);
+  text-decoration: none;
 }
 
-/* 🔥 RESUMEN */
-.steam-summary {
+.gm-section .steam-section__external:hover {
+  color: var(--gm-text);
+  text-decoration: underline;
+}
+
+.steam-section__external .pi {
+  font-size: 11px;
+}
+
+.steam-section__empty {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
 }
 
-.steam-card {
-  flex: 1;
-  background: linear-gradient(135deg, #1b2838, #171a21);
+/* ---------- RESUMEN ---------- */
+.steam-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(0, 2fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.steam-stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--gm-border-soft);
   border-radius: 12px;
-  padding: 1rem;
-  text-align: center;
-  color: white;
-  box-shadow: 0 0 10px rgba(59,130,246,0.3);
+  background: rgba(124, 58, 237, 0.1);
 }
 
-.steam-number {
-  font-size: 1.8rem;
-  font-weight: bold;
-  display: block;
+.steam-stat__value {
+  font-family: var(--gm-font-display);
+  font-size: 24px;
+  line-height: 1.1;
+  color: var(--gm-text);
 }
 
-.steam-label {
-  font-size: 0.9rem;
-  color: #9ca3af;
+.steam-stat__value--text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 17px;
 }
 
-/* 🎮 JUEGOS */
+.steam-stat__label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--gm-label);
+}
+
+.steam-section__subtitle {
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--gm-subtle);
+}
+
+/* ---------- JUEGOS ---------- */
 .steam-games {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.steam-game-card {
+.steam-games > li {
+  aspect-ratio: 2 / 3;
+}
+
+.steam-game {
   position: relative;
-  border-radius: 10px;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
   overflow: hidden;
+  border: 1px solid var(--gm-border-soft);
+  border-radius: 12px;
+  background: var(--gm-gradient);
+  font: inherit;
+  color: #fff;
+  text-align: left;
   cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
-.steam-game-card img {
+.steam-game:hover {
+  border-color: var(--gm-border);
+  transform: translateY(-2px);
+}
+
+.steam-game:focus-visible {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 2px;
+}
+
+.steam-game__img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-/* 🔥 HOVER */
-.steam-overlay {
+.steam-game__info {
   position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.75);
-  color: white;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  opacity: 0;
-  transition: 0.3s;
-  text-align: center;
-  padding: 0.5rem;
+  gap: 4px;
+  padding: 28px 10px 10px;
+  background: linear-gradient(180deg, rgba(15, 15, 35, 0) 0%, rgba(15, 15, 35, 0.92) 55%);
 }
 
-.steam-game-card:hover .steam-overlay {
-  opacity: 1;
-}
-
-.bar {
-  width: 80%;
-  height: 6px;
-  background: rgba(255,255,255,0.2);
-  border-radius: 10px;
-  margin-top: 6px;
+.steam-game__name {
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
 }
 
-.bar-fill {
+.steam-game__hours {
+  font-size: 12px;
+  color: var(--gm-accent-text);
+}
+
+.steam-game__bar,
+.achievements__bar {
+  display: block;
+  height: 4px;
+  overflow: hidden;
+  border-radius: var(--gm-radius-pill);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.steam-game__bar > span,
+.achievements__bar > span {
+  display: block;
   height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #a855f7);
-  transition: width 0.3s;
+  border-radius: inherit;
+  background: var(--gm-gradient);
 }
 
-.steam-game-card:hover .bar-fill {
-  transform: scaleX(1.05);
+/* ---------- SKELETON ---------- */
+.steam-skeleton.p-skeleton {
+  background: rgba(124, 58, 237, 0.12);
+}
+
+.steam-skeleton.p-skeleton::after {
+  background: linear-gradient(90deg, transparent, rgba(167, 139, 250, 0.12), transparent);
+}
+
+/* =====================================================
+   LOGROS (diálogo)
+   ===================================================== */
+.achievements {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-family: var(--gm-font-body);
+}
+
+.achievements__message {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--gm-muted);
+}
+
+.achievements__progress {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--gm-border-soft);
+  border-radius: 12px;
+  background: rgba(124, 58, 237, 0.1);
+}
+
+.achievements__progress-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.achievements__progress-count {
+  font-family: var(--gm-font-display);
+  font-size: 16px;
+  color: var(--gm-text);
+}
+
+.achievements__progress-percent {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gm-accent-text);
+}
+
+.achievements__bar {
+  height: 6px;
+}
+
+.achievements__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 12px;
+  color: var(--gm-muted);
+}
+
+.achievements__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.achievements__legend-item::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.achievements__legend-item--rare::before { background: var(--gm-label); }
+.achievements__legend-item--very-rare::before { background: var(--gm-accent); }
+.achievements__legend-item--ultra-rare::before { background: #FACC15; }
+
+.achievements .achievements__title {
+  margin: 0 0 10px;
+  font-family: var(--gm-font-body);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gm-subtle);
+}
+
+.achievements__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.achievement {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--gm-border-soft);
+  border-radius: 12px;
+  background: rgba(30, 28, 53, 0.6);
+}
+
+.achievement--locked {
+  opacity: 0.6;
+}
+
+.achievement__icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: var(--gm-primary-soft);
+}
+
+.achievement__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 2px;
+  min-width: 0;
+}
+
+.achievement__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gm-text);
+}
+
+.achievement__description {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--gm-muted);
+}
+
+.achievement__rarity {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  gap: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gm-subtle);
+}
+
+.achievement__rarity-label {
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.achievement__rarity--rare {
+  color: var(--gm-label);
+}
+
+.achievement__rarity--very-rare {
+  color: var(--gm-accent-text);
+}
+
+.achievement__rarity--ultra-rare {
+  color: #FACC15;
+}
+
+.achievement:not(.achievement--locked):has(.achievement__rarity--ultra-rare) {
+  border-color: rgba(250, 204, 21, 0.45);
+  box-shadow: 0 0 18px -6px rgba(250, 204, 21, 0.55);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 767px) {
+  .steam-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .steam-stat--wide {
+    grid-column: 1 / -1;
+  }
+
+  .steam-games {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .steam-game {
+    transition: none;
+  }
+
+  .steam-game:hover {
+    transform: none;
+  }
 }

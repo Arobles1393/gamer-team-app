@@ -111,5 +111,10 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow write: if false;
     }
+
+    // ===== steamNonces (solo Admin SDK — anti-replay del login con Steam) =====
+    match /steamNonces/{nonceId} {
+      allow read, write: if false;
+    }
   }
 }

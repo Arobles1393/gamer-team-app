@@ -1,87 +1,121 @@
-import { Avatar } from "primereact/avatar";
+import { UserAvatar } from "../UserAvatar";
 import { Button } from "primereact/button";
-import { formatDates, platformIcons, getPlatformKey } from "../../utils";
+import { ProfileSection } from "../ProfileSection";
+import { countries } from "../../data/countries";
+import { formatDates } from "../../utils";
 
+function InfoRow({ icon, label, children }) {
+  return (
+    <div className="post-info__row">
+      <i className={`pi ${icon} post-info__row-icon`} aria-hidden="true" />
+      <dt className="post-info__label">{label}</dt>
+      <dd className="post-info__value">{children}</dd>
+    </div>
+  );
+}
+
+const formatCount = (count, singular, plural) =>
+  `${count} ${count === 1 ? singular : plural}`;
+
+/**
+ * Detalles de la partida y acciones: Quiero jugar / Mensaje al anfitrión,
+ * o Editar / Eliminar si el post es del usuario.
+ */
 export default function PostInfoCard({
   post,
-  postAuthor,
-  comments,
-  interestedCount,
+  author,
+  isOwner,
   isInterested,
-  currentUserId,
-  onInterestedClick,
+  interestedCount,
+  commentsCount,
+  togglingInterest,
+  openingChat,
+  onToggleInterest,
+  onChatWithHost,
+  onEdit,
+  onDelete,
   onAuthorClick
 }) {
-  const uniquePlatforms = [
-    ...new Set(
-      (post.platforms || [])
-        .map(getPlatformKey)
-        .filter(Boolean)
-    )
-  ];
+  const username = author?.username || "Jugador";
+  const country = countries.find((c) => c.value === author?.region);
+  const playersNeeded = Number(post.playersNeeded) || 0;
 
   return (
-    <div className="left-panel">
-      <img
-        src={!post.portada ? post.image : post.portada}
-        alt={post.game}
-        className="game-cover"
-      />
-      {!post.portada && <h2>{post.game}</h2>}
+    <ProfileSection title="Detalles" icon="pi-info-circle" className="post-info">
+      <button
+        type="button"
+        className="post-info__host"
+        onClick={() => onAuthorClick(post.userId)}
+      >
+        <UserAvatar
+          image={author?.avatar}
+          username={username}
+          className="post-info__avatar"
+        />
+        <span className="post-info__host-text">
+          <span className="post-info__host-label">
+            Anfitrión{isOwner ? " · tú" : ""}
+          </span>
+          <span className="post-info__host-name">{username}</span>
+        </span>
+        <i className="pi pi-chevron-right post-info__host-arrow" aria-hidden="true" />
+      </button>
 
-      <div className="meta-item">
-        {post.multiplatform ? (
-          uniquePlatforms.map((platform) => (
-            <span key={platform}>{platformIcons[platform]?.()}</span>
-          ))
+      <dl className="post-info__list">
+        <InfoRow icon="pi-clock" label="Publicada">
+          {formatDates.formatDateN(post.createdAt) || "—"}
+        </InfoRow>
+        <InfoRow icon="pi-globe" label="Región">
+          {author?.region ? `${country?.flag ?? ""} ${author.region}`.trim() : "Sin región"}
+        </InfoRow>
+        {playersNeeded > 0 && (
+          <InfoRow icon="pi-user" label="Buscan">
+            {formatCount(playersNeeded, "jugador", "jugadores")}
+          </InfoRow>
+        )}
+        <InfoRow icon="pi-users" label="Interesados">
+          {formatCount(interestedCount, "jugador", "jugadores")}
+        </InfoRow>
+        <InfoRow icon="pi-comments" label="Comentarios">
+          {commentsCount}
+        </InfoRow>
+      </dl>
+
+      <div className="post-info__actions">
+        {isOwner ? (
+          <>
+            <Button
+              label="Editar partida"
+              icon="pi pi-pencil"
+              className="gm-btn gm-btn--ghost"
+              onClick={onEdit}
+            />
+            <Button
+              label="Eliminar"
+              icon="pi pi-trash"
+              className="gm-btn gm-btn--danger"
+              onClick={onDelete}
+            />
+          </>
         ) : (
-          platformIcons[post.platform]?.()
+          <>
+            <Button
+              label={isInterested ? "Ya no me interesa" : "Quiero jugar"}
+              icon={isInterested ? "pi pi-times" : "pi pi-bolt"}
+              className={`gm-btn ${isInterested ? "gm-btn--danger" : "gm-btn--primary"}`}
+              loading={togglingInterest}
+              onClick={onToggleInterest}
+            />
+            <Button
+              label="Mensaje al anfitrión"
+              icon="pi pi-comments"
+              className="gm-btn gm-btn--ghost"
+              loading={openingChat}
+              onClick={onChatWithHost}
+            />
+          </>
         )}
       </div>
-
-      <div className="game-info-card">
-        <div className="info-row">
-          <Avatar
-            image={postAuthor?.avatar}
-            label={postAuthor?.username?.charAt(0).toUpperCase()}
-            shape="circle"
-            onClick={(e) => {
-              e.stopPropagation();
-              onAuthorClick(post.userId);
-            }}
-          />
-          <span>{postAuthor?.username}</span>
-        </div>
-
-        <div className="info-row">
-          <i className="pi pi-clock"></i>
-          <span>{formatDates.formatDateN(post.createdAt)}</span>
-        </div>
-
-        <div className="info-row">
-          <i className="pi pi-globe"></i>
-          <span>{postAuthor?.region}</span>
-        </div>
-
-        <div className="info-row">
-          <i className="pi pi-comments"></i>
-          <span>{comments.length} comentarios</span>
-        </div>
-
-        <div className="info-row">
-          <i className="pi pi-users"></i>
-          <span>{interestedCount} jugadores interesados</span>
-        </div>
-
-        {post.userId !== currentUserId && (
-          <Button
-            label={isInterested ? "Ya no me interesa" : "Quiero jugar"}
-            icon={isInterested ? "pi pi-times" : "pi pi-users"}
-            className={isInterested ? "p-button-danger" : "p-button-success"}
-            onClick={onInterestedClick}
-          />
-        )}
-      </div>
-    </div>
+    </ProfileSection>
   );
 }

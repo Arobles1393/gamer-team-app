@@ -97,6 +97,7 @@ const formatLastSeen = (timestamp) => {
 };
 
 export const formatDates = {
+  toDate,
   formatDate,
   formatDateN,
   formatChatTime,

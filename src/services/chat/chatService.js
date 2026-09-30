@@ -24,7 +24,7 @@ const subscribeToUserChats = (userId, onSuccess, onError) => {
     (snapshot) => {
       const chats = snapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data({ serverTimestamps: "estimate" })
       }));
 
       onSuccess(chats);
@@ -52,9 +52,10 @@ const subscribeToMessages = (chatId, onSuccess, onError) => {
   return onSnapshot(
     q,
     (snapshot) => {
+      // "estimate": el mensaje recién enviado ya trae hora aunque el servidor no haya respondido
       const messages = snapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data({ serverTimestamps: "estimate" })
       }));
 
       onSuccess(messages);
@@ -104,6 +105,7 @@ const sendMessage = async ({ chatId, senderId, receiverId, text }) => {
   const chatRef = doc(db, "chats", chatId);
   batch.update(chatRef, {
     lastMessage: text,
+    lastSenderId: senderId,
     lastMessageAt: serverTimestamp()
   });
 

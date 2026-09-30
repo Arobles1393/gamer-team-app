@@ -1,88 +1,103 @@
-import { Card } from "primereact/card";
-import { Button } from "primereact/button";
+import { useMemo, useState } from "react";
+import NewsHeader from "./NewsHeader";
+import NewsFilters from "./NewsFilters";
+import NewsCard from "./NewsCard";
+import NewsCardSkeleton from "./NewsCardSkeleton";
+import NewsEmptyState from "./NewsEmptyState";
 import { useGamingNews } from "../../hooks";
-import { formatDates } from "../../utils";
+import "../Posts/Feed.css";
 import "./GamingNews.css";
 
 export default function GamingNews() {
-  const { news, loading } = useGamingNews();
+  const { news, loading, error, retry } = useGamingNews();
+  const [search, setSearch] = useState("");
+  const [source, setSource] = useState(null);
 
-  if (loading) {
+  // Fuentes presentes en las noticias, con su conteo
+  const sources = useMemo(() => {
+    const counts = news.reduce((acc, item) => {
+      acc[item.source] = (acc[item.source] ?? 0) + 1;
+      return acc;
+    }, {});
+
+    return Object.entries(counts).map(([name, count]) => ({ name, count }));
+  }, [news]);
+
+  // Ya vienen ordenadas por fecha desc desde Firestore
+  const visibleNews = useMemo(() => {
+    const term = search.trim().toLowerCase();
+
+    return news.filter((item) => {
+      const matchSource = !source || item.source === source;
+      const matchSearch =
+        !term ||
+        item.title?.toLowerCase().includes(term) ||
+        item.description?.toLowerCase().includes(term);
+
+      return matchSource && matchSearch;
+    });
+  }, [news, search, source]);
+
+  const renderResults = () => {
+    if (error) {
+      return <NewsEmptyState variant="error" onAction={retry} />;
+    }
+
+    if (loading) {
+      return (
+        <div className="news-grid" aria-busy="true" aria-label="Cargando noticias">
+          <NewsCardSkeleton featured />
+          {Array.from({ length: 6 }, (_, i) => <NewsCardSkeleton key={i} />)}
+        </div>
+      );
+    }
+
+    if (news.length === 0) {
+      return <NewsEmptyState variant="empty" />;
+    }
+
+    if (visibleNews.length === 0) {
+      return (
+        <NewsEmptyState
+          variant="noMatch"
+          search={search}
+          onAction={() => setSearch("")}
+        />
+      );
+    }
+
+    const [featured, ...rest] = visibleNews;
+
     return (
-      <div className="news-loading">
-        <i className="pi pi-spin pi-spinner" />
-        <p>Cargando noticias gamer...</p>
+      <div className="news-grid">
+        <NewsCard item={featured} featured />
+        {rest.map((item) => (
+          <NewsCard key={item.id} item={item} />
+        ))}
       </div>
     );
-  }
+  };
+
+  const hasNews = !loading && !error && news.length > 0;
 
   return (
-    <div className="gaming-news">
+    <div className="feed news">
+      <NewsHeader
+        search={search}
+        onSearchChange={setSearch}
+        disabled={!hasNews}
+      />
 
-      <h2 className="news-title">
-        📰 Noticias Gamer
-      </h2>
+      {hasNews && sources.length > 1 && (
+        <NewsFilters
+          sources={sources}
+          source={source}
+          onSourceChange={setSource}
+          total={news.length}
+        />
+      )}
 
-      <div className="news-grid">
-
-        {news.map((item) => (
-
-          <Card
-            key={item.id}
-            className="news-card"
-          >
-
-            <img
-              src={
-                item.image ||
-                "/imagenotfound.png"
-              }
-              alt={item.title}
-              className="news-image"
-            />
-
-            <div className="news-content">
-
-              <h3>
-                {item.title}
-              </h3>
-
-              <p>
-                {item.description}
-              </p>
-
-              <div className="news-footer">
-
-                <small>
-                  {item.source}
-                  {" • "}
-                  {formatDates.formatDate(
-                    item.publishedAt
-                  )}
-                </small>
-
-                <Button
-                  label="Leer más"
-                  icon="pi pi-external-link"
-                  className="p-button-sm"
-                  onClick={() =>
-                    window.open(
-                      item.link,
-                      "_blank"
-                    )
-                  }
-                />
-
-              </div>
-
-            </div>
-
-          </Card>
-
-        ))}
-
-      </div>
-
+      {renderResults()}
     </div>
   );
 }

@@ -1,29 +1,61 @@
-.profile-section {
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background: rgba(15, 23, 42, 0.6);
-  border-radius: 8px;
-}
-
-.form-row {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap; /* 🔥 para responsive */
-}
-
-.form-group {
+/* =====================================================
+   DATOS PERSONALES — lista de datos (ver) o campos (editar).
+   La card y los controles vienen de ProfileSection.css.
+   ===================================================== */
+.personal-info__list {
   display: flex;
   flex-direction: column;
-  flex: 1; /* 🔥 todos ocupan el mismo espacio */
-  min-width: 150px; /* evita que se rompa feo */
+  margin: 0;
 }
 
-.form-group label {
-  font-size: 0.85rem;
-  color: #94a3b8;
-  margin-bottom: 0.3rem;
+.personal-info__row {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  grid-template-areas:
+    "icon label"
+    "icon value";
+  column-gap: 12px;
+  row-gap: 2px;
+  padding: 12px 0;
 }
 
-.personal-info-description {
-  margin-top: 1rem;
+.personal-info__row + .personal-info__row {
+  border-top: 1px solid var(--gm-border-soft);
+}
+
+.personal-info__row:first-child {
+  padding-top: 0;
+}
+
+.personal-info__row:last-child {
+  padding-bottom: 0;
+}
+
+.personal-info__row-icon {
+  grid-area: icon;
+  align-self: center;
+  font-size: 14px;
+  color: var(--gm-subtle);
+}
+
+.personal-info__label {
+  grid-area: label;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--gm-label);
+}
+
+.personal-info__value {
+  grid-area: value;
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 15px;
+  color: var(--gm-text);
+}
+
+.personal-info__missing {
+  font-style: italic;
+  color: var(--gm-hint);
 }
