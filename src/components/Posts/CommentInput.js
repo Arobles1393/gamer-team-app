@@ -2,10 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { UserAvatar } from "../UserAvatar";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
+import { MAX_MEDIA_MB, MAX_MEDIA_BYTES } from "../../utils";
 
 const MAX_LENGTH = 500;
-// Mismo límite que storage.rules para comments/{userId}
-const MAX_FILE_MB = 20;
 
 export default function CommentInput({ currentUser, onPublish, onError }) {
   const [comment, setComment] = useState("");
@@ -41,8 +40,8 @@ export default function CommentInput({ currentUser, onPublish, onError }) {
       return;
     }
 
-    if (selected.size > MAX_FILE_MB * 1024 * 1024) {
-      onError?.(`El archivo debe pesar máximo ${MAX_FILE_MB} MB.`);
+    if (selected.size > MAX_MEDIA_BYTES) {
+      onError?.(`El archivo debe pesar máximo ${MAX_MEDIA_MB} MB.`);
       return;
     }
 

@@ -1,6 +1,7 @@
 import { useLayoutEffect, useMemo, useRef } from "react";
 import { Skeleton } from "primereact/skeleton";
 import ChatEmptyState from "./ChatEmptyState";
+import MessageBubble from "./MessageBubble";
 import { formatDates } from "../../utils";
 
 // Mensajes seguidos del mismo autor con menos de 5 min entre sí van en el mismo grupo
@@ -144,7 +145,7 @@ export default function MessageList({ messages, loading, currentUserId, otherUse
             className={`chat-group${item.mine ? " chat-group--mine" : ""}`}
           >
             {item.messages.map((message) => (
-              <p key={message.id} className="chat-bubble">{message.text}</p>
+              <MessageBubble key={message.id} message={message} />
             ))}
             <span className="chat-group__time">{formatTime(item.lastDate)}</span>
           </div>

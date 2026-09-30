@@ -17,13 +17,17 @@ export default function ChatWindow({ chatId, onBack, onError }) {
 
   const online = isOnline(otherUser?.lastSeen);
 
-  const handleSend = async (text) => {
+  const handleSend = async (text, file) => {
     try {
-      await sendMessage(text);
+      await sendMessage(text, file);
     } catch (error) {
       console.error("Error enviando mensaje:", error);
-      onError?.("No se pudo enviar el mensaje. Intenta de nuevo.");
-      // El composer devuelve el texto al input
+      onError?.(
+        file
+          ? "No se pudo enviar el archivo. Intenta de nuevo."
+          : "No se pudo enviar el mensaje. Intenta de nuevo."
+      );
+      // El composer conserva el texto y el adjunto para reintentar
       throw error;
     }
   };
@@ -57,7 +61,7 @@ export default function ChatWindow({ chatId, onBack, onError }) {
         otherUsername={otherUser?.username}
       />
 
-      <MessageComposer onSend={handleSend} disabled={!otherUserId} />
+      <MessageComposer onSend={handleSend} onError={onError} disabled={!otherUserId} />
     </section>
   );
 }

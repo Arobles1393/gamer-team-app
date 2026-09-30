@@ -67,14 +67,16 @@ export const useChatWindow = (chatId, currentUserId) => {
       });
   }, [chatId, currentUserId, receivedCount]);
 
-  const sendMessage = async (text) => {
-    if (!text.trim() || !otherUserId) return;
+  // Texto, adjunto o ambos
+  const sendMessage = async (text, file = null) => {
+    if ((!text.trim() && !file) || !otherUserId) return;
 
     await chatService.sendMessage({
       chatId,
       senderId: currentUserId,
       receiverId: otherUserId,
-      text: text.trim()
+      text: text.trim(),
+      file
     });
   };
 
