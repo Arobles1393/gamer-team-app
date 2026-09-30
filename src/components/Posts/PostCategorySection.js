@@ -1,23 +1,20 @@
-import { useState } from "react";
 import PostCard from "./PostCard";
 import PostCardSkeleton from "./PostCardSkeleton";
 
 // Una categoría del feed: título + fila horizontal de PostCard.
-// "Ver más" despliega en la misma fila el resto de posts de la categoría.
+// "Ver más" (onSeeMore) abre la categoría completa en /explorar.
 export default function PostCategorySection({
   title,
   posts,
-  morePosts,
+  hasMore,
   loading,
+  onSeeMore,
   getInterestedDoc,
   onToggleInterested,
   onEdit,
   onDelete,
   onShowProfile
 }) {
-  const [expanded, setExpanded] = useState(false);
-
-  const visiblePosts = expanded ? [...posts, ...morePosts] : posts;
   const showSkeleton = loading && posts.length === 0;
 
   return (
@@ -25,15 +22,14 @@ export default function PostCategorySection({
       <header className="feed-section__header">
         <h2 className="feed-section__title">{title}</h2>
 
-        {morePosts.length > 0 && (
+        {hasMore && (
           <button
             type="button"
             className="feed-section__more"
-            aria-expanded={expanded}
-            onClick={() => setExpanded((value) => !value)}
+            onClick={onSeeMore}
           >
-            {expanded ? "Ver menos" : "Ver más"}
-            <i className={`pi ${expanded ? "pi-chevron-left" : "pi-chevron-right"}`} aria-hidden="true" />
+            Ver más
+            <i className="pi pi-chevron-right" aria-hidden="true" />
           </button>
         )}
       </header>
@@ -45,7 +41,7 @@ export default function PostCategorySection({
               <PostCardSkeleton />
             </div>
           ))
-          : visiblePosts.map((post) => (
+          : posts.map((post) => (
             <div key={post.id} className="feed-row__item">
               <PostCard
                 post={post}

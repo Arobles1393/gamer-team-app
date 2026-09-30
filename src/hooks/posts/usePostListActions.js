@@ -11,11 +11,13 @@ import { useProfileChat } from "../chat/useProfileChat";
 // Acciones sobre las cards de una lista de posts (feed por categorías y
 // vistas planas): "Me interesa", editar, borrar y el diálogo de perfil.
 // `showToast(severity, summary, detail)` muestra los mensajes.
+// `onPostDeleted(id)` (opcional) para listas que no se actualizan solas.
 export const usePostListActions = ({
   user,
   setEditingPost,
   setShowCreatePost,
-  showToast
+  showToast,
+  onPostDeleted
 }) => {
   const { interestedMap } = useInterestedPosts(user);
 
@@ -61,6 +63,7 @@ export const usePostListActions = ({
       onAccept: async () => {
         try {
           await postService.deletePost(id);
+          onPostDeleted?.(id);
           showToast("success", "Eliminado", "Publicación eliminada correctamente");
         } catch (error) {
           console.error("Error al eliminar:", error);
@@ -68,7 +71,7 @@ export const usePostListActions = ({
         }
       }
     });
-  }, [showToast]);
+  }, [showToast, onPostDeleted]);
 
   return {
     interestedMap,

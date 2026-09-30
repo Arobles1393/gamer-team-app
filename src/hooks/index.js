@@ -10,6 +10,7 @@ export * from "./posts/usePostInterestStatus";
 export * from "./posts/usePostComments";
 export * from "./posts/usePostCategories";
 export * from "./posts/usePostListActions";
+export * from "./posts/usePaginatedPosts";
 
 // Perfil
 export * from "./profile/useUserProfile";

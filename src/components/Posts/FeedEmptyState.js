@@ -1,6 +1,7 @@
 import { Button } from "primereact/button";
 
-export default function FeedEmptyState({ hasFilters, onClearFilters }) {
+// emptyText: mensaje propio de una categoría (p. ej. en /explorar)
+export default function FeedEmptyState({ hasFilters, onClearFilters, emptyText }) {
   return (
     <div className="feed-empty" role="status">
       <span className="feed-empty__icon">
@@ -12,7 +13,7 @@ export default function FeedEmptyState({ hasFilters, onClearFilters }) {
       <p className="feed-empty__text">
         {hasFilters
           ? "Prueba con otro juego o plataforma."
-          : "Cuando alguien publique una partida, aparecerá en esta lista."}
+          : emptyText || "Cuando alguien publique una partida, aparecerá en esta lista."}
       </p>
       {hasFilters && (
         <Button

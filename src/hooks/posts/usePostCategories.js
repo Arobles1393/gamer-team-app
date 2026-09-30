@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { postService } from "../../services/posts";
 import { gameTrendsService } from "../../services/games";
-import { filterPosts, platformLabels } from "../../utils";
+import { filterPosts, getCategoryTitle } from "../../utils";
 
 // Posts visibles por categoría
 const ROW_SIZE = 6;
@@ -96,7 +96,8 @@ const useTrendingPosts = (subscribeToTrending) => {
 
 // Feed principal por categorías. Cada sección se consulta por separado y
 // todas respetan los filtros activos (juego, plataforma y búsqueda).
-// Devuelve las secciones en orden: { key, title, posts, morePosts, loading }.
+// Devuelve las secciones en orden: { key, title, posts, hasMore, loading }.
+// hasMore: hay más de ROW_SIZE (o la ventana llegó llena), para "Ver más".
 // Una sección sin posts (o desactivada) se omite en el componente.
 export const usePostCategories = ({
   filterGame,
@@ -127,30 +128,28 @@ export const usePostCategories = ({
 
   return useMemo(() => {
     const filters = { game: filterGame, platform: filterPlatform, search };
-    const platformSuffix = filterPlatform ? ` en ${platformLabels[filterPlatform]}` : "";
 
-    const section = (key, title, { posts, loading }, extraFilter) => {
+    // Claves y títulos compartidos con /explorar (utils/postCategories)
+    const section = (key, { posts, loading }, extraFilter) => {
       const filtered = filterPosts(extraFilter ? posts.filter(extraFilter) : posts, filters);
 
       return {
         key,
-        title,
+        title: getCategoryTitle(key, filterPlatform),
         posts: filtered.slice(0, ROW_SIZE),
-        morePosts: filtered.slice(ROW_SIZE),
+        hasMore: filtered.length > ROW_SIZE || posts.length >= WINDOW_SIZE,
         loading
       };
     };
 
     return [
-      section("recent", `Recientes${platformSuffix}`, recent),
-      // Títulos fijos: son personales, no cambian con el filtro
-      section("friends", "De tus amigos", friends),
-      section("nearby", "Cerca de ti", nearby),
+      section("recent", recent),
+      section("friends", friends),
+      section("nearby", nearby),
       // Sin interesados no hay nada que destacar
-      section("mostInterested", `Más interesados${platformSuffix}`, mostInterested,
-        (post) => post.interestedCount > 0),
-      section("trendingByVolume", `Tendencia en publicaciones${platformSuffix}`, trendingByVolume),
-      section("trendingBySearch", `Tendencia en búsquedas${platformSuffix}`, trendingBySearch)
+      section("mostInterested", mostInterested, (post) => post.interestedCount > 0),
+      section("trendingVolume", trendingByVolume),
+      section("trendingSearch", trendingBySearch)
     ];
   }, [
     filterGame,

@@ -13,3 +13,6 @@ export { platformLabels } from "./platformLabels";
 export { getLastSeenMs, isOnline, getPresenceLabel } from "./presence";
 export { getSteamIdFromLinks } from "./steamLinks";
 export { filterPosts } from "./postFilters";
+export { POST_CATEGORIES, isPostCategory, getCategoryTitle } from "./postCategories";
+export { collectFilteredPage } from "./collectFilteredPage";
+export { buildExploreUrl } from "./exploreUrl";

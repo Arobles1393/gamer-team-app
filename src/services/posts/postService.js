@@ -13,7 +13,8 @@ import {
   setDoc,
   orderBy,
   increment,
-  serverTimestamp
+  serverTimestamp,
+  startAfter
 } from "firebase/firestore";
 import { db, functions } from "../../firebase/config";
 import { httpsCallable } from "firebase/functions";
@@ -164,6 +165,60 @@ const subscribeToPosts = (
   );
 };
 
+// Una página de posts para /explorar (getDocs, no listener).
+// sortBy: "recent" | "mostInterested" | "friends" (con friendIds) |
+// "nearby" (con region). cursor = lastVisibleDoc de la página anterior.
+// hasMore: si llegó la página completa, puede haber más.
+const getPostsPage = async (
+  { sortBy, friendIds = [], region },
+  cursor,
+  pageSize
+) => {
+  // Sin amigos o sin región no hay nada que consultar ("in" vacío falla)
+  if ((sortBy === "friends" && !friendIds.length) || (sortBy === "nearby" && !region)) {
+    return { posts: [], lastVisibleDoc: null, hasMore: false };
+  }
+
+  const constraints = [];
+
+  if (sortBy === "friends") {
+    // Máximo 30 por el operador "in"
+    constraints.push(
+      where("userId", "in", friendIds.slice(0, MAX_IN_VALUES)),
+      orderBy("createdAt", "desc")
+    );
+  } else if (sortBy === "nearby") {
+    constraints.push(
+      where("authorRegion", "==", region),
+      orderBy("createdAt", "desc")
+    );
+  } else if (sortBy === "mostInterested") {
+    // Igual que en el home: sin interesados no cuenta
+    constraints.push(
+      where("interestedCount", ">", 0),
+      orderBy("interestedCount", "desc")
+    );
+  } else {
+    constraints.push(orderBy("createdAt", "desc"));
+  }
+
+  if (cursor) {
+    constraints.push(startAfter(cursor));
+  }
+
+  constraints.push(limit(pageSize));
+
+  const snapshot = await getDocs(
+    query(collection(db, "posts"), ...constraints)
+  );
+
+  return {
+    posts: snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
+    lastVisibleDoc: snapshot.docs[snapshot.docs.length - 1] ?? cursor ?? null,
+    hasMore: snapshot.docs.length === pageSize
+  };
+};
+
 const getGameLogo = httpsCallable(
   functions,
   "getGameLogo"
@@ -205,6 +260,7 @@ export const postService = {
   updatePost,
   subscribeToPost,
   subscribeToPosts,
+  getPostsPage,
   fetchGameLogo,
   fetchGamePortada
 };

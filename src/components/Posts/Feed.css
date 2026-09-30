@@ -388,6 +388,42 @@
   min-width: 0;
 }
 
+/* ---------- EXPLORAR (/explorar) ---------- */
+.explore-header__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 4px 0;
+  border: none;
+  background: none;
+  font-family: var(--gm-font-body);
+  font-size: 14px;
+  color: var(--gm-muted);
+  cursor: pointer;
+}
+
+.explore-header__back .pi {
+  font-size: 12px;
+}
+
+.explore-header__back:hover {
+  color: var(--gm-text);
+}
+
+.explore-header__back:focus-visible {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* "Cargar más": botón secundario (outline), no el CTA de gradiente */
+.feed-load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
 /* ---------- SKELETON ---------- */
 .post-card--skeleton {
   cursor: default;

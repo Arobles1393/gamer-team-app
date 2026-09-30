@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import PostFilters from "./PostFilters";
@@ -18,6 +19,7 @@ import {
   useRequireAuth
 } from "../../hooks";
 import { useCurrentUser, useCurrentUserData } from "../../context";
+import { buildExploreUrl } from "../../utils";
 
 // Feed principal por categorías. El buscador y los chips de plataforma
 // filtran todas las categorías a la vez.
@@ -25,6 +27,7 @@ export default function PostFeed({ setEditingPost, setShowCreatePost }) {
   const user = useCurrentUser();
   const userData = useCurrentUserData();
   const requireAuth = useRequireAuth(user);
+  const navigate = useNavigate();
   const toast = useRef(null);
   const [search, setSearch] = useState("");
 
@@ -100,12 +103,16 @@ export default function PostFeed({ setEditingPost, setShowCreatePost }) {
         <div className="feed-sections">
           {visibleSections.map((section) => (
             <PostCategorySection
-              // Al cambiar filtros la sección vuelve a mostrar solo 6
-              key={`${section.key}-${filterGame}-${filterPlatform}`}
+              key={section.key}
               title={section.title}
               posts={section.posts}
-              morePosts={section.morePosts}
+              hasMore={section.hasMore}
               loading={section.loading}
+              onSeeMore={() => navigate(buildExploreUrl({
+                category: section.key,
+                platform: filterPlatform,
+                game: filterGame
+              }))}
               getInterestedDoc={getInterestedDoc}
               onToggleInterested={handleInterested}
               onEdit={handleEditPost}
