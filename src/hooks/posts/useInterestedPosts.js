@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { interestService } from "../services/posts";
+import { interestService } from "../../services/posts";
 
 export const useInterestedPosts = (user) => {
   const [interestedPosts, setInterestedPosts] = useState([]);

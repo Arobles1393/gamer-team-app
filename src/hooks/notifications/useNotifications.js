@@ -3,7 +3,7 @@ import {
   useState
 } from "react";
 
-import { notificationService } from "../services/notifications";
+import { notificationService } from "../../services/notifications";
 
 export const useNotifications = (user, { limitCount = 10 } = {}) => {
 

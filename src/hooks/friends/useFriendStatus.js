@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { friendService } from "../services/friends";
+import { friendService } from "../../services/friends";
 
 export const useFriendStatus = (user, selectedUserId) => {
   const [friendStatus, setFriendStatus] = useState("none");

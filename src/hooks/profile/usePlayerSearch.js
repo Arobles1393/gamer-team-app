@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { userService } from "../services/users";
+import { userService } from "../../services/users";
 
 // Búsqueda de jugadores por prefijo de username, con debounce.
 // Excluye al usuario actual de los resultados.

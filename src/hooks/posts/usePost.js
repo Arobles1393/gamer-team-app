@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { postService } from "../services/posts";
+import { postService } from "../../services/posts";
 
 export const usePost = (postId) => {
   const [post, setPost] = useState(null);

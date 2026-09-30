@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { notificationService } from "../services/notifications";
+import { notificationService } from "../../services/notifications";
 
 // Conteo de no leídas y si hay mensajes sin leer, sin el límite de la lista del overlay
 export const useUnreadNotifications = (user) => {

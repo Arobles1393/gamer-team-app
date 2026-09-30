@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { friendService } from "../services/friends";
+import { friendService } from "../../services/friends";
 
 export const useFriendRequest = (
   user,

@@ -1,28 +1,41 @@
-export * from "./useNotifications";
-export * from "./useUserPresence";
-export * from "./useAuth";
-export * from "./useFriendStatus";
-export * from "./usePosts";
-export * from "./useInterestedPosts";
-export * from "./useFilteredPosts";
-export * from "./usePostFilters";
-export * from "./useProfileChat";
-export * from "./usePostInterest";
-export * from "./useFriendRequest";
-export * from "./useGameSearch";
-export * from "./useCreatePost";
-export * from "./useUserProfile";
-export * from "./useSteamStats";
-export * from "./useProfileForm";
-export * from "./useProfileImages";
-export * from "./useGamingNews";
-export * from "./useChats";
-export * from "./useChatWindow";
-export * from "./usePost";
-export * from "./usePostComments";
-export * from "./usePostInterestStatus";
-export * from "./useFriends";
-export * from "./usePlayerSearch";
-export * from "./useUnreadNotifications";
-export * from "./useUserProfiles";
-export * from "./useProfileDialog";
+// Posts
+export * from "./posts/usePosts";
+export * from "./posts/usePost";
+export * from "./posts/useCreatePost";
+export * from "./posts/useFilteredPosts";
+export * from "./posts/usePostFilters";
+export * from "./posts/useInterestedPosts";
+export * from "./posts/usePostInterest";
+export * from "./posts/usePostInterestStatus";
+export * from "./posts/usePostComments";
+
+// Perfil
+export * from "./profile/useUserProfile";
+export * from "./profile/useUserProfiles";
+export * from "./profile/useProfileForm";
+export * from "./profile/useProfileImages";
+export * from "./profile/useProfileDialog";
+export * from "./profile/useSteamStats";
+export * from "./profile/useUserPresence";
+export * from "./profile/usePlayerSearch";
+
+// Amigos
+export * from "./friends/useFriends";
+export * from "./friends/useFriendRequest";
+export * from "./friends/useFriendStatus";
+
+// Chat
+export * from "./chat/useChats";
+export * from "./chat/useChatWindow";
+export * from "./chat/useProfileChat";
+
+// Notificaciones
+export * from "./notifications/useNotifications";
+export * from "./notifications/useUnreadNotifications";
+
+// Auth
+export * from "./auth/useAuth";
+
+// Juegos
+export * from "./games/useGameSearch";
+export * from "./games/useGamingNews";

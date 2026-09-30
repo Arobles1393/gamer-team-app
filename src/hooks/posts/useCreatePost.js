@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { postService } from "../services/posts";
-import { getGameDetail } from "../utils";
+import { postService } from "../../services/posts";
+import { getGameDetail } from "../../utils";
 
 export const useCreatePost = ({
   user,

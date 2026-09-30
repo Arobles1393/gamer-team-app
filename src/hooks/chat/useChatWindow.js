@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { chatService } from "../services/chat";
-import { notificationService } from "../services/notifications";
+import { chatService } from "../../services/chat";
+import { notificationService } from "../../services/notifications";
 
 export const useChatWindow = (chatId, currentUserId) => {
   const [messages, setMessages] = useState([]);

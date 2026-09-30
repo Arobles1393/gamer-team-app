@@ -1,36 +1,43 @@
 import { useEffect, useState } from "react";
-import { gamingNewsService } from "../services/gamingNews/gamingNewsService";
+import { chatService } from "../../services/chat";
 
-export const useGamingNews = () => {
-  const [news, setNews] = useState([]);
+export const useChats = (user) => {
+  const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
+    if (!user) {
+      setChats([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(false);
 
-    const unsubscribe = gamingNewsService.subscribeToGamingNews(
+    const unsubscribe = chatService.subscribeToUserChats(
+      user.uid,
       (data) => {
-        setNews(data);
+        setChats(data);
         setLoading(false);
       },
       (error) => {
-        console.error("Error obteniendo noticias gamer:", error);
-        setNews([]);
+        console.error("Error obteniendo chats:", error);
+        setChats([]);
         setError(true);
         setLoading(false);
       }
     );
 
     return unsubscribe;
-  }, [retryKey]);
+  }, [user, retryKey]);
 
   const retry = () => setRetryKey((key) => key + 1);
 
   return {
-    news,
+    chats,
     loading,
     error,
     retry

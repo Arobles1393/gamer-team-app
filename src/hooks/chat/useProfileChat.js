@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { chatService } from "../services/chat";
+import { chatService } from "../../services/chat";
 
 export const useProfileChat = (
   user,

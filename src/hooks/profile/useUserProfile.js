@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { userService } from "../services/users";
+import { userService } from "../../services/users";
 
 export const useUserProfile = (userId) => {
   const [userData, setUserData] = useState(null);

@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { interestService } from "../services/posts";
+import { interestService } from "../../services/posts";
 
 export const usePostInterest = (user, onError) => {
 

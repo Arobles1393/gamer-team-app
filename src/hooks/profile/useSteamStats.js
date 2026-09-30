@@ -2,7 +2,7 @@ import {
   useEffect,
   useState
 } from "react";
-import { steamStatsService } from "../services/steam";
+import { steamStatsService } from "../../services/steam";
 
 export const useSteamStats = (links) => {
 

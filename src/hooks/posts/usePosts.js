@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { postService } from "../services/posts";
+import { postService } from "../../services/posts";
 
 export const usePosts = (user, onlyMine = false, joined = false) => {
   const [posts, setPosts] = useState([]);

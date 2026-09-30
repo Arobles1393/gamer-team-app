@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { profileImageService } from "../services/profile";
+import { profileImageService } from "../../services/profile";
 
 const SUCCESS_MESSAGES = {
   avatar: "Foto de perfil actualizada",

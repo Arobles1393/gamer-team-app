@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { getPlatformKey } from "../utils";
+import { getPlatformKey } from "../../utils";
 
 // Un post multiplataforma aparece en cada plataforma del juego según RAWG.
 // Si no tiene esa lista (juego escrito a mano), aparece en todas.

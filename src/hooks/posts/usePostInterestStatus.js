@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { interestService } from "../services/posts";
+import { interestService } from "../../services/posts";
 
 export const usePostInterestStatus = (postId, userId) => {
   const [interestedUserIds, setInterestedUserIds] = useState([]);

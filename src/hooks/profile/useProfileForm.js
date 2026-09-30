@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { updateEmail } from "firebase/auth";
-import { profileService } from "../services/profile";
+import { profileService } from "../../services/profile";
 
 export const useProfileForm = (user, userData, onError, onSuccess) => {
   const [isEditing, setIsEditing] = useState(false);
