@@ -11,3 +11,4 @@ export { searchGames, getGameDetail } from "./searchGames";
 export { getNotificationMeta } from "./notificationMeta";
 export { platformLabels } from "./platformLabels";
 export { getLastSeenMs, isOnline, getPresenceLabel } from "./presence";
+export { getSteamIdFromLinks } from "./steamLinks";

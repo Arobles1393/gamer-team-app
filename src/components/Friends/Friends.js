@@ -6,7 +6,7 @@ import { PlayerCard, PlayerCardSkeleton } from "../FindPlayers";
 import FriendsHeader from "./FriendsHeader";
 import FriendsFilters from "./FriendsFilters";
 import FriendsEmptyState from "./FriendsEmptyState";
-import { useFriends, useUserProfiles, useFriendStatus, useProfileChat, useFriendRequest, useProfileDialog } from "../../hooks";
+import { useFriends, useUserProfiles, useFriendStatus, useProfileChat, useFriendRequest, useProfileDialog, useSteamPresenceBatch } from "../../hooks";
 import { isOnline } from "../../utils";
 import { useCurrentUser } from "../../context";
 import "../Posts/Feed.css";
@@ -26,6 +26,8 @@ export default function Friends() {
 
   const { friendIds, loading: loadingIds, error, retry } = useFriends(user);
   const { users: friends, loading: loadingProfiles } = useUserProfiles(friendIds);
+  // Una sola consulta a Steam para todos los amigos
+  const steamGames = useSteamPresenceBatch(friends);
 
   const {
     selectedUserId,
@@ -116,6 +118,7 @@ export default function Friends() {
           <PlayerCard
             key={friend.id}
             player={friend}
+            steamGame={steamGames[friend.id]}
             onShowProfile={openProfile}
             onChat={openChatWith}
           />

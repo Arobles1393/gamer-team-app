@@ -8,13 +8,14 @@ const localSigner =
 admin.initializeApp(
   localSigner ? { serviceAccountId: localSigner } : undefined
 );
-const { getSteamStats } = require("./steam/steam.functions");
+const { getSteamStats, getSteamPresence } = require("./steam/steam.functions");
 const { getGameLogo, getGamePortada } = require("./steamgrid/steamgrid.functions");
 const { syncGamingNews } = require("./gamingNews/gamingNews.functions");
 const { cleanupCommentMedia } = require("./postComments/postComments.functions");
 const { loginWithSteam } = require("./steamAuth/steamAuth.functions");
 
 exports.getSteamStats = getSteamStats;
+exports.getSteamPresence = getSteamPresence;
 exports.getGameLogo = getGameLogo;
 exports.getGamePortada = getGamePortada;
 exports.syncGamingNews = syncGamingNews;

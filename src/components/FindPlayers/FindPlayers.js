@@ -5,7 +5,7 @@ import PlayersHeader from "./PlayersHeader";
 import PlayerCard from "./PlayerCard";
 import PlayerCardSkeleton from "./PlayerCardSkeleton";
 import PlayersEmptyState from "./PlayersEmptyState";
-import { useFriendStatus, useProfileChat, useFriendRequest, usePlayerSearch, useProfileDialog } from "../../hooks";
+import { useFriendStatus, useProfileChat, useFriendRequest, usePlayerSearch, useProfileDialog, useSteamPresenceBatch } from "../../hooks";
 import { useCurrentUser } from "../../context";
 import "../Posts/Feed.css";
 import "./FindPlayers.css";
@@ -16,6 +16,8 @@ export default function FindPlayers() {
   const toast = useRef(null);
 
   const { players, loading, error, retry } = usePlayerSearch(search, user?.uid);
+  // Una sola consulta a Steam para todos los resultados
+  const steamGames = useSteamPresenceBatch(players);
 
   const {
     selectedUserId,
@@ -84,6 +86,7 @@ export default function FindPlayers() {
             <PlayerCard
               key={player.id}
               player={player}
+              steamGame={steamGames[player.id]}
               onShowProfile={openProfile}
             />
           ))}

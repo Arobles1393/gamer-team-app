@@ -3,6 +3,7 @@ import { UserAvatar } from "../UserAvatar";
 import { Button } from "primereact/button";
 import { countries } from "../../data/countries";
 import { getPresenceLabel, isOnline } from "../../utils";
+import SteamIcon from "../Steam/SteamIcon";
 
 const MAX_GAMES = 4;
 
@@ -13,6 +14,17 @@ function PlayerStatus({ lastSeen }) {
     <span className={`player-card__status${online ? " player-card__status--online" : ""}`}>
       <span className="player-card__status-dot" aria-hidden="true" />
       {getPresenceLabel(lastSeen)}
+    </span>
+  );
+}
+
+// Solo aparece si Steam confirma que está jugando algo: offline y perfil
+// privado se ven igual desde la API, así que nunca se muestra "desconectado"
+function SteamGameStatus({ game }) {
+  return (
+    <span className="player-card__steam" title={`Jugando ${game} en Steam`}>
+      <SteamIcon className="player-card__steam-icon" />
+      <span className="player-card__steam-text">Jugando {game}</span>
     </span>
   );
 }
@@ -39,8 +51,9 @@ function PlayerGames({ games }) {
   );
 }
 
-// Con `onChat` (p. ej. en Amigos) muestra también el botón de mensaje
-function PlayerCard({ player, onShowProfile, onChat }) {
+// Con `onChat` (p. ej. en Amigos) muestra también el botón de mensaje.
+// `steamGame` lo resuelve el padre para toda la lista (useSteamPresenceBatch).
+function PlayerCard({ player, steamGame, onShowProfile, onChat }) {
   const country = countries.find((c) => c.value === player.region);
   const openProfile = () => onShowProfile(player.id);
   const openChat = () => onChat(player.id);
@@ -67,6 +80,8 @@ function PlayerCard({ player, onShowProfile, onChat }) {
           )}
           <PlayerStatus lastSeen={player.lastSeen} />
         </div>
+
+        {steamGame && <SteamGameStatus game={steamGame} />}
 
         <PlayerGames games={player.games} />
 
