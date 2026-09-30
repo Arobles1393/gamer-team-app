@@ -1,5 +1,6 @@
+import { useMemo } from "react";
 import { Skeleton } from "primereact/skeleton";
-import { useUserProfile } from "../../hooks";
+import { useUserProfile, useSteamPresenceBatch } from "../../hooks";
 import { ProfileHero } from "../ProfileHero";
 import { ProfileSection } from "../ProfileSection";
 import { FavoriteGames } from "../FavoriteGames";
@@ -27,6 +28,14 @@ function UserProfileSkeleton() {
 export default function UserProfile({ userId, actions, onClose }) {
   const { userData } = useUserProfile(userId);
 
+  // Misma consulta batcheada que en las listas, aquí con un solo jugador
+  const links = userData?.links;
+  const players = useMemo(
+    () => (links ? [{ id: userId, links }] : []),
+    [userId, links]
+  );
+  const steamGames = useSteamPresenceBatch(players);
+
   if (!userData) {
     return <UserProfileSkeleton />;
   }
@@ -41,6 +50,7 @@ export default function UserProfile({ userId, actions, onClose }) {
         eyebrow="Perfil de jugador"
         presence={getPresenceLabel(userData.lastSeen)}
         online={isOnline(userData.lastSeen)}
+        steamGame={steamGames[userId]}
         actions={actions}
         bannerAction={
           <button

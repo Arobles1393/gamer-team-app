@@ -1,5 +1,6 @@
 import { UserAvatar } from "../UserAvatar";
 import { formatDates } from "../../utils";
+import SteamIcon from "../Steam/SteamIcon";
 import "./ProfileHero.css";
 
 const formatMemberSince = (createdAt) => {
@@ -15,6 +16,7 @@ const NOT_UPLOADING = { avatar: false, banner: false };
  * Portada + avatar + identidad de un perfil.
  * - Mi perfil: `editable` muestra los botones para cambiar foto y portada.
  * - Diálogo de otro jugador: `presence` y `online` muestran su estado,
+ *   `steamGame` lo que está jugando en Steam (si hay dato) y
  *   `bannerAction` va sobre la portada (p. ej. cerrar).
  * `actions` se dibuja a la derecha (Editar perfil, Agregar amigo, Mensaje…).
  */
@@ -24,6 +26,7 @@ export default function ProfileHero({
   eyebrow,
   presence,
   online = false,
+  steamGame,
   actions,
   bannerAction,
   editable = false,
@@ -102,6 +105,15 @@ export default function ProfileHero({
               <span className={`profile-hero__meta-item profile-hero__presence${online ? " profile-hero__presence--online" : ""}`}>
                 <span className="profile-hero__presence-dot" aria-hidden="true" />
                 {presence}
+              </span>
+            )}
+            {steamGame && (
+              <span
+                className="profile-hero__meta-item profile-hero__steam"
+                title={`Jugando ${steamGame} en Steam`}
+              >
+                <SteamIcon className="profile-hero__steam-icon" />
+                Jugando {steamGame}
               </span>
             )}
             {userData?.region && (
