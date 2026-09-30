@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Avatar } from "primereact/avatar";
+import { UserAvatar } from "../UserAvatar";
 import { useUserProfile } from "../../hooks";
 import { formatDates } from "../../utils";
 
@@ -23,10 +23,9 @@ function CommentItem({
         aria-label={`Ver perfil de ${username}`}
         onClick={openProfile}
       >
-        <Avatar
+        <UserAvatar
           image={author?.avatar}
-          label={author?.avatar ? undefined : username.charAt(0).toUpperCase()}
-          shape="circle"
+          username={username}
           className="comment__avatar"
         />
       </button>

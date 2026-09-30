@@ -1,5 +1,5 @@
 import { Menu } from "primereact/menu";
-import { Avatar } from "primereact/avatar";
+import { UserAvatar } from "../UserAvatar";
 import { useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { useCurrentUserData } from "../../context";
@@ -18,9 +18,6 @@ export default function AppHeader({
 }) {
   const menuRef = useRef(null);
   const userData = useCurrentUserData();
-
-  // Valores derivados
-  const avatarLabel = !userData?.avatar ? userData?.username?.charAt(0).toUpperCase() : null;
 
   // Handlers
   const handleToggleMenu = (event) => {
@@ -57,10 +54,9 @@ export default function AppHeader({
         aria-haspopup="menu"
         onClick={handleToggleMenu}
       >
-        <Avatar
+        <UserAvatar
           image={userData?.avatar}
-          label={avatarLabel}
-          shape="circle"
+          username={userData?.username}
           className="app-rail__avatar"
         />
       </button>

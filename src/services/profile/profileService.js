@@ -1,5 +1,10 @@
 import { db } from "../../firebase/config";
-import { doc, updateDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
+
+const userProfileExists = async (userId) => {
+  const snapshot = await getDoc(doc(db, "users", userId));
+  return snapshot.exists();
+};
 
 const updateUserProfile = async (userId, profileData) => {
   const userRef = doc(db, "users", userId);
@@ -33,6 +38,7 @@ const createUserProfile = async (
 };
 
 export const profileService = {
+  userProfileExists,
   updateUserProfile,
   createUserProfile
 };

@@ -4,13 +4,16 @@ import { countries } from "../../data/countries";
 import { getAuthErrorMessage } from "../../utils/authErrors";
 import { authService } from "../../services/auth";
 import { profileService } from "../../services/profile";
+import { useGoogleLogin } from "../../hooks";
 import {
   AuthLayout,
   AuthInput,
   PasswordInput,
   AuthSelect,
   GradientButton,
-  AuthSwitch
+  AuthSwitch,
+  AuthDivider,
+  GoogleButton
 } from "./ui";
 
 export default function Register({ onToggleMode }) {
@@ -22,6 +25,15 @@ export default function Register({ onToggleMode }) {
   const [loading, setLoading] = useState(false);
 
   const toast = useRef(null);
+
+  const { googleLoading, handleGoogleLogin } = useGoogleLogin((message) => {
+    toast.current?.show({
+      severity: "error",
+      summary: "Error",
+      detail: message,
+      life: 3000
+    });
+  });
 
   const handleRegister = async () => {
     if (loading) return;
@@ -136,6 +148,14 @@ export default function Register({ onToggleMode }) {
           label="Crear cuenta"
           loading={loading}
           disabled={!email || !password || !username || !region}
+        />
+
+        <AuthDivider label="O continúa con" />
+
+        <GoogleButton
+          loading={googleLoading}
+          disabled={loading}
+          onClick={handleGoogleLogin}
         />
 
         <AuthSwitch

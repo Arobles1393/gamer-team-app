@@ -1,4 +1,4 @@
-import { Avatar } from "primereact/avatar";
+import { UserAvatar } from "../UserAvatar";
 import { Skeleton } from "primereact/skeleton";
 import { ProfileSection } from "../ProfileSection";
 import { useUserProfiles } from "../../hooks";
@@ -45,10 +45,9 @@ export default function PostInterested({ userIds, isOwner, onOpenProfile }) {
                 onClick={() => onOpenProfile(player.id)}
               >
                 <span className="post-interested__avatar">
-                  <Avatar
+                  <UserAvatar
                     image={player.avatar}
-                    label={player.avatar ? undefined : player.username?.charAt(0).toUpperCase()}
-                    shape="circle"
+                    username={player.username}
                     className="post-interested__avatar-img"
                   />
                   {online && <span className="post-interested__online" aria-hidden="true" />}

@@ -1,4 +1,4 @@
-import { Avatar } from "primereact/avatar";
+import { UserAvatar } from "../UserAvatar";
 import { Button } from "primereact/button";
 import { ProfileSection } from "../ProfileSection";
 import { countries } from "../../data/countries";
@@ -47,10 +47,9 @@ export default function PostInfoCard({
         className="post-info__host"
         onClick={() => onAuthorClick(post.userId)}
       >
-        <Avatar
+        <UserAvatar
           image={author?.avatar}
-          label={author?.avatar ? undefined : username.charAt(0).toUpperCase()}
-          shape="circle"
+          username={username}
           className="post-info__avatar"
         />
         <span className="post-info__host-text">

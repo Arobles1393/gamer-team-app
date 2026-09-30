@@ -1,4 +1,4 @@
-import { Avatar } from "primereact/avatar";
+import { UserAvatar } from "../UserAvatar";
 import { formatDates } from "../../utils";
 import "./ProfileHero.css";
 
@@ -64,10 +64,9 @@ export default function ProfileHero({
 
       <div className="profile-hero__info">
         <div className="profile-hero__avatar-wrap">
-          <Avatar
+          <UserAvatar
             image={avatarImage}
-            label={avatarImage ? undefined : username.charAt(0).toUpperCase()}
-            shape="circle"
+            username={username}
             className="profile-hero__avatar"
           />
 

@@ -8,14 +8,16 @@ import PostFilters from "./PostFilters";
 import FeedHeader from "./FeedHeader";
 import PostCardSkeleton from "./PostCardSkeleton";
 import FeedEmptyState from "./FeedEmptyState";
+import ProfileNudge from "./ProfileNudge";
 import "./Feed.css";
 import { UserProfileDialog } from "../UserProfile";
 import { useFriendStatus, usePosts, useInterestedPosts, useFilteredPosts, usePostFilters, useProfileChat, usePostInterest,
   useFriendRequest, useProfileDialog } from "../../hooks";
-import { useCurrentUser } from "../../context";
+import { useCurrentUser, useCurrentUserData } from "../../context";
 
 export default function PostList({ setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
   const user = useCurrentUser();
+  const userData = useCurrentUserData();
 
 
   const {
@@ -159,6 +161,7 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
         onSearchChange={setSearch}
         onCreatePost={() => setShowCreatePost(true)}
       />
+      {userData && !userData.region && <ProfileNudge />}
       <PostFilters
         filterGame={filterGame}
         onGameChange={setFilterGame}

@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Avatar } from "primereact/avatar";
+import { UserAvatar } from "../UserAvatar";
 import { Button } from "primereact/button";
 import { countries } from "../../data/countries";
 import { getPresenceLabel, isOnline } from "../../utils";
@@ -50,10 +50,9 @@ function PlayerCard({ player, onShowProfile, onChat }) {
       <div className="player-card__banner" aria-hidden="true" />
 
       <div className="player-card__body">
-        <Avatar
+        <UserAvatar
           image={player.avatar}
-          label={player.avatar ? undefined : player.username?.charAt(0).toUpperCase()}
-          shape="circle"
+          username={player.username}
           className="player-card__avatar"
         />
 

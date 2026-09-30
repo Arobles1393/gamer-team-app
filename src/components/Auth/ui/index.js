@@ -5,3 +5,5 @@ export { default as PasswordInput } from "./PasswordInput";
 export { default as AuthSelect } from "./AuthSelect";
 export { default as GradientButton } from "./GradientButton";
 export { default as AuthSwitch } from "./AuthSwitch";
+export { default as AuthDivider } from "./AuthDivider";
+export { default as GoogleButton } from "./GoogleButton";

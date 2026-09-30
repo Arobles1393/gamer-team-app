@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Avatar } from "primereact/avatar";
+import { UserAvatar } from "../UserAvatar";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
 
@@ -75,14 +75,11 @@ export default function CommentInput({ currentUser, onPublish, onError }) {
     }
   };
 
-  const initial = currentUser?.username?.charAt(0).toUpperCase() || "?";
-
   return (
     <div className="comment-composer">
-      <Avatar
+      <UserAvatar
         image={currentUser?.avatar}
-        label={currentUser?.avatar ? undefined : initial}
-        shape="circle"
+        username={currentUser?.username}
         className="comment-composer__avatar"
       />
 

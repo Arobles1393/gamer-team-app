@@ -1,16 +1,13 @@
-import { Avatar } from "primereact/avatar";
+import { UserAvatar } from "../UserAvatar";
 import { isOnline } from "../../utils";
 
 // Avatar con punto verde si el usuario está en línea
 export default function ChatAvatar({ user, size = "md" }) {
-  const initial = user?.username?.charAt(0).toUpperCase() || "?";
-
   return (
     <span className={`chat-avatar chat-avatar--${size}`}>
-      <Avatar
+      <UserAvatar
         image={user?.avatar}
-        label={user?.avatar ? undefined : initial}
-        shape="circle"
+        username={user?.username}
         className="chat-avatar__img"
       />
       {isOnline(user?.lastSeen) && (

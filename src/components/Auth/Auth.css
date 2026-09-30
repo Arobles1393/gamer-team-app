@@ -355,6 +355,83 @@
   cursor: not-allowed;
 }
 
+/* ---------- SEPARADOR "O CONTINÚA CON" ---------- */
+.auth__divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 24px 0 16px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--auth-icon);
+}
+
+.auth__divider::before,
+.auth__divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--gm-border-soft);
+}
+
+.auth--compact .auth__divider {
+  margin: 18px 0 12px;
+}
+
+/* ---------- BOTÓN GOOGLE ----------
+   Variante oscura oficial de "Sign in with Google" (colores y tipografía
+   de las guías de marca de Google); solo el radio y el alto siguen al
+   resto de botones del formulario. */
+.auth .auth__google.p-button {
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid #8E918F;
+  border-radius: 10px;
+  background: #131314;
+  color: #E3E3E3;
+  box-shadow: none;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.auth .auth__google.p-button .p-button-label {
+  flex: 0 0 auto;
+  font-family: "Roboto", "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.25px;
+}
+
+.auth .auth__google.p-button .p-button-icon {
+  margin: 0;
+}
+
+.auth__google-logo {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.auth .auth__google.p-button:not(:disabled):hover {
+  border-color: #8E918F;
+  background: #1F1F1F;
+  color: #E3E3E3;
+}
+
+.auth .auth__google.p-button:focus-visible {
+  outline: 2px solid var(--auth-label);
+  outline-offset: 3px;
+  box-shadow: none;
+}
+
+.auth .auth__google.p-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* ---------- CAMBIO DE MODO ---------- */
 .auth__switch {
   margin: 24px 0 0;
@@ -514,7 +591,8 @@
     font-size: 16px;
   }
 
-  .auth .auth__submit.p-button {
+  .auth .auth__submit.p-button,
+  .auth .auth__google.p-button {
     height: 50px;
   }
 }

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Avatar } from "primereact/avatar";
+import { UserAvatar } from "../UserAvatar";
 import { Button } from "primereact/button";
 import { memo, useCallback } from "react";
 import PostPlatforms from "./PostPlatforms";
@@ -80,8 +80,6 @@ function PostCard({
 
   const showInterestedBadge = !isOwner && isInterested;
 
-  const usernameInitial = author?.username?.charAt(0)?.toUpperCase() || "?";
-
   const relativeTime = formatRelativeTime(post.createdAt);
 
   const gameTitle = post.logo ? (
@@ -127,10 +125,9 @@ function PostCard({
             className="post-card__author-btn"
             onClick={handleShowProfile}
           >
-            <Avatar
+            <UserAvatar
               image={author?.avatar}
-              label={author?.avatar ? null : usernameInitial}
-              shape="circle"
+              username={author?.username}
               className="post-card__avatar"
             />
             <span className="post-card__username">{author?.username}</span>

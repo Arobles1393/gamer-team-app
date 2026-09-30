@@ -120,6 +120,48 @@
   box-shadow: var(--gm-cta-shadow);
 }
 
+/* ---------- AVISO DE PERFIL INCOMPLETO ---------- */
+.profile-nudge {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+  padding: 12px 12px 12px 18px;
+  border: 1px solid var(--gm-border-soft);
+  border-radius: var(--gm-radius-control);
+  background: var(--gm-primary-soft);
+}
+
+.profile-nudge__icon {
+  font-size: 16px;
+  color: var(--gm-label);
+}
+
+.profile-nudge__text {
+  flex: 1;
+  margin: 0;
+  font-size: 14px;
+  color: var(--gm-text);
+}
+
+.feed .profile-nudge__cta.p-button {
+  flex-shrink: 0;
+  height: 36px;
+  padding: 0 16px;
+}
+
+.feed .profile-nudge__close.p-button {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  color: var(--gm-muted);
+}
+
+.feed .profile-nudge__close.p-button:enabled:hover {
+  background: var(--gm-primary-soft);
+  color: var(--gm-text);
+}
+
 /* ---------- CHIPS DE FILTRO ---------- */
 .feed-filters {
   display: flex;
@@ -384,6 +426,20 @@
 
   .feed .feed-publish.p-button {
     padding: 0 18px;
+  }
+
+  /* Texto arriba, botón y cerrar abajo */
+  .profile-nudge {
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+
+  .profile-nudge__text {
+    flex-basis: calc(100% - 64px);
+  }
+
+  .feed .profile-nudge__cta.p-button {
+    margin-left: 30px;
   }
 
   /* Chips en una sola fila con scroll horizontal */

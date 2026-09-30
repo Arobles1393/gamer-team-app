@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Avatar } from "primereact/avatar";
+import { UserAvatar } from "../UserAvatar";
 import { Button } from "primereact/button";
 import { useUserProfile } from "../../hooks";
 import { formatDates, getNotificationMeta } from "../../utils";
@@ -53,10 +53,9 @@ export default function NotificationItem({
   const content = (
     <>
       <span className="notif__avatar">
-        <Avatar
+        <UserAvatar
           image={sender?.avatar}
-          label={sender?.avatar ? undefined : username.charAt(0).toUpperCase()}
-          shape="circle"
+          username={username}
           className="notif__avatar-img"
         />
         <span className={`notif__badge notif__badge--${notification.type}`} aria-hidden="true">
