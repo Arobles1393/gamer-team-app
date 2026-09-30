@@ -35,7 +35,7 @@ export * from "./notifications/useUnreadNotifications";
 
 // Auth
 export * from "./auth/useAuth";
-export * from "./auth/useGoogleLogin";
+export * from "./auth/useProviderLogin";
 
 // Juegos
 export * from "./games/useGameSearch";

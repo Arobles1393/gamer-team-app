@@ -432,6 +432,83 @@
   cursor: not-allowed;
 }
 
+/* ---------- BOTONES DE PROVEEDORES ---------- */
+.auth__providers {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auth--compact .auth__providers {
+  gap: 10px;
+}
+
+/* ---------- BOTÓN STEAM ----------
+   Colores del botón oficial "Sign in through Steam" de Valve; como con
+   Google, solo el radio y el alto siguen al resto del formulario. */
+.auth .auth__steam.p-button {
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid #2A475E;
+  border-radius: 10px;
+  background: #171A21;
+  color: #FFFFFF;
+  box-shadow: none;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.auth .auth__steam.p-button .p-button-label {
+  flex: 0 0 auto;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.25px;
+}
+
+.auth .auth__steam.p-button .p-button-icon {
+  margin: 0;
+}
+
+.auth__steam-logo {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.auth .auth__steam.p-button:not(:disabled):hover {
+  border-color: #66C0F4;
+  background: #1B2838;
+  color: #FFFFFF;
+}
+
+.auth .auth__steam.p-button:focus-visible {
+  outline: 2px solid var(--auth-label);
+  outline-offset: 3px;
+  box-shadow: none;
+}
+
+.auth .auth__steam.p-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- RETORNO DE STEAM (popup) ---------- */
+.auth-return {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 16px;
+  background: var(--gm-bg);
+  color: var(--gm-muted);
+  font-family: "Chakra Petch", sans-serif;
+  font-size: 15px;
+  text-align: center;
+}
+
 /* ---------- CAMBIO DE MODO ---------- */
 .auth__switch {
   margin: 24px 0 0;
@@ -592,7 +669,8 @@
   }
 
   .auth .auth__submit.p-button,
-  .auth .auth__google.p-button {
+  .auth .auth__google.p-button,
+  .auth .auth__steam.p-button {
     height: 50px;
   }
 }

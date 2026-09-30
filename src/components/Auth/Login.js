@@ -3,15 +3,14 @@ import { Toast } from "primereact/toast";
 import { useNavigate } from "react-router-dom";
 import { getAuthErrorMessage } from "../../utils/authErrors";
 import { authService } from "../../services/auth";
-import { useGoogleLogin } from "../../hooks";
+import { useProviderLogin } from "../../hooks";
 import {
   AuthLayout,
   AuthInput,
   PasswordInput,
   GradientButton,
   AuthSwitch,
-  AuthDivider,
-  GoogleButton
+  AuthProviders
 } from "./ui";
 
 export default function Login({ onToggleMode }) {
@@ -21,7 +20,7 @@ export default function Login({ onToggleMode }) {
   const navigate = useNavigate();
   const toast = useRef(null);
 
-  const { googleLoading, handleGoogleLogin } = useGoogleLogin((message) => {
+  const { loadingProvider, loginWith } = useProviderLogin((message) => {
     toast.current?.show({
       severity: "error",
       summary: "Error",
@@ -84,12 +83,10 @@ export default function Login({ onToggleMode }) {
           disabled={!email || !password}
         />
 
-        <AuthDivider label="O continúa con" />
-
-        <GoogleButton
-          loading={googleLoading}
+        <AuthProviders
+          loadingProvider={loadingProvider}
           disabled={loading}
-          onClick={handleGoogleLogin}
+          onSelect={loginWith}
         />
 
         <AuthSwitch

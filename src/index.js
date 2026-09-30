@@ -1,23 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 import "primereact/resources/themes/lara-dark-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import { PrimeReactProvider } from "primereact/api";
 import { BrowserRouter } from "react-router-dom";
-import { AuthProvider } from "./context";
+// Importado directo (no desde ./routes) para evitar el ciclo App → routes → App
+import RootRoutes from "./routes/RootRoutes";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <PrimeReactProvider value={{ ripple: true }}>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
+        <RootRoutes />
       </PrimeReactProvider>
     </BrowserRouter>
   </React.StrictMode>

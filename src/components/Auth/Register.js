@@ -4,7 +4,7 @@ import { countries } from "../../data/countries";
 import { getAuthErrorMessage } from "../../utils/authErrors";
 import { authService } from "../../services/auth";
 import { profileService } from "../../services/profile";
-import { useGoogleLogin } from "../../hooks";
+import { useProviderLogin } from "../../hooks";
 import {
   AuthLayout,
   AuthInput,
@@ -12,8 +12,7 @@ import {
   AuthSelect,
   GradientButton,
   AuthSwitch,
-  AuthDivider,
-  GoogleButton
+  AuthProviders
 } from "./ui";
 
 export default function Register({ onToggleMode }) {
@@ -26,7 +25,7 @@ export default function Register({ onToggleMode }) {
 
   const toast = useRef(null);
 
-  const { googleLoading, handleGoogleLogin } = useGoogleLogin((message) => {
+  const { loadingProvider, loginWith } = useProviderLogin((message) => {
     toast.current?.show({
       severity: "error",
       summary: "Error",
@@ -150,12 +149,10 @@ export default function Register({ onToggleMode }) {
           disabled={!email || !password || !username || !region}
         />
 
-        <AuthDivider label="O continúa con" />
-
-        <GoogleButton
-          loading={googleLoading}
+        <AuthProviders
+          loadingProvider={loadingProvider}
           disabled={loading}
-          onClick={handleGoogleLogin}
+          onSelect={loginWith}
         />
 
         <AuthSwitch

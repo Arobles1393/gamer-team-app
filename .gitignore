@@ -28,3 +28,6 @@ firebase-debug*.log
 
 # claude
 .claude/
+
+# impeccable
+.impeccable/
