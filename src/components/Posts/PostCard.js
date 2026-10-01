@@ -109,6 +109,12 @@ function PostCard({
           platforms={post.platforms}
           platform={post.platform}
         />
+        {post.scheduledAt && (
+          <span className="post-card__scheduled" title="Partida programada">
+            <i className="pi pi-calendar" aria-hidden="true" />
+            {formatDates.formatScheduledTime(post.scheduledAt)}
+          </span>
+        )}
         <div className="post-card__cover-title">
           {gameTitle}
         </div>

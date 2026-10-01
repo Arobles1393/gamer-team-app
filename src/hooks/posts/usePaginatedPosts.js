@@ -18,6 +18,8 @@ const createFetcher = ({ category, friendIds, region }) => {
       return (cursor) => postService.getPostsPage({ sortBy: "nearby", region }, cursor, PAGE_SIZE);
     case "mostInterested":
       return (cursor) => postService.getPostsPage({ sortBy: "mostInterested" }, cursor, PAGE_SIZE);
+    case "upcoming":
+      return (cursor) => postService.getPostsPage({ sortBy: "upcoming" }, cursor, PAGE_SIZE);
     default:
       return (cursor) => postService.getPostsPage({ sortBy: "recent" }, cursor, PAGE_SIZE);
   }

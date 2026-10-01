@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { postService } from "../../services/posts";
 import { gameTrendsService } from "../../services/games";
-import { filterPosts, getCategoryTitle } from "../../utils";
+import { filterPosts, formatDates, getCategoryTitle } from "../../utils";
 
 // Posts visibles por categoría
 const ROW_SIZE = 6;
@@ -108,6 +108,7 @@ export const usePostCategories = ({
   blockedIds = []
 }) => {
   const recent = usePostsQuery({ sortBy: "recent", limitCount: WINDOW_SIZE });
+  const upcoming = usePostsQuery({ sortBy: "upcoming", limitCount: WINDOW_SIZE });
 
   const friendsKey = friendIds.slice(0, MAX_FRIEND_IDS).join(",");
   const friends = usePostsQuery(
@@ -145,6 +146,9 @@ export const usePostCategories = ({
 
     return [
       section("recent", recent),
+      // La consulta fija "ahora" al suscribirse: las que ya empezaron se quitan aquí
+      section("upcoming", upcoming,
+        (post) => formatDates.toDate(post.scheduledAt)?.getTime() > Date.now()),
       section("friends", friends),
       section("nearby", nearby),
       // Sin interesados no hay nada que destacar
@@ -158,6 +162,7 @@ export const usePostCategories = ({
     search,
     blockedIds,
     recent,
+    upcoming,
     friends,
     nearby,
     mostInterested,

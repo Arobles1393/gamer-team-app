@@ -51,15 +51,24 @@ service cloud.firestore {
 
     // ===== posts (lectura pública: el feed se ve sin sesión) =====
     match /posts/{postId} {
+      function validSchedule() {
+        return request.resource.data.get('scheduledAt', null) == null
+               || request.resource.data.scheduledAt > request.time;
+      }
+
       allow read: if true;
+      // scheduledAt: null ("ahora mismo") o una fecha futura
       allow create: if isSignedIn()
                     && request.resource.data.userId == request.auth.uid
-                    && request.resource.data.get('interestedCount', 0) == 0;
-      // El dueño edita su post (sin tocar el contador ni el autor); cualquiera
-      // con sesión solo mueve interestedCount ±1 ("Me interesa")
+                    && request.resource.data.get('interestedCount', 0) == 0
+                    && validSchedule();
+      // El dueño edita su post (sin tocar el contador ni el autor; si cambia
+      // la fecha programada, tiene que ser futura); cualquiera con sesión
+      // solo mueve interestedCount ±1 ("Me interesa")
       allow update: if isSignedIn()
                     && ((resource.data.userId == request.auth.uid
-                         && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['interestedCount', 'userId']))
+                         && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['interestedCount', 'userId'])
+                         && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['scheduledAt']) || validSchedule()))
                         || onlyStepsCounter('interestedCount'));
       allow delete: if isSignedIn()
                     && resource.data.userId == request.auth.uid;

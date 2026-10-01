@@ -2,7 +2,9 @@ import { useState } from "react";
 import { AutoComplete } from "primereact/autocomplete";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
+import { Calendar } from "primereact/calendar";
 import { useGameSearch, useCreatePost } from "../../hooks";
+import { CALENDAR_LOCALE } from "../../utils/calendarLocale";
 import { platforms } from "../../constants";
 import { getPlatformKey, platformIcons, platformLabels } from "../../utils";
 import { useCurrentUser, useCurrentUserData } from "../../context";
@@ -12,6 +14,12 @@ const MULTI = "multi";
 const MIN_PLAYERS = 1;
 const MAX_PLAYERS = 20;
 const MAX_DESCRIPTION = 300;
+
+// "Cuándo": por defecto ahora mismo; programar muestra el calendario
+const WHEN_OPTIONS = [
+  { value: false, label: "Ahora mismo", icon: "pi-bolt" },
+  { value: true, label: "Programar para después", icon: "pi-calendar" }
+];
 
 const suggestionTemplate = (item) => (
   <div className="create-post__suggestion">
@@ -90,6 +98,10 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
     setPlatform,
     multiplatform,
     setMultiplatform,
+    scheduled,
+    setScheduled,
+    scheduledAt,
+    setScheduledAt,
     loading,
     handleSubmit
   } = useCreatePost({
@@ -118,7 +130,9 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
   const errors = {
     game: !gameName && "Elige el juego de la partida.",
     platform: !selectedPlatform && "Elige una plataforma o marca Multiplataforma.",
-    description: !description.trim() && "Cuenta un poco de la partida."
+    description: !description.trim() && "Cuenta un poco de la partida.",
+    // Que sea futura lo valida useCreatePost (con aviso)
+    schedule: scheduled && !scheduledAt && "Elige la fecha y hora de la partida."
   };
 
   const handleSelectPlatform = (value) => {
@@ -231,6 +245,53 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
             <i className="pi pi-plus" aria-hidden="true" />
           </button>
         </div>
+      </Field>
+
+      <Field
+        id="create-when"
+        label="Cuándo"
+        error={submitted && errors.schedule}
+        hint={scheduled ? "Aparecerá en «Próximamente» hasta esa hora." : undefined}
+      >
+        <div className="create-post__platforms" role="radiogroup" aria-labelledby="create-when-label">
+          {WHEN_OPTIONS.map(({ value, label, icon }) => {
+            const active = scheduled === value;
+
+            return (
+              <button
+                key={label}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                className={`create-post__platform${active ? " create-post__platform--active" : ""}`}
+                onClick={() => setScheduled(value)}
+              >
+                <i className={`pi ${icon}`} aria-hidden="true" />
+                {label}
+              </button>
+            );
+          })}
+        </div>
+
+        {scheduled && (
+          <Calendar
+            inputId="create-when-date"
+            value={scheduledAt}
+            onChange={(e) => setScheduledAt(e.value)}
+            showTime
+            hourFormat="24"
+            minDate={new Date()}
+            locale={CALENDAR_LOCALE}
+            dateFormat="dd/mm/yy"
+            placeholder="Fecha y hora"
+            showIcon
+            readOnlyInput
+            aria-labelledby="create-when-label"
+            className="create-post__calendar"
+            inputClassName={`gm-input${submitted && errors.schedule ? " gm-input--invalid" : ""}`}
+            panelClassName="gm-panel create-post__calendar-panel"
+          />
+        )}
       </Field>
 
       <Field id="create-description" label="Descripción" error={submitted && errors.description}>

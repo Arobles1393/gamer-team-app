@@ -96,8 +96,33 @@ const formatLastSeen = (timestamp) => {
   return `Última conexión: hace ${diff.years} año${diff.years > 1 ? "s" : ""}`;
 };
 
+// Hora de una partida programada (siempre en la zona horaria de quien la ve):
+// "Hoy 20:00", "Mañana 20:00", "Sáb 20:00" (próximos 6 días) o "4 oct, 20:00"
+const formatScheduledTime = (timestamp) => {
+  const date = toDate(timestamp);
+  if (!date) return "";
+
+  const time = date.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit", hour12: false });
+
+  // Diferencia en días de calendario (no en horas)
+  const startOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const days = Math.round((startOfDay(date) - startOfDay(new Date())) / 86400000);
+
+  if (days === 0) return `Hoy ${time}`;
+  if (days === 1) return `Mañana ${time}`;
+
+  if (days > 1 && days <= 6) {
+    const weekday = date.toLocaleDateString("es-MX", { weekday: "short" }).replace(".", "");
+    return `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)} ${time}`;
+  }
+
+  const day = date.toLocaleDateString("es-MX", { day: "numeric", month: "short" }).replace(".", "");
+  return `${day}, ${time}`;
+};
+
 export const formatDates = {
   toDate,
+  formatScheduledTime,
   formatDate,
   formatDateN,
   formatChatTime,

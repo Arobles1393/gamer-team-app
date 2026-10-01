@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { postService } from "../../services/posts";
-import { getGameDetail } from "../../utils";
+import { formatDates, getGameDetail } from "../../utils";
+
+// Una fecha programada tiene que estar en el futuro
+const isFuture = (date) => date instanceof Date && date.getTime() > Date.now();
 
 export const useCreatePost = ({
   user,
@@ -16,7 +19,16 @@ export const useCreatePost = ({
   const [comments, setComments] = useState("");
   const [platform, setPlatform] = useState("");
   const [multiplatform, setMultiplatform] = useState(false);
+  // Programar para después: por defecto "ahora mismo" (scheduledAt null)
+  const [scheduled, setScheduledState] = useState(false);
+  const [scheduledAt, setScheduledAt] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // Al volver a "ahora mismo" se descarta la fecha elegida
+  const setScheduled = useCallback((value) => {
+    setScheduledState(value);
+    if (!value) setScheduledAt(null);
+  }, []);
 
   const resetForm = useCallback(() => {
     setGame({});
@@ -24,6 +36,8 @@ export const useCreatePost = ({
     setComments("");
     setPlatform("");
     setMultiplatform(false);
+    setScheduledState(false);
+    setScheduledAt(null);
   }, []);
 
   useEffect(() => {
@@ -37,6 +51,10 @@ export const useCreatePost = ({
     setPlayers(Number(editingPost.playersNeeded) || 1);
     setComments(editingPost.comments || "");
     setMultiplatform(editingPost.multiplatform ?? false);
+
+    const savedSchedule = formatDates.toDate(editingPost.scheduledAt);
+    setScheduledState(Boolean(savedSchedule));
+    setScheduledAt(savedSchedule);
   }, [editingPost, resetForm]);
 
   const handleSubmit = useCallback(async (e) => {
@@ -54,6 +72,16 @@ export const useCreatePost = ({
       (!multiplatform && !platform)
     ) {
       onError?.("Completa todos los campos");
+      return;
+    }
+
+    // Al editar se acepta la fecha que ya tenía aunque haya pasado; una
+    // fecha nueva siempre tiene que ser futura
+    const savedSchedule = formatDates.toDate(editingPost?.scheduledAt);
+    const scheduleChanged = scheduledAt?.getTime() !== savedSchedule?.getTime();
+
+    if (scheduled && (!scheduledAt || (scheduleChanged && !isFuture(scheduledAt)))) {
+      onError?.("Elige una fecha y hora futuras para la partida");
       return;
     }
 
@@ -117,7 +145,9 @@ export const useCreatePost = ({
           game.platforms ??
           editingPost?.platforms ??
           null,
-        multiplatform
+        multiplatform,
+        // null = "ahora mismo"
+        scheduledAt: scheduled ? scheduledAt : null
       };
 
       if (editingPost) {
@@ -171,6 +201,8 @@ export const useCreatePost = ({
     comments,
     platform,
     multiplatform,
+    scheduled,
+    scheduledAt,
     editingPost,
     user,
     authorRegion,
@@ -190,6 +222,10 @@ export const useCreatePost = ({
     setPlatform,
     multiplatform,
     setMultiplatform,
+    scheduled,
+    setScheduled,
+    scheduledAt,
+    setScheduledAt,
     loading,
     resetForm,
     handleSubmit

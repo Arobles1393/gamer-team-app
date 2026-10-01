@@ -64,9 +64,16 @@ export default function PostInfoCard({
       </button>
 
       <dl className="post-info__list">
-        <InfoRow icon="pi-clock" label="Publicada">
-          {formatDates.formatDateN(post.createdAt) || "—"}
-        </InfoRow>
+        {/* Programada: lo que importa para unirse es cuándo se juega */}
+        {post.scheduledAt ? (
+          <InfoRow icon="pi-clock" label="Programado">
+            {formatDates.formatScheduledTime(post.scheduledAt)}
+          </InfoRow>
+        ) : (
+          <InfoRow icon="pi-clock" label="Publicada">
+            {formatDates.formatDateN(post.createdAt) || "—"}
+          </InfoRow>
+        )}
         <InfoRow icon="pi-globe" label="Región">
           {author?.region ? `${country?.flag ?? ""} ${author.region}`.trim() : "Sin región"}
         </InfoRow>

@@ -136,8 +136,9 @@ const subscribeToPost = (postId, onSuccess, onError) => {
 // - onlyMine + userId: posts de un usuario (Mis publicaciones)
 // - userIds: posts de varios autores (De tus amigos), máximo 30 por el "in"
 // - authorRegion: posts publicados desde una región (Cerca de ti)
-// sortBy: "recent" (createdAt) o "mostInterested" (interestedCount); sin
-// sortBy no se ordena (vistas planas que ordenan en el cliente).
+// sortBy: "recent" (createdAt), "mostInterested" (interestedCount) o
+// "upcoming" (programados a futuro, el más próximo primero); sin sortBy no
+// se ordena (vistas planas que ordenan en el cliente).
 // Algunas combinaciones necesitan índice compuesto (firestore.indexes.json).
 const subscribeToPosts = (
   { userId, onlyMine, userIds, authorRegion, sortBy, limitCount },
@@ -162,6 +163,8 @@ const subscribeToPosts = (
     constraints.push(orderBy("createdAt", "desc"));
   } else if (sortBy === "mostInterested") {
     constraints.push(orderBy("interestedCount", "desc"));
+  } else if (sortBy === "upcoming") {
+    constraints.push(...upcomingConstraints());
   }
 
   if (limitCount) {
@@ -181,9 +184,17 @@ const subscribeToPosts = (
   );
 };
 
+// "Próximamente": solo posts con scheduledAt futuro (los que tienen null o
+// ya pasaron quedan fuera por el rango). "now" se fija al consultar; el
+// cliente vuelve a filtrar por la hora actual.
+const upcomingConstraints = () => [
+  where("scheduledAt", ">=", new Date()),
+  orderBy("scheduledAt", "asc")
+];
+
 // Una página de posts para /explorar (getDocs, no listener).
-// sortBy: "recent" | "mostInterested" | "friends" (con friendIds) |
-// "nearby" (con region). cursor = lastVisibleDoc de la página anterior.
+// sortBy: "recent" | "mostInterested" | "upcoming" | "friends" (con
+// friendIds) | "nearby" (con region). cursor = lastVisibleDoc de la página anterior.
 // hasMore: si llegó la página completa, puede haber más.
 const getPostsPage = async (
   { sortBy, friendIds = [], region },
@@ -214,6 +225,8 @@ const getPostsPage = async (
       where("interestedCount", ">", 0),
       orderBy("interestedCount", "desc")
     );
+  } else if (sortBy === "upcoming") {
+    constraints.push(...upcomingConstraints());
   } else {
     constraints.push(orderBy("createdAt", "desc"));
   }

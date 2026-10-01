@@ -7,6 +7,12 @@ export const POST_CATEGORIES = {
     title: "Recientes",
     empty: "Todavía no hay partidas publicadas."
   },
+  upcoming: {
+    title: "Próximamente",
+    // Título fijo, aunque el filtro de plataforma sí se aplica
+    fixedTitle: true,
+    empty: "No hay partidas programadas próximamente."
+  },
   friends: {
     title: "De tus amigos",
     // Personal: el título no cambia con el filtro

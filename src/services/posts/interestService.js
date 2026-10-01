@@ -76,6 +76,12 @@ const toggleInterested = async ({
     return true;
   });
 
+  // TODO: aquí sería el lugar natural para programar el recordatorio "tu
+  // partida empieza en 30 min" (post.scheduledAt) al marcar interés, y
+  // cancelarlo al quitarlo. Requiere una Cloud Function programada (Cloud
+  // Scheduler o Cloud Tasks), que necesita el plan Blaze, igual que
+  // cleanupCommentMedia y la protección de syncGamingNews.
+
   if (created && post.userId !== user.uid) {
     await notificationService.createNotification({
       userId: post.userId,
