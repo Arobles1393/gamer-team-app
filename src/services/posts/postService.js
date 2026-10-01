@@ -18,6 +18,7 @@ import { db, functions } from "../../firebase/config";
 import { httpsCallable } from "firebase/functions";
 import { gameStatsRef } from "../games/gameStats";
 import { groupChatRef, groupChatService } from "../chat/groupChatService";
+import { notificationService } from "../notifications";
 
 // Límite del operador "in" de Firestore
 const MAX_IN_VALUES = 30;
@@ -45,18 +46,46 @@ const postFromSnapshot = (snap) => ({
   ...snap.data({ serverTimestamps: "estimate" })
 });
 
+// Firestore admite 500 escrituras por batch
+const BATCH_LIMIT = 400;
+
+const deleteInBatches = async (refs) => {
+  for (let i = 0; i < refs.length; i += BATCH_LIMIT) {
+    const batch = writeBatch(db);
+    refs.slice(i, i + BATCH_LIMIT).forEach((ref) => batch.delete(ref));
+    await batch.commit();
+  }
+};
+
+// Borra el post sin dejar nada colgando:
+// 1. Sus comentarios, antes del post (firestore.rules deja al autor borrarlos
+//    mientras el post existe). La media de cada uno la borra la Cloud
+//    Function cleanupCommentMedia.
+// 2. En un solo batch: el post, sus "Me interesa" (la regla exige que el post
+//    se borre en ese mismo batch), el -1 de game_stats y el cierre del chat
+//    del grupo.
+// 3. Las notificaciones del autor sobre el post (comentarios, interesados y
+//    mensajes del grupo). Las de otros usuarios no se pueden tocar; al
+//    abrirlas, el post ya no existe y la app vuelve al inicio.
 const deletePost = async (postId) => {
   const postRef = doc(db, "posts", postId);
 
   // Se lee antes de borrar para saber de qué juego descontar
-  const [snapshot, groupSnap] = await Promise.all([
+  const [snapshot, groupSnap, commentsSnap, interestsSnap] = await Promise.all([
     getDoc(postRef),
-    getDoc(groupChatRef(postId))
+    getDoc(groupChatRef(postId)),
+    getDocs(query(collection(db, "post_comments"), where("postId", "==", postId))),
+    getDocs(query(collection(db, "post_interested"), where("postId", "==", postId)))
   ]);
-  const game = snapshot.data()?.game;
+
+  if (!snapshot.exists()) return;
+
+  const { game, userId } = snapshot.data();
   // Sin documento de estadísticas no hay nada que descontar (un -1 sobre un
   // documento inexistente lo crearía, y las reglas lo rechazarían)
   const statsSnap = game ? await getDoc(gameStatsRef(game)) : null;
+
+  await deleteInBatches(commentsSnap.docs.map((commentDoc) => commentDoc.ref));
 
   // El chat del grupo no se borra (sus mensajes son una subcolección):
   // queda inactivo y las reglas cierran el acceso. Va en el mismo batch que
@@ -68,8 +97,19 @@ const deletePost = async (postId) => {
   if (statsSnap?.exists()) {
     addGamePostCountToBatch(batch, game, postId, -1);
   }
+  // Los interesados de una partida son pocos: caben en el batch del post
+  interestsSnap.docs
+    .slice(0, BATCH_LIMIT)
+    .forEach((interestDoc) => batch.delete(interestDoc.ref));
   batch.delete(postRef);
   await batch.commit();
+
+  // El post ya no existe: si esto falla solo quedan notificaciones viejas
+  try {
+    await notificationService.deleteNotificationsAbout(userId, postId);
+  } catch (error) {
+    console.error("Error borrando notificaciones del post:", error);
+  }
 };
 
 const getExistingMedia = async (game) => {

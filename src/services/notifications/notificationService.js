@@ -139,6 +139,22 @@ const deleteAllNotifications = async (userId) => {
   await commitInBatches(operations);
 };
 
+// Las notificaciones propias sobre algo que ya no existe (p. ej. comentarios,
+// interesados y mensajes del grupo de un post borrado: relatedId = postId)
+const deleteNotificationsAbout = async (userId, relatedId) => {
+  const q = query(
+    collection(db, "notifications"),
+    where("userId", "==", userId),
+    where("relatedId", "==", relatedId)
+  );
+
+  const snapshot = await getDocs(q);
+
+  await commitInBatches(
+    snapshot.docs.map((docSnap) => ({ type: "delete", ref: docSnap.ref }))
+  );
+};
+
 const createNotification = (notificationData) => {
   return addDoc(
     collection(db, "notifications"),
@@ -199,6 +215,7 @@ export const notificationService = {
   markAllNotificationsAsRead,
   markChatNotificationsAsRead,
   deleteAllNotifications,
+  deleteNotificationsAbout,
   createNotification,
   updateNotificationStatus
 };

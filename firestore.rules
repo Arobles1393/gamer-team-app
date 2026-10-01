@@ -128,14 +128,17 @@ service cloud.firestore {
     }
 
     // ===== post_comments (lectura pública) =====
-    // Con bloqueo entre quien comenta y el autor del post no se puede comentar
+    // Con bloqueo entre quien comenta y el autor del post no se puede comentar.
+    // Borra quien comentó o el autor del post (así, al borrar su post, no
+    // quedan comentarios huérfanos)
     match /post_comments/{commentId} {
       allow read: if true;
       allow create: if isSignedIn()
                     && request.resource.data.userId == request.auth.uid
                     && noBlockBetween(request.auth.uid, postAuthor(request.resource.data.postId));
       allow delete: if isSignedIn()
-                    && resource.data.userId == request.auth.uid;
+                    && (resource.data.userId == request.auth.uid
+                        || postAuthor(resource.data.postId) == request.auth.uid);
       allow update: if false;
     }
 
@@ -144,6 +147,7 @@ service cloud.firestore {
     // posts.interestedCount en la misma transacción. Con bloqueo con el autor
     // no se puede marcar (y por eso tampoco entrar al chat del grupo, que lo
     // exige). Quitarlo sí se puede, y si el post ya no existe, sin contador.
+    // El autor del post los borra todos en el mismo batch en que borra el post.
     match /post_interested/{docId} {
       function countBefore(postId) {
         return get(postPath(postId)).data.get('interestedCount', 0);
@@ -160,9 +164,11 @@ service cloud.firestore {
                     && noBlockBetween(request.auth.uid, postAuthor(request.resource.data.postId))
                     && countAfter(request.resource.data.postId) == countBefore(request.resource.data.postId) + 1;
       allow delete: if isSignedIn()
-                    && resource.data.userId == request.auth.uid
-                    && (!existsAfter(postPath(resource.data.postId))
-                        || countAfter(resource.data.postId) == countBefore(resource.data.postId) - 1);
+                    && ((resource.data.userId == request.auth.uid
+                         && (!existsAfter(postPath(resource.data.postId))
+                             || countAfter(resource.data.postId) == countBefore(resource.data.postId) - 1))
+                        || (postAuthor(resource.data.postId) == request.auth.uid
+                            && !existsAfter(postPath(resource.data.postId))));
       allow update: if false;
     }
 
