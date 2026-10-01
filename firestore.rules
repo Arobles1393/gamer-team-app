@@ -90,21 +90,31 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // Autor del post al que apunta un comentario o un "Me interesa"
+    function postAuthor(postId) {
+      return get(/databases/$(database)/documents/posts/$(postId)).data.userId;
+    }
+
     // ===== post_comments (lectura pública) =====
+    // Con bloqueo entre quien comenta y el autor del post no se puede comentar
     match /post_comments/{commentId} {
       allow read: if true;
       allow create: if isSignedIn()
-                    && request.resource.data.userId == request.auth.uid;
+                    && request.resource.data.userId == request.auth.uid
+                    && noBlockBetween(request.auth.uid, postAuthor(request.resource.data.postId));
       allow delete: if isSignedIn()
                     && resource.data.userId == request.auth.uid;
       allow update: if false;
     }
 
     // ===== post_interested (lectura pública: lista de interesados del post) =====
+    // Con bloqueo con el autor no se puede marcar "Me interesa" (y por eso
+    // tampoco entrar al chat del grupo, que lo exige). Quitarlo sí se puede.
     match /post_interested/{docId} {
       allow read: if true;
       allow create: if isSignedIn()
-                    && request.resource.data.userId == request.auth.uid;
+                    && request.resource.data.userId == request.auth.uid
+                    && noBlockBetween(request.auth.uid, postAuthor(request.resource.data.postId));
       allow delete: if isSignedIn()
                     && resource.data.userId == request.auth.uid;
       allow update: if false;

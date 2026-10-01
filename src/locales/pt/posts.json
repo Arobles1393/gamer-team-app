@@ -119,7 +119,9 @@
       "message": "O comentário e sua imagem ou vídeo serão excluídos. Esta ação não pode ser desfeita.",
       "accept": "Excluir comentário",
       "done": "Comentário excluído"
-    }
+    },
+    "blockedTitle": "Esta partida não está disponível",
+    "blockedText": "Você não pode ver publicações de usuários com quem há um bloqueio."
   },
   "info": {
     "host": "Anfitrião",

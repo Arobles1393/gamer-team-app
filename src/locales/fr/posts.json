@@ -119,7 +119,9 @@
       "message": "Le commentaire et son image ou sa vidéo seront supprimés. Cette action est irréversible.",
       "accept": "Supprimer le commentaire",
       "done": "Commentaire supprimé"
-    }
+    },
+    "blockedTitle": "Cette partie n'est pas disponible",
+    "blockedText": "Vous ne pouvez pas voir les publications des utilisateurs avec qui il y a un blocage."
   },
   "info": {
     "host": "Hôte",

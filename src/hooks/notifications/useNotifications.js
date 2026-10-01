@@ -1,9 +1,12 @@
 import {
   useEffect,
+  useMemo,
   useState
 } from "react";
 
 import { notificationService } from "../../services/notifications";
+import { excludeBlockedAuthors } from "../../utils";
+import { useBlockedIds } from "../blocks/useBlockedIds";
 
 export const useNotifications = (user, { limitCount = 10 } = {}) => {
 
@@ -11,6 +14,7 @@ export const useNotifications = (user, { limitCount = 10 } = {}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [retryKey, setRetryKey] = useState(0);
+  const { blockedIds } = useBlockedIds(user);
 
   useEffect(() => {
 
@@ -49,12 +53,18 @@ export const useNotifications = (user, { limitCount = 10 } = {}) => {
 
   const retry = () => setRetryKey((key) => key + 1);
 
-  const unreadCount = notifications.filter(
+  // Las de usuarios con bloqueo de por medio no se muestran
+  const visibleNotifications = useMemo(
+    () => excludeBlockedAuthors(notifications, blockedIds, "senderId"),
+    [notifications, blockedIds]
+  );
+
+  const unreadCount = visibleNotifications.filter(
     (notification) => !notification.read
   ).length;
 
   return {
-    notifications,
+    notifications: visibleNotifications,
     unreadCount,
     loading,
     error,

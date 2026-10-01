@@ -119,7 +119,9 @@
       "message": "El comentario y su imagen o video se eliminarán. Esta acción no se puede deshacer.",
       "accept": "Eliminar comentario",
       "done": "Comentario eliminado"
-    }
+    },
+    "blockedTitle": "Esta partida no está disponible",
+    "blockedText": "No puedes ver publicaciones de usuarios con los que hay un bloqueo."
   },
   "info": {
     "host": "Anfitrión",

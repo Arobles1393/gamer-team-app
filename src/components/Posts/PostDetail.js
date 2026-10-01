@@ -74,7 +74,7 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
   );
 
   // Comentarios de usuarios bloqueados (en cualquier dirección) se ocultan
-  const { blockedIds } = useBlockedIds(user);
+  const { blockedIds, loading: loadingBlocks } = useBlockedIds(user);
   const comments = useMemo(
     () => excludeBlockedAuthors(allComments, blockedIds),
     [allComments, blockedIds]
@@ -82,6 +82,12 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
 
   const { interestedUserIds, interestedCount, isInterested, interestedDoc } =
     usePostInterestStatus(id, user?.uid);
+
+  // Interesados con bloqueo de por medio tampoco aparecen en la lista
+  const visibleInterestedIds = useMemo(
+    () => interestedUserIds.filter((userId) => !blockedIds.includes(userId)),
+    [interestedUserIds, blockedIds]
+  );
 
   const showError = useCallback((detail) => {
     toast.current?.show({ severity: "error", summary: t("common:status.error"), detail, life: 3000 });
@@ -120,7 +126,8 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
     setFriendStatus
   );
 
-  if (loading) {
+  // Se esperan los bloqueos para no mostrar un instante un post bloqueado
+  if (loading || loadingBlocks) {
     return <PostDetailSkeleton />;
   }
 
@@ -146,6 +153,27 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
   // Si el post se borra, usePost ya redirige al inicio
   if (!post) {
     return null;
+  }
+
+  // Link directo a un post de alguien con quien hay bloqueo (en cualquier
+  // dirección): no se muestra, igual que en el feed y en /explorar
+  if (blockedIds.includes(post.userId)) {
+    return (
+      <div className="feed post-detail">
+        <div className="feed-empty" role="status">
+          <span className="feed-empty__icon">
+            <i className="pi pi-ban" aria-hidden="true" />
+          </span>
+          <p className="feed-empty__title">{t("detail.blockedTitle")}</p>
+          <p className="feed-empty__text">{t("detail.blockedText")}</p>
+          <Button
+            label={t("detail.home")}
+            className="feed-empty__btn"
+            onClick={() => navigate("/")}
+          />
+        </div>
+      </div>
+    );
   }
 
   const isOwner = post.userId === user?.uid;
@@ -297,7 +325,7 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
           />
 
           <PostInterested
-            userIds={interestedUserIds}
+            userIds={visibleInterestedIds}
             isOwner={isOwner}
             onOpenProfile={openProfile}
           />
