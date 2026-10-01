@@ -75,7 +75,8 @@
     "player": "Jogador",
     "openImage": "Abrir imagem em uma nova aba",
     "image": "Imagem",
-    "file": "Arquivo"
+    "file": "Arquivo",
+    "loadOlder": "Ver mensagens anteriores"
   },
   "composer": {
     "placeholder": "Escreva uma mensagem…",

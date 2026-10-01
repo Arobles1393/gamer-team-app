@@ -46,11 +46,16 @@ const subscribeToTrendingByVolume = (limitGames, onSuccess, onError) =>
 const subscribeToTrendingBySearch = (limitGames, onSuccess, onError) =>
   subscribeToTrending("searchCount", limitGames, onSuccess, onError);
 
-// Todos los juegos con al menos una publicación (opciones del filtro por juego)
+// Juegos con publicaciones para el filtro por juego: los que más tienen,
+// con un tope para que la lista no crezca sin límite con el catálogo
+const MAX_FILTER_GAMES = 100;
+
 const subscribeToGames = (onSuccess, onError) => {
   const q = query(
     collection(db, "game_stats"),
-    where("postCount", ">", 0)
+    where("postCount", ">", 0),
+    orderBy("postCount", "desc"),
+    limit(MAX_FILTER_GAMES)
   );
 
   return onSnapshot(

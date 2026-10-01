@@ -426,6 +426,8 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  /* MessageList compensa a mano los mensajes anteriores que llegan arriba */
+  overflow-anchor: none;
   padding: 8px 24px 20px;
   scrollbar-width: thin;
   scrollbar-color: rgba(124, 58, 237, 0.35) transparent;
@@ -433,6 +435,12 @@
 
 .chat-messages--empty {
   justify-content: center;
+}
+
+/* "Ver mensajes anteriores", arriba de la conversación */
+.chat-load-older {
+  align-self: center;
+  margin: 4px auto 8px;
 }
 
 .chat-day {

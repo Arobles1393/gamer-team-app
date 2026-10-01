@@ -1,35 +1,21 @@
 import { useEffect, useState } from "react";
 import { groupChatService } from "../../services/chat";
 import { notificationService } from "../../services/notifications";
+import { useLiveMessages } from "./useLiveMessages";
 
 // Espejo de useChatWindow para el chat del grupo de una partida
 // (group_chats/{postId}): expone todos los participantes en vez de un
 // solo "otro usuario".
 export const useGroupChatWindow = (postId, currentUserId) => {
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [group, setGroup] = useState(undefined);
 
-  useEffect(() => {
-    if (!postId) return;
-
-    setMessages([]);
-    setLoading(true);
-
-    return groupChatService.subscribeToMessages(
-      postId,
-      (data) => {
-        setMessages(data);
-        setLoading(false);
-      },
-      (error) => {
-        // Sin acceso (ya no es participante o el grupo se cerró)
-        console.error("Error obteniendo mensajes del grupo:", error);
-        setMessages([]);
-        setLoading(false);
-      }
-    );
-  }, [postId]);
+  // Los últimos 50 mensajes; loadOlder trae más. Si falla es porque ya no
+  // hay acceso (dejó de ser participante o el grupo se cerró)
+  const { messages, loading, hasOlder, loadingOlder, loadOlder } = useLiveMessages(
+    groupChatService.subscribeToMessages,
+    postId,
+    "Error obteniendo mensajes del grupo:"
+  );
 
   useEffect(() => {
     if (!postId) return;
@@ -81,6 +67,9 @@ export const useGroupChatWindow = (postId, currentUserId) => {
   return {
     messages,
     loading: loading || group === undefined,
+    hasOlder,
+    loadingOlder,
+    loadOlder,
     participants,
     hasAccess,
     sendMessage

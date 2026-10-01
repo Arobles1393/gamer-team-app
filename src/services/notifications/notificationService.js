@@ -47,12 +47,19 @@ const subscribeToNotifications = (
   );
 };
 
-// Todas las no leídas (sin límite), para el badge y el punto de chats del rail
+// Las no leídas más recientes, para el badge y el punto de chats del rail.
+// Con un tope: cada mensaje de grupo crea una por participante, así que
+// pueden acumularse. El badge muestra "9+" y el panel "99+", así que pasar
+// de 100 no cambia nada visible.
+const MAX_UNREAD = 100;
+
 const subscribeToUnreadNotifications = (userId, onChange, onError) => {
   const q = query(
     collection(db, "notifications"),
     where("userId", "==", userId),
-    where("read", "==", false)
+    where("read", "==", false),
+    orderBy("createdAt", "desc"),
+    limit(MAX_UNREAD)
   );
 
   return onSnapshot(

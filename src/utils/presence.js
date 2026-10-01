@@ -1,8 +1,9 @@
 import i18n from "../i18n";
 import { formatDates } from "./formatDates";
 
-// La presencia se actualiza cada 30 s: 2 min de margen para "en línea"
-const ONLINE_WINDOW_MS = 2 * 60 * 1000;
+// La presencia se actualiza cada 2 min con la pestaña visible
+// (useUserPresence): 5 min de margen para "en línea"
+const ONLINE_WINDOW_MS = 5 * 60 * 1000;
 
 export const getLastSeenMs = (lastSeen) => {
   if (!lastSeen) return null;

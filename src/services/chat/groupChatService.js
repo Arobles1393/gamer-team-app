@@ -3,6 +3,7 @@ import {
   doc,
   onSnapshot,
   orderBy,
+  limitToLast,
   query,
   serverTimestamp,
   where,
@@ -36,10 +37,12 @@ const subscribeToGroupChat = (postId, onSuccess, onError) =>
     onError
   );
 
-const subscribeToMessages = (postId, onSuccess, onError) => {
+// Los últimos `limitCount` mensajes, del más viejo al más nuevo
+const subscribeToMessages = (postId, limitCount, onSuccess, onError) => {
   const q = query(
     collection(db, "group_chats", postId, "messages"),
-    orderBy("createdAt")
+    orderBy("createdAt"),
+    limitToLast(limitCount)
   );
 
   return onSnapshot(

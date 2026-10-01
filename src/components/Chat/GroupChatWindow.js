@@ -39,7 +39,7 @@ export default function GroupChatWindow({ postId, onBack, onError }) {
   const { t } = useTranslation("chat");
   const user = useCurrentUser();
 
-  const { messages, loading, participants, hasAccess, sendMessage } =
+  const { messages, loading, hasOlder, loadingOlder, loadOlder, participants, hasAccess, sendMessage } =
     useGroupChatWindow(postId, user.uid);
 
   // Juego y autor del post, en vivo
@@ -108,6 +108,9 @@ export default function GroupChatWindow({ postId, onBack, onError }) {
             currentUserId={user.uid}
             otherUsername={t("window.wholeGroup")}
             senderProfiles={profiles}
+            hasOlder={hasOlder}
+            loadingOlder={loadingOlder}
+            onLoadOlder={loadOlder}
           />
           <MessageComposer onSend={handleSend} onError={onError} disabled={!hasAccess} />
         </>

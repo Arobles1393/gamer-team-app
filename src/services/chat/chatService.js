@@ -8,6 +8,7 @@ import {
   where,
   onSnapshot,
   orderBy,
+  limitToLast,
   writeBatch
 } from "firebase/firestore";
 import { db } from "../../firebase/config";
@@ -44,10 +45,12 @@ const subscribeToChat = (chatId, onSuccess, onError) => {
   );
 };
 
-const subscribeToMessages = (chatId, onSuccess, onError) => {
+// Los últimos `limitCount` mensajes, del más viejo al más nuevo
+const subscribeToMessages = (chatId, limitCount, onSuccess, onError) => {
   const q = query(
     collection(db, "chats", chatId, "messages"),
-    orderBy("createdAt")
+    orderBy("createdAt"),
+    limitToLast(limitCount)
   );
 
   return onSnapshot(

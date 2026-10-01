@@ -75,7 +75,8 @@
     "player": "Player",
     "openImage": "Open image in a new tab",
     "image": "Image",
-    "file": "File"
+    "file": "File",
+    "loadOlder": "See earlier messages"
   },
   "composer": {
     "placeholder": "Write a message…",

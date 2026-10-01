@@ -2,6 +2,7 @@ import { useLayoutEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { getIntlLocale } from "../../i18n";
 import { Skeleton } from "primereact/skeleton";
+import { Button } from "primereact/button";
 import ChatEmptyState from "./ChatEmptyState";
 import MessageBubble from "./MessageBubble";
 import { formatDates } from "../../utils";
@@ -85,11 +86,24 @@ function MessagesSkeleton() {
 
 // senderProfiles (opcional, chat de grupo): { uid: perfil } para mostrar
 // quién escribió cada bloque de mensajes ajenos
-export default function MessageList({ messages, loading, currentUserId, otherUsername, senderProfiles }) {
+// hasOlder / loadingOlder / onLoadOlder: los mensajes llegan de a 50 y el
+// botón de arriba trae los anteriores
+export default function MessageList({
+  messages,
+  loading,
+  currentUserId,
+  otherUsername,
+  senderProfiles,
+  hasOlder = false,
+  loadingOlder = false,
+  onLoadOlder
+}) {
   const { t, i18n } = useTranslation("chat");
   const containerRef = useRef(null);
   const stickToBottomRef = useRef(true);
   const hasScrolledRef = useRef(false);
+  // Para mantener la vista quieta cuando llegan mensajes anteriores arriba
+  const prevRef = useRef({ firstId: null, lastId: null, scrollHeight: 0 });
 
   // El idioma entra en las dependencias: las etiquetas de día se recalculan al cambiarlo
   const timeline = useMemo(
@@ -109,6 +123,15 @@ export default function MessageList({ messages, loading, currentUserId, otherUse
     if (!el || messages.length === 0) return;
 
     const lastMessage = messages[messages.length - 1];
+    const prev = prevRef.current;
+    prevRef.current = { firstId: messages[0].id, lastId: lastMessage.id, scrollHeight: el.scrollHeight };
+
+    // Llegaron mensajes anteriores (cambió el primero, no el último): se
+    // compensa la altura agregada arriba para no mover lo que se estaba leyendo
+    if (prev.lastId === lastMessage.id && prev.firstId !== messages[0].id) {
+      el.scrollTop += el.scrollHeight - prev.scrollHeight;
+      return;
+    }
 
     if (stickToBottomRef.current || lastMessage.senderId === currentUserId) {
       el.scrollTo({
@@ -144,6 +167,16 @@ export default function MessageList({ messages, loading, currentUserId, otherUse
       aria-label={t("messages.label")}
       onScroll={handleScroll}
     >
+      {hasOlder && onLoadOlder && (
+        <Button
+          label={t("messages.loadOlder")}
+          icon="pi pi-arrow-up"
+          className="gm-btn gm-btn--ghost chat-load-older"
+          loading={loadingOlder}
+          onClick={onLoadOlder}
+        />
+      )}
+
       {timeline.map((item) =>
         item.type === "day" ? (
           <p key={item.key} className="chat-day">{item.label}</p>
