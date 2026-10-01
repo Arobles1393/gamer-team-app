@@ -24,8 +24,10 @@ service cloud.firestore {
     }
 
     // ===== users =====
+    // Solo lo lee su dueño: guarda correo, teléfono e idioma. Lo que ven los
+    // demás está en publicProfiles/{uid}
     match /users/{userId} {
-      allow read: if isSignedIn();
+      allow read: if isOwner(userId);
       allow create: if isOwner(userId);
       allow update: if isOwner(userId);
       allow delete: if false;
