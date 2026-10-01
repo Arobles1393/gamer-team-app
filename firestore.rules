@@ -110,30 +110,69 @@ service cloud.firestore {
       allow update: if false;
     }
 
-    // ===== friends =====
-    match /friends/{docId} {
+    // ===== friends (id `${uidMenor}_${uidMayor}`) =====
+    // Solo se crea en el batch en que quien RECIBIÓ la solicitud la acepta:
+    // su friend_requests/{otro}_{yo} pasa de pending a accepted. Así nadie
+    // se agrega a la lista de amigos de otro sin su consentimiento.
+    match /friends/{pairId} {
+      function requestPath(senderId, receiverId) {
+        return /databases/$(database)/documents/friend_requests/$(senderId + '_' + receiverId);
+      }
+
+      // Yo (receiver) acepto la solicitud que me envió senderId
+      function acceptsRequestFrom(senderId) {
+        return get(requestPath(senderId, request.auth.uid)).data.status == 'pending'
+               && getAfter(requestPath(senderId, request.auth.uid)).data.status == 'accepted';
+      }
+
       allow read: if isSignedIn()
                   && request.auth.uid in resource.data.users;
       allow create: if isSignedIn()
-                    && request.auth.uid in request.resource.data.users
                     && request.resource.data.users.size() == 2
-                    && noBlockBetween(request.resource.data.users[0], request.resource.data.users[1]);
+                    && request.resource.data.users[0] < request.resource.data.users[1]
+                    && pairId == request.resource.data.users[0] + '_' + request.resource.data.users[1]
+                    && noBlockBetween(request.resource.data.users[0], request.resource.data.users[1])
+                    && ((request.auth.uid == request.resource.data.users[0]
+                          && acceptsRequestFrom(request.resource.data.users[1]))
+                        || (request.auth.uid == request.resource.data.users[1]
+                          && acceptsRequestFrom(request.resource.data.users[0])));
       // Cualquiera de los dos puede terminar la amistad (o bloquear)
       allow delete: if isSignedIn()
                     && request.auth.uid in resource.data.users;
       allow update: if false;
     }
 
-    // ===== friend_requests =====
+    // ===== friend_requests (id `${senderId}_${receiverId}`) =====
     match /friend_requests/{requestId} {
+      function sameParties() {
+        return request.resource.data.senderId == resource.data.senderId
+               && request.resource.data.receiverId == resource.data.receiverId;
+      }
+
+      // resource == null: para comprobar si hay una solicitud pendiente
       allow read: if isSignedIn()
-                  && (request.auth.uid == resource.data.senderId
+                  && (resource == null
+                      || request.auth.uid == resource.data.senderId
                       || request.auth.uid == resource.data.receiverId);
       allow create: if isSignedIn()
                     && request.resource.data.senderId == request.auth.uid
+                    && request.resource.data.receiverId != request.auth.uid
+                    && requestId == request.auth.uid + '_' + request.resource.data.receiverId
+                    && request.resource.data.status == 'pending'
                     && noBlockBetween(request.auth.uid, request.resource.data.receiverId);
-      allow update: if isSignedIn()
-                    && request.auth.uid == resource.data.receiverId;
+      allow update: if isSignedIn() && sameParties() && (
+        // Quien la recibe: aceptar o rechazar una pendiente
+        (request.auth.uid == resource.data.receiverId
+          && resource.data.status == 'pending'
+          && request.resource.data.status in ['accepted', 'rejected']
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']))
+        // Quien la envió: volver a enviarla (estaba rechazada o la amistad terminó)
+        || (request.auth.uid == resource.data.senderId
+          && resource.data.status != 'pending'
+          && request.resource.data.status == 'pending'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'createdAt'])
+          && noBlockBetween(request.auth.uid, resource.data.receiverId))
+      );
       allow delete: if false;
     }
 
