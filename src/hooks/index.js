@@ -50,6 +50,7 @@ export * from "./auth/useRequireAuth";
 export * from "./auth/useIsAdmin";
 export * from "./auth/useAccountLanguage";
 export * from "./auth/useAccountEmail";
+export * from "./auth/useWelcomeNotice";
 
 // Juegos
 export * from "./games/useGameSearch";

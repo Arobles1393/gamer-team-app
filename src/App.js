@@ -4,11 +4,12 @@ import { AppHeader, createHeaderMenu } from "./components/Header";
 import { NotificationOverlay } from "./components/Notifications";
 import { notificationService } from "./services/notifications";
 import { friendService } from "./services/friends";
-import { useNotifications, useUnreadNotifications, useUserPresence, useRequireAuth } from "./hooks";
+import { useNotifications, useUnreadNotifications, useUserPresence, useRequireAuth, useWelcomeNotice } from "./hooks";
 import { useAuthReady, useCurrentUser } from "./context";
 import { AppRoutes } from "./routes";
 import { CreatePostDialog } from "./components/Posts";
 import { useNavigate } from "react-router-dom"
+import { Toast } from "primereact/toast";
 import { useTranslation } from "react-i18next";
 import { resetAppLanguage } from "./i18n";
 import "./styles/theme.css";
@@ -25,6 +26,7 @@ function App() {
 
   // Refs
   const notificationRef = useRef(null);
+  const toast = useRef(null);
 
   // Navigation
   const navigate = useNavigate();
@@ -38,6 +40,15 @@ function App() {
   // Badge y punto rosa en "Chats" del rail: cuentan todas las no leídas, no solo las 10 del overlay
   const { unreadCount, hasUnreadMessages } = useUnreadNotifications(user);
   useUserPresence(user);
+  // "Cuenta creada": el formulario de registro ya no está en pantalla
+  useWelcomeNotice(user, () => {
+    toast.current?.show({
+      severity: "success",
+      summary: t("auth:register.createdTitle"),
+      detail: t("auth:register.createdDetail"),
+      life: 4000
+    });
+  });
 
   // UI Handlers
   const handleToggleNotifications = (e) => {
@@ -127,6 +138,7 @@ function App() {
           setShowCreatePost={setShowCreatePost}
         />
       </main>
+      <Toast ref={toast} />
     </>
   );
 }
