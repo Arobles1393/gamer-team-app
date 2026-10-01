@@ -50,13 +50,17 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
         return;
       }
 
-      if (email !== user.email) {
-        if (!email.includes("@")) {
+      // Las cuentas de Steam no tienen correo (user.email es null): un campo
+      // vacío no es un cambio
+      const nextEmail = email.trim();
+
+      if (nextEmail !== (user.email ?? "")) {
+        if (!nextEmail.includes("@")) {
           onError?.(i18n.t("profile:form.invalidEmail"));
           return;
         }
 
-        await updateEmail(user, email);
+        await updateEmail(user, nextEmail);
       }
 
       await profileService.updateUserProfile(user.uid, {
