@@ -33,9 +33,20 @@ export const useUnreadNotifications = (user) => {
     [unread]
   );
 
+  // Chats de grupo (postId) con mensajes sin leer
+  const unreadGroupIds = useMemo(
+    () => new Set(
+      unread
+        .filter((notification) => notification.type === "group_message")
+        .map((notification) => notification.relatedId)
+    ),
+    [unread]
+  );
+
   return {
     unreadCount: unread.length,
-    hasUnreadMessages: unreadChatIds.size > 0,
-    unreadChatIds
+    hasUnreadMessages: unreadChatIds.size > 0 || unreadGroupIds.size > 0,
+    unreadChatIds,
+    unreadGroupIds
   };
 };

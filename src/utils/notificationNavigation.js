@@ -13,6 +13,14 @@ const notificationRoutes = {
       state: {
         chatId: notification.relatedId
       }
+    }),
+
+  // relatedId = postId (group_chats/{postId})
+  group_message: (notification, navigate) =>
+    navigate("/chat", {
+      state: {
+        groupChatId: notification.relatedId
+      }
     })
 };
 

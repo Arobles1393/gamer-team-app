@@ -1,24 +1,24 @@
 import {
   doc,
-  deleteDoc,
   updateDoc,
   query,
   collection,
   where,
   getDocs,
   limit,
-  addDoc,
   onSnapshot,
   getDoc,
   setDoc,
   orderBy,
   increment,
   serverTimestamp,
-  startAfter
+  startAfter,
+  writeBatch
 } from "firebase/firestore";
 import { db, functions } from "../../firebase/config";
 import { httpsCallable } from "firebase/functions";
 import { gameStatsRef } from "../games/gameStats";
+import { groupChatRef, groupChatService } from "../chat/groupChatService";
 
 // Límite del operador "in" de Firestore
 const MAX_IN_VALUES = 30;
@@ -48,10 +48,22 @@ const deletePost = async (postId) => {
   const postRef = doc(db, "posts", postId);
 
   // Se lee antes de borrar para saber de qué juego descontar
-  const snapshot = await getDoc(postRef);
+  const [snapshot, groupSnap] = await Promise.all([
+    getDoc(postRef),
+    getDoc(groupChatRef(postId))
+  ]);
   const game = snapshot.data()?.game;
 
-  await deleteDoc(postRef);
+  // El chat del grupo no se borra (sus mensajes son una subcolección):
+  // queda inactivo y las reglas cierran el acceso. Va en el mismo batch que
+  // el borrado porque la regla comprueba que quien lo cierra es el autor.
+  const batch = writeBatch(db);
+  if (groupSnap.exists()) {
+    batch.update(groupChatRef(postId), { active: false });
+  }
+  batch.delete(postRef);
+  await batch.commit();
+
   await stepGamePostCount(game, -1);
 };
 
@@ -84,14 +96,18 @@ const getExistingMedia = async (game) => {
   };
 };
 
+// El post y el chat de su grupo (con el autor como primer participante) se
+// crean en el mismo batch: nunca queda un post sin grupo
 const createPost = async (postData) => {
-  const postRef = await addDoc(
-    collection(db, "posts"),
-    {
-      ...postData,
-      interestedCount: 0
-    }
-  );
+  const postRef = doc(collection(db, "posts"));
+
+  const batch = writeBatch(db);
+  batch.set(postRef, {
+    ...postData,
+    interestedCount: 0
+  });
+  groupChatService.addGroupChatToBatch(batch, postRef.id, postData.userId);
+  await batch.commit();
 
   await stepGamePostCount(postData.game, 1);
 

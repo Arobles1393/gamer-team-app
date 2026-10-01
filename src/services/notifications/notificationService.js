@@ -95,12 +95,13 @@ const markAllNotificationsAsRead = async (userId) => {
   await commitInBatches(operations);
 };
 
-// Al abrir un chat: sus notificaciones de mensaje dejan de contar como no leídas
-const markChatNotificationsAsRead = async (userId, chatId) => {
+// Al abrir un chat: sus notificaciones de mensaje dejan de contar como no leídas.
+// type: "message" (chat 1:1) o "group_message" (chat del grupo, chatId = postId)
+const markChatNotificationsAsRead = async (userId, chatId, type = "message") => {
   const q = query(
     collection(db, "notifications"),
     where("userId", "==", userId),
-    where("type", "==", "message"),
+    where("type", "==", type),
     where("relatedId", "==", chatId),
     where("read", "==", false)
   );

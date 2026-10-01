@@ -10,9 +10,8 @@ import {
   orderBy,
   writeBatch
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../../firebase/config";
-import { MAX_MEDIA_BYTES, MAX_MEDIA_MB, getMediaType } from "../../utils/media";
+import { db } from "../../firebase/config";
+import { uploadMessageMedia, getAttachmentPreview } from "./messageMedia";
 
 const subscribeToUserChats = (userId, onSuccess, onError) => {
   const q = query(
@@ -86,29 +85,8 @@ const createOrGetChat = async (user1, user2) => {
 
 // Mismo patrón que los adjuntos de comentarios: el senderId va en la ruta
 // para que storage.rules valide al dueño
-const uploadChatMedia = async (chatId, senderId, file) => {
-  if (file.size > MAX_MEDIA_BYTES) {
-    throw new Error(`El archivo debe pesar máximo ${MAX_MEDIA_MB} MB.`);
-  }
-
-  const fileRef = ref(storage, `chats/${chatId}/${senderId}/${Date.now()}_${file.name}`);
-
-  await uploadBytes(fileRef, file, { contentType: file.type || undefined });
-
-  return {
-    mediaUrl: await getDownloadURL(fileRef),
-    mediaType: getMediaType(file.type),
-    fileName: file.name,
-    fileSize: file.size
-  };
-};
-
-// Preview del chat (ChatList) cuando el mensaje no trae texto
-const getAttachmentPreview = ({ mediaType, fileName }) => {
-  if (mediaType === "image") return "📷 Imagen";
-  if (mediaType === "video") return "🎥 Video";
-  return `📎 ${fileName}`;
-};
+const uploadChatMedia = (chatId, senderId, file) =>
+  uploadMessageMedia(`chats/${chatId}`, senderId, file);
 
 // Texto, adjunto o ambos. El archivo se sube ANTES del batch (Storage no
 // entra en un batch de Firestore); si la subida falla no se envía nada.

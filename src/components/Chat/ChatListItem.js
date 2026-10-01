@@ -22,7 +22,7 @@ function ChatListItem({ chat, otherUser, currentUserId, active, unread, onSelect
         className={className}
         aria-current={active ? "true" : undefined}
         aria-label={`Chat con ${username}${unread ? ", mensajes sin leer" : ""}`}
-        onClick={() => onSelect(chat.id)}
+        onClick={() => onSelect({ type: "direct", id: chat.id })}
       >
         <ChatAvatar user={otherUser} />
 

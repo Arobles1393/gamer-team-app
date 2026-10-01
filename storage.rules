@@ -66,5 +66,18 @@ service firebase.storage {
                     && isValidChatMedia();
       allow update, delete: if false;
     }
+
+    // ===== group_chats/{postId}/{userId}/{fileName} =====
+    // Chat del grupo de una partida: solo participantes de un grupo activo
+    match /group_chats/{postId}/{userId}/{fileName} {
+      allow read: if isSignedIn()
+                  && firestore.get(/databases/(default)/documents/group_chats/$(postId)).data.active == true
+                  && request.auth.uid in firestore.get(/databases/(default)/documents/group_chats/$(postId)).data.participants;
+      allow create: if isOwner(userId)
+                    && firestore.get(/databases/(default)/documents/group_chats/$(postId)).data.active == true
+                    && request.auth.uid in firestore.get(/databases/(default)/documents/group_chats/$(postId)).data.participants
+                    && isValidChatMedia();
+      allow update, delete: if false;
+    }
   }
 }

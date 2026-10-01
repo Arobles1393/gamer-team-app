@@ -11,6 +11,8 @@ export * from "./posts/usePostComments";
 export * from "./posts/usePostCategories";
 export * from "./posts/usePostListActions";
 export * from "./posts/usePaginatedPosts";
+export * from "./posts/usePostSummary";
+export * from "./posts/usePostSummaries";
 
 // Perfil
 export * from "./profile/useUserProfile";
@@ -32,6 +34,8 @@ export * from "./friends/useFriendStatus";
 export * from "./chat/useChats";
 export * from "./chat/useChatWindow";
 export * from "./chat/useProfileChat";
+export * from "./chat/useGroupChatWindow";
+export * from "./chat/useMyGroupChats";
 
 // Notificaciones
 export * from "./notifications/useNotifications";

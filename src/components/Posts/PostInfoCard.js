@@ -19,7 +19,8 @@ const formatCount = (count, singular, plural) =>
 
 /**
  * Detalles de la partida y acciones: Quiero jugar / Mensaje al anfitrión,
- * o Editar / Eliminar si el post es del usuario.
+ * o Editar / Eliminar si el post es del usuario. "Chat del grupo" solo para
+ * el autor y los interesados (los participantes del grupo).
  */
 export default function PostInfoCard({
   post,
@@ -32,6 +33,7 @@ export default function PostInfoCard({
   openingChat,
   onToggleInterest,
   onChatWithHost,
+  onOpenGroupChat,
   onEdit,
   onDelete,
   onAuthorClick
@@ -82,6 +84,14 @@ export default function PostInfoCard({
       </dl>
 
       <div className="post-info__actions">
+        {(isOwner || isInterested) && (
+          <Button
+            label="Chat del grupo"
+            icon="pi pi-users"
+            className="gm-btn gm-btn--primary post-info__group-chat"
+            onClick={onOpenGroupChat}
+          />
+        )}
         {isOwner ? (
           <>
             <Button

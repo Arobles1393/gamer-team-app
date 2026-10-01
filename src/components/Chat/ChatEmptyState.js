@@ -7,10 +7,22 @@ const STATES = {
     text: () => "Escríbele a uno de tus amigos para empezar a coordinar partidas.",
     action: "Ver amigos"
   },
+  noGroupChats: {
+    icon: "pi-users",
+    title: "Aún no tienes chats de partida",
+    text: () => "Marca «Quiero jugar» en una publicación para unirte a su chat de grupo.",
+    action: "Ver partidas"
+  },
   noMatch: {
     icon: "pi-search",
     title: "Ningún chat coincide",
     text: (search) => `No tienes chats con alguien cuyo usuario contenga "${search}".`,
+    action: "Limpiar búsqueda"
+  },
+  noGroupMatch: {
+    icon: "pi-search",
+    title: "Ningún chat de partida coincide",
+    text: (search) => `No tienes chats de partida de un juego que contenga "${search}".`,
     action: "Limpiar búsqueda"
   },
   error: {

@@ -286,6 +286,7 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
             openingChat={openingChat}
             onToggleInterest={handleToggleInterest}
             onChatWithHost={handleChatWithHost}
+            onOpenGroupChat={() => navigate("/chat", { state: { groupChatId: post.id } })}
             onEdit={handleEdit}
             onDelete={handleDeletePost}
             onAuthorClick={openProfile}

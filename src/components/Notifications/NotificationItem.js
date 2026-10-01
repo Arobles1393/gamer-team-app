@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { UserAvatar } from "../UserAvatar";
 import { Button } from "primereact/button";
-import { useUserProfile } from "../../hooks";
+import { usePostSummary, useUserProfile } from "../../hooks";
 import { formatDates, getNotificationMeta } from "../../utils";
 
 const STATUS = {
@@ -23,7 +23,14 @@ export default function NotificationItem({
   const { userData: sender } = useUserProfile(notification.senderId);
   const [responding, setResponding] = useState(null);
 
-  const { icon, action } = getNotificationMeta(notification.type);
+  const isGroupMessage = notification.type === "group_message";
+  // El juego del post se lee en vivo (no se copia en la notificación)
+  const post = usePostSummary(isGroupMessage ? notification.relatedId : null);
+
+  const { icon, action: baseAction } = getNotificationMeta(notification.type);
+  const action = isGroupMessage && post?.game
+    ? `escribió en el chat de ${post.game}`
+    : baseAction;
   const username = sender?.username || "Alguien";
   const unread = !notification.read;
 

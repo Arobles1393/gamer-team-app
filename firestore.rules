@@ -174,6 +174,80 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // ===== group_chats/{postId} (chat del grupo de una partida) =====
+    // participants = autor + interesados. El cliente lo escribe en flujos
+    // concretos, cada uno validado por separado:
+    // - crear: solo el autor del post, con él como único participante
+    // - entrar/salir: cada quien solo a sí mismo; para entrar, su "Me
+    //   interesa" (post_interested/{postId}_{uid}) debe existir en la misma
+    //   transacción; el autor no puede salir de su propio grupo
+    // - lastMessage: solo participantes, mientras esté activo
+    // - desactivar (al borrar el post): solo el autor
+    match /group_chats/{postId} {
+      function postDoc() {
+        return get(/databases/$(database)/documents/posts/$(postId));
+      }
+
+      function changed() {
+        return request.resource.data.diff(resource.data).affectedKeys();
+      }
+
+      function interestAfter() {
+        return existsAfter(/databases/$(database)/documents/post_interested/$(postId + '_' + request.auth.uid));
+      }
+
+      // resource == null: para comprobar si el grupo existe
+      allow read: if isSignedIn()
+                  && (resource == null
+                      || (resource.data.active == true && request.auth.uid in resource.data.participants));
+
+      // getAfter: se crea en el mismo batch que el post
+      allow create: if isSignedIn()
+                    && getAfter(/databases/$(database)/documents/posts/$(postId)).data.userId == request.auth.uid
+                    && request.resource.data.postId == postId
+                    && request.resource.data.participants == [request.auth.uid]
+                    && request.resource.data.active == true;
+
+      allow update: if isSignedIn() && (
+        // Entrar (marcar "Me interesa")
+        (changed().hasOnly(['participants'])
+          && request.resource.data.participants.toSet()
+               == resource.data.participants.toSet().union([request.auth.uid].toSet())
+          && interestAfter())
+        // Salir (quitar "Me interesa")
+        || (changed().hasOnly(['participants'])
+          && request.resource.data.participants.toSet()
+               == resource.data.participants.toSet().difference([request.auth.uid].toSet())
+          && !interestAfter()
+          && postDoc().data.userId != request.auth.uid)
+        // Último mensaje
+        || (changed().hasOnly(['lastMessage', 'lastMessageAt', 'lastSenderId'])
+          && resource.data.active == true
+          && request.auth.uid in resource.data.participants)
+        // Desactivar al borrar el post
+        || (changed().hasOnly(['active'])
+          && request.resource.data.active == false
+          && postDoc().data.userId == request.auth.uid)
+      );
+
+      allow delete: if false;
+
+      match /messages/{messageId} {
+        function group() {
+          return get(/databases/$(database)/documents/group_chats/$(postId)).data;
+        }
+
+        allow read: if isSignedIn()
+                    && group().active == true
+                    && request.auth.uid in group().participants;
+        allow create: if isSignedIn()
+                      && request.resource.data.senderId == request.auth.uid
+                      && group().active == true
+                      && request.auth.uid in group().participants;
+        allow update, delete: if false;
+      }
+    }
+
     // ===== blocks (id `${blockerId}_${blockedId}`) =====
     match /blocks/{blockId} {
       // resource == null: para consultar si existe un bloqueo con alguien

@@ -79,7 +79,9 @@ function MessagesSkeleton() {
   );
 }
 
-export default function MessageList({ messages, loading, currentUserId, otherUsername }) {
+// senderProfiles (opcional, chat de grupo): { uid: perfil } para mostrar
+// quién escribió cada bloque de mensajes ajenos
+export default function MessageList({ messages, loading, currentUserId, otherUsername, senderProfiles }) {
   const containerRef = useRef(null);
   const stickToBottomRef = useRef(true);
   const hasScrolledRef = useRef(false);
@@ -144,6 +146,11 @@ export default function MessageList({ messages, loading, currentUserId, otherUse
             key={item.key}
             className={`chat-group${item.mine ? " chat-group--mine" : ""}`}
           >
+            {senderProfiles && !item.mine && (
+              <span className="chat-group__sender">
+                {senderProfiles[item.senderId]?.username || "Jugador"}
+              </span>
+            )}
             {item.messages.map((message) => (
               <MessageBubble key={message.id} message={message} />
             ))}
