@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { getCountryOptions } from "../../utils/countryNames";
 import { getAuthErrorMessage } from "../../utils/authErrors";
 import { authService } from "../../services/auth";
-import { profileService } from "../../services/profile";
 import { useProviderLogin } from "../../hooks";
 import {
   AuthLayout,
@@ -54,21 +53,13 @@ export default function Register({ onToggleMode, onBack }) {
     setLoading(true);
 
     try {
-      const userCredential =
-        await authService.register(
-          email,
-          password
-        );
-
-      await profileService.createUserProfile(
-        userCredential.user.uid,
-        {
-          email,
-          username,
-          phone,
-          region
-        }
-      );
+      await authService.register({
+        email,
+        password,
+        username,
+        phone,
+        region
+      });
 
       toast.current?.show({
         severity: "success",

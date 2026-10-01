@@ -1,5 +1,5 @@
-import { Button } from "primereact/button";
 import { useTranslation } from "react-i18next";
+import { EmptyState } from "../EmptyState";
 
 // Icono y si lleva botón; los textos en chat:empty.{variante}
 const STATES = {
@@ -8,6 +8,7 @@ const STATES = {
   noMatch: { icon: "pi-search", hasAction: true },
   noGroupMatch: { icon: "pi-search", hasAction: true },
   error: { icon: "pi-exclamation-triangle", hasAction: true },
+  messagesError: { icon: "pi-exclamation-triangle", hasAction: true },
   noSelection: { icon: "pi-comment", hasAction: false },
   noMessages: { icon: "pi-send", hasAction: false }
 };
@@ -24,15 +25,14 @@ export default function ChatEmptyState({ variant, detail = "", onAction }) {
     : t(`empty.${variant}.text`, { search: value });
 
   return (
-    <div className="feed-empty feed-empty--plain" role={variant === "error" ? "alert" : "status"}>
-      <span className="feed-empty__icon">
-        <i className={`pi ${icon}`} aria-hidden="true" />
-      </span>
-      <p className="feed-empty__title">{t(`empty.${variant}.title`)}</p>
-      <p className="feed-empty__text">{text}</p>
-      {hasAction && (
-        <Button label={t(`empty.${variant}.action`)} className="feed-empty__btn" onClick={onAction} />
-      )}
-    </div>
+    <EmptyState
+      icon={icon}
+      title={t(`empty.${variant}.title`)}
+      text={text}
+      actionLabel={hasAction ? t(`empty.${variant}.action`) : null}
+      onAction={onAction}
+      alert={variant === "error" || variant === "messagesError"}
+      plain
+    />
   );
 }

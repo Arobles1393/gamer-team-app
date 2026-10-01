@@ -3,11 +3,11 @@ import { useTranslation } from "react-i18next";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { Skeleton } from "primereact/skeleton";
-import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { UserProfileDialog } from "../UserProfile";
 import { ProfileSection } from "../ProfileSection";
 import PostDetailHero from "./PostDetailHero";
+import { EmptyState } from "../EmptyState";
 import PostInfoCard from "./PostInfoCard";
 import PostInterested from "./PostInterested";
 import CommentInput from "./CommentInput";
@@ -134,18 +134,14 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
   if (error) {
     return (
       <div className="feed post-detail">
-        <div className="feed-empty" role="alert">
-          <span className="feed-empty__icon">
-            <i className="pi pi-exclamation-triangle" aria-hidden="true" />
-          </span>
-          <p className="feed-empty__title">{t("detail.errorTitle")}</p>
-          <p className="feed-empty__text">{t("detail.errorText")}</p>
-          <Button
-            label={t("detail.home")}
-            className="feed-empty__btn"
-            onClick={() => navigate("/")}
-          />
-        </div>
+        <EmptyState
+          icon="pi-exclamation-triangle"
+          title={t("detail.errorTitle")}
+          text={t("detail.errorText")}
+          actionLabel={t("detail.home")}
+          onAction={() => navigate("/")}
+          alert
+        />
       </div>
     );
   }
@@ -160,18 +156,13 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
   if (blockedIds.includes(post.userId)) {
     return (
       <div className="feed post-detail">
-        <div className="feed-empty" role="status">
-          <span className="feed-empty__icon">
-            <i className="pi pi-ban" aria-hidden="true" />
-          </span>
-          <p className="feed-empty__title">{t("detail.blockedTitle")}</p>
-          <p className="feed-empty__text">{t("detail.blockedText")}</p>
-          <Button
-            label={t("detail.home")}
-            className="feed-empty__btn"
-            onClick={() => navigate("/")}
-          />
-        </div>
+        <EmptyState
+          icon="pi-ban"
+          title={t("detail.blockedTitle")}
+          text={t("detail.blockedText")}
+          actionLabel={t("detail.home")}
+          onAction={() => navigate("/")}
+        />
       </div>
     );
   }

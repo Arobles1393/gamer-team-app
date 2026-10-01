@@ -16,6 +16,14 @@ service cloud.firestore {
       return isSignedIn() && request.auth.token.admin == true;
     }
 
+    // Texto opcional de hasta `max` caracteres (los mismos límites que la UI)
+    function textUpTo(field, max) {
+      let data = request.resource.data;
+      return !(field in data)
+             || data[field] == null
+             || (data[field] is string && data[field].size() <= max);
+    }
+
     // Bloqueo en cualquier dirección. blocks usa id `${blockerId}_${blockedId}`
     // justamente para poder comprobarlo aquí con exists()
     function noBlockBetween(uid1, uid2) {
@@ -28,8 +36,8 @@ service cloud.firestore {
     // demás está en publicProfiles/{uid}
     match /users/{userId} {
       allow read: if isOwner(userId);
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId);
+      allow create: if isOwner(userId) && textUpTo('description', 500);
+      allow update: if isOwner(userId) && textUpTo('description', 500);
       allow delete: if false;
     }
 
@@ -42,7 +50,8 @@ service cloud.firestore {
                  'username', 'usernameLower', 'avatar', 'banner', 'region',
                  'description', 'games', 'links', 'lastSeen', 'createdAt'
                ])
-               && request.resource.data.username is string;
+               && request.resource.data.username is string
+               && textUpTo('description', 500);
       }
 
       // lastSeen (presencia) solo con la hora del servidor
@@ -102,6 +111,7 @@ service cloud.firestore {
                     && request.resource.data.userId == request.auth.uid
                     && request.resource.data.get('interestedCount', 0) == 0
                     && request.resource.data.createdAt == request.time
+                    && textUpTo('comments', 300)
                     && validSchedule();
       // El dueño edita su post sin tocar el contador, el autor, la fecha de
       // publicación ni el juego (game_stats cuenta por juego); si cambia la
@@ -110,6 +120,7 @@ service cloud.firestore {
       allow update: if isSignedIn()
                     && ((resource.data.userId == request.auth.uid
                          && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['interestedCount', 'userId', 'createdAt', 'game'])
+                         && textUpTo('comments', 300)
                          && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['scheduledAt']) || validSchedule()))
                         || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['interestedCount'])
                             && interestToggled()));
@@ -157,6 +168,7 @@ service cloud.firestore {
       allow read: if true;
       allow create: if isSignedIn()
                     && request.resource.data.userId == request.auth.uid
+                    && textUpTo('text', 500)
                     && noBlockBetween(request.auth.uid, postAuthor(request.resource.data.postId));
       allow delete: if isSignedIn()
                     && (resource.data.userId == request.auth.uid
@@ -298,6 +310,7 @@ service cloud.firestore {
                     && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
         allow create: if isSignedIn()
                       && request.resource.data.senderId == request.auth.uid
+                      && textUpTo('text', 1000)
                       && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants
                       && noBlockBetween(
                            get(/databases/$(database)/documents/chats/$(chatId)).data.participants[0],
@@ -380,6 +393,7 @@ service cloud.firestore {
                     && request.auth.uid in group().participants;
         allow create: if isSignedIn()
                       && request.resource.data.senderId == request.auth.uid
+                      && textUpTo('text', 1000)
                       && group().active == true
                       && request.auth.uid in group().participants;
         allow update, delete: if false;
@@ -409,7 +423,8 @@ service cloud.firestore {
                     && request.resource.data.reporterId == request.auth.uid
                     && request.resource.data.status == 'pending'
                     && request.resource.data.targetType in ['user', 'post', 'comment']
-                    && request.resource.data.reason in ['spam', 'inappropriate', 'harassment', 'impersonation', 'other'];
+                    && request.resource.data.reason in ['spam', 'inappropriate', 'harassment', 'impersonation', 'other']
+                    && textUpTo('note', 500);
       // Solo marcar como revisado
       allow update: if isAdmin()
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedAt']);

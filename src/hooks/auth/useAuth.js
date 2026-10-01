@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../../firebase/config";
+import { authService } from "../../services/auth";
 import { userService } from "../../services/users";
 
 export const useAuth = () => {
@@ -12,8 +11,7 @@ export const useAuth = () => {
   useEffect(() => {
     let unsubscribeUserDoc = null;
 
-    const unsubscribeAuth = onAuthStateChanged(
-      auth,
+    const unsubscribeAuth = authService.subscribeToAuthState(
       (currentUser) => {
         if (unsubscribeUserDoc) {
           unsubscribeUserDoc();

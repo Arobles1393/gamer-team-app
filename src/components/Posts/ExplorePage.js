@@ -5,6 +5,7 @@ import { Button } from "primereact/button";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import PostCard from "./PostCard";
+import { EmptyState } from "../EmptyState";
 import PostCardSkeleton from "./PostCardSkeleton";
 import PostFilters from "./PostFilters";
 import FeedEmptyState from "./FeedEmptyState";
@@ -135,14 +136,14 @@ export default function ExplorePage({ setEditingPost, setShowCreatePost }) {
   const renderResults = () => {
     if (error && posts.length === 0) {
       return (
-        <div className="feed-empty" role="alert">
-          <span className="feed-empty__icon">
-            <i className="pi pi-exclamation-triangle" aria-hidden="true" />
-          </span>
-          <p className="feed-empty__title">{t("explore.errorTitle")}</p>
-          <p className="feed-empty__text">{t("explore.errorText")}</p>
-          <Button label={t("common:actions.retry")} className="feed-empty__btn" onClick={retry} />
-        </div>
+        <EmptyState
+          icon="pi-exclamation-triangle"
+          title={t("explore.errorTitle")}
+          text={t("explore.errorText")}
+          actionLabel={t("common:actions.retry")}
+          onAction={retry}
+          alert
+        />
       );
     }
 

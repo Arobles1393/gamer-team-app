@@ -11,7 +11,7 @@ export const useGroupChatWindow = (postId, currentUserId) => {
 
   // Los últimos 50 mensajes; loadOlder trae más. Si falla es porque ya no
   // hay acceso (dejó de ser participante o el grupo se cerró)
-  const { messages, loading, hasOlder, loadingOlder, loadOlder } = useLiveMessages(
+  const { messages, loading, error, retry, hasOlder, loadingOlder, loadOlder } = useLiveMessages(
     groupChatService.subscribeToMessages,
     postId,
     "Error obteniendo mensajes del grupo:"
@@ -67,6 +67,8 @@ export const useGroupChatWindow = (postId, currentUserId) => {
   return {
     messages,
     loading: loading || group === undefined,
+    error,
+    retry,
     hasOlder,
     loadingOlder,
     loadOlder,

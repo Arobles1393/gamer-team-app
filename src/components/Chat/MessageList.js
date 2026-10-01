@@ -96,7 +96,9 @@ export default function MessageList({
   senderProfiles,
   hasOlder = false,
   loadingOlder = false,
-  onLoadOlder
+  onLoadOlder,
+  error = false,
+  onRetry
 }) {
   const { t, i18n } = useTranslation("chat");
   const containerRef = useRef(null);
@@ -146,6 +148,15 @@ export default function MessageList({
     return (
       <div className="chat-messages" aria-busy="true" aria-label={t("messages.loading")}>
         <MessagesSkeleton />
+      </div>
+    );
+  }
+
+  // Sin esto, un fallo al cargar se veía como "Inicia la conversación"
+  if (error) {
+    return (
+      <div className="chat-messages chat-messages--empty">
+        <ChatEmptyState variant="messagesError" onAction={onRetry} />
       </div>
     );
   }

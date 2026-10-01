@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { UserAvatar } from "../UserAvatar";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
-import { MAX_MEDIA_MB, MAX_MEDIA_BYTES } from "../../utils";
+import { MAX_MEDIA_MB, fitsMediaLimit } from "../../utils";
 
 const MAX_LENGTH = 500;
 
@@ -42,7 +42,7 @@ export default function CommentInput({ currentUser, onPublish, onError }) {
       return;
     }
 
-    if (selected.size > MAX_MEDIA_BYTES) {
+    if (!fitsMediaLimit(selected)) {
       onError?.(t("comments.tooBig", { mb: MAX_MEDIA_MB }));
       return;
     }

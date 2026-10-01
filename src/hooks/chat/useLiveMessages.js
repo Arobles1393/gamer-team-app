@@ -12,7 +12,9 @@ export const useLiveMessages = (subscribe, id, errorLabel) => {
   const limitCount = windowState.id === id ? windowState.limitCount : PAGE_SIZE;
 
   // loadedLimit: con qué ventana llegó la última respuesta
-  const [state, setState] = useState({ id: null, messages: [], loadedLimit: 0 });
+  const [state, setState] = useState({ id: null, messages: [], loadedLimit: 0, error: false });
+  // Reintentar = volver a suscribirse
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
     if (!id) return;
@@ -20,13 +22,13 @@ export const useLiveMessages = (subscribe, id, errorLabel) => {
     return subscribe(
       id,
       limitCount,
-      (messages) => setState({ id, messages, loadedLimit: limitCount }),
+      (messages) => setState({ id, messages, loadedLimit: limitCount, error: false }),
       (error) => {
         console.error(errorLabel, error);
-        setState({ id, messages: [], loadedLimit: limitCount });
+        setState({ id, messages: [], loadedLimit: limitCount, error: true });
       }
     );
-  }, [subscribe, id, limitCount, errorLabel]);
+  }, [subscribe, id, limitCount, errorLabel, retryKey]);
 
   // Mientras llega el chat nuevo no se muestran los mensajes del anterior
   const current = state.id === id;
@@ -36,9 +38,16 @@ export const useLiveMessages = (subscribe, id, errorLabel) => {
     setWindowState({ id, limitCount: limitCount + PAGE_SIZE });
   }, [id, limitCount]);
 
+  const retry = useCallback(() => {
+    setState((prev) => ({ ...prev, id: null }));
+    setRetryKey((key) => key + 1);
+  }, []);
+
   return {
     messages,
     loading: !current,
+    error: current && state.error,
+    retry,
     // Si llegó la ventana completa, puede haber más atrás
     hasOlder: current && messages.length >= state.loadedLimit,
     loadingOlder: current && limitCount > state.loadedLimit,

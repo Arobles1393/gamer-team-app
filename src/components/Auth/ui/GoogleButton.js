@@ -1,4 +1,5 @@
 import { Button } from "primereact/button";
+import { useTranslation } from "react-i18next";
 
 // Logo oficial de Google ("G" multicolor)
 function GoogleLogo() {
@@ -14,12 +15,14 @@ function GoogleLogo() {
 
 // Variante oscura del botón oficial "Sign in with Google": no lleva el
 // gradiente de marca para que se reconozca como botón de Google.
-export default function GoogleButton({ label = "Continuar con Google", ...buttonProps }) {
+export default function GoogleButton({ label, ...buttonProps }) {
+  const { t } = useTranslation("auth");
+
   return (
     <Button
       type="button"
       className="auth__google"
-      label={label}
+      label={label ?? t("providers.google")}
       icon={<GoogleLogo />}
       {...buttonProps}
     />

@@ -23,9 +23,10 @@ exports.getSteamStats = functions.https.onCall(
         );
       }
 
+      // El detalle queda en los logs; al cliente no se le exponen errores internos
       throw new functions.https.HttpsError(
         "internal",
-        error.message || "Error obteniendo datos de Steam"
+        "Error obteniendo datos de Steam"
       );
     }
   }

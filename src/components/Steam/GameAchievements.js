@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Skeleton } from "primereact/skeleton";
-import { steamStatsService } from "../../services/steam";
+import { useGameAchievements } from "../../hooks";
 
 // Rareza según el % global de jugadores que lo desbloquearon
 const RARITIES = [
@@ -41,50 +40,7 @@ function AchievementItem({ achievement, unlocked }) {
 
 export default function GameAchievements({ game, steamId }) {
   const { t } = useTranslation("profile");
-  const [achievements, setAchievements] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    if (!game || !steamId) return;
-
-    let cancelled = false;
-
-    const fetchAchievements = async () => {
-      setLoading(true);
-      setError(false);
-
-      try {
-        const data =
-          await steamStatsService.getSteamStats(
-            steamId,
-            game.appid
-          );
-
-        if (!cancelled) {
-          setAchievements(
-            data.achievements || []
-          );
-        }
-      } catch (err) {
-        console.error("Error obteniendo logros:", err);
-
-        if (!cancelled) {
-          setError(true);
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchAchievements();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [game, steamId]);
+  const { achievements, loading, error } = useGameAchievements(game, steamId);
 
   if (loading) {
     return (

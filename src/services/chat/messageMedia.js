@@ -1,12 +1,12 @@
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebase/config";
-import { MAX_MEDIA_BYTES, MAX_MEDIA_MB, getMediaType } from "../../utils/media";
+import { MAX_MEDIA_MB, fitsMediaLimit, getMediaType } from "../../utils/media";
 import i18n from "../../i18n";
 
 // Sube el adjunto de un mensaje a `${folder}/${senderId}/...` (chats 1:1 y
 // de grupo). El senderId va en la ruta para que storage.rules valide al dueño.
 export const uploadMessageMedia = async (folder, senderId, file) => {
-  if (file.size > MAX_MEDIA_BYTES) {
+  if (!fitsMediaLimit(file)) {
     throw new Error(i18n.t("chat:composer.tooBig", { mb: MAX_MEDIA_MB }));
   }
 

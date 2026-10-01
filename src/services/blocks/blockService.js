@@ -2,7 +2,6 @@ import {
   collection,
   deleteDoc,
   doc,
-  getDoc,
   getDocs,
   onSnapshot,
   query,
@@ -70,28 +69,6 @@ const subscribeToBlocks = (userId, onSuccess, onError) => {
   );
 };
 
-// Ids de "el otro" en cada bloqueo (igual que los ids de amigos)
-const getBlockedIds = async (userId) => {
-  const snapshot = await getDocs(
-    query(collection(db, "blocks"), where("participants", "array-contains", userId))
-  );
-
-  return snapshot.docs.map((blockDoc) => {
-    const { blockerId, blockedId } = blockDoc.data();
-    return blockerId === userId ? blockedId : blockerId;
-  });
-};
-
-// true si hay bloqueo entre ambos, en cualquier dirección
-const checkBlockStatus = async (userId, otherUserId) => {
-  const [mine, theirs] = await Promise.all([
-    getDoc(blockRef(userId, otherUserId)),
-    getDoc(blockRef(otherUserId, userId))
-  ]);
-
-  return mine.exists() || theirs.exists();
-};
-
 // En vivo: { blockedByMe, blockedMe, blockId } entre dos usuarios
 const subscribeToBlockStatus = (userId, otherUserId, onSuccess, onError) => {
   const status = { blockedByMe: false, blockedMe: false };
@@ -128,7 +105,5 @@ export const blockService = {
   blockUser,
   unblockUser,
   subscribeToBlocks,
-  getBlockedIds,
-  checkBlockStatus,
   subscribeToBlockStatus
 };

@@ -1,15 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-const PLATFORM_OPTIONS = [
-  { label: "Todas", value: "" },
-  { label: "PlayStation", value: "playstation" },
-  { label: "Xbox", value: "xbox" },
-  { label: "Switch", value: "switch" },
-  { label: "PC", value: "pc" },
-  { label: "Mobile", value: "mobile" }
-];
-
 // gameNames: juegos para el filtro (los de la lista en vistas planas, o
 // todos los de game_stats en el feed por categorías)
 export const usePostFilters = (gameNames) => {
@@ -58,7 +49,6 @@ export const usePostFilters = (gameNames) => {
     setFilterLanguage,
     tagFilters,
     setTagFilters,
-    gameOptions,
-    platformOptions: PLATFORM_OPTIONS
+    gameOptions
   };
 };
