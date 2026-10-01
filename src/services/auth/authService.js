@@ -1,4 +1,4 @@
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signInWithCustomToken, verifyBeforeUpdateEmail } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signInWithCustomToken, verifyBeforeUpdateEmail, onAuthStateChanged } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
 import { auth, googleProvider, functions } from "../../firebase/config";
 import { profileService } from "../profile";
@@ -15,16 +15,27 @@ const login = async (
   );
 };
 
-const register = async (
-  email,
-  password
-) => {
-  return createUserWithEmailAndPassword(
+// Crea la cuenta y su perfil (users + publicProfiles), igual que el primer
+// login con Google o Steam
+const register = async ({ email, password, username, phone, region }) => {
+  const userCredential = await createUserWithEmailAndPassword(
     auth,
     email,
     password
   );
+
+  await profileService.createUserProfile(userCredential.user.uid, {
+    email,
+    username,
+    phone,
+    region
+  });
+
+  return userCredential;
 };
+
+// Cambios de sesión (entrar, salir, recargar): devuelve la función para dejar de escuchar
+const subscribeToAuthState = (callback) => onAuthStateChanged(auth, callback);
 
 // Crea el perfil solo en el primer login con Google; si ya existe
 // no se toca, para no pisar lo que el usuario haya personalizado.
@@ -100,6 +111,7 @@ const requestEmailChange = (user, newEmail) =>
 export const authService = {
   hasPasswordSignIn,
   requestEmailChange,
+  subscribeToAuthState,
   login,
   register,
   loginWithGoogle,

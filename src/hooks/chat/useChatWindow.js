@@ -7,7 +7,7 @@ export const useChatWindow = (chatId, currentUserId) => {
   const [otherUserId, setOtherUserId] = useState(null);
 
   // Los últimos 50 mensajes; loadOlder trae más
-  const { messages, loading, hasOlder, loadingOlder, loadOlder } = useLiveMessages(
+  const { messages, loading, error, retry, hasOlder, loadingOlder, loadOlder } = useLiveMessages(
     chatService.subscribeToMessages,
     chatId,
     "Error obteniendo mensajes:"
@@ -66,6 +66,8 @@ export const useChatWindow = (chatId, currentUserId) => {
   return {
     messages,
     loading,
+    error,
+    retry,
     hasOlder,
     loadingOlder,
     loadOlder,

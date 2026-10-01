@@ -12,7 +12,7 @@ export default function ChatWindow({ chatId, onBack, onError }) {
   const { t } = useTranslation("chat");
   const user = useCurrentUser();
 
-  const { messages, loading, hasOlder, loadingOlder, loadOlder, otherUserId, sendMessage } = useChatWindow(
+  const { messages, loading, error, retry, hasOlder, loadingOlder, loadOlder, otherUserId, sendMessage } = useChatWindow(
     chatId,
     user.uid
   );
@@ -75,6 +75,8 @@ export default function ChatWindow({ chatId, onBack, onError }) {
         loading={loading}
         currentUserId={user.uid}
         otherUsername={otherUser?.username}
+        error={error}
+        onRetry={retry}
         hasOlder={hasOlder}
         loadingOlder={loadingOlder}
         onLoadOlder={loadOlder}

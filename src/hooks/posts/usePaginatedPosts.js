@@ -88,8 +88,14 @@ export const usePaginatedPosts = ({
       if (requestId !== requestRef.current) return;
 
       cursorRef.current = page.cursor;
-      // Se concatenan: "Cargar más" no reemplaza lo ya cargado
-      setPosts((prev) => (reset ? page.posts : [...prev, ...page.posts]));
+      // Se concatenan: "Cargar más" no reemplaza lo ya cargado. Sin
+      // repetidos: en "Más interesados" el cursor va sobre interestedCount,
+      // que puede cambiar entre páginas y traer de nuevo un post ya cargado
+      setPosts((prev) => {
+        if (reset) return page.posts;
+        const loaded = new Set(prev.map((post) => post.id));
+        return [...prev, ...page.posts.filter((post) => !loaded.has(post.id))];
+      });
       setHasMore(page.hasMore);
     } catch (err) {
       if (requestId !== requestRef.current) return;

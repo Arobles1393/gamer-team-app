@@ -1,9 +1,26 @@
-// Límite de adjuntos (comentarios y chat): el mismo que storage.rules
+// Límite de adjuntos (comentarios y chat): el mismo que storage.rules, que
+// exige tamaño < 20 MB (por eso un archivo de exactamente 20 MB no cabe)
 export const MAX_MEDIA_MB = 20;
 export const MAX_MEDIA_BYTES = MAX_MEDIA_MB * 1024 * 1024;
 
+export const fitsMediaLimit = (file) => file.size < MAX_MEDIA_BYTES;
+
 // Tipos que acepta el chat además de imágenes y videos (ver storage.rules)
 export const CHAT_FILE_ACCEPT = "image/*,video/*,.pdf,.doc,.docx,.zip";
+
+// Los mismos tipos que acepta storage.rules (isValidChatMedia) en el chat:
+// imágenes, videos, PDF, ZIP y Word
+export const isAllowedChatFile = (file) => {
+  const type = file.type || "";
+
+  return type.startsWith("image/")
+    || type.startsWith("video/")
+    || type === "application/pdf"
+    || type === "application/zip"
+    || type === "application/x-zip-compressed"
+    || type === "application/msword"
+    || type.startsWith("application/vnd.openxmlformats-officedocument.");
+};
 
 // "image" | "video" | "file" según el MIME del archivo
 export const getMediaType = (mimeType = "") => {

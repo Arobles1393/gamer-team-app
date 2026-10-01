@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Skeleton } from "primereact/skeleton";
 import { Toast } from "primereact/toast";
 import AdminReportItem from "./AdminReportItem";
+import { EmptyState } from "../EmptyState";
 import { UserProfileDialog } from "../UserProfile";
 import { reportService } from "../../services/reports";
 import { usePendingReports, usePostListActions, useUserProfiles } from "../../hooks";
@@ -63,25 +64,22 @@ export default function AdminReports() {
 
     if (error) {
       return (
-        <div className="feed-empty" role="alert">
-          <span className="feed-empty__icon">
-            <i className="pi pi-exclamation-triangle" aria-hidden="true" />
-          </span>
-          <p className="feed-empty__title">{t("admin.errorTitle")}</p>
-          <p className="feed-empty__text">{t("admin.errorText")}</p>
-        </div>
+        <EmptyState
+          icon="pi-exclamation-triangle"
+          title={t("admin.errorTitle")}
+          text={t("admin.errorText")}
+          alert
+        />
       );
     }
 
     if (reports.length === 0) {
       return (
-        <div className="feed-empty" role="status">
-          <span className="feed-empty__icon">
-            <i className="pi pi-check-circle" aria-hidden="true" />
-          </span>
-          <p className="feed-empty__title">{t("admin.emptyTitle")}</p>
-          <p className="feed-empty__text">{t("admin.emptyText")}</p>
-        </div>
+        <EmptyState
+          icon="pi-check-circle"
+          title={t("admin.emptyTitle")}
+          text={t("admin.emptyText")}
+        />
       );
     }
 

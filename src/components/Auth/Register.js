@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { getCountryOptions } from "../../utils/countryNames";
 import { getAuthErrorMessage } from "../../utils/authErrors";
 import { authService } from "../../services/auth";
-import { profileService } from "../../services/profile";
+import { clearWelcomeNotice, queueWelcomeNotice } from "../../utils/welcomeNotice";
 import { useProviderLogin } from "../../hooks";
 import {
   AuthLayout,
@@ -53,31 +53,20 @@ export default function Register({ onToggleMode, onBack }) {
 
     setLoading(true);
 
+    // La bienvenida la muestra la app: al crearse la cuenta, /login redirige
+    // y este formulario ya no está en pantalla
+    queueWelcomeNotice();
+
     try {
-      const userCredential =
-        await authService.register(
-          email,
-          password
-        );
-
-      await profileService.createUserProfile(
-        userCredential.user.uid,
-        {
-          email,
-          username,
-          phone,
-          region
-        }
-      );
-
-      toast.current?.show({
-        severity: "success",
-        summary: t("register.createdTitle"),
-        detail: t("register.createdDetail"),
-        life: 3000
+      await authService.register({
+        email,
+        password,
+        username,
+        phone,
+        region
       });
-
     } catch (error) {
+      clearWelcomeNotice();
       toast.current?.show({
         severity: "error",
         summary: t("common:status.error"),

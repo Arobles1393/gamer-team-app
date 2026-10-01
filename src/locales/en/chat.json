@@ -54,6 +54,11 @@
       "title": "Start the conversation",
       "text": "Send the first message.",
       "textTo": "Send the first message to {{username}}."
+    },
+    "messagesError": {
+      "title": "Couldn't load the messages",
+      "text": "Check your connection and try again.",
+      "action": "Retry"
     }
   },
   "window": {
@@ -87,7 +92,8 @@
     "searchEmoji": "Search emoji",
     "removeAttachment": "Remove attachment",
     "uploading": "Uploading…",
-    "tooBig": "The file must be {{mb}} MB or less."
+    "tooBig": "The file must be {{mb}} MB or less.",
+    "invalidType": "That file type can't be sent. Use images, videos, PDF, ZIP or Word."
   },
   "preview": {
     "image": "📷 Image",

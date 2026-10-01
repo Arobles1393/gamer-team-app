@@ -5,8 +5,9 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { OverlayPanel } from "primereact/overlaypanel";
 import {
   CHAT_FILE_ACCEPT,
-  MAX_MEDIA_BYTES,
   MAX_MEDIA_MB,
+  fitsMediaLimit,
+  isAllowedChatFile,
   formatFileSize,
   getMediaType
 } from "../../utils";
@@ -90,7 +91,14 @@ export default function MessageComposer({ onSend, onError, disabled = false }) {
 
     if (!selected) return;
 
-    if (selected.size > MAX_MEDIA_BYTES) {
+    // Los mismos tipos que storage.rules: si no, la subida fallaría con un
+    // error genérico (el selector de archivos permite elegir "Todos")
+    if (!isAllowedChatFile(selected)) {
+      onError?.(t("composer.invalidType"));
+      return;
+    }
+
+    if (!fitsMediaLimit(selected)) {
       onError?.(t("composer.tooBig", { mb: MAX_MEDIA_MB }));
       return;
     }

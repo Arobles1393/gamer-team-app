@@ -54,6 +54,11 @@
       "title": "Inicia la conversación",
       "text": "Envía el primer mensaje.",
       "textTo": "Envía el primer mensaje a {{username}}."
+    },
+    "messagesError": {
+      "title": "No se pudieron cargar los mensajes",
+      "text": "Revisa tu conexión e inténtalo de nuevo.",
+      "action": "Reintentar"
     }
   },
   "window": {
@@ -87,7 +92,8 @@
     "searchEmoji": "Buscar emoji",
     "removeAttachment": "Quitar adjunto",
     "uploading": "Subiendo…",
-    "tooBig": "El archivo debe pesar máximo {{mb}} MB."
+    "tooBig": "El archivo debe pesar máximo {{mb}} MB.",
+    "invalidType": "Ese tipo de archivo no se puede enviar. Usa imágenes, videos, PDF, ZIP o Word."
   },
   "preview": {
     "image": "📷 Imagen",
