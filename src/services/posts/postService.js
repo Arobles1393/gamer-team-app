@@ -8,7 +8,6 @@ import {
   limit,
   onSnapshot,
   getDoc,
-  setDoc,
   orderBy,
   increment,
   serverTimestamp,
@@ -23,26 +22,28 @@ import { groupChatRef, groupChatService } from "../chat/groupChatService";
 // Límite del operador "in" de Firestore
 const MAX_IN_VALUES = 30;
 
-// Contador de publicaciones por juego (tendencia por volumen). Si falla no
-// se revierte el post: la tendencia es secundaria y se corrige con el script
-// de backfill.
-const stepGamePostCount = async (game, step) => {
-  if (!game) return;
+// Contador de publicaciones por juego (tendencia por volumen). Va en el
+// mismo batch que crea o borra el post: firestore.rules solo deja mover
+// postCount ±1 si en ese batch se crea o se borra un post de ese juego
+// (lastPostId) de quien escribe.
+const addGamePostCountToBatch = (batch, game, postId, step) =>
+  batch.set(
+    gameStatsRef(game),
+    {
+      game,
+      postCount: increment(step),
+      updatedAt: serverTimestamp(),
+      lastPostId: postId
+    },
+    { merge: true }
+  );
 
-  try {
-    await setDoc(
-      gameStatsRef(game),
-      {
-        game,
-        postCount: increment(step),
-        updatedAt: serverTimestamp()
-      },
-      { merge: true }
-    );
-  } catch (error) {
-    console.error("Error actualizando game_stats:", error);
-  }
-};
+// Documentos de un post con las horas del servidor estimadas: un post recién
+// publicado ya trae createdAt aunque el servidor no haya respondido
+const postFromSnapshot = (snap) => ({
+  id: snap.id,
+  ...snap.data({ serverTimestamps: "estimate" })
+});
 
 const deletePost = async (postId) => {
   const postRef = doc(db, "posts", postId);
@@ -53,6 +54,9 @@ const deletePost = async (postId) => {
     getDoc(groupChatRef(postId))
   ]);
   const game = snapshot.data()?.game;
+  // Sin documento de estadísticas no hay nada que descontar (un -1 sobre un
+  // documento inexistente lo crearía, y las reglas lo rechazarían)
+  const statsSnap = game ? await getDoc(gameStatsRef(game)) : null;
 
   // El chat del grupo no se borra (sus mensajes son una subcolección):
   // queda inactivo y las reglas cierran el acceso. Va en el mismo batch que
@@ -61,10 +65,11 @@ const deletePost = async (postId) => {
   if (groupSnap.exists()) {
     batch.update(groupChatRef(postId), { active: false });
   }
+  if (statsSnap?.exists()) {
+    addGamePostCountToBatch(batch, game, postId, -1);
+  }
   batch.delete(postRef);
   await batch.commit();
-
-  await stepGamePostCount(game, -1);
 };
 
 const getExistingMedia = async (game) => {
@@ -96,20 +101,21 @@ const getExistingMedia = async (game) => {
   };
 };
 
-// El post y el chat de su grupo (con el autor como primer participante) se
-// crean en el mismo batch: nunca queda un post sin grupo
+// El post, el chat de su grupo (con el autor como primer participante) y el
+// +1 de game_stats se crean en el mismo batch: nunca queda un post sin grupo
+// ni sin contar. createdAt lo pone el servidor (firestore.rules lo exige).
 const createPost = async (postData) => {
   const postRef = doc(collection(db, "posts"));
 
   const batch = writeBatch(db);
   batch.set(postRef, {
     ...postData,
-    interestedCount: 0
+    interestedCount: 0,
+    createdAt: serverTimestamp()
   });
   groupChatService.addGroupChatToBatch(batch, postRef.id, postData.userId);
+  addGamePostCountToBatch(batch, postData.game, postRef.id, 1);
   await batch.commit();
-
-  await stepGamePostCount(postData.game, 1);
 
   return postRef;
 };
@@ -126,7 +132,7 @@ const subscribeToPost = (postId, onSuccess, onError) => {
   return onSnapshot(
     doc(db, "posts", postId),
     (snap) => {
-      onSuccess(snap.exists() ? { id: snap.id, ...snap.data() } : null);
+      onSuccess(snap.exists() ? postFromSnapshot(snap) : null);
     },
     onError
   );
@@ -176,9 +182,7 @@ const subscribeToPosts = (
   return onSnapshot(
     q,
     (snapshot) => {
-      onSuccess(
-        snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-      );
+      onSuccess(snapshot.docs.map(postFromSnapshot));
     },
     onError
   );

@@ -183,8 +183,7 @@ export const useCreatePost = ({
           // (username/avatar sí se leen siempre del perfil). Si después
           // cambia de región, este post sigue en "Cerca de ti" de la
           // región desde la que se publicó.
-          authorRegion: authorRegion ?? null,
-          createdAt: new Date()
+          authorRegion: authorRegion ?? null
         });
 
         onSuccess?.("guardar");
