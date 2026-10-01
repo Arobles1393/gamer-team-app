@@ -19,7 +19,7 @@ const uploadProfileImage = async (userId, file, type) => {
 
   const data = { [type]: url };
 
-  // El avatar también es público; el banner no
+  // Avatar y portada son públicos: también van a publicProfiles
   const publicData = pickPublicFields(data);
 
   const batch = writeBatch(db);

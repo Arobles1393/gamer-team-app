@@ -41,16 +41,18 @@ const createUserProfile = async (
 ) => {
   const batch = writeBatch(db);
 
+  const userData = {
+    ...profileData,
+    usernameLower:
+      profileData.username
+        .trim()
+        .toLowerCase(),
+    createdAt: new Date()
+  };
+
   batch.set(
     doc(db, "users", userId),
-    {
-      ...profileData,
-      usernameLower:
-        profileData.username
-          .trim()
-          .toLowerCase(),
-      createdAt: new Date()
-    }
+    userData
   );
 
   batch.set(
@@ -58,7 +60,7 @@ const createUserProfile = async (
     pickPublicFields({
       avatar: null,
       region: null,
-      ...profileData
+      ...userData
     })
   );
 

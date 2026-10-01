@@ -8,10 +8,11 @@ import {
   endAt,
   doc,
   onSnapshot,
-  updateDoc,
-  serverTimestamp
+  serverTimestamp,
+  writeBatch
 } from "firebase/firestore";
 import { db } from "../../firebase/config";
+import { publicProfileRef } from "../profile/publicProfileService";
 
 const getAllUsers = async () => {
   const snapshot = await getDocs(collection(db, "users"));
@@ -72,13 +73,14 @@ const subscribeToUserProfile = (
   );
 };
 
+// lastSeen es público: va a users y a publicProfiles en el mismo batch
 const updateUserPresence = async (userId) => {
-  await updateDoc(
-    doc(db, "users", userId),
-    {
-      lastSeen: serverTimestamp()
-    }
-  );
+  const data = { lastSeen: serverTimestamp() };
+
+  const batch = writeBatch(db);
+  batch.update(doc(db, "users", userId), data);
+  batch.set(publicProfileRef(userId), data, { merge: true });
+  await batch.commit();
 };
 
 export const userService = {
