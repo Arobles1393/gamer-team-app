@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { UserAvatar } from "../UserAvatar";
 import { useUserProfile } from "../../hooks";
 import { formatDates } from "../../utils";
-import { useCurrentUser } from "../../context";
 import { ReportButton } from "../Reports";
 
 function CommentItem({
@@ -14,8 +13,7 @@ function CommentItem({
   onOpenProfile
 }) {
   const { t } = useTranslation("posts");
-  const user = useCurrentUser();
-  const { userData: author } = useUserProfile(comment.userId, { publicOnly: !user });
+  const { userData: author } = useUserProfile(comment.userId);
   const username = author?.username || t("comments.player");
 
   const openProfile = () => onOpenProfile(comment.userId);

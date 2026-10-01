@@ -41,7 +41,7 @@ function PostCard({
   const navigate = useNavigate();
   const user = useCurrentUser();
 
-  const { userData: author } = useUserProfile(post.userId, { publicOnly: !user });
+  const { userData: author } = useUserProfile(post.userId);
 
   const isInterested = Boolean(interestedDoc);
 

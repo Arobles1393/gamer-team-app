@@ -29,7 +29,7 @@ export const useAuth = () => {
         }
 
         unsubscribeUserDoc =
-          userService.subscribeToUserProfile(
+          userService.subscribeToOwnProfile(
             currentUser.uid,
             (data) => {
               setUserData(data);

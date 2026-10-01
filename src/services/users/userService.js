@@ -14,15 +14,12 @@ import {
 import { db } from "../../firebase/config";
 import { publicProfileRef } from "../profile/publicProfileService";
 
-const getAllUsers = async () => {
-  const snapshot = await getDocs(collection(db, "users"));
+// Los perfiles de otros usuarios siempre se leen de publicProfiles (lo
+// público: nickname, avatar, región, juegos, redes, presencia...).
+// users/{uid} tiene además correo, teléfono e idioma: solo lo lee su dueño
+// (subscribeToOwnProfile).
 
-  return snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data()
-  }));
-};
-
+// Jugadores cuyo nickname empieza por `search`
 const searchUsers = async (search) => {
   const searchLower = search.trim().toLowerCase();
 
@@ -31,7 +28,7 @@ const searchUsers = async (search) => {
   }
 
   const usersQuery = query(
-    collection(db, "users"),
+    collection(db, "publicProfiles"),
     orderBy("usernameLower"),
     startAt(searchLower),
     endAt(`${searchLower}\uf8ff`),
@@ -46,22 +43,9 @@ const searchUsers = async (search) => {
   }));
 };
 
-// publicOnly: lee publicProfiles (nickname, avatar, región), lo único
-// que pueden leer los visitantes sin sesión
-const subscribeToUserProfile = (
-  userId,
-  onSuccess,
-  onError,
-  { publicOnly = false } = {}
-) => {
-  const userRef = doc(
-    db,
-    publicOnly ? "publicProfiles" : "users",
-    userId
-  );
-
-  return onSnapshot(
-    userRef,
+const subscribeToDoc = (ref, onSuccess, onError) =>
+  onSnapshot(
+    ref,
     (docSnap) => {
       if (docSnap.exists()) {
         onSuccess(docSnap.data());
@@ -71,7 +55,14 @@ const subscribeToUserProfile = (
     },
     onError
   );
-};
+
+// Perfil público de cualquier usuario (con o sin sesión)
+const subscribeToUserProfile = (userId, onSuccess, onError) =>
+  subscribeToDoc(publicProfileRef(userId), onSuccess, onError);
+
+// Perfil completo del usuario actual, con sus datos privados
+const subscribeToOwnProfile = (userId, onSuccess, onError) =>
+  subscribeToDoc(doc(db, "users", userId), onSuccess, onError);
 
 // lastSeen es público: va a users y a publicProfiles en el mismo batch
 const updateUserPresence = async (userId) => {
@@ -84,8 +75,8 @@ const updateUserPresence = async (userId) => {
 };
 
 export const userService = {
-  getAllUsers,
   searchUsers,
   subscribeToUserProfile,
+  subscribeToOwnProfile,
   updateUserPresence
 };

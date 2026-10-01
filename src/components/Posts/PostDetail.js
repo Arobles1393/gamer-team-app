@@ -65,7 +65,7 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
   const requireAuth = useRequireAuth(user);
 
   const { post, loading, error } = usePost(id);
-  const { userData: postAuthor } = useUserProfile(post?.userId, { publicOnly: !user });
+  const { userData: postAuthor } = useUserProfile(post?.userId);
 
   const { comments: allComments, publishComment, removeComment } = usePostComments(
     id,

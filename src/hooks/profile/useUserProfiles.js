@@ -4,8 +4,8 @@ import { userService } from "../../services/users";
 // Perfiles en tiempo real de varios usuarios a la vez (p. ej. la lista de amigos),
 // para poder buscar, ordenar y contar sobre ellos. `profiles` los indexa por id;
 // un perfil inexistente queda en null.
-// publicOnly: para visitantes sin sesión (lee publicProfiles)
-export const useUserProfiles = (userIds, { publicOnly = false } = {}) => {
+// Lee publicProfiles: funciona con y sin sesión
+export const useUserProfiles = (userIds) => {
   const [profiles, setProfiles] = useState({});
 
   // Clave estable: solo se re-suscribe si cambian los ids, no la referencia del array
@@ -33,13 +33,12 @@ export const useUserProfiles = (userIds, { publicOnly = false } = {}) => {
         (error) => {
           console.error("Error al obtener el perfil del usuario:", error);
           setProfiles((prev) => ({ ...prev, [id]: null }));
-        },
-        { publicOnly }
+        }
       )
     );
 
     return () => unsubscribes.forEach((unsubscribe) => unsubscribe());
-  }, [idsKey, publicOnly]);
+  }, [idsKey]);
 
   const loading = userIds.some((id) => !(id in profiles));
 

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { userService } from "../../services/users";
 
-// publicOnly: para visitantes sin sesión (lee publicProfiles)
-export const useUserProfile = (userId, { publicOnly = false } = {}) => {
+// Perfil público de un usuario, en vivo (publicProfiles: funciona con y sin
+// sesión). El perfil propio con sus datos privados es useCurrentUserData.
+export const useUserProfile = (userId) => {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
@@ -24,12 +25,11 @@ export const useUserProfile = (userId, { publicOnly = false } = {}) => {
           );
 
           setUserData(null);
-        },
-        { publicOnly }
+        }
       );
 
     return unsubscribe;
-  }, [userId, publicOnly]);
+  }, [userId]);
 
   return {
     userData
