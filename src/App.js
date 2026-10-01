@@ -4,12 +4,13 @@ import { AppHeader, createHeaderMenu } from "./components/Header";
 import { NotificationOverlay } from "./components/Notifications";
 import { notificationService } from "./services/notifications";
 import { friendService } from "./services/friends";
-import { useNotifications, useUnreadNotifications, useUserPresence } from "./hooks";
-import { useCurrentUser } from "./context";
+import { useNotifications, useUnreadNotifications, useUserPresence, useRequireAuth } from "./hooks";
+import { useAuthReady, useCurrentUser } from "./context";
 import { AppRoutes } from "./routes";
 import { CreatePostDialog } from "./components/Posts";
-import { Auth } from "./components/Auth";
 import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next";
+import { resetAppLanguage } from "./i18n";
 import "./styles/theme.css";
 import "./styles/layout.css";
 import "./styles/confirm.css";
@@ -27,16 +28,22 @@ function App() {
 
   // Navigation
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Hooks
   const user = useCurrentUser();
+  const authReady = useAuthReady();
+  const requireAuth = useRequireAuth(user);
   const { notifications, loading: loadingNotifications } = useNotifications(user, { limitCount: 10 });
   // Badge y punto rosa en "Chats" del rail: cuentan todas las no leídas, no solo las 10 del overlay
   const { unreadCount, hasUnreadMessages } = useUnreadNotifications(user);
   useUserPresence(user);
 
   // UI Handlers
-  const handleToggleNotifications = (e) => { notificationRef.current?.toggle(e); }
+  const handleToggleNotifications = (e) => {
+    if (!requireAuth()) return;
+    notificationRef.current?.toggle(e);
+  };
   const handleCloseCreatePost = () => { setShowCreatePost(false); setEditingPost(null); };
   const handleAcceptFriendRequest = (notification) => {
     return friendService.acceptFriendRequest(
@@ -63,15 +70,26 @@ function App() {
     );
   };
 
-  if (!user) {
-    return (
-      <Auth/>
-    );
+  // Evita mostrar la vista de visitante (o redirigir al login) mientras
+  // Firebase todavía no confirma si hay sesión
+  if (!authReady) {
+    return null;
   }
+
+  // Al cerrar sesión se vuelve al feed (público) en vez de quedar en una
+  // página privada que mandaría al login
+  // El idioma elegido por esta cuenta se olvida: la siguiente sesión
+  // empieza con el del navegador (o el guardado en su propia cuenta)
+  const handleLogout = () => {
+    navigate("/");
+    logout();
+    resetAppLanguage();
+  };
 
   const items = createHeaderMenu(
     navigate,
-    logout
+    handleLogout,
+    t
   );
 
   return (
@@ -81,23 +99,28 @@ function App() {
         hasUnreadMessages={hasUnreadMessages}
         items={items}
         onToggleNotifications={handleToggleNotifications}
+        onLogin={user ? undefined : requireAuth}
       />
-      <NotificationOverlay
-        notificationRef={notificationRef}
-        notifications={notifications}
-        loading={loadingNotifications}
-        unreadCount={unreadCount}
-        onAccept={handleAcceptFriendRequest}
-        onReject={handleRejectFriendRequest}
-        onMarkAsRead={handleMarkNotificationAsRead}
-        onMarkAllAsRead={handleMarkAllNotificationsAsRead}
-      />
-      <CreatePostDialog
-        visible={showCreatePost}
-        editingPost={editingPost}
-        onHide={handleCloseCreatePost}
-        onClose={handleCloseCreatePost}
-      />
+      {user && (
+        <>
+          <NotificationOverlay
+            notificationRef={notificationRef}
+            notifications={notifications}
+            loading={loadingNotifications}
+            unreadCount={unreadCount}
+            onAccept={handleAcceptFriendRequest}
+            onReject={handleRejectFriendRequest}
+            onMarkAsRead={handleMarkNotificationAsRead}
+            onMarkAllAsRead={handleMarkAllNotificationsAsRead}
+          />
+          <CreatePostDialog
+            visible={showCreatePost}
+            editingPost={editingPost}
+            onHide={handleCloseCreatePost}
+            onClose={handleCloseCreatePost}
+          />
+        </>
+      )}
       <main className="app-content">
         <AppRoutes
           setEditingPost={setEditingPost}

@@ -1,17 +1,21 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "primereact/button";
 import { Skeleton } from "primereact/skeleton";
 import { ProfileSection } from "../ProfileSection";
 import GameAchievementsDialog from "./GameAchievementsDialog";
 import { useSteamStats } from "../../hooks";
+import { getIntlLocale } from "../../i18n";
 import "./Steam.css";
 
 const STEAM_CDN = "https://cdn.cloudflare.steamstatic.com/steam/apps";
 
-const formatHours = (minutes) =>
-  Math.round(minutes / 60).toLocaleString("es-MX");
+const formatNumber = (value) => value.toLocaleString(getIntlLocale());
+
+const formatHours = (minutes) => formatNumber(Math.round(minutes / 60));
 
 function SteamGameCard({ game, maxPlaytime, onSelect }) {
+  const { t } = useTranslation("profile");
   // Algunos juegos no tienen la portada vertical: se intenta con el header horizontal
   const [src, setSrc] = useState(`${STEAM_CDN}/${game.appid}/library_600x900.jpg`);
   const [broken, setBroken] = useState(false);
@@ -31,7 +35,7 @@ function SteamGameCard({ game, maxPlaytime, onSelect }) {
       <button
         type="button"
         className="steam-game"
-        aria-label={`Ver logros de ${game.name}`}
+        aria-label={t("steam.viewAchievements", { name: game.name })}
         onClick={() => onSelect(game)}
       >
         {!broken && (
@@ -45,7 +49,9 @@ function SteamGameCard({ game, maxPlaytime, onSelect }) {
         )}
         <span className="steam-game__info">
           <span className="steam-game__name">{game.name}</span>
-          <span className="steam-game__hours">{formatHours(game.playtime_forever)} h</span>
+          <span className="steam-game__hours">
+            {t("steam.hours", { hours: formatHours(game.playtime_forever) })}
+          </span>
           <span className="steam-game__bar" aria-hidden="true">
             <span style={{ width: `${percent}%` }} />
           </span>
@@ -56,8 +62,10 @@ function SteamGameCard({ game, maxPlaytime, onSelect }) {
 }
 
 function SteamSkeleton() {
+  const { t } = useTranslation("profile");
+
   return (
-    <div aria-busy="true" aria-label="Cargando estadísticas de Steam">
+    <div aria-busy="true" aria-label={t("steam.loading")}>
       <div className="steam-summary">
         {Array.from({ length: 3 }, (_, i) => (
           <Skeleton key={i} height="72px" borderRadius="12px" className="steam-skeleton" />
@@ -79,6 +87,7 @@ function SteamSkeleton() {
  * Al tocar un juego se abren sus logros.
  */
 export default function SteamSection({ links, isOwnProfile = false, onConnect }) {
+  const { t } = useTranslation("profile");
   const { steamStats, steamID, loadingSteam, steamError } = useSteamStats(links);
   const [selectedGame, setSelectedGame] = useState(null);
 
@@ -93,12 +102,10 @@ export default function SteamSection({ links, isOwnProfile = false, onConnect })
     if (!steamID) {
       return isOwnProfile ? (
         <div className="steam-section__empty">
-          <p className="gm-section__empty">
-            Pega el link de tu perfil de Steam en Redes sociales y aquí mostraremos tus horas y juegos más jugados.
-          </p>
+          <p className="gm-section__empty">{t("steam.connectHint")}</p>
           {onConnect && (
             <Button
-              label="Conectar Steam"
+              label={t("steam.connect")}
               icon="pi pi-link"
               className="gm-btn gm-btn--ghost"
               onClick={onConnect}
@@ -106,26 +113,21 @@ export default function SteamSection({ links, isOwnProfile = false, onConnect })
           )}
         </div>
       ) : (
-        <p className="gm-section__empty">Este jugador no ha conectado su Steam.</p>
+        <p className="gm-section__empty">{t("steam.notConnected")}</p>
       );
     }
 
     if (steamError) {
       return (
         <p className="gm-section__empty">
-          No pudimos leer las estadísticas de Steam.
-          {isOwnProfile
-            ? " Revisa que el link sea correcto y que tu perfil y detalles de juegos sean públicos."
-            : " Es posible que su perfil sea privado."}
+          {t("steam.error")} {isOwnProfile ? t("steam.errorOwn") : t("steam.errorOther")}
         </p>
       );
     }
 
     if (!steamStats || games.length === 0) {
       return (
-        <p className="gm-section__empty">
-          El perfil de Steam no muestra juegos (la biblioteca puede ser privada).
-        </p>
+        <p className="gm-section__empty">{t("steam.noGames")}</p>
       );
     }
 
@@ -133,22 +135,22 @@ export default function SteamSection({ links, isOwnProfile = false, onConnect })
       <>
         <div className="steam-summary">
           <div className="steam-stat">
-            <span className="steam-stat__value">{steamStats.totalHours.toLocaleString("es-MX")}</span>
-            <span className="steam-stat__label">Horas jugadas</span>
+            <span className="steam-stat__value">{formatNumber(steamStats.totalHours)}</span>
+            <span className="steam-stat__label">{t("steam.hoursPlayed")}</span>
           </div>
           <div className="steam-stat">
-            <span className="steam-stat__value">{steamStats.totalGames.toLocaleString("es-MX")}</span>
-            <span className="steam-stat__label">Juegos</span>
+            <span className="steam-stat__value">{formatNumber(steamStats.totalGames)}</span>
+            <span className="steam-stat__label">{t("steam.games")}</span>
           </div>
           <div className="steam-stat steam-stat--wide">
             <span className="steam-stat__value steam-stat__value--text" title={games[0].name}>
               {games[0].name}
             </span>
-            <span className="steam-stat__label">Más jugado</span>
+            <span className="steam-stat__label">{t("steam.mostPlayed")}</span>
           </div>
         </div>
 
-        <p className="steam-section__subtitle">Más jugados · toca uno para ver sus logros</p>
+        <p className="steam-section__subtitle">{t("steam.subtitle")}</p>
 
         <ul className="steam-games">
           {games.map((game) => (
@@ -177,7 +179,7 @@ export default function SteamSection({ links, isOwnProfile = false, onConnect })
             rel="noreferrer"
             className="steam-section__external"
           >
-            Ver en Steam
+            {t("steam.viewOnSteam")}
             <i className="pi pi-external-link" aria-hidden="true" />
           </a>
         )

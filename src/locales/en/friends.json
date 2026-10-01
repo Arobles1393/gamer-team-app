@@ -1,0 +1,66 @@
+{
+  "friends": {
+    "title": "My friends",
+    "searchPlaceholder": "Search friends…",
+    "searchLabel": "Search your friends",
+    "filtersLabel": "Filter friends",
+    "filterAll": "All",
+    "filterOnline": "Online",
+    "loading": "Loading friends",
+    "empty": {
+      "empty": {
+        "title": "No friends yet",
+        "text": "Find players and send them a request to build your squad.",
+        "action": "Find players"
+      },
+      "noMatch": {
+        "title": "No friends match",
+        "text": "None of your friends has a username containing \"{{search}}\".",
+        "action": "Clear search"
+      },
+      "offline": {
+        "title": "Nobody is online",
+        "text": "None of your friends is online right now.",
+        "action": "See all"
+      },
+      "error": {
+        "title": "Couldn't load your friends",
+        "text": "Check your connection and try again.",
+        "action": "Retry"
+      }
+    }
+  },
+  "players": {
+    "title": "Find players",
+    "searchPlaceholder": "Username…",
+    "searchLabel": "Search players by username",
+    "searching": "Searching players",
+    "found_one": "{{count}} player found",
+    "found_other": "{{count}} players found",
+    "chatError": "Couldn't open the chat. Please try again.",
+    "empty": {
+      "idle": {
+        "title": "Find your next squad",
+        "text": "Type a player's username to get started."
+      },
+      "empty": {
+        "title": "No players match",
+        "text": "We couldn't find anyone whose username starts with \"{{search}}\".",
+        "action": "Clear search"
+      },
+      "error": {
+        "title": "Couldn't load players",
+        "text": "Check your connection and try again.",
+        "action": "Retry"
+      }
+    }
+  },
+  "card": {
+    "noGames": "No favorite games",
+    "gamesLabel": "Favorite games",
+    "message": "Message",
+    "messageLabel": "Send a message to {{username}}",
+    "viewProfile": "View profile",
+    "viewProfileLabel": "View {{username}}'s profile"
+  }
+}

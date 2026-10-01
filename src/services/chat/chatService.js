@@ -8,9 +8,11 @@ import {
   where,
   onSnapshot,
   orderBy,
+  limitToLast,
   writeBatch
 } from "firebase/firestore";
 import { db } from "../../firebase/config";
+import { uploadMessageMedia, getAttachmentPreview } from "./messageMedia";
 
 const subscribeToUserChats = (userId, onSuccess, onError) => {
   const q = query(
@@ -43,10 +45,12 @@ const subscribeToChat = (chatId, onSuccess, onError) => {
   );
 };
 
-const subscribeToMessages = (chatId, onSuccess, onError) => {
+// Los últimos `limitCount` mensajes, del más viejo al más nuevo
+const subscribeToMessages = (chatId, limitCount, onSuccess, onError) => {
   const q = query(
     collection(db, "chats", chatId, "messages"),
-    orderBy("createdAt")
+    orderBy("createdAt"),
+    limitToLast(limitCount)
   );
 
   return onSnapshot(
@@ -82,13 +86,24 @@ const createOrGetChat = async (user1, user2) => {
   return chatId;
 };
 
-const sendMessage = async ({ chatId, senderId, receiverId, text }) => {
+// Mismo patrón que los adjuntos de comentarios: el senderId va en la ruta
+// para que storage.rules valide al dueño
+const uploadChatMedia = (chatId, senderId, file) =>
+  uploadMessageMedia(`chats/${chatId}`, senderId, file);
+
+// Texto, adjunto o ambos. El archivo se sube ANTES del batch (Storage no
+// entra en un batch de Firestore); si la subida falla no se envía nada.
+// Mensaje + notificación + metadata del chat siguen siendo atómicos.
+const sendMessage = async ({ chatId, senderId, receiverId, text = "", file }) => {
+  const media = file ? await uploadChatMedia(chatId, senderId, file) : null;
+
   const batch = writeBatch(db);
 
   const messageRef = doc(collection(db, "chats", chatId, "messages"));
   batch.set(messageRef, {
     text,
     senderId,
+    ...(media ?? {}),
     createdAt: serverTimestamp()
   });
 
@@ -104,7 +119,7 @@ const sendMessage = async ({ chatId, senderId, receiverId, text }) => {
 
   const chatRef = doc(db, "chats", chatId);
   batch.update(chatRef, {
-    lastMessage: text,
+    lastMessage: text || getAttachmentPreview(media),
     lastSenderId: senderId,
     lastMessageAt: serverTimestamp()
   });
@@ -117,5 +132,6 @@ export const chatService = {
   subscribeToUserChats,
   subscribeToChat,
   subscribeToMessages,
+  uploadChatMedia,
   sendMessage
 };

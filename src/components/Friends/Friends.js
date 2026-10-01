@@ -1,23 +1,26 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Toast } from "primereact/toast";
 import { UserProfileDialog } from "../UserProfile";
 import { PlayerCard, PlayerCardSkeleton } from "../FindPlayers";
 import FriendsHeader from "./FriendsHeader";
 import FriendsFilters from "./FriendsFilters";
 import FriendsEmptyState from "./FriendsEmptyState";
-import { useFriends, useUserProfiles, useFriendStatus, useProfileChat, useFriendRequest, useProfileDialog } from "../../hooks";
+import { useFriends, useUserProfiles, useFriendStatus, useProfileChat, useFriendRequest, useProfileDialog, useSteamPresenceBatch, useTwitchPresenceBatch } from "../../hooks";
 import { isOnline } from "../../utils";
 import { useCurrentUser } from "../../context";
+import { getIntlLocale } from "../../i18n";
 import "../Posts/Feed.css";
 import "../FindPlayers/FindPlayers.css";
 
 // Primero los que están en línea, luego por nombre
 const compareFriends = (a, b) =>
   isOnline(b.lastSeen) - isOnline(a.lastSeen) ||
-  (a.username || "").localeCompare(b.username || "", "es", { sensitivity: "base" });
+  (a.username || "").localeCompare(b.username || "", getIntlLocale(), { sensitivity: "base" });
 
 export default function Friends() {
+  const { t } = useTranslation("friends");
   const user = useCurrentUser();
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
@@ -26,6 +29,10 @@ export default function Friends() {
 
   const { friendIds, loading: loadingIds, error, retry } = useFriends(user);
   const { users: friends, loading: loadingProfiles } = useUserProfiles(friendIds);
+  // Una sola consulta a Steam para todos los amigos
+  const steamGames = useSteamPresenceBatch(friends);
+  // Una sola consulta a Twitch para todos los amigos
+  const twitchLive = useTwitchPresenceBatch(friends);
 
   const {
     selectedUserId,
@@ -39,11 +46,11 @@ export default function Friends() {
   const showChatError = useCallback((message) => {
     toast.current?.show({
       severity: "error",
-      summary: "Error",
+      summary: t("common:status.error"),
       detail: message,
       life: 3000
     });
-  }, []);
+  }, [t]);
 
   const { handleChat, openChatWith } = useProfileChat(
     user,
@@ -86,7 +93,7 @@ export default function Friends() {
 
     if (loading) {
       return (
-        <div className="players-grid" aria-busy="true" aria-label="Cargando amigos">
+        <div className="players-grid" aria-busy="true" aria-label={t("friends.loading")}>
           {Array.from({ length: 6 }, (_, i) => <PlayerCardSkeleton key={i} />)}
         </div>
       );
@@ -116,6 +123,8 @@ export default function Friends() {
           <PlayerCard
             key={friend.id}
             player={friend}
+            steamGame={steamGames[friend.id]}
+            twitchLive={twitchLive[friend.id]}
             onShowProfile={openProfile}
             onChat={openChatWith}
           />
@@ -149,6 +158,7 @@ export default function Friends() {
         friendStatus={friendStatus}
         onSendFriendRequest={handleFriendRequest}
         onChat={handleChat}
+        onFriendStatusChange={setFriendStatus}
       />
       <Toast ref={toast} />
     </div>

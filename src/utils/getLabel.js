@@ -1,3 +1,5 @@
+import i18n from "../i18n";
+
 export const getLabel = (platform) => {
     switch (platform) {
         case "steam": return "Steam";
@@ -16,6 +18,6 @@ export const getLabel = (platform) => {
         case "twitch": return "Twitch"
         case "fchan": return "4chan"
         case "reddit": return "Reddit"
-        default: return "Perfil";
+        default: return i18n.t("profile:links.genericProfile");
     }
 };

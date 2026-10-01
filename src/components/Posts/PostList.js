@@ -1,24 +1,39 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
-import { postService } from "../../services/posts";
-import { confirmDeletePost } from "../../utils/confirmDeletePost";
 import PostCard from "./PostCard";
 import PostFilters from "./PostFilters";
 import FeedHeader from "./FeedHeader";
 import PostCardSkeleton from "./PostCardSkeleton";
 import FeedEmptyState from "./FeedEmptyState";
-import ProfileNudge from "./ProfileNudge";
 import "./Feed.css";
 import { UserProfileDialog } from "../UserProfile";
-import { useFriendStatus, usePosts, useInterestedPosts, useFilteredPosts, usePostFilters, useProfileChat, usePostInterest,
-  useFriendRequest, useProfileDialog } from "../../hooks";
-import { useCurrentUser, useCurrentUserData } from "../../context";
+import { useBlockedIds, usePosts, useFilteredPosts, usePostFilters, usePostListActions } from "../../hooks";
+import { EMPTY_TAG_FILTERS, excludeBlockedAuthors, hasTagFilters } from "../../utils";
+import { useCurrentUser } from "../../context";
 
+// Vistas planas: "Mis publicaciones" (onlyMine) y "Mis partidas" (joined).
+// El feed principal por categorías es PostFeed.
 export default function PostList({ setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
+  const { t } = useTranslation("posts");
   const user = useCurrentUser();
-  const userData = useCurrentUserData();
+  const toast = useRef(null);
+  const [search, setSearch] = useState("");
 
+  const showToast = useCallback((severity, summary, detail) => {
+    toast.current?.show({ severity, summary, detail, life: 3000 });
+  }, []);
+
+  const {
+    interestedMap,
+    getInterestedDoc,
+    handleInterested,
+    handleEditPost,
+    confirmDelete,
+    openProfile,
+    profileDialogProps
+  } = usePostListActions({ user, setEditingPost, setShowCreatePost, showToast });
 
   const {
     posts: allPosts,
@@ -30,128 +45,51 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
     joined
   );
 
-  const { interestedMap } = useInterestedPosts(user);
-
   // "Mis partidas": posts marcados con "me interesa" (colección post_interested)
   const posts = useMemo(
     () => joined
-      ? allPosts.filter((post) => interestedMap.has(`${post.id}_${user.uid}`))
+      ? allPosts.filter((post) => interestedMap.has(`${post.id}_${user?.uid}`))
       : allPosts,
-    [allPosts, joined, interestedMap, user.uid]
+    [allPosts, joined, interestedMap, user?.uid]
   );
+
+  const gameNames = useMemo(() => posts.map((post) => post.game), [posts]);
 
   const {
     filterGame,
     setFilterGame,
     filterPlatform,
     setFilterPlatform,
+    tagFilters,
+    setTagFilters,
     gameOptions
-  } = usePostFilters(posts);
-
-  const [search, setSearch] = useState("");
-  const toast = useRef(null);
-
-  const {
-    selectedUserId,
-    visible: showProfile,
-    openProfile,
-    closeProfile
-  } = useProfileDialog(user);
-
-  const {
-    friendStatus,
-    setFriendStatus
-  } = useFriendStatus(
-      user,
-      selectedUserId
-  );
-
-  const handleDelete = async (id) => {
-    try {
-      await postService.deletePost(id);
-      return true;
-    } catch (error) {
-      console.error("Error al eliminar:", error);
-      return false;
-    }
-  };
-
-  const confirmDelete = (id) => {
-    confirmDeletePost({
-      onAccept: async () => {
-        const success = await handleDelete(id);
-
-        toast.current.show({
-          severity: success ? "success" : "error",
-          summary: success ? "Eliminado" : "Error",
-          detail: success
-            ? "Publicación eliminada correctamente"
-            : "No se pudo eliminar la publicación",
-          life: 3000
-        });
-      }
-    });
-  };
+  } = usePostFilters(gameNames);
 
   const filteredPosts = useFilteredPosts(
     posts,
     filterGame,
-    filterPlatform
+    filterPlatform,
+    tagFilters
   );
 
-  // Búsqueda por nombre de juego desde la top bar
+  const { blockedIds } = useBlockedIds(user);
+
+  // Búsqueda por nombre de juego desde la top bar; sin autores bloqueados
   const visiblePosts = useMemo(() => {
     const term = search.trim().toLowerCase();
-    if (!term) return filteredPosts;
-    return filteredPosts.filter((post) => post.game?.toLowerCase().includes(term));
-  }, [filteredPosts, search]);
+    const unblocked = excludeBlockedAuthors(filteredPosts, blockedIds);
+    if (!term) return unblocked;
+    return unblocked.filter((post) => post.game?.toLowerCase().includes(term));
+  }, [filteredPosts, search, blockedIds]);
 
-  const hasFilters = Boolean(filterGame || filterPlatform || search.trim());
+  const hasFilters = Boolean(filterGame || filterPlatform || search.trim() || hasTagFilters(tagFilters));
 
   const handleClearFilters = () => {
     setFilterGame(null);
     setFilterPlatform(null);
+    setTagFilters(EMPTY_TAG_FILTERS);
     setSearch("");
   };
-
-  const {
-    handleChat
-  } = useProfileChat(
-    user,
-    selectedUserId,
-    closeProfile,
-    () => {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo abrir el chat. Intenta de nuevo.",
-        life: 3000
-      });
-    }
-  );
-
-  const { handleInterested } = usePostInterest(
-    user,
-    () => {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo guardar el interés",
-        life: 3000
-      });
-    }
-  );
-
-  const handleEditPost = (post) => {
-    setEditingPost(post);
-    setShowCreatePost(true);
-  };
-
-  const { handleFriendRequest } = useFriendRequest(
-    user,
-    selectedUserId,
-    setFriendStatus
-  );
 
   return (
     <div className="feed">
@@ -161,16 +99,17 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
         onSearchChange={setSearch}
         onCreatePost={() => setShowCreatePost(true)}
       />
-      {userData && !userData.region && <ProfileNudge />}
       <PostFilters
         filterGame={filterGame}
         onGameChange={setFilterGame}
         filterPlatform={filterPlatform}
         onPlatformChange={setFilterPlatform}
         gameOptions={gameOptions}
+        tagFilters={tagFilters}
+        onTagFiltersChange={setTagFilters}
       />
       {loading ? (
-        <div className="post-grid" aria-busy="true" aria-label="Cargando partidas">
+        <div className="post-grid" aria-busy="true" aria-label={t("feed.loading")}>
           {Array.from({ length: 6 }, (_, i) => <PostCardSkeleton key={i} />)}
         </div>
       ) : visiblePosts.length === 0 ? (
@@ -184,7 +123,7 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
             <PostCard
               key={post.id}
               post={post}
-              interestedDoc={ interestedMap.get(`${post.id}_${user.uid}`) }
+              interestedDoc={getInterestedDoc(post)}
               onToggleInterested={handleInterested}
               onEdit={handleEditPost}
               onDelete={confirmDelete}
@@ -193,14 +132,7 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
           ))}
         </div>
       )}
-      <UserProfileDialog
-        visible={showProfile}
-        onHide={closeProfile}
-        selectedUserId={selectedUserId}
-        friendStatus={friendStatus}
-        onSendFriendRequest={handleFriendRequest}
-        onChat={handleChat}
-      />
+      <UserProfileDialog {...profileDialogProps} />
       <ConfirmDialog />
       <Toast ref={toast} />
     </div>

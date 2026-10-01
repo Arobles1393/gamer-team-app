@@ -1,0 +1,105 @@
+/* =====================================================
+   REPORTAR — diálogo compartido (perfil, post, comentario)
+   ===================================================== */
+.report-dialog.p-dialog .p-dialog-content {
+  padding: 20px 24px 24px;
+  background: transparent;
+}
+
+.report-dialog__target {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--gm-muted);
+}
+
+.report-dialog__reasons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 18px;
+  padding: 0;
+  border: none;
+}
+
+.report-dialog__reasons legend {
+  margin-bottom: 10px;
+}
+
+.report-dialog__reason {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--gm-border-soft);
+  border-radius: var(--gm-radius-control);
+  font-size: 14px;
+  color: var(--gm-text);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.report-dialog__reason:hover {
+  border-color: var(--gm-border);
+}
+
+.report-dialog__reason--active {
+  border-color: var(--gm-primary);
+  background: var(--gm-primary-soft);
+}
+
+.report-dialog__reason input {
+  accent-color: var(--gm-primary);
+}
+
+.report-dialog__reason:focus-within {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 2px;
+}
+
+.report-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Botón discreto de "Reportar" en cards y comentarios. El wrapper solo
+   corta la propagación de eventos: no participa en el layout */
+.report-trigger-wrap {
+  display: contents;
+}
+
+.report-trigger {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--gm-subtle);
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.report-trigger .pi {
+  font-size: 13px;
+}
+
+.report-trigger:hover {
+  background: var(--gm-accent-soft);
+  color: var(--gm-accent-text);
+}
+
+.report-trigger:focus-visible {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .report-dialog__reason,
+  .report-trigger {
+    transition: none;
+  }
+}

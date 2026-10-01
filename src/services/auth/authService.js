@@ -1,4 +1,4 @@
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signInWithCustomToken } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signInWithCustomToken, verifyBeforeUpdateEmail } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
 import { auth, googleProvider, functions } from "../../firebase/config";
 import { profileService } from "../profile";
@@ -86,7 +86,20 @@ const loginWithSteam = async () => {
   return userCredential;
 };
 
+// Solo las cuentas con contraseña administran su correo aquí: el de Google
+// lo administra Google y las cuentas de Steam no tienen correo
+const hasPasswordSignIn = (user) =>
+  Boolean(user?.providerData?.some((provider) => provider.providerId === "password"));
+
+// Manda un enlace al correo nuevo; Firebase Auth lo cambia cuando el usuario
+// lo confirma (y cierra las sesiones abiertas). users.email se sincroniza al
+// volver a entrar (useAccountEmail).
+const requestEmailChange = (user, newEmail) =>
+  verifyBeforeUpdateEmail(user, newEmail);
+
 export const authService = {
+  hasPasswordSignIn,
+  requestEmailChange,
   login,
   register,
   loginWithGoogle,

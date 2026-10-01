@@ -1,9 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { postService } from "../../services/posts";
-import { getGameDetail } from "../../utils";
+import { formatDates, getGameDetail } from "../../utils";
+import i18n from "../../i18n";
+
+// Una fecha programada tiene que estar en el futuro
+const isFuture = (date) => date instanceof Date && date.getTime() > Date.now();
 
 export const useCreatePost = ({
   user,
+  authorRegion,
   editingPost,
   onSuccess,
   onError
@@ -15,7 +20,20 @@ export const useCreatePost = ({
   const [comments, setComments] = useState("");
   const [platform, setPlatform] = useState("");
   const [multiplatform, setMultiplatform] = useState(false);
+  // Programar para después: por defecto "ahora mismo" (scheduledAt null)
+  const [scheduled, setScheduledState] = useState(false);
+  const [scheduledAt, setScheduledAt] = useState(null);
+  // Etiquetas opcionales: null = "sin especificar" (no es lo mismo que false)
+  const [requiresMic, setRequiresMic] = useState(null);
+  const [skillLevel, setSkillLevel] = useState(null);
+  const [language, setLanguage] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // Al volver a "ahora mismo" se descarta la fecha elegida
+  const setScheduled = useCallback((value) => {
+    setScheduledState(value);
+    if (!value) setScheduledAt(null);
+  }, []);
 
   const resetForm = useCallback(() => {
     setGame({});
@@ -23,6 +41,11 @@ export const useCreatePost = ({
     setComments("");
     setPlatform("");
     setMultiplatform(false);
+    setScheduledState(false);
+    setScheduledAt(null);
+    setRequiresMic(null);
+    setSkillLevel(null);
+    setLanguage(null);
   }, []);
 
   useEffect(() => {
@@ -36,6 +59,13 @@ export const useCreatePost = ({
     setPlayers(Number(editingPost.playersNeeded) || 1);
     setComments(editingPost.comments || "");
     setMultiplatform(editingPost.multiplatform ?? false);
+
+    const savedSchedule = formatDates.toDate(editingPost.scheduledAt);
+    setScheduledState(Boolean(savedSchedule));
+    setScheduledAt(savedSchedule);
+    setRequiresMic(editingPost.requiresMic ?? null);
+    setSkillLevel(editingPost.skillLevel ?? null);
+    setLanguage(editingPost.language ?? null);
   }, [editingPost, resetForm]);
 
   const handleSubmit = useCallback(async (e) => {
@@ -52,7 +82,17 @@ export const useCreatePost = ({
       !comments?.trim() ||
       (!multiplatform && !platform)
     ) {
-      onError?.("Completa todos los campos");
+      onError?.(i18n.t("posts:create.errors.incomplete"));
+      return;
+    }
+
+    // Al editar se acepta la fecha que ya tenía aunque haya pasado; una
+    // fecha nueva siempre tiene que ser futura
+    const savedSchedule = formatDates.toDate(editingPost?.scheduledAt);
+    const scheduleChanged = scheduledAt?.getTime() !== savedSchedule?.getTime();
+
+    if (scheduled && (!scheduledAt || (scheduleChanged && !isFuture(scheduledAt)))) {
+      onError?.(i18n.t("posts:create.errors.pastDate"));
       return;
     }
 
@@ -116,7 +156,12 @@ export const useCreatePost = ({
           game.platforms ??
           editingPost?.platforms ??
           null,
-        multiplatform
+        multiplatform,
+        // null = "ahora mismo"
+        scheduledAt: scheduled ? scheduledAt : null,
+        requiresMic,
+        skillLevel,
+        language
       };
 
       if (editingPost) {
@@ -133,7 +178,12 @@ export const useCreatePost = ({
         await postService.createPost({
           ...postData,
           userId: user.uid,
-          createdAt: new Date()
+          // Excepción intencional a "resolver en vivo": como createdAt, es
+          // el contexto de dónde publicó el autor, no su identidad actual
+          // (username/avatar sí se leen siempre del perfil). Si después
+          // cambia de región, este post sigue en "Cerca de ti" de la
+          // región desde la que se publicó.
+          authorRegion: authorRegion ?? null
         });
 
         onSuccess?.("guardar");
@@ -150,8 +200,8 @@ export const useCreatePost = ({
 
       onError?.(
         editingPost
-          ? "No se pudo actualizar la publicación"
-          : "No se pudo guardar la publicación"
+          ? i18n.t("posts:create.errors.update")
+          : i18n.t("posts:create.errors.save")
       );
 
     } finally {
@@ -164,8 +214,14 @@ export const useCreatePost = ({
     comments,
     platform,
     multiplatform,
+    scheduled,
+    scheduledAt,
+    requiresMic,
+    skillLevel,
+    language,
     editingPost,
     user,
+    authorRegion,
     resetForm,
     onSuccess,
     onError
@@ -182,6 +238,16 @@ export const useCreatePost = ({
     setPlatform,
     multiplatform,
     setMultiplatform,
+    scheduled,
+    setScheduled,
+    scheduledAt,
+    setScheduledAt,
+    requiresMic,
+    setRequiresMic,
+    skillLevel,
+    setSkillLevel,
+    language,
+    setLanguage,
     loading,
     resetForm,
     handleSubmit

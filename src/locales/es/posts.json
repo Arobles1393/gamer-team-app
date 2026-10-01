@@ -1,0 +1,232 @@
+{
+  "feed": {
+    "title": "Partidas disponibles",
+    "myPosts": "Mis publicaciones",
+    "myParties": "Mis partidas",
+    "searchPlaceholder": "Buscar un juego…",
+    "searchLabel": "Buscar un juego",
+    "publish": "Publicar",
+    "allGames": "Todos los juegos",
+    "filterByGame": "Filtrar por juego",
+    "allOption": "Todos",
+    "loading": "Cargando partidas",
+    "filters": "Filtros"
+  },
+  "empty": {
+    "noMatchTitle": "Nada coincide con tu búsqueda",
+    "noMatchText": "Prueba con otro juego o plataforma.",
+    "emptyTitle": "Todavía no hay partidas aquí",
+    "emptyText": "Cuando alguien publique una partida, aparecerá en esta lista."
+  },
+  "categories": {
+    "withPlatform": "{{title}} en {{platform}}",
+    "recent": {
+      "title": "Recientes",
+      "empty": "Todavía no hay partidas publicadas."
+    },
+    "upcoming": {
+      "title": "Próximamente",
+      "empty": "No hay partidas programadas próximamente."
+    },
+    "friends": {
+      "title": "De tus amigos",
+      "empty": "Aún no tienes amigos con publicaciones."
+    },
+    "nearby": {
+      "title": "Cerca de ti",
+      "empty": "No hay publicaciones en tu región todavía.",
+      "noRegion": "Configura tu región en tu perfil para ver publicaciones cerca de ti."
+    },
+    "mostInterested": {
+      "title": "Más interesados",
+      "empty": "Todavía ninguna partida tiene interesados."
+    },
+    "trendingVolume": {
+      "title": "Tendencia en publicaciones",
+      "empty": "Todavía no hay juegos en tendencia."
+    },
+    "trendingSearch": {
+      "title": "Tendencia en búsquedas",
+      "empty": "Todavía no hay juegos en tendencia por búsquedas."
+    }
+  },
+  "explore": {
+    "eyebrow": "Explorar",
+    "back": "Volver",
+    "loadMore": "Cargar más",
+    "loadingMore": "Cargando…",
+    "errorTitle": "No se pudieron cargar las partidas",
+    "errorText": "Revisa tu conexión e inténtalo de nuevo."
+  },
+  "card": {
+    "playersNeeded_one": "{{count}} jugador necesario",
+    "playersNeeded_other": "{{count}} jugadores necesarios",
+    "open": "Ver partida de {{game}}",
+    "interestedBadge": "Te interesa",
+    "scheduledTitle": "Partida programada",
+    "reportLabel": "Publicación de {{username}} · {{game}}",
+    "aPlayer": "un jugador",
+    "join": "Quiero jugar",
+    "leave": "Ya no me interesa",
+    "edit": "Editar",
+    "delete": "Eliminar"
+  },
+  "tags": {
+    "label": "Etiquetas de la partida",
+    "mic": "Micrófono",
+    "micRequired": "Requiere micrófono",
+    "competitive": "Competitivo",
+    "languageTitle": "Idioma: {{language}}"
+  },
+  "skill": {
+    "casual": "Casual",
+    "competitive": "Competitivo"
+  },
+  "moreFilters": {
+    "button": "Más filtros",
+    "buttonActive": "Más filtros (hay filtros activos)",
+    "mic": "Micrófono",
+    "withMic": "Con micrófono",
+    "withoutMic": "Sin micrófono",
+    "level": "Nivel",
+    "language": "Idioma",
+    "anyLanguage": "Cualquiera",
+    "searchLanguage": "Buscar idioma…",
+    "noLanguage": "Ningún idioma coincide",
+    "clear": "Quitar estos filtros"
+  },
+  "detail": {
+    "loading": "Cargando partida",
+    "errorTitle": "No se pudo cargar la partida",
+    "errorText": "Revisa tu conexión e inténtalo de nuevo.",
+    "home": "Volver al inicio",
+    "back": "Volver",
+    "about": "Sobre la partida",
+    "noDescription": "El anfitrión no agregó una descripción.",
+    "comments": "Comentarios",
+    "noComments": "Todavía no hay comentarios. ¡Rompe el hielo y coordina la partida!",
+    "cover": "Portada de {{game}}",
+    "lookingFor_one": "Busca {{count}} jugador",
+    "lookingFor_other": "Busca {{count}} jugadores",
+    "errors": {
+      "interest": "No se pudo guardar tu interés. Intenta de nuevo.",
+      "deletePost": "No se pudo eliminar la publicación. Intenta de nuevo.",
+      "saveComment": "No se pudo guardar el comentario. Intenta de nuevo.",
+      "deleteComment": "No se pudo eliminar el comentario. Intenta de nuevo."
+    },
+    "deleteComment": {
+      "header": "Eliminar comentario",
+      "message": "El comentario y su imagen o video se eliminarán. Esta acción no se puede deshacer.",
+      "accept": "Eliminar comentario",
+      "done": "Comentario eliminado"
+    },
+    "blockedTitle": "Esta partida no está disponible",
+    "blockedText": "No puedes ver publicaciones de usuarios con los que hay un bloqueo."
+  },
+  "info": {
+    "host": "Anfitrión",
+    "hostYou": "Anfitrión · tú",
+    "scheduled": "Programado",
+    "published": "Publicada",
+    "region": "Región",
+    "noRegion": "Sin región",
+    "lookingFor": "Buscan",
+    "players_one": "{{count}} jugador",
+    "players_other": "{{count}} jugadores",
+    "mic": "Micrófono",
+    "level": "Nivel",
+    "language": "Idioma",
+    "interested": "Interesados",
+    "comments": "Comentarios",
+    "groupChat": "Chat del grupo",
+    "editPost": "Editar partida",
+    "delete": "Eliminar",
+    "messageHost": "Mensaje al anfitrión"
+  },
+  "interested": {
+    "title": "Jugadores interesados",
+    "loading": "Cargando interesados",
+    "emptyOwner": "Aún nadie se ha unido. Cuando alguien toque «Quiero jugar», aparecerá aquí.",
+    "empty": "Nadie se ha unido todavía. ¡Sé el primero!"
+  },
+  "comments": {
+    "placeholder": "Escribe un comentario… ¿a qué hora juegan?",
+    "label": "Escribe un comentario",
+    "removeFile": "Quitar archivo adjunto",
+    "attach": "Imagen o video",
+    "publish": "Comentar",
+    "publishing": "Publicando…",
+    "onlyMedia": "Solo puedes adjuntar imágenes o videos.",
+    "tooBig": "El archivo debe pesar máximo {{mb}} MB.",
+    "player": "Jugador",
+    "viewProfile": "Ver perfil de {{username}}",
+    "host": "Anfitrión",
+    "delete": "Eliminar comentario",
+    "reportLabel": "Comentario de {{username}}",
+    "openImage": "Abrir imagen en otra pestaña",
+    "imageAlt": "Imagen compartida por {{username}}",
+    "loginPrompt": "Inicia sesión para comentar y coordinar la partida."
+  },
+  "nudge": {
+    "text": "Agrega tu región para que otros jugadores sepan desde dónde juegas.",
+    "cta": "Completar perfil",
+    "close": "Cerrar aviso"
+  },
+  "create": {
+    "titleNew": "Publicar partida",
+    "titleEdit": "Editar partida",
+    "game": "Juego",
+    "gamePlaceholder": "Busca el juego…",
+    "gameLocked": "El juego no se puede cambiar al editar",
+    "gameAvailable": "Disponible en: {{platforms}}",
+    "gameSelected": "Juego seleccionado",
+    "changeGame": "Cambiar juego",
+    "platform": "Plataforma",
+    "multiplatform": "Multiplataforma",
+    "details": "Detalles",
+    "detailsHint": "Opcional: ayuda a encontrar jugadores afines.",
+    "micRequired": "Requiere micrófono",
+    "level": "Nivel",
+    "languagePlaceholder": "Idioma: sin especificar",
+    "languageLabel": "Idioma de la partida",
+    "players": "Jugadores que buscas",
+    "playersHint": "Cuántos jugadores te faltan para completar la partida.",
+    "fewerPlayers": "Menos jugadores",
+    "morePlayers": "Más jugadores",
+    "playerUnit_one": "jugador",
+    "playerUnit_other": "jugadores",
+    "when": "Cuándo",
+    "now": "Ahora mismo",
+    "schedule": "Programar para después",
+    "scheduleHint": "Aparecerá en «Próximamente» hasta esa hora.",
+    "datePlaceholder": "Fecha y hora",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Modo de juego, rango, horario, si usas micrófono…",
+    "submitNew": "Publicar partida",
+    "submitEdit": "Guardar cambios",
+    "publishing": "Publicando…",
+    "errors": {
+      "game": "Elige el juego de la partida.",
+      "platform": "Elige una plataforma o marca Multiplataforma.",
+      "description": "Cuenta un poco de la partida.",
+      "schedule": "Elige la fecha y hora de la partida.",
+      "incomplete": "Completa todos los campos",
+      "pastDate": "Elige una fecha y hora futuras para la partida",
+      "update": "No se pudo actualizar la publicación",
+      "save": "No se pudo guardar la publicación"
+    },
+    "done": {
+      "updatedTitle": "Partida actualizada",
+      "updatedText": "Los cambios ya están visibles en el feed.",
+      "createdTitle": "Partida publicada",
+      "createdText": "Tu partida ya aparece en el feed."
+    }
+  },
+  "actions": {
+    "chatError": "No se pudo abrir el chat. Intenta de nuevo.",
+    "interestError": "No se pudo guardar el interés",
+    "deletedTitle": "Eliminado",
+    "deletedText": "Publicación eliminada correctamente",
+    "deleteError": "No se pudo eliminar la publicación"
+  }
+}

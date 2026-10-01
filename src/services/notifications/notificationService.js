@@ -47,12 +47,19 @@ const subscribeToNotifications = (
   );
 };
 
-// Todas las no leídas (sin límite), para el badge y el punto de chats del rail
+// Las no leídas más recientes, para el badge y el punto de chats del rail.
+// Con un tope: cada mensaje de grupo crea una por participante, así que
+// pueden acumularse. El badge muestra "9+" y el panel "99+", así que pasar
+// de 100 no cambia nada visible.
+const MAX_UNREAD = 100;
+
 const subscribeToUnreadNotifications = (userId, onChange, onError) => {
   const q = query(
     collection(db, "notifications"),
     where("userId", "==", userId),
-    where("read", "==", false)
+    where("read", "==", false),
+    orderBy("createdAt", "desc"),
+    limit(MAX_UNREAD)
   );
 
   return onSnapshot(
@@ -95,12 +102,13 @@ const markAllNotificationsAsRead = async (userId) => {
   await commitInBatches(operations);
 };
 
-// Al abrir un chat: sus notificaciones de mensaje dejan de contar como no leídas
-const markChatNotificationsAsRead = async (userId, chatId) => {
+// Al abrir un chat: sus notificaciones de mensaje dejan de contar como no leídas.
+// type: "message" (chat 1:1) o "group_message" (chat del grupo, chatId = postId)
+const markChatNotificationsAsRead = async (userId, chatId, type = "message") => {
   const q = query(
     collection(db, "notifications"),
     where("userId", "==", userId),
-    where("type", "==", "message"),
+    where("type", "==", type),
     where("relatedId", "==", chatId),
     where("read", "==", false)
   );
@@ -129,6 +137,22 @@ const deleteAllNotifications = async (userId) => {
   }));
 
   await commitInBatches(operations);
+};
+
+// Las notificaciones propias sobre algo que ya no existe (p. ej. comentarios,
+// interesados y mensajes del grupo de un post borrado: relatedId = postId)
+const deleteNotificationsAbout = async (userId, relatedId) => {
+  const q = query(
+    collection(db, "notifications"),
+    where("userId", "==", userId),
+    where("relatedId", "==", relatedId)
+  );
+
+  const snapshot = await getDocs(q);
+
+  await commitInBatches(
+    snapshot.docs.map((docSnap) => ({ type: "delete", ref: docSnap.ref }))
+  );
 };
 
 const createNotification = (notificationData) => {
@@ -191,6 +215,7 @@ export const notificationService = {
   markAllNotificationsAsRead,
   markChatNotificationsAsRead,
   deleteAllNotifications,
+  deleteNotificationsAbout,
   createNotification,
   updateNotificationStatus
 };

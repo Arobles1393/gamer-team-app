@@ -1,0 +1,51 @@
+{
+  "titles": {
+    "user": "Report user",
+    "post": "Report post",
+    "comment": "Report comment"
+  },
+  "reasons": {
+    "spam": "Spam",
+    "inappropriate": "Inappropriate content",
+    "harassment": "Harassment",
+    "impersonation": "Impersonation",
+    "other": "Other reason"
+  },
+  "dialog": {
+    "question": "What's the problem?",
+    "noteRequired": "Tell us what's going on",
+    "noteOptional": "Context",
+    "optional": "(optional)",
+    "notePlaceholder": "Details that help us review the report",
+    "send": "Send report",
+    "sentSummary": "Report sent",
+    "sentDetail": "Thanks, we'll review it.",
+    "sendError": "Couldn't send the report. Please try again."
+  },
+  "button": {
+    "title": "Report"
+  },
+  "admin": {
+    "eyebrow": "Admin",
+    "title": "Reports",
+    "titleCount": "Reports ({{count}})",
+    "markError": "Couldn't mark the report as reviewed.",
+    "errorTitle": "Couldn't load the reports",
+    "errorText": "Make sure your account has admin permission.",
+    "emptyTitle": "No pending reports",
+    "emptyText": "When someone reports something, it'll show up here.",
+    "types": {
+      "user": "User",
+      "post": "Post",
+      "comment": "Comment"
+    },
+    "userFallback": "user",
+    "viewProfile": "View {{username}}'s profile",
+    "viewPost": "View post",
+    "loadingComment": "Loading comment…",
+    "commentGone": "The comment no longer exists",
+    "viewComment": "View comment in its post",
+    "reportedBy": "Reported by",
+    "markReviewed": "Mark as reviewed"
+  }
+}

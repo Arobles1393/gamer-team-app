@@ -1,0 +1,232 @@
+{
+  "feed": {
+    "title": "Parties disponibles",
+    "myPosts": "Mes publications",
+    "myParties": "Mes parties",
+    "searchPlaceholder": "Rechercher un jeu…",
+    "searchLabel": "Rechercher un jeu",
+    "publish": "Publier",
+    "allGames": "Tous les jeux",
+    "filterByGame": "Filtrer par jeu",
+    "allOption": "Tous",
+    "loading": "Chargement des parties",
+    "filters": "Filtres"
+  },
+  "empty": {
+    "noMatchTitle": "Aucun résultat pour votre recherche",
+    "noMatchText": "Essayez un autre jeu ou une autre plateforme.",
+    "emptyTitle": "Aucune partie ici pour l'instant",
+    "emptyText": "Quand quelqu'un publiera une partie, elle apparaîtra dans cette liste."
+  },
+  "categories": {
+    "withPlatform": "{{title}} sur {{platform}}",
+    "recent": {
+      "title": "Récentes",
+      "empty": "Aucune partie publiée pour l'instant."
+    },
+    "upcoming": {
+      "title": "Bientôt",
+      "empty": "Aucune partie programmée prochainement."
+    },
+    "friends": {
+      "title": "De vos amis",
+      "empty": "Vos amis n'ont encore rien publié."
+    },
+    "nearby": {
+      "title": "Près de chez vous",
+      "empty": "Aucune publication dans votre région pour l'instant.",
+      "noRegion": "Indiquez votre région dans votre profil pour voir les publications près de chez vous."
+    },
+    "mostInterested": {
+      "title": "Les plus suivies",
+      "empty": "Aucune partie n'a encore d'intéressés."
+    },
+    "trendingVolume": {
+      "title": "Tendance dans les publications",
+      "empty": "Aucun jeu en tendance pour l'instant."
+    },
+    "trendingSearch": {
+      "title": "Tendance dans les recherches",
+      "empty": "Aucun jeu en tendance dans les recherches pour l'instant."
+    }
+  },
+  "explore": {
+    "eyebrow": "Explorer",
+    "back": "Retour",
+    "loadMore": "Charger plus",
+    "loadingMore": "Chargement…",
+    "errorTitle": "Impossible de charger les parties",
+    "errorText": "Vérifiez votre connexion et réessayez."
+  },
+  "card": {
+    "playersNeeded_one": "{{count}} joueur recherché",
+    "playersNeeded_other": "{{count}} joueurs recherchés",
+    "open": "Voir la partie de {{game}}",
+    "interestedBadge": "Ça vous intéresse",
+    "scheduledTitle": "Partie programmée",
+    "reportLabel": "Publication de {{username}} · {{game}}",
+    "aPlayer": "un joueur",
+    "join": "Je veux jouer",
+    "leave": "Ça ne m'intéresse plus",
+    "edit": "Modifier",
+    "delete": "Supprimer"
+  },
+  "tags": {
+    "label": "Étiquettes de la partie",
+    "mic": "Micro",
+    "micRequired": "Micro requis",
+    "competitive": "Compétitif",
+    "languageTitle": "Langue : {{language}}"
+  },
+  "skill": {
+    "casual": "Détente",
+    "competitive": "Compétitif"
+  },
+  "moreFilters": {
+    "button": "Plus de filtres",
+    "buttonActive": "Plus de filtres (filtres actifs)",
+    "mic": "Micro",
+    "withMic": "Avec micro",
+    "withoutMic": "Sans micro",
+    "level": "Niveau",
+    "language": "Langue",
+    "anyLanguage": "Toutes",
+    "searchLanguage": "Rechercher une langue…",
+    "noLanguage": "Aucune langue ne correspond",
+    "clear": "Retirer ces filtres"
+  },
+  "detail": {
+    "loading": "Chargement de la partie",
+    "errorTitle": "Impossible de charger la partie",
+    "errorText": "Vérifiez votre connexion et réessayez.",
+    "home": "Retour à l'accueil",
+    "back": "Retour",
+    "about": "À propos de la partie",
+    "noDescription": "L'hôte n'a pas ajouté de description.",
+    "comments": "Commentaires",
+    "noComments": "Aucun commentaire pour l'instant. Brisez la glace et organisez la partie !",
+    "cover": "Couverture de {{game}}",
+    "lookingFor_one": "Recherche {{count}} joueur",
+    "lookingFor_other": "Recherche {{count}} joueurs",
+    "errors": {
+      "interest": "Impossible d'enregistrer votre intérêt. Réessayez.",
+      "deletePost": "Impossible de supprimer la publication. Réessayez.",
+      "saveComment": "Impossible d'enregistrer le commentaire. Réessayez.",
+      "deleteComment": "Impossible de supprimer le commentaire. Réessayez."
+    },
+    "deleteComment": {
+      "header": "Supprimer le commentaire",
+      "message": "Le commentaire et son image ou sa vidéo seront supprimés. Cette action est irréversible.",
+      "accept": "Supprimer le commentaire",
+      "done": "Commentaire supprimé"
+    },
+    "blockedTitle": "Cette partie n'est pas disponible",
+    "blockedText": "Vous ne pouvez pas voir les publications des utilisateurs avec qui il y a un blocage."
+  },
+  "info": {
+    "host": "Hôte",
+    "hostYou": "Hôte · vous",
+    "scheduled": "Programmée",
+    "published": "Publiée",
+    "region": "Région",
+    "noRegion": "Aucune région",
+    "lookingFor": "Recherchent",
+    "players_one": "{{count}} joueur",
+    "players_other": "{{count}} joueurs",
+    "mic": "Micro",
+    "level": "Niveau",
+    "language": "Langue",
+    "interested": "Intéressés",
+    "comments": "Commentaires",
+    "groupChat": "Discussion de groupe",
+    "editPost": "Modifier la partie",
+    "delete": "Supprimer",
+    "messageHost": "Écrire à l'hôte"
+  },
+  "interested": {
+    "title": "Joueurs intéressés",
+    "loading": "Chargement des intéressés",
+    "emptyOwner": "Personne n'a encore rejoint. Quand quelqu'un appuiera sur « Je veux jouer », il apparaîtra ici.",
+    "empty": "Personne n'a encore rejoint. Soyez le premier !"
+  },
+  "comments": {
+    "placeholder": "Écrivez un commentaire… à quelle heure jouez-vous ?",
+    "label": "Écrivez un commentaire",
+    "removeFile": "Retirer la pièce jointe",
+    "attach": "Image ou vidéo",
+    "publish": "Commenter",
+    "publishing": "Publication…",
+    "onlyMedia": "Vous ne pouvez joindre que des images ou des vidéos.",
+    "tooBig": "Le fichier ne doit pas dépasser {{mb}} Mo.",
+    "player": "Joueur",
+    "viewProfile": "Voir le profil de {{username}}",
+    "host": "Hôte",
+    "delete": "Supprimer le commentaire",
+    "reportLabel": "Commentaire de {{username}}",
+    "openImage": "Ouvrir l'image dans un nouvel onglet",
+    "imageAlt": "Image partagée par {{username}}",
+    "loginPrompt": "Connectez-vous pour commenter et organiser la partie."
+  },
+  "nudge": {
+    "text": "Ajoutez votre région pour que les autres joueurs sachent d'où vous jouez.",
+    "cta": "Compléter le profil",
+    "close": "Fermer l'avis"
+  },
+  "create": {
+    "titleNew": "Publier une partie",
+    "titleEdit": "Modifier la partie",
+    "game": "Jeu",
+    "gamePlaceholder": "Recherchez le jeu…",
+    "gameLocked": "Le jeu ne peut pas être modifié lors de l'édition",
+    "gameAvailable": "Disponible sur : {{platforms}}",
+    "gameSelected": "Jeu sélectionné",
+    "changeGame": "Changer de jeu",
+    "platform": "Plateforme",
+    "multiplatform": "Multiplateforme",
+    "details": "Détails",
+    "detailsHint": "Facultatif : aide à trouver des joueurs qui vous ressemblent.",
+    "micRequired": "Micro requis",
+    "level": "Niveau",
+    "languagePlaceholder": "Langue : non précisée",
+    "languageLabel": "Langue de la partie",
+    "players": "Joueurs recherchés",
+    "playersHint": "Combien de joueurs il vous manque pour compléter la partie.",
+    "fewerPlayers": "Moins de joueurs",
+    "morePlayers": "Plus de joueurs",
+    "playerUnit_one": "joueur",
+    "playerUnit_other": "joueurs",
+    "when": "Quand",
+    "now": "Tout de suite",
+    "schedule": "Programmer pour plus tard",
+    "scheduleHint": "Elle apparaîtra dans « Bientôt » jusqu'à cette heure-là.",
+    "datePlaceholder": "Date et heure",
+    "description": "Description",
+    "descriptionPlaceholder": "Mode de jeu, rang, horaires, si vous utilisez un micro…",
+    "submitNew": "Publier la partie",
+    "submitEdit": "Enregistrer les modifications",
+    "publishing": "Publication…",
+    "errors": {
+      "game": "Choisissez le jeu de la partie.",
+      "platform": "Choisissez une plateforme ou cochez Multiplateforme.",
+      "description": "Dites-en un peu plus sur la partie.",
+      "schedule": "Choisissez la date et l'heure de la partie.",
+      "incomplete": "Remplissez tous les champs",
+      "pastDate": "Choisissez une date et une heure futures pour la partie",
+      "update": "Impossible de mettre à jour la publication",
+      "save": "Impossible d'enregistrer la publication"
+    },
+    "done": {
+      "updatedTitle": "Partie mise à jour",
+      "updatedText": "Les modifications sont visibles dans le fil.",
+      "createdTitle": "Partie publiée",
+      "createdText": "Votre partie apparaît maintenant dans le fil."
+    }
+  },
+  "actions": {
+    "chatError": "Impossible d'ouvrir la discussion. Réessayez.",
+    "interestError": "Impossible d'enregistrer l'intérêt",
+    "deletedTitle": "Supprimée",
+    "deletedText": "Publication supprimée",
+    "deleteError": "Impossible de supprimer la publication"
+  }
+}

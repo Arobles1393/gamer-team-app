@@ -1,0 +1,72 @@
+{
+  "title": "Notifications",
+  "loading": "Loading notifications",
+  "markAllRead": "Mark all as read",
+  "deleteAll": "Delete all",
+  "viewAll": "See all notifications",
+  "unreadCount": "{{count}} unread",
+  "unreadSr": "(unread)",
+  "someone": "Someone",
+  "accept": "Accept",
+  "reject": "Decline",
+  "status": {
+    "accepted": "Accepted",
+    "rejected": "Declined"
+  },
+  "actions": {
+    "friend_request": "wants to add you as a friend",
+    "friend_accepted": "accepted your friend request",
+    "message": "sent you a message",
+    "group_message": "wrote in the group chat",
+    "group_message_game": "wrote in the {{game}} chat",
+    "comment": "commented on your post",
+    "interested": "is interested in your party",
+    "default": "sent you a notification"
+  },
+  "sections": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "thisWeek": "This week",
+    "older": "Earlier"
+  },
+  "filters": {
+    "label": "Filter notifications",
+    "all": "All",
+    "unread": "Unread",
+    "requests": "Requests"
+  },
+  "errors": {
+    "markAll": "Couldn't mark them as read. Please try again.",
+    "deleteAll": "Couldn't delete the notifications. Please try again.",
+    "respond": "Couldn't respond to the request. Please try again."
+  },
+  "confirmDelete": {
+    "header": "Delete notifications",
+    "message": "All your notifications will be deleted. This action can't be undone."
+  },
+  "overlayEmpty": {
+    "title": "You're all caught up",
+    "text": "You have no new notifications."
+  },
+  "empty": {
+    "empty": {
+      "title": "You're all caught up",
+      "text": "Here you'll see friend requests, messages, and activity on your parties."
+    },
+    "unread": {
+      "title": "Nothing pending",
+      "text": "You've read all your notifications.",
+      "action": "See all"
+    },
+    "requests": {
+      "title": "No pending requests",
+      "text": "When someone wants to add you as a friend, it'll show up here.",
+      "action": "See all"
+    },
+    "error": {
+      "title": "Couldn't load your notifications",
+      "text": "Check your connection and try again.",
+      "action": "Retry"
+    }
+  }
+}

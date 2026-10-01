@@ -1,6 +1,10 @@
 import { useLayoutEffect, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { getIntlLocale } from "../../i18n";
 import { Skeleton } from "primereact/skeleton";
+import { Button } from "primereact/button";
 import ChatEmptyState from "./ChatEmptyState";
+import MessageBubble from "./MessageBubble";
 import { formatDates } from "../../utils";
 
 // Mensajes seguidos del mismo autor con menos de 5 min entre sí van en el mismo grupo
@@ -8,23 +12,25 @@ const GROUP_WINDOW_MS = 5 * 60 * 1000;
 // Si el usuario está a menos de esto del final, los mensajes nuevos lo mantienen abajo
 const STICK_THRESHOLD_PX = 120;
 
+// "Hoy" / "Ayer" (Intl, en el idioma actual) o "lunes, 28 de septiembre"
 const getDayLabel = (date) => {
-  const today = new Date();
-  const yesterday = new Date();
-  yesterday.setDate(today.getDate() - 1);
+  const startOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const days = Math.round((startOfDay(date) - startOfDay(new Date())) / 86400000);
 
-  if (date.toDateString() === today.toDateString()) return "Hoy";
-  if (date.toDateString() === yesterday.toDateString()) return "Ayer";
+  if (days === 0 || days === -1) {
+    const label = new Intl.RelativeTimeFormat(getIntlLocale(), { numeric: "auto" }).format(days, "day");
+    return label.charAt(0).toUpperCase() + label.slice(1);
+  }
 
-  return date.toLocaleDateString("es-MX", {
+  return new Intl.DateTimeFormat(getIntlLocale(), {
     weekday: "long",
     day: "numeric",
     month: "long"
-  });
+  }).format(date);
 };
 
 const formatTime = (date) =>
-  date.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
+  new Intl.DateTimeFormat(getIntlLocale(), { hour: "2-digit", minute: "2-digit" }).format(date);
 
 // Convierte la lista plana en separadores de día y grupos por autor
 const buildTimeline = (messages, currentUserId) => {
@@ -78,14 +84,31 @@ function MessagesSkeleton() {
   );
 }
 
-export default function MessageList({ messages, loading, currentUserId, otherUsername }) {
+// senderProfiles (opcional, chat de grupo): { uid: perfil } para mostrar
+// quién escribió cada bloque de mensajes ajenos
+// hasOlder / loadingOlder / onLoadOlder: los mensajes llegan de a 50 y el
+// botón de arriba trae los anteriores
+export default function MessageList({
+  messages,
+  loading,
+  currentUserId,
+  otherUsername,
+  senderProfiles,
+  hasOlder = false,
+  loadingOlder = false,
+  onLoadOlder
+}) {
+  const { t, i18n } = useTranslation("chat");
   const containerRef = useRef(null);
   const stickToBottomRef = useRef(true);
   const hasScrolledRef = useRef(false);
+  // Para mantener la vista quieta cuando llegan mensajes anteriores arriba
+  const prevRef = useRef({ firstId: null, lastId: null, scrollHeight: 0 });
 
+  // El idioma entra en las dependencias: las etiquetas de día se recalculan al cambiarlo
   const timeline = useMemo(
     () => buildTimeline(messages, currentUserId),
-    [messages, currentUserId]
+    [messages, currentUserId, i18n.resolvedLanguage] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const handleScroll = () => {
@@ -100,6 +123,15 @@ export default function MessageList({ messages, loading, currentUserId, otherUse
     if (!el || messages.length === 0) return;
 
     const lastMessage = messages[messages.length - 1];
+    const prev = prevRef.current;
+    prevRef.current = { firstId: messages[0].id, lastId: lastMessage.id, scrollHeight: el.scrollHeight };
+
+    // Llegaron mensajes anteriores (cambió el primero, no el último): se
+    // compensa la altura agregada arriba para no mover lo que se estaba leyendo
+    if (prev.lastId === lastMessage.id && prev.firstId !== messages[0].id) {
+      el.scrollTop += el.scrollHeight - prev.scrollHeight;
+      return;
+    }
 
     if (stickToBottomRef.current || lastMessage.senderId === currentUserId) {
       el.scrollTo({
@@ -112,7 +144,7 @@ export default function MessageList({ messages, loading, currentUserId, otherUse
 
   if (loading) {
     return (
-      <div className="chat-messages" aria-busy="true" aria-label="Cargando mensajes">
+      <div className="chat-messages" aria-busy="true" aria-label={t("messages.loading")}>
         <MessagesSkeleton />
       </div>
     );
@@ -132,9 +164,19 @@ export default function MessageList({ messages, loading, currentUserId, otherUse
       className="chat-messages"
       role="log"
       aria-live="polite"
-      aria-label="Mensajes"
+      aria-label={t("messages.label")}
       onScroll={handleScroll}
     >
+      {hasOlder && onLoadOlder && (
+        <Button
+          label={t("messages.loadOlder")}
+          icon="pi pi-arrow-up"
+          className="gm-btn gm-btn--ghost chat-load-older"
+          loading={loadingOlder}
+          onClick={onLoadOlder}
+        />
+      )}
+
       {timeline.map((item) =>
         item.type === "day" ? (
           <p key={item.key} className="chat-day">{item.label}</p>
@@ -143,8 +185,13 @@ export default function MessageList({ messages, loading, currentUserId, otherUse
             key={item.key}
             className={`chat-group${item.mine ? " chat-group--mine" : ""}`}
           >
+            {senderProfiles && !item.mine && (
+              <span className="chat-group__sender">
+                {senderProfiles[item.senderId]?.username || t("messages.player")}
+              </span>
+            )}
             {item.messages.map((message) => (
-              <p key={message.id} className="chat-bubble">{message.text}</p>
+              <MessageBubble key={message.id} message={message} />
             ))}
             <span className="chat-group__time">{formatTime(item.lastDate)}</span>
           </div>

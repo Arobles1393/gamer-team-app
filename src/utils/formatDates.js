@@ -1,3 +1,9 @@
+import i18n, { getIntlLocale } from "../i18n";
+
+// Todas las funciones leen el idioma actual de i18next al llamarse; los
+// textos ("hace 5 minutos", "ayer", nombres de días) los genera Intl en ese
+// idioma, no se traducen a mano.
+
 const toDate = (timestamp) => {
   if (!timestamp) return null;
 
@@ -30,74 +36,111 @@ const getTimeDiff = (timestamp) => {
   };
 };
 
+const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
+
+// Mayor unidad que aplica: [valor, unidad de Intl]
+const largestUnit = (diff) => {
+  if (diff.minutes < 1) return [0, "second"];
+  if (diff.minutes < 60) return [diff.minutes, "minute"];
+  if (diff.hours < 24) return [diff.hours, "hour"];
+  if (diff.days < 7) return [diff.days, "day"];
+  if (diff.weeks < 4) return [diff.weeks, "week"];
+  if (diff.months < 12) return [diff.months, "month"];
+  return [diff.years, "year"];
+};
+
+const relativeTime = (value, unit, style = "long") =>
+  new Intl.RelativeTimeFormat(getIntlLocale(), { numeric: "auto", style }).format(value, unit);
+
+const timeOfDay = (date) =>
+  new Intl.DateTimeFormat(getIntlLocale(), { hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(date);
+
+// "10 sept 2026" / "Sep 10, 2026"
 const formatDate = (timestamp) => {
   const date = toDate(timestamp);
   if (!date) return "";
 
-  return date.toLocaleDateString("es-MX", {
+  return new Intl.DateTimeFormat(getIntlLocale(), {
     day: "numeric",
     month: "short",
     year: "numeric"
-  });
+  }).format(date);
 };
 
+// "Hace 5 minutos" / "5 minutes ago" / "Há 5 minutos"
 const formatDateN = (timestamp) => {
   const diff = getTimeDiff(timestamp);
   if (!diff) return "";
 
-  if (diff.minutes < 1) return "Hace unos segundos";
-  if (diff.minutes < 60) return `Hace ${diff.minutes} min`;
-  if (diff.hours < 24) return `Hace ${diff.hours} h`;
-  if (diff.days < 7) return `Hace ${diff.days} días`;
-  if (diff.weeks < 4) return `Hace ${diff.weeks} semanas`;
-  if (diff.months < 12) return `Hace ${diff.months} meses`;
-  return `Hace ${diff.years} años`;
+  const [value, unit] = largestUnit(diff);
+  return capitalize(relativeTime(-value, unit));
 };
 
+// Corto para listas: "ahora", "5 min", "3 h", "2 d"... (sin "hace")
 const formatChatTime = (timestamp) => {
   const diff = getTimeDiff(timestamp);
   if (!diff) return "";
 
-  if (diff.minutes < 1) return "ahora";
-  if (diff.minutes < 60) return `${diff.minutes} min`;
-  if (diff.hours < 24) return `${diff.hours} h`;
-  if (diff.days < 7) return `${diff.days} d`;
-  if (diff.weeks < 4) return `${diff.weeks} sem`;
-  if (diff.months < 12) return `${diff.months} mes`;
-  return `${diff.years} año${diff.years > 1 ? "s" : ""}`;
+  const [value, unit] = largestUnit(diff);
+  if (unit === "second") return relativeTime(0, "second");
+
+  return new Intl.NumberFormat(getIntlLocale(), {
+    style: "unit",
+    unit,
+    unitDisplay: "narrow"
+  }).format(value);
 };
 
+// Hora si es de hoy, "Ayer", "Hace 3 días" o la fecha
 const formatMessageTime = (timestamp) => {
   const date = toDate(timestamp);
   if (!date) return "";
 
   const diff = getTimeDiff(timestamp);
 
-  if (diff.days === 0) {
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  }
+  if (diff.days === 0) return timeOfDay(date);
+  if (diff.days < 7) return capitalize(relativeTime(-diff.days, "day"));
 
-  if (diff.days === 1) return "Ayer";
-  if (diff.days < 7) return `Hace ${diff.days} días`;
-
-  return date.toLocaleDateString();
+  return formatDate(timestamp);
 };
 
+// "Activo ahora" / "Última conexión: hace 5 minutos" / "Desconectado"
 const formatLastSeen = (timestamp) => {
   const diff = getTimeDiff(timestamp);
-  if (!diff) return "⚫ Desconectado";
+  if (!diff) return i18n.t("common:presence.offline");
+  if (diff.minutes < 1) return i18n.t("common:presence.activeNow");
 
-  if (diff.minutes < 1) return "🟢 Activo ahora";
-  if (diff.minutes < 60) return `Última conexión: hace ${diff.minutes} min`;
-  if (diff.hours < 24) return `Última conexión: hace ${diff.hours} h`;
-  if (diff.days < 7) return `Última conexión: hace ${diff.days} día${diff.days > 1 ? "s" : ""}`;
-  if (diff.weeks < 4) return `Última conexión: hace ${diff.weeks} semana${diff.weeks > 1 ? "s" : ""}`;
-  if (diff.months < 12) return `Última conexión: hace ${diff.months} mes${diff.months > 1 ? "es" : ""}`;
-  return `Última conexión: hace ${diff.years} año${diff.years > 1 ? "s" : ""}`;
+  const [value, unit] = largestUnit(diff);
+  return i18n.t("common:presence.lastSeen", { time: relativeTime(-value, unit) });
+};
+
+// Hora de una partida programada (en la zona horaria de quien la ve):
+// "Hoy 20:00", "Mañana 20:00", "Sáb 20:00" (próximos 6 días) o "4 oct, 20:00"
+const formatScheduledTime = (timestamp) => {
+  const date = toDate(timestamp);
+  if (!date) return "";
+
+  const time = timeOfDay(date);
+
+  // Diferencia en días de calendario (no en horas)
+  const startOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const days = Math.round((startOfDay(date) - startOfDay(new Date())) / 86400000);
+
+  // "hoy" / "mañana" de Intl (numeric: "auto")
+  if (days === 0 || days === 1) return `${capitalize(relativeTime(days, "day"))} ${time}`;
+
+  if (days > 1 && days <= 6) {
+    const weekday = new Intl.DateTimeFormat(getIntlLocale(), { weekday: "short" }).format(date).replace(".", "");
+    return `${capitalize(weekday)} ${time}`;
+  }
+
+  const day = new Intl.DateTimeFormat(getIntlLocale(), { day: "numeric", month: "short" }).format(date).replace(".", "");
+  return `${day}, ${time}`;
 };
 
 export const formatDates = {
   toDate,
+  formatScheduledTime,
   formatDate,
   formatDateN,
   formatChatTime,

@@ -3,6 +3,7 @@ import {
   useState
 } from "react";
 import { steamStatsService } from "../../services/steam";
+import { getSteamIdFromLinks } from "../../utils";
 
 export const useSteamStats = (links) => {
 
@@ -11,11 +12,7 @@ export const useSteamStats = (links) => {
   // Hay link de Steam pero no se pudo leer (perfil privado, link inválido, emulador apagado…)
   const [steamError, setSteamError] = useState(false);
 
-  const steamLink = links?.find(
-    (link) => link.includes("steamcommunity")
-  );
-
-  const steamId = getSteamIdFromLinks(steamLink);
+  const steamId = getSteamIdFromLinks(links);
 
   useEffect(() => {
 
@@ -86,18 +83,4 @@ export const useSteamStats = (links) => {
     loadingSteam,
     steamError
   };
-};
-
-const getSteamIdFromLinks = (steamLink) => {
-  if (!steamLink) {
-    return null;
-  }
-
-  const parts = steamLink.split("/");
-
-  return (
-    parts[parts.length - 1] ||
-    parts[parts.length - 2] ||
-    null
-  );
 };

@@ -1,0 +1,51 @@
+{
+  "titles": {
+    "user": "Signaler l'utilisateur",
+    "post": "Signaler la publication",
+    "comment": "Signaler le commentaire"
+  },
+  "reasons": {
+    "spam": "Spam",
+    "inappropriate": "Contenu inapproprié",
+    "harassment": "Harcèlement",
+    "impersonation": "Usurpation d'identité",
+    "other": "Autre motif"
+  },
+  "dialog": {
+    "question": "Quel est le problème ?",
+    "noteRequired": "Dites-nous ce qui se passe",
+    "noteOptional": "Contexte",
+    "optional": "(facultatif)",
+    "notePlaceholder": "Des détails qui nous aident à examiner le signalement",
+    "send": "Envoyer le signalement",
+    "sentSummary": "Signalement envoyé",
+    "sentDetail": "Merci, nous allons l'examiner.",
+    "sendError": "Impossible d'envoyer le signalement. Réessayez."
+  },
+  "button": {
+    "title": "Signaler"
+  },
+  "admin": {
+    "eyebrow": "Admin",
+    "title": "Signalements",
+    "titleCount": "Signalements ({{count}})",
+    "markError": "Impossible de marquer le signalement comme examiné.",
+    "errorTitle": "Impossible de charger les signalements",
+    "errorText": "Vérifiez que votre compte a l'autorisation admin.",
+    "emptyTitle": "Aucun signalement en attente",
+    "emptyText": "Quand quelqu'un signalera quelque chose, cela apparaîtra ici.",
+    "types": {
+      "user": "Utilisateur",
+      "post": "Publication",
+      "comment": "Commentaire"
+    },
+    "userFallback": "utilisateur",
+    "viewProfile": "Voir le profil de {{username}}",
+    "viewPost": "Voir la publication",
+    "loadingComment": "Chargement du commentaire…",
+    "commentGone": "Le commentaire n'existe plus",
+    "viewComment": "Voir le commentaire dans sa publication",
+    "reportedBy": "Signalé par",
+    "markReviewed": "Marquer comme examiné"
+  }
+}

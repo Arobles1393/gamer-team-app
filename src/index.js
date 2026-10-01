@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+// Antes que la app: idioma, traducciones y locale de PrimeReact
+import './i18n';
 import reportWebVitals from './reportWebVitals';
 import "primereact/resources/themes/lara-dark-blue/theme.css";
 import "primereact/resources/primereact.min.css";

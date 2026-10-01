@@ -1,0 +1,146 @@
+{
+  "page": {
+    "eyebrow": "Mi perfil",
+    "editing": "Editando perfil",
+    "edit": "Editar perfil",
+    "loading": "Cargando perfil",
+    "emptyGames": "Aún no agregas juegos favoritos.",
+    "emptyLinks": "Aún no agregas tus redes."
+  },
+  "language": {
+    "title": "Idioma",
+    "label": "Idioma de la interfaz",
+    "hint": "Se guarda en tu cuenta y se aplica cuando inicias sesión en cualquier dispositivo.",
+    "saveError": "No se pudo guardar el idioma en tu cuenta."
+  },
+  "personal": {
+    "title": "Datos personales",
+    "nickname": "Nickname",
+    "email": "Correo",
+    "emailHint": "Te enviaremos un enlace al correo nuevo; el cambio se aplica cuando lo confirmes.",
+    "phone": "Teléfono",
+    "region": "Región",
+    "regionPlaceholder": "Selecciona tu región",
+    "missing": "Sin agregar",
+    "emailManaged": "Es el correo de la cuenta con la que iniciaste sesión (por ejemplo, Google) y no se cambia desde aquí.",
+    "emailNone": "Tu cuenta no tiene correo: iniciaste sesión con Steam."
+  },
+  "about": {
+    "title": "Sobre mí",
+    "placeholder": "Cuéntale a otros jugadores qué juegas, tus horarios, tu estilo…",
+    "empty": "Aún no has escrito nada sobre ti. Edita tu perfil para presentarte."
+  },
+  "saveBar": {
+    "label": "Guardar cambios del perfil",
+    "unsaved": "Tienes cambios sin guardar",
+    "noChanges": "Sin cambios todavía",
+    "save": "Guardar cambios"
+  },
+  "blocked": {
+    "title": "Usuarios bloqueados",
+    "userFallback": "Usuario",
+    "since": "Bloqueado {{time}}",
+    "unblock": "Desbloquear",
+    "unblockHeader": "Desbloquear a {{username}}",
+    "unblockMessage": "Volverán a ver sus publicaciones y comentarios, y podrán chatear y enviarse solicitudes de amistad. La amistad anterior no se restaura.",
+    "unblockError": "No se pudo desbloquear. Intenta de nuevo."
+  },
+  "hero": {
+    "fallbackName": "Gamer",
+    "uploading": "Subiendo…",
+    "changeBanner": "Cambiar portada",
+    "changeAvatar": "Cambiar foto de perfil",
+    "memberSince": "Miembro desde {{date}}"
+  },
+  "player": {
+    "eyebrow": "Perfil de jugador",
+    "close": "Cerrar perfil",
+    "loading": "Cargando perfil"
+  },
+  "actions": {
+    "addFriend": "Agregar amigo",
+    "acceptRequest": "Aceptar solicitud",
+    "requestSent": "Solicitud enviada",
+    "friends": "Amigos",
+    "blocked": "Bloqueado",
+    "unavailable": "No disponible",
+    "thisUser": "este usuario",
+    "removeFriend": "Dejar de ser amigos",
+    "unblockUser": "Desbloquear a {{name}}",
+    "blockUser": "Bloquear a {{name}}",
+    "reportUser": "Reportar a {{name}}",
+    "message": "Mensaje",
+    "more": "Más opciones"
+  },
+  "dialog": {
+    "removeFriendMessage": "{{username}} dejará de estar en tu lista de amigos. Podrán volver a enviarse una solicitud cuando quieran.",
+    "blockMessage": "No verán sus publicaciones ni comentarios, no podrán chatear ni enviarse solicitudes de amistad, y dejarán de ser amigos. Puedes desbloquear cuando quieras.",
+    "block": "Bloquear",
+    "reportLabel": "Perfil de {{username}}",
+    "removeFriendError": "No se pudo terminar la amistad. Intenta de nuevo.",
+    "blockError": "No se pudo bloquear. Intenta de nuevo."
+  },
+  "links": {
+    "title": "Redes sociales",
+    "linkLabel": "Link {{number}}",
+    "remove": "Quitar link {{number}}",
+    "invalid": "El link debe comenzar con https://",
+    "add": "Agregar link",
+    "steamHint": "Pega el link de tu perfil de Steam para mostrar tus estadísticas.",
+    "empty": "Este jugador no ha agregado redes.",
+    "genericProfile": "Perfil"
+  },
+  "games": {
+    "title": "Juegos favoritos",
+    "searchPlaceholder": "Busca un juego para agregarlo…",
+    "searchLabel": "Buscar juego para agregar a favoritos",
+    "remove": "Quitar {{name}} de favoritos",
+    "empty": "Este jugador aún no tiene juegos favoritos.",
+    "add": "Agregar juegos"
+  },
+  "steam": {
+    "loading": "Cargando estadísticas de Steam",
+    "connectHint": "Pega el link de tu perfil de Steam en Redes sociales y aquí mostraremos tus horas y juegos más jugados.",
+    "connect": "Conectar Steam",
+    "notConnected": "Este jugador no ha conectado su Steam.",
+    "error": "No pudimos leer las estadísticas de Steam.",
+    "errorOwn": "Revisa que el link sea correcto y que tu perfil y detalles de juegos sean públicos.",
+    "errorOther": "Es posible que su perfil sea privado.",
+    "noGames": "El perfil de Steam no muestra juegos (la biblioteca puede ser privada).",
+    "hoursPlayed": "Horas jugadas",
+    "games": "Juegos",
+    "mostPlayed": "Más jugado",
+    "subtitle": "Más jugados · toca uno para ver sus logros",
+    "viewOnSteam": "Ver en Steam",
+    "hours": "{{hours}} h",
+    "viewAchievements": "Ver logros de {{name}}"
+  },
+  "achievements": {
+    "loading": "Cargando logros",
+    "error": "No se pudieron cargar los logros. Intenta de nuevo más tarde.",
+    "empty": "No hay logros disponibles para este juego. Puede que el juego no tenga logros o que los logros de Steam del usuario sean privados.",
+    "progress": "{{unlocked}} / {{total}} logros",
+    "rarity": {
+      "ultraRare": "Ultra raro",
+      "veryRare": "Muy raro",
+      "rare": "Raro"
+    }
+  },
+  "form": {
+    "usernameRequired": "El nickname no puede quedar vacío",
+    "linksHttps": "Todos los links deben comenzar con https://",
+    "invalidEmail": "Correo inválido",
+    "updated": "Perfil actualizado",
+    "reloginEmail": "Por seguridad, vuelve a iniciar sesión para cambiar tu correo.",
+    "saveError": "No se pudo guardar el perfil. Intenta de nuevo.",
+    "emailVerificationSent": "Perfil actualizado. Te enviamos un enlace a {{email}} para confirmar tu nuevo correo."
+  },
+  "images": {
+    "avatarUpdated": "Foto de perfil actualizada",
+    "bannerUpdated": "Portada actualizada",
+    "onlyImages": "Solo se permiten imágenes",
+    "maxSize": "La imagen debe pesar máximo {{mb}} MB",
+    "avatarError": "No se pudo subir la foto de perfil.",
+    "bannerError": "No se pudo subir la portada."
+  }
+}

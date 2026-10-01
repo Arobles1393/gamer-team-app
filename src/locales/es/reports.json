@@ -1,0 +1,51 @@
+{
+  "titles": {
+    "user": "Reportar usuario",
+    "post": "Reportar publicación",
+    "comment": "Reportar comentario"
+  },
+  "reasons": {
+    "spam": "Spam",
+    "inappropriate": "Contenido inapropiado",
+    "harassment": "Acoso",
+    "impersonation": "Suplantación de identidad",
+    "other": "Otro motivo"
+  },
+  "dialog": {
+    "question": "¿Cuál es el problema?",
+    "noteRequired": "Cuéntanos qué pasa",
+    "noteOptional": "Contexto",
+    "optional": "(opcional)",
+    "notePlaceholder": "Detalles que nos ayuden a revisar el reporte",
+    "send": "Enviar reporte",
+    "sentSummary": "Reporte enviado",
+    "sentDetail": "Gracias, lo revisaremos.",
+    "sendError": "No se pudo enviar el reporte. Intenta de nuevo."
+  },
+  "button": {
+    "title": "Reportar"
+  },
+  "admin": {
+    "eyebrow": "Admin",
+    "title": "Reportes",
+    "titleCount": "Reportes ({{count}})",
+    "markError": "No se pudo marcar el reporte como revisado.",
+    "errorTitle": "No se pudieron cargar los reportes",
+    "errorText": "Revisa que tu cuenta tenga permiso de admin.",
+    "emptyTitle": "No hay reportes pendientes",
+    "emptyText": "Cuando alguien reporte algo, aparecerá aquí.",
+    "types": {
+      "user": "Usuario",
+      "post": "Publicación",
+      "comment": "Comentario"
+    },
+    "userFallback": "usuario",
+    "viewProfile": "Ver perfil de {{username}}",
+    "viewPost": "Ver publicación",
+    "loadingComment": "Cargando comentario…",
+    "commentGone": "El comentario ya no existe",
+    "viewComment": "Ver comentario en su publicación",
+    "reportedBy": "Reportado por",
+    "markReviewed": "Marcar como revisado"
+  }
+}

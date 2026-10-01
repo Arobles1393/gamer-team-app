@@ -1,13 +1,16 @@
+import { useTranslation } from "react-i18next";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
 
 export default function PlayersHeader({ search, onSearchChange }) {
+  const { t } = useTranslation("friends");
+
   return (
     <header className="feed-header">
       <div className="feed-header__titles">
         <span className="feed-header__eyebrow">GamerMatch</span>
-        <h1 className="feed-header__title">Buscar jugadores</h1>
+        <h1 className="feed-header__title">{t("players.title")}</h1>
       </div>
 
       <div className="feed-header__actions">
@@ -16,8 +19,8 @@ export default function PlayersHeader({ search, onSearchChange }) {
           <InputText
             type="search"
             className="feed-search__input"
-            placeholder="Nombre de usuario…"
-            aria-label="Buscar jugador por nombre de usuario"
+            placeholder={t("players.searchPlaceholder")}
+            aria-label={t("players.searchLabel")}
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             autoFocus

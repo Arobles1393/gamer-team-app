@@ -1,34 +1,17 @@
 import { useEffect, useState } from "react";
 import { chatService } from "../../services/chat";
 import { notificationService } from "../../services/notifications";
+import { useLiveMessages } from "./useLiveMessages";
 
 export const useChatWindow = (chatId, currentUserId) => {
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [otherUserId, setOtherUserId] = useState(null);
 
-  useEffect(() => {
-    if (!chatId) return;
-
-    // Limpia el chat anterior para no mostrar sus mensajes mientras carga el nuevo
-    setMessages([]);
-    setLoading(true);
-
-    const unsubscribe = chatService.subscribeToMessages(
-      chatId,
-      (data) => {
-        setMessages(data);
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Error obteniendo mensajes:", error);
-        setMessages([]);
-        setLoading(false);
-      }
-    );
-
-    return unsubscribe;
-  }, [chatId]);
+  // Los últimos 50 mensajes; loadOlder trae más
+  const { messages, loading, hasOlder, loadingOlder, loadOlder } = useLiveMessages(
+    chatService.subscribeToMessages,
+    chatId,
+    "Error obteniendo mensajes:"
+  );
 
   useEffect(() => {
     if (!chatId) return;
@@ -67,20 +50,25 @@ export const useChatWindow = (chatId, currentUserId) => {
       });
   }, [chatId, currentUserId, receivedCount]);
 
-  const sendMessage = async (text) => {
-    if (!text.trim() || !otherUserId) return;
+  // Texto, adjunto o ambos
+  const sendMessage = async (text, file = null) => {
+    if ((!text.trim() && !file) || !otherUserId) return;
 
     await chatService.sendMessage({
       chatId,
       senderId: currentUserId,
       receiverId: otherUserId,
-      text: text.trim()
+      text: text.trim(),
+      file
     });
   };
 
   return {
     messages,
     loading,
+    hasOlder,
+    loadingOlder,
+    loadOlder,
     otherUserId,
     sendMessage
   };

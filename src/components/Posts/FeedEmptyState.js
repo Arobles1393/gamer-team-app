@@ -1,22 +1,26 @@
 import { Button } from "primereact/button";
+import { useTranslation } from "react-i18next";
 
-export default function FeedEmptyState({ hasFilters, onClearFilters }) {
+// emptyText: mensaje propio de una categoría (p. ej. en /explorar)
+export default function FeedEmptyState({ hasFilters, onClearFilters, emptyText }) {
+  const { t } = useTranslation("posts");
+
   return (
     <div className="feed-empty" role="status">
       <span className="feed-empty__icon">
         <i className={`pi ${hasFilters ? "pi-filter-slash" : "pi-inbox"}`} aria-hidden="true" />
       </span>
       <p className="feed-empty__title">
-        {hasFilters ? "Nada coincide con tu búsqueda" : "Todavía no hay partidas aquí"}
+        {hasFilters ? t("empty.noMatchTitle") : t("empty.emptyTitle")}
       </p>
       <p className="feed-empty__text">
         {hasFilters
-          ? "Prueba con otro juego o plataforma."
-          : "Cuando alguien publique una partida, aparecerá en esta lista."}
+          ? t("empty.noMatchText")
+          : emptyText || t("empty.emptyText")}
       </p>
       {hasFilters && (
         <Button
-          label="Limpiar filtros"
+          label={t("common:actions.clearFilters")}
           className="feed-empty__btn"
           onClick={onClearFilters}
         />

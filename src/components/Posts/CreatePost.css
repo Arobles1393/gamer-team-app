@@ -261,3 +261,52 @@
     transition: none;
   }
 }
+
+/* ---------- CUÁNDO (programar partida) ---------- */
+.create-post .create-post__calendar.p-calendar {
+  display: flex;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.create-post .create-post__calendar .p-inputtext {
+  flex: 1;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  cursor: pointer;
+}
+
+.create-post .create-post__calendar .p-datepicker-trigger.p-button {
+  width: 46px;
+  border: 1px solid var(--gm-border);
+  border-left: none;
+  border-radius: 0 var(--gm-radius-control) var(--gm-radius-control) 0;
+  background: var(--gm-primary-soft);
+  color: var(--gm-label);
+  box-shadow: none;
+}
+
+.create-post .create-post__calendar .p-datepicker-trigger.p-button:enabled:hover {
+  background: rgba(124, 58, 237, 0.32);
+  color: var(--gm-text);
+}
+
+.create-post__calendar-panel.p-datepicker {
+  border: 1px solid var(--gm-border);
+  border-radius: var(--gm-radius-control);
+  background: var(--gm-popover-bg);
+  font-family: var(--gm-font-body);
+}
+
+/* ---------- DETALLES (micrófono, nivel, idioma) ---------- */
+.create-post__details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.create-post .create-post__language.p-dropdown {
+  width: 100%;
+  max-width: 280px;
+}

@@ -1,0 +1,97 @@
+{
+  "list": {
+    "label": "Lista de chats",
+    "title": "Chats",
+    "loading": "Cargando chats",
+    "tabsLabel": "Tipo de chat",
+    "tabDirect": "Chats",
+    "tabGroup": "Chats de partida",
+    "unreadBadge": "{{count}} sin leer",
+    "searchDirect": "Buscar chat…",
+    "searchDirectLabel": "Buscar chat por nombre de usuario",
+    "searchGroup": "Buscar por juego…",
+    "searchGroupLabel": "Buscar chat de partida por juego",
+    "user": "Usuario",
+    "you": "Tú: {{message}}",
+    "noMessages": "Sin mensajes todavía",
+    "itemLabel": "Chat con {{username}}",
+    "itemLabelUnread": "Chat con {{username}}, mensajes sin leer",
+    "groupFallback": "Chat del grupo",
+    "groupItemLabel": "Chat del grupo de {{title}}",
+    "groupItemLabelUnread": "Chat del grupo de {{title}}, mensajes sin leer"
+  },
+  "empty": {
+    "noChats": {
+      "title": "Aún no tienes chats",
+      "text": "Escríbele a uno de tus amigos para empezar a coordinar partidas.",
+      "action": "Ver amigos"
+    },
+    "noGroupChats": {
+      "title": "Aún no tienes chats de partida",
+      "text": "Marca «Quiero jugar» en una publicación para unirte a su chat de grupo.",
+      "action": "Ver partidas"
+    },
+    "noMatch": {
+      "title": "Ningún chat coincide",
+      "text": "No tienes chats con alguien cuyo usuario contenga \"{{search}}\".",
+      "action": "Limpiar búsqueda"
+    },
+    "noGroupMatch": {
+      "title": "Ningún chat de partida coincide",
+      "text": "No tienes chats de partida de un juego que contenga \"{{search}}\".",
+      "action": "Limpiar búsqueda"
+    },
+    "error": {
+      "title": "No se pudieron cargar tus chats",
+      "text": "Revisa tu conexión e inténtalo de nuevo.",
+      "action": "Reintentar"
+    },
+    "noSelection": {
+      "title": "Selecciona un chat",
+      "text": "Elige una conversación de la lista para ver los mensajes."
+    },
+    "noMessages": {
+      "title": "Inicia la conversación",
+      "text": "Envía el primer mensaje.",
+      "textTo": "Envía el primer mensaje a {{username}}."
+    }
+  },
+  "window": {
+    "label": "Chat con {{username}}",
+    "groupLabel": "Chat del grupo de {{title}}",
+    "back": "Volver a los chats",
+    "blocked": "No puedes enviar mensajes en esta conversación.",
+    "leftGroup": "Ya no formas parte de este grupo.",
+    "participants_one": "{{count}} participante",
+    "participants_other": "{{count}} participantes",
+    "wholeGroup": "todo el grupo",
+    "sendError": "No se pudo enviar el mensaje. Intenta de nuevo.",
+    "sendFileError": "No se pudo enviar el archivo. Intenta de nuevo.",
+    "openError": "No se pudo abrir el chat. Intenta de nuevo."
+  },
+  "messages": {
+    "label": "Mensajes",
+    "loading": "Cargando mensajes",
+    "player": "Jugador",
+    "openImage": "Abrir imagen en una pestaña nueva",
+    "image": "Imagen",
+    "file": "Archivo",
+    "loadOlder": "Ver mensajes anteriores"
+  },
+  "composer": {
+    "placeholder": "Escribe un mensaje…",
+    "label": "Escribe un mensaje",
+    "send": "Enviar mensaje",
+    "attach": "Adjuntar archivo",
+    "emoji": "Insertar emoji",
+    "searchEmoji": "Buscar emoji",
+    "removeAttachment": "Quitar adjunto",
+    "uploading": "Subiendo…",
+    "tooBig": "El archivo debe pesar máximo {{mb}} MB."
+  },
+  "preview": {
+    "image": "📷 Imagen",
+    "video": "🎥 Video",
+    "file": "📎 {{fileName}}"
+  }
+}

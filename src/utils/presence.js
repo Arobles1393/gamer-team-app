@@ -1,7 +1,9 @@
+import i18n from "../i18n";
 import { formatDates } from "./formatDates";
 
-// La presencia se actualiza cada 30 s: 2 min de margen para "en línea"
-const ONLINE_WINDOW_MS = 2 * 60 * 1000;
+// La presencia se actualiza cada 2 min con la pestaña visible
+// (useUserPresence): 5 min de margen para "en línea"
+const ONLINE_WINDOW_MS = 5 * 60 * 1000;
 
 export const getLastSeenMs = (lastSeen) => {
   if (!lastSeen) return null;
@@ -15,9 +17,11 @@ export const isOnline = (lastSeen) => {
   return lastSeenMs !== null && Date.now() - lastSeenMs < ONLINE_WINDOW_MS;
 };
 
-// Texto de estado: "En línea", "Visto hace 5 min" o "Desconectado"
+// Texto de estado: "En línea", "Visto hace 5 minutos" o "Desconectado"
 export const getPresenceLabel = (lastSeen) => {
-  if (isOnline(lastSeen)) return "En línea";
-  if (getLastSeenMs(lastSeen)) return `Visto hace ${formatDates.formatChatTime(lastSeen)}`;
-  return "Desconectado";
+  if (isOnline(lastSeen)) return i18n.t("common:presence.online");
+  if (getLastSeenMs(lastSeen)) {
+    return i18n.t("common:presence.seen", { time: formatDates.formatDateN(lastSeen).toLowerCase() });
+  }
+  return i18n.t("common:presence.offline");
 };

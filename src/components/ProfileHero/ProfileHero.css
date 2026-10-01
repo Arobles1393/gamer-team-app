@@ -223,6 +223,18 @@
   box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
 }
 
+/* Presencia de Steam: solo si está jugando algo */
+.profile-hero__steam {
+  min-width: 0;
+  color: #66C0F4;
+}
+
+.profile-hero__steam-icon {
+  flex-shrink: 0;
+  width: 13px;
+  height: 13px;
+}
+
 /* ---------- ACCIONES ---------- */
 .profile-hero__actions {
   display: flex;

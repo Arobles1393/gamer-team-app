@@ -1,43 +1,28 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "primereact/button";
 
+// Textos en notifications:empty.{variant}.title / text / action
 const STATES = {
-  empty: {
-    icon: "pi-bell",
-    title: "Estás al día",
-    text: "Aquí verás solicitudes de amistad, mensajes y la actividad de tus partidas."
-  },
-  unread: {
-    icon: "pi-check-circle",
-    title: "No tienes pendientes",
-    text: "Ya leíste todas tus notificaciones.",
-    action: "Ver todas"
-  },
-  requests: {
-    icon: "pi-user-plus",
-    title: "Sin solicitudes pendientes",
-    text: "Cuando alguien quiera agregarte como amigo, aparecerá aquí.",
-    action: "Ver todas"
-  },
-  error: {
-    icon: "pi-exclamation-triangle",
-    title: "No se pudieron cargar tus notificaciones",
-    text: "Revisa tu conexión e inténtalo de nuevo.",
-    action: "Reintentar"
-  }
+  empty: { icon: "pi-bell", hasAction: false },
+  unread: { icon: "pi-check-circle", hasAction: true },
+  requests: { icon: "pi-user-plus", hasAction: true },
+  error: { icon: "pi-exclamation-triangle", hasAction: true }
 };
 
 export default function NotificationsEmptyState({ variant, onAction }) {
-  const { icon, title, text, action } = STATES[variant];
+  const { t } = useTranslation("notifications");
+  const { icon, hasAction } = STATES[variant];
+  const key = `empty.${variant}`;
 
   return (
     <div className="feed-empty" role={variant === "error" ? "alert" : "status"}>
       <span className="feed-empty__icon">
         <i className={`pi ${icon}`} aria-hidden="true" />
       </span>
-      <p className="feed-empty__title">{title}</p>
-      <p className="feed-empty__text">{text}</p>
-      {action && (
-        <Button label={action} className="feed-empty__btn" onClick={onAction} />
+      <p className="feed-empty__title">{t(`${key}.title`)}</p>
+      <p className="feed-empty__text">{t(`${key}.text`)}</p>
+      {hasAction && (
+        <Button label={t(`${key}.action`)} className="feed-empty__btn" onClick={onAction} />
       )}
     </div>
   );

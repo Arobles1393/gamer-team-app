@@ -168,3 +168,53 @@
     flex: 1;
   }
 }
+
+/* ---------- USUARIOS BLOQUEADOS ---------- */
+.blocked-users__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.blocked-users__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.blocked-users__info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.blocked-users__name {
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gm-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.blocked-users__date {
+  font-size: 12px;
+  color: var(--gm-subtle);
+}
+
+.profile-page .blocked-users__avatar.p-avatar {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  font-size: 15px;
+}
+
+.blocked-users .blocked-users__btn.p-button {
+  flex-shrink: 0;
+  height: 36px;
+  padding: 0 16px;
+}

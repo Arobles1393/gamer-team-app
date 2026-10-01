@@ -1,21 +1,34 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Toast } from "primereact/toast";
 import { UserProfileDialog } from "../UserProfile";
 import PlayersHeader from "./PlayersHeader";
 import PlayerCard from "./PlayerCard";
 import PlayerCardSkeleton from "./PlayerCardSkeleton";
 import PlayersEmptyState from "./PlayersEmptyState";
-import { useFriendStatus, useProfileChat, useFriendRequest, usePlayerSearch, useProfileDialog } from "../../hooks";
+import { useBlockedIds, useFriendStatus, useProfileChat, useFriendRequest, usePlayerSearch, useProfileDialog, useSteamPresenceBatch, useTwitchPresenceBatch } from "../../hooks";
+import { excludeBlockedAuthors } from "../../utils";
 import { useCurrentUser } from "../../context";
 import "../Posts/Feed.css";
 import "./FindPlayers.css";
 
 export default function FindPlayers() {
+  const { t } = useTranslation("friends");
   const user = useCurrentUser();
   const [search, setSearch] = useState("");
   const toast = useRef(null);
 
-  const { players, loading, error, retry } = usePlayerSearch(search, user?.uid);
+  const { players: foundPlayers, loading, error, retry } = usePlayerSearch(search, user?.uid);
+
+  // Usuarios bloqueados (en cualquier dirección) no aparecen en la búsqueda
+  const { blockedIds } = useBlockedIds(user);
+  const players = useMemo(
+    () => excludeBlockedAuthors(foundPlayers, blockedIds, "id"),
+    [foundPlayers, blockedIds]
+  );
+  // Una sola consulta a Steam para todos los resultados
+  const steamGames = useSteamPresenceBatch(players);
+  const twitchLive = useTwitchPresenceBatch(players);
 
   const {
     selectedUserId,
@@ -36,8 +49,8 @@ export default function FindPlayers() {
     () => {
       toast.current?.show({
         severity: "error",
-        summary: "Error",
-        detail: "No se pudo abrir el chat. Intenta de nuevo.",
+        summary: t("common:status.error"),
+        detail: t("players.chatError"),
         life: 3000
       });
     }
@@ -58,7 +71,7 @@ export default function FindPlayers() {
 
     if (loading) {
       return (
-        <div className="players-grid" aria-busy="true" aria-label="Buscando jugadores">
+        <div className="players-grid" aria-busy="true" aria-label={t("players.searching")}>
           {Array.from({ length: 6 }, (_, i) => <PlayerCardSkeleton key={i} />)}
         </div>
       );
@@ -77,13 +90,15 @@ export default function FindPlayers() {
     return (
       <>
         <p className="players-count" role="status">
-          {players.length} {players.length === 1 ? "jugador encontrado" : "jugadores encontrados"}
+          {t("players.found", { count: players.length })}
         </p>
         <div className="players-grid">
           {players.map((player) => (
             <PlayerCard
               key={player.id}
               player={player}
+              steamGame={steamGames[player.id]}
+              twitchLive={twitchLive[player.id]}
               onShowProfile={openProfile}
             />
           ))}
@@ -105,6 +120,7 @@ export default function FindPlayers() {
         friendStatus={friendStatus}
         onSendFriendRequest={handleFriendRequest}
         onChat={handleChat}
+        onFriendStatusChange={setFriendStatus}
       />
       <Toast ref={toast} />
     </div>

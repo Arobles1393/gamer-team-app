@@ -45,14 +45,17 @@ const searchUsers = async (search) => {
   }));
 };
 
+// publicOnly: lee publicProfiles (nickname, avatar, región), lo único
+// que pueden leer los visitantes sin sesión
 const subscribeToUserProfile = (
   userId,
   onSuccess,
-  onError
+  onError,
+  { publicOnly = false } = {}
 ) => {
   const userRef = doc(
     db,
-    "users",
+    publicOnly ? "publicProfiles" : "users",
     userId
   );
 

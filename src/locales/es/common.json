@@ -1,0 +1,102 @@
+{
+  "appName": "GamerMatch",
+  "actions": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "close": "Cerrar",
+    "back": "Volver",
+    "retry": "Reintentar",
+    "yes": "Sí",
+    "no": "No",
+    "loading": "Cargando…",
+    "seeMore": "Ver más",
+    "clearFilters": "Limpiar filtros",
+    "clearSearch": "Limpiar búsqueda",
+    "login": "Iniciar sesión",
+    "logout": "Cerrar sesión"
+  },
+  "status": {
+    "error": "Error",
+    "done": "Listo"
+  },
+  "nav": {
+    "main": "Navegación principal",
+    "homeLogo": "GamerMatch — inicio",
+    "home": "Inicio",
+    "findPlayers": "Buscar jugadores",
+    "friends": "Amigos",
+    "chats": "Chats",
+    "news": "Noticias",
+    "notifications": "Notificaciones",
+    "unreadCount": "{{label}} ({{count}} sin leer)",
+    "accountMenu": "Menú de cuenta",
+    "myProfile": "Mi perfil",
+    "myPosts": "Mis publicaciones",
+    "myParties": "Mis partidas"
+  },
+  "presence": {
+    "online": "En línea",
+    "seen": "Visto {{time}}",
+    "offline": "Desconectado",
+    "activeNow": "Activo ahora",
+    "lastSeen": "Última conexión: {{time}}",
+    "playing": "Jugando {{game}}",
+    "playingOnSteam": "Jugando {{game}} en Steam",
+    "live": "En vivo",
+    "liveWith": "En vivo: {{detail}}",
+    "liveOnTwitch": "En vivo en Twitch",
+    "liveOnTwitchTitle": "En vivo en Twitch: {{title}}"
+  },
+  "prime": {
+    "today": "Hoy",
+    "clear": "Limpiar",
+    "chooseDate": "Elegir fecha",
+    "chooseTime": "Elegir hora",
+    "emptyMessage": "Sin opciones",
+    "emptyFilterMessage": "No hay resultados",
+    "searchMessage": "{0} resultados disponibles",
+    "selectionMessage": "{0} elementos seleccionados"
+  },
+  "notFound": {
+    "eyebrow": "Error 404",
+    "title": "Game over: nivel no encontrado",
+    "text": "La página que buscas no existe o fue movida. Vuelve al inicio para seguir buscando partidas.",
+    "home": "Volver al inicio",
+    "back": "Regresar"
+  },
+  "confirm": {
+    "deletePost": {
+      "header": "Eliminar publicación",
+      "message": "Se eliminará la partida y ya no aparecerá en el feed. Esta acción no se puede deshacer.",
+      "accept": "Eliminar partida"
+    }
+  },
+  "errors": {
+    "generic": "Ocurrió un error. Intenta de nuevo."
+  },
+  "news": {
+    "title": "Noticias gamer",
+    "searchPlaceholder": "Buscar noticia…",
+    "searchLabel": "Buscar noticia por título",
+    "filtersLabel": "Filtrar por fuente",
+    "all": "Todas",
+    "empty": {
+      "empty": {
+        "title": "Aún no hay noticias",
+        "text": "Las noticias de IGN y GameSpot se sincronizan periódicamente. Vuelve más tarde."
+      },
+      "noMatch": {
+        "title": "Ninguna noticia coincide",
+        "text": "No encontramos noticias sobre \"{{search}}\".",
+        "action": "Limpiar búsqueda"
+      },
+      "error": {
+        "title": "No se pudieron cargar las noticias",
+        "text": "Revisa tu conexión e inténtalo de nuevo.",
+        "action": "Reintentar"
+      }
+    }
+  }
+}

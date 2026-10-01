@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import { PostList, PostDetail } from "../components/Posts";
+import { PostList, PostFeed, PostDetail, ExplorePage } from "../components/Posts";
 import { Profile } from "../components/Profile";
 import { ChatPage } from "../components/Chat";
 import { Notifications } from "../components/Notifications";
@@ -7,6 +7,9 @@ import { Friends } from "../components/Friends";
 import { FindPlayers } from "../components/FindPlayers";
 import { GamingNews } from "../components/GamingNews";
 import { NotFound } from "../components/NotFound";
+import { AdminReports } from "../components/Admin";
+import RequireAuth from "./RequireAuth";
+import RequireAdmin from "./RequireAdmin";
 
 const AppRoutes = ({
 	setEditingPost,
@@ -18,7 +21,7 @@ const AppRoutes = ({
 			<Route
 				path="/"
 				element={
-					<PostList
+					<PostFeed
 						setEditingPost={setEditingPost}
 						setShowCreatePost={setShowCreatePost}
 					/>
@@ -27,32 +30,40 @@ const AppRoutes = ({
 			<Route
 				path="/profile"
 				element={
-					<Profile />
+					<RequireAuth>
+						<Profile />
+					</RequireAuth>
 				}
 			/>
 			<Route
 				path="/myposts"
 				element={
-					<PostList
-						setEditingPost={setEditingPost}
-						setShowCreatePost={setShowCreatePost}
-						onlyMine
-					/>
+					<RequireAuth>
+						<PostList
+							setEditingPost={setEditingPost}
+							setShowCreatePost={setShowCreatePost}
+							onlyMine
+						/>
+					</RequireAuth>
 				}
 			/>
 			<Route
 				path="/myparties"
 				element={
-					<PostList
-						setShowCreatePost={setShowCreatePost}
-						joined
-					/>
+					<RequireAuth>
+						<PostList
+							setShowCreatePost={setShowCreatePost}
+							joined
+						/>
+					</RequireAuth>
 				}
 			/>
 			<Route
 				path="/chat"
 				element={
-					<ChatPage />
+					<RequireAuth>
+						<ChatPage />
+					</RequireAuth>
 				}
 			/>
 			<Route
@@ -66,19 +77,49 @@ const AppRoutes = ({
 			/>
 			<Route
 				path="/notifications"
-				element={<Notifications />}
+				element={
+					<RequireAuth>
+						<Notifications />
+					</RequireAuth>
+				}
 			/>
 			<Route
 				path="/friends"
-				element={<Friends />}
+				element={
+					<RequireAuth>
+						<Friends />
+					</RequireAuth>
+				}
 			/>
 			<Route
 				path="/findPlayers"
-				element={<FindPlayers />}
+				element={
+					<RequireAuth>
+						<FindPlayers />
+					</RequireAuth>
+				}
+			/>
+			<Route
+				path="/explorar"
+				element={
+					<ExplorePage
+						setEditingPost={setEditingPost}
+						setShowCreatePost={setShowCreatePost}
+					/>
+				}
 			/>
 			<Route
 				path="/news"
 				element={<GamingNews />}
+			/>
+			{/* Admin: sin enlace en ningún menú */}
+			<Route
+				path="/admin/reports"
+				element={
+					<RequireAdmin>
+						<AdminReports />
+					</RequireAdmin>
+				}
 			/>
 			<Route
 				path="*"

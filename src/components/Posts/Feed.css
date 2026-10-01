@@ -223,6 +223,116 @@
   color: var(--gm-accent-text);
 }
 
+/* ---------- MÁS FILTROS (micrófono, nivel, idioma) ---------- */
+.more-filters__trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.more-filters__trigger .pi {
+  font-size: 13px;
+}
+
+/* Hay filtros de este panel activos */
+.more-filters__dot {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gm-accent);
+  box-shadow: 0 0 0 2px var(--gm-bg);
+}
+
+/* El panel se monta en <body>: colores directos del tema */
+.more-filters.p-overlaypanel {
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  border: 1px solid var(--gm-border);
+  border-radius: var(--gm-radius-card);
+  background: var(--gm-popover-bg);
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.8);
+  font-family: var(--gm-font-body);
+  color: var(--gm-text);
+}
+
+.more-filters.p-overlaypanel::before,
+.more-filters.p-overlaypanel::after {
+  display: none;
+}
+
+.more-filters .p-overlaypanel-content {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 18px;
+}
+
+.more-filters__group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.more-filters__label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--gm-label);
+}
+
+.more-filters__options {
+  display: flex;
+  gap: 8px;
+}
+
+.more-filters .more-filters__option {
+  flex: 1;
+  height: 38px;
+  padding: 0 12px;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+}
+
+.more-filters .more-filters__select.p-dropdown {
+  width: 100%;
+  height: 40px;
+  border: 1px solid var(--gm-border);
+  border-radius: var(--gm-radius-control);
+  background: var(--gm-surface);
+  box-shadow: none;
+}
+
+.more-filters .more-filters__select .p-dropdown-label {
+  display: flex;
+  align-items: center;
+  font-family: var(--gm-font-body);
+  font-size: 14px;
+  color: var(--gm-text);
+}
+
+.more-filters__clear {
+  align-self: flex-start;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gm-accent-text);
+  cursor: pointer;
+}
+
+.more-filters__clear:hover {
+  text-decoration: underline;
+}
+
 /* Chip-dropdown "Todos los juegos" (PrimeReact Dropdown) */
 .feed .feed-chip--select.p-dropdown {
   display: inline-flex;
@@ -304,6 +414,124 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 28px;
+}
+
+/* ---------- CATEGORÍAS (feed principal) ---------- */
+.feed-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.feed-section__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.feed .feed-section__title {
+  margin: 0;
+  font-family: var(--gm-font-display);
+  font-size: 19px;
+  font-weight: 400;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--gm-text);
+}
+
+.feed-section__more {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 6px;
+  padding: 4px 0;
+  border: none;
+  background: none;
+  font-family: var(--gm-font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gm-label);
+  cursor: pointer;
+}
+
+.feed-section__more .pi {
+  font-size: 11px;
+}
+
+.feed-section__more:hover {
+  color: var(--gm-text);
+}
+
+.feed-section__more:focus-visible {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Fila horizontal: 3 cards visibles en desktop, el resto con scroll.
+   El padding deja espacio al hover (translate) y al glow de la card,
+   que el overflow recortaría. */
+.feed-row {
+  --feed-row-gap: 28px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 2 * var(--feed-row-gap)) / 3);
+  gap: var(--feed-row-gap);
+  margin: -8px 0 -8px;
+  padding: 8px 0 28px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gm-border) transparent;
+}
+
+.feed-row__item {
+  display: flex;
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.feed-row__item > * {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ---------- EXPLORAR (/explorar) ---------- */
+.explore-header__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 4px 0;
+  border: none;
+  background: none;
+  font-family: var(--gm-font-body);
+  font-size: 14px;
+  color: var(--gm-muted);
+  cursor: pointer;
+}
+
+.explore-header__back .pi {
+  font-size: 12px;
+}
+
+.explore-header__back:hover {
+  color: var(--gm-text);
+}
+
+.explore-header__back:focus-visible {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* "Cargar más": botón secundario (outline), no el CTA de gradiente */
+.feed-load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
 }
 
 /* ---------- SKELETON ---------- */
@@ -396,6 +624,11 @@
     gap: 22px;
   }
 
+  .feed-row {
+    --feed-row-gap: 22px;
+    grid-auto-columns: calc((100% - var(--feed-row-gap)) / 2);
+  }
+
   .feed .feed-search {
     width: 240px;
   }
@@ -463,6 +696,16 @@
   .feed .post-grid {
     grid-template-columns: 1fr;
     gap: 18px;
+  }
+
+  /* Se asoma la siguiente card para indicar que hay scroll */
+  .feed-row {
+    --feed-row-gap: 14px;
+    grid-auto-columns: 85%;
+  }
+
+  .feed .feed-section__title {
+    font-size: 17px;
   }
 }
 

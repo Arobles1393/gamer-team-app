@@ -1,0 +1,51 @@
+{
+  "titles": {
+    "user": "Denunciar usuário",
+    "post": "Denunciar publicação",
+    "comment": "Denunciar comentário"
+  },
+  "reasons": {
+    "spam": "Spam",
+    "inappropriate": "Conteúdo inapropriado",
+    "harassment": "Assédio",
+    "impersonation": "Falsidade ideológica",
+    "other": "Outro motivo"
+  },
+  "dialog": {
+    "question": "Qual é o problema?",
+    "noteRequired": "Conte-nos o que está acontecendo",
+    "noteOptional": "Contexto",
+    "optional": "(opcional)",
+    "notePlaceholder": "Detalhes que nos ajudem a analisar a denúncia",
+    "send": "Enviar denúncia",
+    "sentSummary": "Denúncia enviada",
+    "sentDetail": "Obrigado, vamos analisá-la.",
+    "sendError": "Não foi possível enviar a denúncia. Tente novamente."
+  },
+  "button": {
+    "title": "Denunciar"
+  },
+  "admin": {
+    "eyebrow": "Admin",
+    "title": "Denúncias",
+    "titleCount": "Denúncias ({{count}})",
+    "markError": "Não foi possível marcar a denúncia como analisada.",
+    "errorTitle": "Não foi possível carregar as denúncias",
+    "errorText": "Verifique se sua conta tem permissão de admin.",
+    "emptyTitle": "Não há denúncias pendentes",
+    "emptyText": "Quando alguém denunciar algo, aparecerá aqui.",
+    "types": {
+      "user": "Usuário",
+      "post": "Publicação",
+      "comment": "Comentário"
+    },
+    "userFallback": "usuário",
+    "viewProfile": "Ver perfil de {{username}}",
+    "viewPost": "Ver publicação",
+    "loadingComment": "Carregando comentário…",
+    "commentGone": "O comentário não existe mais",
+    "viewComment": "Ver comentário na publicação",
+    "reportedBy": "Denunciado por",
+    "markReviewed": "Marcar como analisada"
+  }
+}

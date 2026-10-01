@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { postService } from "../../services/posts";
+import i18n from "../../i18n";
 
 export const usePosts = (user, onlyMine = false, joined = false) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Se evalúa en cada render: sigue el idioma actual
   const title = onlyMine
-    ? "Mis publicaciones"
+    ? i18n.t("posts:feed.myPosts")
     : joined
-      ? "Mis partidas"
-      : "Partidas disponibles";
+      ? i18n.t("posts:feed.myParties")
+      : i18n.t("posts:feed.title");
 
   useEffect(() => {
     if ((onlyMine || joined) && !user) {

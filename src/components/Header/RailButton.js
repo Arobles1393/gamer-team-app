@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 /**
  * Botón de icono del rail. Con `to` navega (y marca activo según la ruta);
@@ -11,7 +12,8 @@ export default function RailButton({
   label,
   onClick,
   dot = false,
-  badge = 0
+  badge = 0,
+  className = ""
 }) {
   const content = (
     <>
@@ -25,7 +27,8 @@ export default function RailButton({
     </>
   );
 
-  const accessibleLabel = badge > 0 ? `${label} (${badge} sin leer)` : label;
+  const { t } = useTranslation();
+  const accessibleLabel = badge > 0 ? t("nav.unreadCount", { label, count: badge }) : label;
 
   if (to) {
     return (
@@ -34,7 +37,7 @@ export default function RailButton({
         end={end}
         title={label}
         aria-label={accessibleLabel}
-        className={({ isActive }) => `rail-btn${isActive ? " rail-btn--active" : ""}`}
+        className={({ isActive }) => `rail-btn${isActive ? " rail-btn--active" : ""} ${className}`.trim()}
       >
         {content}
       </NavLink>
@@ -44,7 +47,7 @@ export default function RailButton({
   return (
     <button
       type="button"
-      className="rail-btn"
+      className={`rail-btn ${className}`.trim()}
       title={label}
       aria-label={accessibleLabel}
       onClick={onClick}

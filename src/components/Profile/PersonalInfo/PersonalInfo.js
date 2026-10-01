@@ -1,6 +1,8 @@
+import { useTranslation } from "react-i18next";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { ProfileSection } from "../../ProfileSection";
+import { getCountryLabel } from "../../../utils";
 import "./PersonalInfo.css";
 
 function InfoRow({ icon, label, children }) {
@@ -32,20 +34,27 @@ export default function PersonalInfo({
   phone,
   region,
   countries,
+  canChangeEmail,
   isEditing,
   onEmailChange,
   onUsernameChange,
   onPhoneChange,
   onRegionChange
 }) {
+  const { t } = useTranslation("profile");
   const country = countries.find((c) => c.value === region);
-  const missing = <span className="personal-info__missing">Sin agregar</span>;
+  const missing = <span className="personal-info__missing">{t("personal.missing")}</span>;
+
+  // Google: el correo es el de su cuenta de Google. Steam: no tiene correo
+  const emailHint = canChangeEmail
+    ? t("personal.emailHint")
+    : t(email ? "personal.emailManaged" : "personal.emailNone");
 
   return (
-    <ProfileSection title="Datos personales" icon="pi-id-card" className="personal-info">
+    <ProfileSection title={t("personal.title")} icon="pi-id-card" className="personal-info">
       {isEditing ? (
         <>
-          <Field id="profile-username" label="Nickname">
+          <Field id="profile-username" label={t("personal.nickname")}>
             <InputText
               id="profile-username"
               value={username}
@@ -57,20 +66,21 @@ export default function PersonalInfo({
 
           <Field
             id="profile-email"
-            label="Correo"
-            hint="Si lo cambias, puede pedirte volver a iniciar sesión."
+            label={t("personal.email")}
+            hint={emailHint}
           >
             <InputText
               id="profile-email"
               type="email"
               value={email}
               onChange={(e) => onEmailChange(e.target.value)}
+              disabled={!canChangeEmail}
               autoComplete="email"
               className="gm-input"
             />
           </Field>
 
-          <Field id="profile-phone" label="Teléfono">
+          <Field id="profile-phone" label={t("personal.phone")}>
             <InputText
               id="profile-phone"
               type="tel"
@@ -82,7 +92,7 @@ export default function PersonalInfo({
             />
           </Field>
 
-          <Field id="profile-region" label="Región">
+          <Field id="profile-region" label={t("personal.region")}>
             <Dropdown
               inputId="profile-region"
               value={region}
@@ -92,7 +102,7 @@ export default function PersonalInfo({
               optionValue="value"
               itemTemplate={countryTemplate}
               valueTemplate={(option, props) => countryTemplate(option) ?? props.placeholder}
-              placeholder="Selecciona tu región"
+              placeholder={t("personal.regionPlaceholder")}
               filter
               className="gm-select"
               panelClassName="gm-panel"
@@ -101,11 +111,11 @@ export default function PersonalInfo({
         </>
       ) : (
         <dl className="personal-info__list">
-          <InfoRow icon="pi-user" label="Nickname">{username || missing}</InfoRow>
-          <InfoRow icon="pi-envelope" label="Correo">{email || missing}</InfoRow>
-          <InfoRow icon="pi-phone" label="Teléfono">{phone || missing}</InfoRow>
-          <InfoRow icon="pi-globe" label="Región">
-            {region ? `${country?.flag ?? ""} ${region}`.trim() : missing}
+          <InfoRow icon="pi-user" label={t("personal.nickname")}>{username || missing}</InfoRow>
+          <InfoRow icon="pi-envelope" label={t("personal.email")}>{email || missing}</InfoRow>
+          <InfoRow icon="pi-phone" label={t("personal.phone")}>{phone || missing}</InfoRow>
+          <InfoRow icon="pi-globe" label={t("personal.region")}>
+            {region ? `${country?.flag ?? ""} ${getCountryLabel(region)}`.trim() : missing}
           </InfoRow>
         </dl>
       )}

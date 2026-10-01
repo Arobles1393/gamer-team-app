@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { Skeleton } from "primereact/skeleton";
 import { Button } from "primereact/button";
@@ -11,6 +12,7 @@ import PostInfoCard from "./PostInfoCard";
 import PostInterested from "./PostInterested";
 import CommentInput from "./CommentInput";
 import CommentItem from "./CommentItem";
+import CommentLoginPrompt from "./CommentLoginPrompt";
 import { postService } from "../../services/posts";
 import {
   usePost,
@@ -21,16 +23,20 @@ import {
   useFriendStatus,
   useProfileChat,
   useFriendRequest,
-  useProfileDialog
+  useProfileDialog,
+  useRequireAuth,
+  useBlockedIds
 } from "../../hooks";
-import { confirmDeletePost, confirmDestructive } from "../../utils";
+import { confirmDeletePost, confirmDestructive, excludeBlockedAuthors } from "../../utils";
 import { useCurrentUser, useCurrentUserData } from "../../context";
 import "./Feed.css";
 import "./PostDetail.css";
 
 function PostDetailSkeleton() {
+  const { t } = useTranslation("posts");
+
   return (
-    <div className="post-detail" aria-busy="true" aria-label="Cargando partida">
+    <div className="post-detail" aria-busy="true" aria-label={t("detail.loading")}>
       <Skeleton height="340px" borderRadius="16px" className="post-detail-skeleton" />
       <div className="post-detail__grid">
         <div className="post-detail__main">
@@ -46,6 +52,7 @@ function PostDetailSkeleton() {
 }
 
 export default function PostDetail({ setEditingPost, setShowCreatePost }) {
+  const { t } = useTranslation("posts");
   const user = useCurrentUser();
   const currentUserData = useCurrentUserData();
   const navigate = useNavigate();
@@ -55,28 +62,43 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
   const [togglingInterest, setTogglingInterest] = useState(false);
   const [openingChat, setOpeningChat] = useState(false);
 
-  const { post, loading, error } = usePost(id);
-  const { userData: postAuthor } = useUserProfile(post?.userId);
+  const requireAuth = useRequireAuth(user);
 
-  const { comments, publishComment, removeComment } = usePostComments(
+  const { post, loading, error } = usePost(id);
+  const { userData: postAuthor } = useUserProfile(post?.userId, { publicOnly: !user });
+
+  const { comments: allComments, publishComment, removeComment } = usePostComments(
     id,
     post?.userId,
-    user.uid
+    user?.uid
+  );
+
+  // Comentarios de usuarios bloqueados (en cualquier dirección) se ocultan
+  const { blockedIds, loading: loadingBlocks } = useBlockedIds(user);
+  const comments = useMemo(
+    () => excludeBlockedAuthors(allComments, blockedIds),
+    [allComments, blockedIds]
   );
 
   const { interestedUserIds, interestedCount, isInterested, interestedDoc } =
-    usePostInterestStatus(id, user.uid);
+    usePostInterestStatus(id, user?.uid);
+
+  // Interesados con bloqueo de por medio tampoco aparecen en la lista
+  const visibleInterestedIds = useMemo(
+    () => interestedUserIds.filter((userId) => !blockedIds.includes(userId)),
+    [interestedUserIds, blockedIds]
+  );
 
   const showError = useCallback((detail) => {
-    toast.current?.show({ severity: "error", summary: "Error", detail, life: 3000 });
-  }, []);
+    toast.current?.show({ severity: "error", summary: t("common:status.error"), detail, life: 3000 });
+  }, [t]);
 
   const showSuccess = useCallback((detail) => {
-    toast.current?.show({ severity: "success", summary: "Listo", detail, life: 2500 });
-  }, []);
+    toast.current?.show({ severity: "success", summary: t("common:status.done"), detail, life: 2500 });
+  }, [t]);
 
   const { handleInterested } = usePostInterest(user, () => {
-    showError("No se pudo guardar tu interés. Intenta de nuevo.");
+    showError(t("detail.errors.interest"));
   });
 
   const {
@@ -104,7 +126,8 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
     setFriendStatus
   );
 
-  if (loading) {
+  // Se esperan los bloqueos para no mostrar un instante un post bloqueado
+  if (loading || loadingBlocks) {
     return <PostDetailSkeleton />;
   }
 
@@ -115,10 +138,10 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
           <span className="feed-empty__icon">
             <i className="pi pi-exclamation-triangle" aria-hidden="true" />
           </span>
-          <p className="feed-empty__title">No se pudo cargar la partida</p>
-          <p className="feed-empty__text">Revisa tu conexión e inténtalo de nuevo.</p>
+          <p className="feed-empty__title">{t("detail.errorTitle")}</p>
+          <p className="feed-empty__text">{t("detail.errorText")}</p>
           <Button
-            label="Volver al inicio"
+            label={t("detail.home")}
             className="feed-empty__btn"
             onClick={() => navigate("/")}
           />
@@ -132,7 +155,28 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
     return null;
   }
 
-  const isOwner = post.userId === user.uid;
+  // Link directo a un post de alguien con quien hay bloqueo (en cualquier
+  // dirección): no se muestra, igual que en el feed y en /explorar
+  if (blockedIds.includes(post.userId)) {
+    return (
+      <div className="feed post-detail">
+        <div className="feed-empty" role="status">
+          <span className="feed-empty__icon">
+            <i className="pi pi-ban" aria-hidden="true" />
+          </span>
+          <p className="feed-empty__title">{t("detail.blockedTitle")}</p>
+          <p className="feed-empty__text">{t("detail.blockedText")}</p>
+          <Button
+            label={t("detail.home")}
+            className="feed-empty__btn"
+            onClick={() => navigate("/")}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  const isOwner = post.userId === user?.uid;
 
   const handleBack = () => {
     // Sin historial (link directo) se regresa al feed
@@ -176,7 +220,7 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
           navigate("/");
         } catch (error) {
           console.error("Error al eliminar la publicación:", error);
-          showError("No se pudo eliminar la publicación. Intenta de nuevo.");
+          showError(t("detail.errors.deletePost"));
         }
       }
     });
@@ -187,23 +231,23 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
       return await publishComment(comment, file);
     } catch (error) {
       console.error("Error al publicar comentario:", error);
-      showError("No se pudo guardar el comentario. Intenta de nuevo.");
+      showError(t("detail.errors.saveComment"));
       return false;
     }
   };
 
   const confirmDeleteComment = (commentId) => {
     confirmDestructive({
-      header: "Eliminar comentario",
-      message: "El comentario y su imagen o video se eliminarán. Esta acción no se puede deshacer.",
-      acceptLabel: "Eliminar comentario",
+      header: t("detail.deleteComment.header"),
+      message: t("detail.deleteComment.message"),
+      acceptLabel: t("detail.deleteComment.accept"),
       onAccept: async () => {
         try {
           await removeComment(commentId);
-          showSuccess("Comentario eliminado");
+          showSuccess(t("detail.deleteComment.done"));
         } catch (error) {
           console.error("Error al eliminar comentario:", error);
-          showError("No se pudo eliminar el comentario. Intenta de nuevo.");
+          showError(t("detail.errors.deleteComment"));
         }
       }
     });
@@ -215,27 +259,31 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
 
       <div className="post-detail__grid">
         <div className="post-detail__main">
-          <ProfileSection title="Sobre la partida" icon="pi-align-left">
+          <ProfileSection title={t("detail.about")} icon="pi-align-left">
             {post.comments ? (
               <p className="post-detail__description">{post.comments}</p>
             ) : (
-              <p className="gm-section__empty">El anfitrión no agregó una descripción.</p>
+              <p className="gm-section__empty">{t("detail.noDescription")}</p>
             )}
           </ProfileSection>
 
           <ProfileSection
-            title="Comentarios"
+            title={t("detail.comments")}
             icon="pi-comments"
             className="post-comments"
             action={comments.length > 0 && (
               <span className="post-detail__count">{comments.length}</span>
             )}
           >
-            <CommentInput
-              currentUser={currentUserData}
-              onPublish={handlePublish}
-              onError={showError}
-            />
+            {user ? (
+              <CommentInput
+                currentUser={currentUserData}
+                onPublish={handlePublish}
+                onError={showError}
+              />
+            ) : (
+              <CommentLoginPrompt onLogin={requireAuth} />
+            )}
 
             {comments.length > 0 ? (
               <ul className="post-comments__list">
@@ -243,7 +291,7 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
                   <CommentItem
                     key={item.id}
                     comment={item}
-                    isOwn={item.userId === user.uid}
+                    isOwn={item.userId === user?.uid}
                     isHost={item.userId === post.userId}
                     onDelete={confirmDeleteComment}
                     onOpenProfile={openProfile}
@@ -252,7 +300,7 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
               </ul>
             ) : (
               <p className="gm-section__empty post-comments__empty">
-                Todavía no hay comentarios. ¡Rompe el hielo y coordina la partida!
+                {t("detail.noComments")}
               </p>
             )}
           </ProfileSection>
@@ -270,13 +318,14 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
             openingChat={openingChat}
             onToggleInterest={handleToggleInterest}
             onChatWithHost={handleChatWithHost}
+            onOpenGroupChat={() => navigate("/chat", { state: { groupChatId: post.id } })}
             onEdit={handleEdit}
             onDelete={handleDeletePost}
             onAuthorClick={openProfile}
           />
 
           <PostInterested
-            userIds={interestedUserIds}
+            userIds={visibleInterestedIds}
             isOwner={isOwner}
             onOpenProfile={openProfile}
           />
@@ -290,6 +339,7 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
         friendStatus={friendStatus}
         onSendFriendRequest={handleFriendRequest}
         onChat={handleChat}
+        onFriendStatusChange={setFriendStatus}
       />
 
       <ConfirmDialog />

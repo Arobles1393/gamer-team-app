@@ -1,9 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { notificationService } from "../../services/notifications";
+import { excludeBlockedAuthors } from "../../utils";
+import { useBlockedIds } from "../blocks/useBlockedIds";
 
 // Conteo de no leídas y si hay mensajes sin leer, sin el límite de la lista del overlay
 export const useUnreadNotifications = (user) => {
-  const [unread, setUnread] = useState([]);
+  const [allUnread, setUnread] = useState([]);
+  const { blockedIds } = useBlockedIds(user);
+
+  // Las de usuarios con bloqueo de por medio no cuentan
+  const unread = useMemo(
+    () => excludeBlockedAuthors(allUnread, blockedIds, "senderId"),
+    [allUnread, blockedIds]
+  );
 
   useEffect(() => {
     if (!user) {
@@ -33,9 +42,20 @@ export const useUnreadNotifications = (user) => {
     [unread]
   );
 
+  // Chats de grupo (postId) con mensajes sin leer
+  const unreadGroupIds = useMemo(
+    () => new Set(
+      unread
+        .filter((notification) => notification.type === "group_message")
+        .map((notification) => notification.relatedId)
+    ),
+    [unread]
+  );
+
   return {
     unreadCount: unread.length,
-    hasUnreadMessages: unreadChatIds.size > 0,
-    unreadChatIds
+    hasUnreadMessages: unreadChatIds.size > 0 || unreadGroupIds.size > 0,
+    unreadChatIds,
+    unreadGroupIds
   };
 };

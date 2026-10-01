@@ -1,0 +1,102 @@
+{
+  "appName": "GamerMatch",
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "close": "Close",
+    "back": "Back",
+    "retry": "Retry",
+    "yes": "Yes",
+    "no": "No",
+    "loading": "Loading…",
+    "seeMore": "See more",
+    "clearFilters": "Clear filters",
+    "clearSearch": "Clear search",
+    "login": "Log in",
+    "logout": "Log out"
+  },
+  "status": {
+    "error": "Error",
+    "done": "Done"
+  },
+  "nav": {
+    "main": "Main navigation",
+    "homeLogo": "GamerMatch — home",
+    "home": "Home",
+    "findPlayers": "Find players",
+    "friends": "Friends",
+    "chats": "Chats",
+    "news": "News",
+    "notifications": "Notifications",
+    "unreadCount": "{{label}} ({{count}} unread)",
+    "accountMenu": "Account menu",
+    "myProfile": "My profile",
+    "myPosts": "My posts",
+    "myParties": "My parties"
+  },
+  "presence": {
+    "online": "Online",
+    "seen": "Seen {{time}}",
+    "offline": "Offline",
+    "activeNow": "Active now",
+    "lastSeen": "Last seen: {{time}}",
+    "playing": "Playing {{game}}",
+    "playingOnSteam": "Playing {{game}} on Steam",
+    "live": "Live",
+    "liveWith": "Live: {{detail}}",
+    "liveOnTwitch": "Live on Twitch",
+    "liveOnTwitchTitle": "Live on Twitch: {{title}}"
+  },
+  "prime": {
+    "today": "Today",
+    "clear": "Clear",
+    "chooseDate": "Choose date",
+    "chooseTime": "Choose time",
+    "emptyMessage": "No options",
+    "emptyFilterMessage": "No results found",
+    "searchMessage": "{0} results available",
+    "selectionMessage": "{0} items selected"
+  },
+  "notFound": {
+    "eyebrow": "Error 404",
+    "title": "Game over: level not found",
+    "text": "The page you're looking for doesn't exist or was moved. Head back home to keep looking for parties.",
+    "home": "Back to home",
+    "back": "Go back"
+  },
+  "confirm": {
+    "deletePost": {
+      "header": "Delete post",
+      "message": "The party will be deleted and will no longer appear in the feed. This action can't be undone.",
+      "accept": "Delete party"
+    }
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again."
+  },
+  "news": {
+    "title": "Gaming news",
+    "searchPlaceholder": "Search news…",
+    "searchLabel": "Search news by title",
+    "filtersLabel": "Filter by source",
+    "all": "All",
+    "empty": {
+      "empty": {
+        "title": "No news yet",
+        "text": "News from IGN and GameSpot syncs periodically. Check back later."
+      },
+      "noMatch": {
+        "title": "No news matches",
+        "text": "We couldn't find news about \"{{search}}\".",
+        "action": "Clear search"
+      },
+      "error": {
+        "title": "Couldn't load the news",
+        "text": "Check your connection and try again.",
+        "action": "Retry"
+      }
+    }
+  }
+}

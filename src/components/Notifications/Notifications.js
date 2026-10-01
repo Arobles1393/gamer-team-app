@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import NotificationItem from "./NotificationItem";
@@ -26,37 +27,39 @@ const FILTER_FNS = {
   requests: isPendingRequest
 };
 
-const getSectionLabel = (timestamp) => {
+// Clave de notifications:sections.* según la fecha
+const getSectionKey = (timestamp) => {
   const date = formatDates.toDate(timestamp);
-  if (!date) return "Anteriores";
+  if (!date) return "older";
 
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
 
   const diff = startOfToday - date;
 
-  if (diff <= 0) return "Hoy";
-  if (diff <= DAY_MS) return "Ayer";
-  if (diff <= 6 * DAY_MS) return "Esta semana";
-  return "Anteriores";
+  if (diff <= 0) return "today";
+  if (diff <= DAY_MS) return "yesterday";
+  if (diff <= 6 * DAY_MS) return "thisWeek";
+  return "older";
 };
 
 // Vienen ordenadas por fecha desc: basta con cortar cuando cambia la sección
 const groupBySection = (notifications) =>
   notifications.reduce((sections, notification) => {
-    const label = getSectionLabel(notification.createdAt);
+    const key = getSectionKey(notification.createdAt);
     const last = sections[sections.length - 1];
 
-    if (last?.label === label) {
+    if (last?.key === key) {
       last.items.push(notification);
     } else {
-      sections.push({ label, items: [notification] });
+      sections.push({ key, items: [notification] });
     }
 
     return sections;
   }, []);
 
 export default function Notifications() {
+  const { t } = useTranslation("notifications");
   const user = useCurrentUser();
   const navigate = useNavigate();
   const toast = useRef(null);
@@ -79,11 +82,11 @@ export default function Notifications() {
   const showError = useCallback((detail) => {
     toast.current?.show({
       severity: "error",
-      summary: "Error",
+      summary: t("common:status.error"),
       detail,
       life: 3000
     });
-  }, []);
+  }, [t]);
 
   const handleOpenNotification = useCallback((notification) => {
     if (!notification.read) {
@@ -110,7 +113,7 @@ export default function Notifications() {
       await notificationService.markAllNotificationsAsRead(user.uid);
     } catch (error) {
       console.error("Error marcando todas como leídas:", error);
-      showError("No se pudieron marcar como leídas. Intenta de nuevo.");
+      showError(t("errors.markAll"));
     } finally {
       setMarkingAll(false);
     }
@@ -122,15 +125,15 @@ export default function Notifications() {
       setFilter("all");
     } catch (error) {
       console.error("Error eliminando notificaciones:", error);
-      showError("No se pudieron eliminar las notificaciones. Intenta de nuevo.");
+      showError(t("errors.deleteAll"));
     }
   };
 
   const confirmDeleteAll = () => {
     confirmDestructive({
-      header: "Eliminar notificaciones",
-      message: "Se eliminarán todas tus notificaciones. Esta acción no se puede deshacer.",
-      acceptLabel: "Eliminar todas",
+      header: t("confirmDelete.header"),
+      message: t("confirmDelete.message"),
+      acceptLabel: t("deleteAll"),
       onAccept: handleDeleteAll
     });
   };
@@ -142,7 +145,7 @@ export default function Notifications() {
 
     if (loading) {
       return (
-        <ul className="notif-list notif-list--card" aria-busy="true" aria-label="Cargando notificaciones">
+        <ul className="notif-list notif-list--card" aria-busy="true" aria-label={t("loading")}>
           {Array.from({ length: 5 }, (_, i) => <NotificationItemSkeleton key={i} />)}
         </ul>
       );
@@ -157,8 +160,8 @@ export default function Notifications() {
     }
 
     return sections.map((section) => (
-      <section key={section.label} className="notif-section">
-        <h2 className="notif-section__title">{section.label}</h2>
+      <section key={section.key} className="notif-section">
+        <h2 className="notif-section__title">{t(`sections.${section.key}`)}</h2>
         <ul className="notif-list notif-list--card">
           {section.items.map((notification) => (
             <NotificationItem
@@ -167,6 +170,7 @@ export default function Notifications() {
               onOpen={handleOpenNotification}
               onAccept={handleAcceptFriendRequest}
               onReject={handleRejectFriendRequest}
+              onError={showError}
             />
           ))}
         </ul>

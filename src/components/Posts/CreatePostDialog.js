@@ -1,4 +1,5 @@
 import { useCallback, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog } from "primereact/dialog";
 import { Toast } from "primereact/toast";
 import CreatePost from "./CreatePost";
@@ -9,6 +10,7 @@ const CreatePostDialog = ({
   onHide,
   onClose
 }) => {
+  const { t } = useTranslation("posts");
   // Fuera del Dialog: el aviso sigue visible después de cerrarlo
   const toast = useRef(null);
   const isEditing = Boolean(editingPost);
@@ -16,29 +18,29 @@ const CreatePostDialog = ({
   const handleSuccess = useCallback((action) => {
     toast.current?.show({
       severity: "success",
-      summary: action === "actualizar" ? "Partida actualizada" : "Partida publicada",
+      summary: action === "actualizar" ? t("create.done.updatedTitle") : t("create.done.createdTitle"),
       detail: action === "actualizar"
-        ? "Los cambios ya están visibles en el feed."
-        : "Tu partida ya aparece en el feed.",
+        ? t("create.done.updatedText")
+        : t("create.done.createdText"),
       life: 3000
     });
 
     onClose();
-  }, [onClose]);
+  }, [onClose, t]);
 
   const handleError = useCallback((message) => {
     toast.current?.show({
       severity: "error",
-      summary: "Error",
+      summary: t("common:status.error"),
       detail: message,
       life: 3000
     });
-  }, []);
+  }, [t]);
 
   return (
     <>
       <Dialog
-        header={isEditing ? "Editar partida" : "Publicar partida"}
+        header={isEditing ? t("create.titleEdit") : t("create.titleNew")}
         visible={visible}
         onHide={onHide}
         className="gm-dialog create-post-dialog"

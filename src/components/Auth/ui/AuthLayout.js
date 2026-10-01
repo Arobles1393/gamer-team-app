@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import "../Auth.css";
 
 function Brand({ className }) {
@@ -15,8 +16,11 @@ export default function AuthLayout({
   tagline,
   compact = false,
   onSubmit,
+  onBack,
   children
 }) {
+  const { t } = useTranslation("auth");
+
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit?.();
@@ -43,6 +47,13 @@ export default function AuthLayout({
 
       <section className="auth__panel">
         <Brand className="auth__brand--panel" />
+
+        {onBack && (
+          <button type="button" className="auth__back" onClick={onBack}>
+            <i className="pi pi-arrow-left" aria-hidden="true" />
+            {t("keepExploring")}
+          </button>
+        )}
 
         <form className="auth__form" onSubmit={handleSubmit} noValidate>
           <h1 className="auth__title">{title}</h1>

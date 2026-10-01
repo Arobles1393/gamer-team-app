@@ -1,18 +1,21 @@
+import { useTranslation } from "react-i18next";
 import { InputTextarea } from "primereact/inputtextarea";
 import { ProfileSection } from "../ProfileSection";
 
 const MAX_LENGTH = 500;
 
 export default function ProfileAbout({ description, isEditing, onDescriptionChange }) {
+  const { t } = useTranslation("profile");
+
   return (
-    <ProfileSection title="Sobre mí" icon="pi-user" className="profile-about">
+    <ProfileSection title={t("about.title")} icon="pi-user" className="profile-about">
       {isEditing ? (
         <div className="gm-field">
           <InputTextarea
             value={description}
             onChange={(e) => onDescriptionChange(e.target.value)}
-            placeholder="Cuéntale a otros jugadores qué juegas, tus horarios, tu estilo…"
-            aria-label="Sobre mí"
+            placeholder={t("about.placeholder")}
+            aria-label={t("about.title")}
             rows={4}
             autoResize
             maxLength={MAX_LENGTH}
@@ -25,9 +28,7 @@ export default function ProfileAbout({ description, isEditing, onDescriptionChan
       ) : description ? (
         <p className="profile-about__text">{description}</p>
       ) : (
-        <p className="gm-section__empty">
-          Aún no has escrito nada sobre ti. Edita tu perfil para presentarte.
-        </p>
+        <p className="gm-section__empty">{t("about.empty")}</p>
       )}
     </ProfileSection>
   );

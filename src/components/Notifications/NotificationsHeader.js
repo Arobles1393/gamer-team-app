@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "primereact/button";
 
 export default function NotificationsHeader({
@@ -7,17 +8,19 @@ export default function NotificationsHeader({
   onMarkAllAsRead,
   onDeleteAll
 }) {
+  const { t } = useTranslation("notifications");
+
   return (
     <header className="feed-header">
       <div className="feed-header__titles">
         <span className="feed-header__eyebrow">GamerMatch</span>
-        <h1 className="feed-header__title">Notificaciones</h1>
+        <h1 className="feed-header__title">{t("title")}</h1>
       </div>
 
       {hasNotifications && (
         <div className="feed-header__actions notifications__actions">
           <Button
-            label="Marcar todas como leídas"
+            label={t("markAllRead")}
             icon="pi pi-check"
             className="notifications__action"
             loading={markingAll}
@@ -25,7 +28,7 @@ export default function NotificationsHeader({
             onClick={onMarkAllAsRead}
           />
           <Button
-            label="Eliminar todas"
+            label={t("deleteAll")}
             icon="pi pi-trash"
             className="notifications__action notifications__action--danger"
             onClick={onDeleteAll}

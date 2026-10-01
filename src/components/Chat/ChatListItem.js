@@ -1,13 +1,15 @@
 import { memo } from "react";
+import { useTranslation } from "react-i18next";
 import ChatAvatar from "./ChatAvatar";
 import { formatDates } from "../../utils";
 
 function ChatListItem({ chat, otherUser, currentUserId, active, unread, onSelect }) {
-  const username = otherUser?.username || "Usuario";
+  const { t } = useTranslation("chat");
+  const username = otherUser?.username || t("list.user");
 
   const preview = chat.lastMessage
-    ? `${chat.lastSenderId === currentUserId ? "Tú: " : ""}${chat.lastMessage}`
-    : "Sin mensajes todavía";
+    ? (chat.lastSenderId === currentUserId ? t("list.you", { message: chat.lastMessage }) : chat.lastMessage)
+    : t("list.noMessages");
 
   const className = [
     "chat-item",
@@ -21,8 +23,8 @@ function ChatListItem({ chat, otherUser, currentUserId, active, unread, onSelect
         type="button"
         className={className}
         aria-current={active ? "true" : undefined}
-        aria-label={`Chat con ${username}${unread ? ", mensajes sin leer" : ""}`}
-        onClick={() => onSelect(chat.id)}
+        aria-label={t(unread ? "list.itemLabelUnread" : "list.itemLabel", { username })}
+        onClick={() => onSelect({ type: "direct", id: chat.id })}
       >
         <ChatAvatar user={otherUser} />
 

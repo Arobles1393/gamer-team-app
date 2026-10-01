@@ -8,6 +8,11 @@ export * from "./posts/useInterestedPosts";
 export * from "./posts/usePostInterest";
 export * from "./posts/usePostInterestStatus";
 export * from "./posts/usePostComments";
+export * from "./posts/usePostCategories";
+export * from "./posts/usePostListActions";
+export * from "./posts/usePaginatedPosts";
+export * from "./posts/usePostSummary";
+export * from "./posts/usePostSummaries";
 
 // Perfil
 export * from "./profile/useUserProfile";
@@ -16,6 +21,8 @@ export * from "./profile/useProfileForm";
 export * from "./profile/useProfileImages";
 export * from "./profile/useProfileDialog";
 export * from "./profile/useSteamStats";
+export * from "./profile/useSteamPresenceBatch";
+export * from "./profile/useTwitchPresenceBatch";
 export * from "./profile/useUserPresence";
 export * from "./profile/usePlayerSearch";
 
@@ -28,6 +35,8 @@ export * from "./friends/useFriendStatus";
 export * from "./chat/useChats";
 export * from "./chat/useChatWindow";
 export * from "./chat/useProfileChat";
+export * from "./chat/useGroupChatWindow";
+export * from "./chat/useMyGroupChats";
 
 // Notificaciones
 export * from "./notifications/useNotifications";
@@ -36,7 +45,19 @@ export * from "./notifications/useUnreadNotifications";
 // Auth
 export * from "./auth/useAuth";
 export * from "./auth/useProviderLogin";
+export * from "./auth/useRequireAuth";
+export * from "./auth/useIsAdmin";
+export * from "./auth/useAccountLanguage";
+export * from "./auth/useAccountEmail";
 
 // Juegos
 export * from "./games/useGameSearch";
 export * from "./games/useGamingNews";
+export * from "./games/useGames";
+export * from "./games/useGameSearchLog";
+
+// Bloqueos y reportes
+export * from "./blocks/useBlockedIds";
+export * from "./blocks/useBlockStatus";
+export * from "./reports/useReportDialog";
+export * from "./reports/usePendingReports";

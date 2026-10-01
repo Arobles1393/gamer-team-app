@@ -1,8 +1,11 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { UserAvatar } from "../UserAvatar";
 import { Button } from "primereact/button";
 import { memo, useCallback } from "react";
 import PostPlatforms from "./PostPlatforms";
+import PostTags from "./PostTags";
+import { ReportButton } from "../Reports";
 import { useUserProfile } from "../../hooks";
 import { formatDates } from "../../utils";
 import "./PostCard.css";
@@ -19,11 +22,6 @@ const getCoverVariant = (id = "") => {
   return hash;
 };
 
-const formatPlayersNeeded = (count) => (
-  Number(count) === 1
-    ? "1 jugador necesario"
-    : `${count} jugadores necesarios`
-);
 
 const formatRelativeTime = (timestamp) => {
   const text = formatDates.formatDateN(timestamp);
@@ -39,10 +37,11 @@ function PostCard({
   onShowProfile
 }) {
 
+  const { t } = useTranslation("posts");
   const navigate = useNavigate();
   const user = useCurrentUser();
 
-  const { userData: author } = useUserProfile(post.userId);
+  const { userData: author } = useUserProfile(post.userId, { publicOnly: !user });
 
   const isInterested = Boolean(interestedDoc);
 
@@ -76,7 +75,7 @@ function PostCard({
     }
   }, [handleOpenPost]);
 
-  const isOwner = post.userId === user.uid;
+  const isOwner = post.userId === user?.uid;
 
   const showInterestedBadge = !isOwner && isInterested;
 
@@ -94,20 +93,26 @@ function PostCard({
       onClick={handleOpenPost}
       onKeyDown={handleKeyDown}
       tabIndex={0}
-      aria-label={`Ver partida de ${post.game}`}
+      aria-label={t("card.open", { game: post.game })}
     >
       <div className={`post-card__cover post-card__cover--${getCoverVariant(post.id)}`}>
         {post.image && (
           <img src={post.image} alt="" className="post-card__image" loading="lazy" />
         )}
         {showInterestedBadge && (
-          <span className="post-card__interested">Te interesa</span>
+          <span className="post-card__interested">{t("card.interestedBadge")}</span>
         )}
         <PostPlatforms
           multiplatform={post.multiplatform}
           platforms={post.platforms}
           platform={post.platform}
         />
+        {post.scheduledAt && (
+          <span className="post-card__scheduled" title={t("card.scheduledTitle")}>
+            <i className="pi pi-calendar" aria-hidden="true" />
+            {formatDates.formatScheduledTime(post.scheduledAt)}
+          </span>
+        )}
         <div className="post-card__cover-title">
           {gameTitle}
         </div>
@@ -116,8 +121,14 @@ function PostCard({
       <div className="post-card__body">
         <p className="post-card__meta">
           <i className="pi pi-user" aria-hidden="true" />
-          {formatPlayersNeeded(post.playersNeeded)}
+          {t("card.playersNeeded", { count: Number(post.playersNeeded) || 0 })}
         </p>
+
+        <PostTags
+          requiresMic={post.requiresMic}
+          skillLevel={post.skillLevel}
+          language={post.language}
+        />
 
         <div className="post-card__author">
           <button
@@ -135,25 +146,33 @@ function PostCard({
           {relativeTime && (
             <span className="post-card__time">· {relativeTime}</span>
           )}
+          {!isOwner && (
+            <ReportButton
+              targetType="post"
+              targetId={post.id}
+              label={t("card.reportLabel", { username: author?.username || t("card.aPlayer"), game: post.game })}
+              className="post-card__report"
+            />
+          )}
         </div>
 
         <div className="post-card__actions">
           {isOwner ? (
             <>
               <Button
-                label="Editar"
+                label={t("card.edit")}
                 className="post-card__btn post-card__btn--outline"
                 onClick={handleEdit}
               />
               <Button
-                label="Eliminar"
+                label={t("card.delete")}
                 className="post-card__btn post-card__btn--danger"
                 onClick={handleDelete}
               />
             </>
           ) : (
             <Button
-              label={isInterested ? "Ya no me interesa" : "Quiero jugar"}
+              label={isInterested ? t("card.leave") : t("card.join")}
               className={`post-card__btn ${isInterested ? "post-card__btn--leave" : "post-card__btn--primary"}`}
               onClick={handleInterest}
             />

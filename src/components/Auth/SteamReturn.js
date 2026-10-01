@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { STEAM_AUTH_MESSAGE } from "../../services/auth/steamPopup";
 import "./Auth.css";
 
@@ -13,6 +14,7 @@ const readOpenIdParams = () => {
 // principal y se cierra. La verificación real ocurre en la Cloud Function.
 export default function SteamReturn() {
   const [failed, setFailed] = useState(false);
+  const { t } = useTranslation("auth");
 
   useEffect(() => {
     const params = readOpenIdParams();
@@ -45,7 +47,7 @@ export default function SteamReturn() {
 
   return (
     <div className="auth-return" role="status">
-      {failed ? "Puedes cerrar esta ventana." : "Conectando con Steam…"}
+      {failed ? t("steamReturn.canClose") : t("steamReturn.connecting")}
     </div>
   );
 }

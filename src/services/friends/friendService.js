@@ -3,28 +3,35 @@ import {
   serverTimestamp,
   query,
   where,
+  getDoc,
   getDocs,
+  setDoc,
   updateDoc,
   writeBatch,
   doc,
-  addDoc,
-  onSnapshot
+  onSnapshot,
+  deleteDoc
 } from "firebase/firestore";
 
 import { db } from "../../firebase/config";
 import { notificationService } from "../notifications";
 
+// Ids deterministas: firestore.rules los usa para exigir consentimiento.
+// - friend_requests/{senderId}_{receiverId}: una solicitud por dirección
+// - friends/{uidMenor}_{uidMayor}: una amistad por pareja; solo se crea en
+//   el mismo batch en que quien la recibió acepta la solicitud
+const requestRef = (senderId, receiverId) =>
+  doc(db, "friend_requests", `${senderId}_${receiverId}`);
+
+const friendPair = (uid1, uid2) => [uid1, uid2].sort();
+
+const friendRef = (uid1, uid2) =>
+  doc(db, "friends", friendPair(uid1, uid2).join("_"));
+
 const getPendingRequest = async (senderId, receiverId) => {
-  const q = query(
-    collection(db, "friend_requests"),
-    where("senderId", "==", senderId),
-    where("receiverId", "==", receiverId),
-    where("status", "==", "pending")
-  );
+  const snapshot = await getDoc(requestRef(senderId, receiverId));
 
-  const snapshot = await getDocs(q);
-
-  return snapshot.docs[0] ?? null;
+  return snapshot.exists() && snapshot.data().status === "pending" ? snapshot : null;
 };
 
 // Devuelve el nuevo estado de amistad: "pending" o "friends"
@@ -59,7 +66,9 @@ const sendFriendRequest = async (sender, receiverId) => {
   const existing = await getPendingRequest(sender.uid, receiverId);
   if (existing) return "pending";
 
-  await addDoc(collection(db, "friend_requests"), {
+  // Crea la solicitud o reabre una anterior (rechazada, o aceptada de una
+  // amistad que ya terminó) con el mismo id
+  await setDoc(requestRef(sender.uid, receiverId), {
     senderId: sender.uid,
     receiverId,
     status: "pending",
@@ -78,54 +87,29 @@ const sendFriendRequest = async (sender, receiverId) => {
   return "pending";
 };
 
+// notification: { id?, senderId (quien envió la solicitud), userId (quien acepta) }
 const acceptFriendRequest = async (
   notification,
   user
 ) => {
-  const q = query(
-    collection(db, "friend_requests"),
-    where(
-      "senderId",
-      "==",
-      notification.senderId
-    ),
-    where(
-      "receiverId",
-      "==",
-      notification.userId
-    ),
-    where(
-      "status",
-      "==",
-      "pending"
-    )
-  );
+  const pending = await getPendingRequest(notification.senderId, notification.userId);
 
-  const snapshot = await getDocs(q);
-
-  if (snapshot.empty) {
+  if (!pending) {
     return;
   }
 
-  const friendRequestRef = snapshot.docs[0].ref;
-
   const batch = writeBatch(db);
 
-  const friendRef = doc(collection(db, "friends"));
-
   batch.set(
-    friendRef,
+    friendRef(notification.senderId, notification.userId),
     {
-      users: [
-        notification.senderId,
-        notification.userId
-      ],
+      users: friendPair(notification.senderId, notification.userId),
       createdAt: serverTimestamp()
     }
   );
 
   batch.update(
-    friendRequestRef,
+    pending.ref,
     {
       status: "accepted"
     }
@@ -161,33 +145,14 @@ const acceptFriendRequest = async (
 };
 
 const rejectFriendRequest = async (notification) => {
-  const q = query(
-    collection(db, "friend_requests"),
-    where(
-      "senderId",
-      "==",
-      notification.senderId
-    ),
-    where(
-      "receiverId",
-      "==",
-      notification.userId
-    ),
-    where(
-      "status",
-      "==",
-      "pending"
-    )
-  );
+  const pending = await getPendingRequest(notification.senderId, notification.userId);
 
-  const snapshot = await getDocs(q);
-
-  if (snapshot.empty) {
+  if (!pending) {
     return;
   }
 
   await updateDoc(
-    snapshot.docs[0].ref,
+    pending.ref,
     {
       status: "rejected"
     }
@@ -251,10 +216,24 @@ const checkFriendStatus = async (userId, otherUserId) => {
   return "none";
 };
 
+// Termina la amistad (cualquiera de los dos puede hacerlo)
+const removeFriend = async (userId, otherUserId) => {
+  const snapshot = await getDocs(
+    query(collection(db, "friends"), where("users", "array-contains", userId))
+  );
+
+  const friendDocs = snapshot.docs.filter((friendDoc) =>
+    friendDoc.data().users.includes(otherUserId)
+  );
+
+  await Promise.all(friendDocs.map((friendDoc) => deleteDoc(friendDoc.ref)));
+};
+
 export const friendService = {
   sendFriendRequest,
   acceptFriendRequest,
   rejectFriendRequest,
   subscribeToFriends,
-  checkFriendStatus
+  checkFriendStatus,
+  removeFriend
 };

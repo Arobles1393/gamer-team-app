@@ -1,6 +1,17 @@
 import { useEffect, useState } from "react";
-import { updateEmail } from "firebase/auth";
+import i18n from "../../i18n";
+import { authService } from "../../services/auth";
 import { profileService } from "../../services/profile";
+import { getAuthErrorMessage } from "../../utils";
+
+// Errores del cambio de correo con mensaje propio
+const EMAIL_ERRORS = ["auth/email-already-in-use", "auth/invalid-email", "auth/too-many-requests"];
+
+const getSaveErrorMessage = (error) => {
+  if (error.code === "auth/requires-recent-login") return i18n.t("profile:form.reloginEmail");
+  if (EMAIL_ERRORS.includes(error.code)) return getAuthErrorMessage(error);
+  return i18n.t("profile:form.saveError");
+};
 
 export const useProfileForm = (user, userData, onError, onSuccess) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -14,18 +25,24 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
   const [games, setGames] = useState([]);
   const [region, setRegion] = useState("");
 
+  // El correo sale de Firebase Auth (users.email es una copia que puede ir
+  // atrasada hasta que se confirma un cambio). Solo las cuentas con
+  // contraseña lo cambian desde aquí.
+  const savedEmail = user?.email ?? userData?.email ?? "";
+  const canChangeEmail = authService.hasPasswordSignIn(user);
+
   useEffect(() => {
     if (!userData) return;
     if (isEditing) return;
 
-    setEmail(userData.email || "");
+    setEmail(savedEmail);
     setUsername(userData.username || "");
     setPhone(userData.phone || "");
     setDescription(userData.description || "");
     setLinks(userData.links || []);
     setGames(userData.games || []);
     setRegion(userData.region || "");
-  }, [userData, isEditing]);
+  }, [userData, isEditing, savedEmail]);
 
   const isValidLink = (url) => {
     return url.startsWith("https://");
@@ -33,7 +50,7 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
 
   const handleSave = async () => {
     if (!username.trim()) {
-      onError?.("El nickname no puede quedar vacío");
+      onError?.(i18n.t("profile:form.usernameRequired"));
       return;
     }
 
@@ -45,17 +62,23 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
       );
 
       if (invalid) {
-        onError?.("Todos los links deben comenzar con https://");
+        onError?.(i18n.t("profile:form.linksHttps"));
         return;
       }
 
-      if (email !== user.email) {
-        if (!email.includes("@")) {
-          onError?.("Correo inválido");
+      // Las cuentas de Steam no tienen correo (user.email es null): un campo
+      // vacío no es un cambio
+      const nextEmail = email.trim();
+      const emailChanged = canChangeEmail && nextEmail !== (user.email ?? "");
+
+      if (emailChanged) {
+        if (!nextEmail.includes("@")) {
+          onError?.(i18n.t("profile:form.invalidEmail"));
           return;
         }
 
-        await updateEmail(user, email);
+        // El correo no cambia todavía: llega un enlace al nuevo para confirmarlo
+        await authService.requestEmailChange(user, nextEmail);
       }
 
       await profileService.updateUserProfile(user.uid, {
@@ -69,23 +92,21 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
       });
 
       setIsEditing(false);
-      onSuccess?.("Perfil actualizado");
+      onSuccess?.(
+        emailChanged
+          ? i18n.t("profile:form.emailVerificationSent", { email: nextEmail })
+          : i18n.t("profile:form.updated")
+      );
     } catch (error) {
       console.error("Error actualizando perfil:", error);
-
-      const message =
-        error.code === "auth/requires-recent-login"
-          ? "Por seguridad, vuelve a iniciar sesión para cambiar tu correo."
-          : "No se pudo guardar el perfil. Intenta de nuevo.";
-
-      onError?.(message);
+      onError?.(getSaveErrorMessage(error));
     } finally {
       setSaving(false);
     }
   };
 
   const handleCancel = () => {
-    setEmail(userData?.email || "");
+    setEmail(savedEmail);
     setUsername(userData?.username || "");
     setPhone(userData?.phone || "");
     setDescription(userData?.description || "");
@@ -98,7 +119,7 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
 
   const hasChanges = () => {
     return (
-      email !== (userData?.email || "") ||
+      email !== savedEmail ||
       username !== (userData?.username || "") ||
       phone !== (userData?.phone || "") ||
       region !== (userData?.region || "") ||
@@ -136,6 +157,7 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
     saving,
 
     email,
+    canChangeEmail,
     username,
     phone,
     description,
