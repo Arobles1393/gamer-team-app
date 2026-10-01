@@ -19,7 +19,8 @@ export default function NotificationItem({
   compact = false,
   onOpen,
   onAccept,
-  onReject
+  onReject,
+  onError
 }) {
   const { t } = useTranslation("notifications");
   const { userData: sender } = useUserProfile(notification.senderId);
@@ -47,6 +48,7 @@ export default function NotificationItem({
       await handler(notification);
     } catch (error) {
       console.error("Error respondiendo la solicitud de amistad:", error);
+      onError?.(t("errors.respond"));
     } finally {
       setResponding(null);
     }

@@ -76,7 +76,9 @@
     "removeFriendMessage": "{{username}} sera retiré de votre liste d'amis. Vous pourrez vous renvoyer une demande quand vous voudrez.",
     "blockMessage": "Vous ne verrez plus vos publications ni vos commentaires respectifs, vous ne pourrez plus discuter ni vous envoyer de demandes d'ami, et vous ne serez plus amis. Vous pouvez débloquer à tout moment.",
     "block": "Bloquer",
-    "reportLabel": "Profil de {{username}}"
+    "reportLabel": "Profil de {{username}}",
+    "removeFriendError": "Impossible de retirer cet ami. Réessayez.",
+    "blockError": "Impossible de bloquer. Réessayez."
   },
   "links": {
     "title": "Réseaux sociaux",

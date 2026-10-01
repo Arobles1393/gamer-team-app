@@ -37,7 +37,8 @@
   },
   "errors": {
     "markAll": "Couldn't mark them as read. Please try again.",
-    "deleteAll": "Couldn't delete the notifications. Please try again."
+    "deleteAll": "Couldn't delete the notifications. Please try again.",
+    "respond": "Couldn't respond to the request. Please try again."
   },
   "confirmDelete": {
     "header": "Delete notifications",

@@ -76,7 +76,9 @@
     "removeFriendMessage": "{{username}} dejará de estar en tu lista de amigos. Podrán volver a enviarse una solicitud cuando quieran.",
     "blockMessage": "No verán sus publicaciones ni comentarios, no podrán chatear ni enviarse solicitudes de amistad, y dejarán de ser amigos. Puedes desbloquear cuando quieras.",
     "block": "Bloquear",
-    "reportLabel": "Perfil de {{username}}"
+    "reportLabel": "Perfil de {{username}}",
+    "removeFriendError": "No se pudo terminar la amistad. Intenta de nuevo.",
+    "blockError": "No se pudo bloquear. Intenta de nuevo."
   },
   "links": {
     "title": "Redes sociales",

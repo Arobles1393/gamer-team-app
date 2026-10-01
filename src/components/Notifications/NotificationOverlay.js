@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { OverlayPanel } from "primereact/overlaypanel";
+import { Toast } from "primereact/toast";
 import { useNavigate } from "react-router-dom";
 import NotificationItem from "./NotificationItem";
 import NotificationItemSkeleton from "./NotificationItemSkeleton";
@@ -21,6 +22,11 @@ export default function NotificationOverlay({
   const { t } = useTranslation("notifications");
   const navigate = useNavigate();
   const [markingAll, setMarkingAll] = useState(false);
+  const toast = useRef(null);
+
+  const showError = useCallback((detail) => {
+    toast.current?.show({ severity: "error", summary: t("common:status.error"), detail, life: 3000 });
+  }, [t]);
 
   const notificationsList = notifications ?? [];
 
@@ -47,6 +53,7 @@ export default function NotificationOverlay({
       await onMarkAllAsRead();
     } catch (error) {
       console.error("Error marcando todas como leídas:", error);
+      showError(t("errors.markAll"));
     } finally {
       setMarkingAll(false);
     }
@@ -88,6 +95,7 @@ export default function NotificationOverlay({
             onOpen={handleOpenNotification}
             onAccept={onAccept}
             onReject={onReject}
+            onError={showError}
           />
         ))}
       </ul>
@@ -95,40 +103,45 @@ export default function NotificationOverlay({
   };
 
   return (
-    <OverlayPanel
-      ref={notificationRef}
-      className="gm-notif-overlay"
-      aria-label={t("title")}
-    >
-      <header className="notif-panel__header">
-        <span className="notif-panel__title">{t("title")}</span>
-        {unreadCount > 0 && (
-          <span className="notif-panel__count" aria-label={t("unreadCount", { count: unreadCount })}>
-            {unreadCount > 99 ? "99+" : unreadCount}
-          </span>
-        )}
+    <>
+      <OverlayPanel
+        ref={notificationRef}
+        className="gm-notif-overlay"
+        aria-label={t("title")}
+      >
+        <header className="notif-panel__header">
+          <span className="notif-panel__title">{t("title")}</span>
+          {unreadCount > 0 && (
+            <span className="notif-panel__count" aria-label={t("unreadCount", { count: unreadCount })}>
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </span>
+          )}
+          <button
+            type="button"
+            className="notif-panel__link"
+            onClick={handleMarkAllAsRead}
+            disabled={unreadCount === 0 || markingAll}
+          >
+            {t("markAllRead")}
+          </button>
+        </header>
+
+        <div className="notif-panel__body">
+          {renderBody()}
+        </div>
+
         <button
           type="button"
-          className="notif-panel__link"
-          onClick={handleMarkAllAsRead}
-          disabled={unreadCount === 0 || markingAll}
+          className="notif-panel__footer"
+          onClick={handleViewAllNotifications}
         >
-          {t("markAllRead")}
+          {t("viewAll")}
+          <i className="pi pi-arrow-right" aria-hidden="true" />
         </button>
-      </header>
+      </OverlayPanel>
 
-      <div className="notif-panel__body">
-        {renderBody()}
-      </div>
-
-      <button
-        type="button"
-        className="notif-panel__footer"
-        onClick={handleViewAllNotifications}
-      >
-        {t("viewAll")}
-        <i className="pi pi-arrow-right" aria-hidden="true" />
-      </button>
-    </OverlayPanel>
+      {/* Fuera del panel: el aviso sigue visible aunque el panel se cierre */}
+      <Toast ref={toast} />
+    </>
   );
 }

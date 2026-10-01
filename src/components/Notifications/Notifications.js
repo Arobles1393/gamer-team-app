@@ -170,6 +170,7 @@ export default function Notifications() {
               onOpen={handleOpenNotification}
               onAccept={handleAcceptFriendRequest}
               onReject={handleRejectFriendRequest}
+              onError={showError}
             />
           ))}
         </ul>

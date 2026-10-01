@@ -37,7 +37,8 @@
   },
   "errors": {
     "markAll": "Não foi possível marcar como lidas. Tente novamente.",
-    "deleteAll": "Não foi possível excluir as notificações. Tente novamente."
+    "deleteAll": "Não foi possível excluir as notificações. Tente novamente.",
+    "respond": "Não foi possível responder à solicitação. Tente novamente."
   },
   "confirmDelete": {
     "header": "Excluir notificações",

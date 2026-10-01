@@ -37,7 +37,8 @@
   },
   "errors": {
     "markAll": "Impossible de les marquer comme lues. Réessayez.",
-    "deleteAll": "Impossible de supprimer les notifications. Réessayez."
+    "deleteAll": "Impossible de supprimer les notifications. Réessayez.",
+    "respond": "Impossible de répondre à la demande. Réessayez."
   },
   "confirmDelete": {
     "header": "Supprimer les notifications",

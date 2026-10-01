@@ -1,6 +1,7 @@
 import { Dialog } from "primereact/dialog";
 import { ConfirmDialog } from "primereact/confirmdialog";
-import { memo } from "react";
+import { Toast } from "primereact/toast";
+import { memo, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import UserProfile from "./UserProfile";
 import UserProfileActions from "./UserProfileActions";
@@ -44,6 +45,13 @@ const UserProfileDialog = ({
 }) => {
   const { t } = useTranslation("profile");
   const user = useCurrentUser();
+  // Toast propio: el diálogo se abre desde varias páginas (amigos, buscar
+  // jugadores, feed, admin) y no todas tienen uno
+  const toast = useRef(null);
+
+  const showError = useCallback((detail) => {
+    toast.current?.show({ severity: "error", summary: t("common:status.error"), detail, life: 3000 });
+  }, [t]);
   const { userData } = useUserProfile(selectedUserId);
   const { blocked, blockedByMe, blockId } = useBlockStatus(user, selectedUserId);
   const { reportTarget, openReport, closeReport } = useReportDialog(user);
@@ -68,6 +76,7 @@ const UserProfileDialog = ({
           onFriendStatusChange?.("none");
         } catch (error) {
           console.error("Error al eliminar amigo:", error);
+          showError(t("dialog.removeFriendError"));
         }
       }
     });
@@ -88,6 +97,7 @@ const UserProfileDialog = ({
           onHide();
         } catch (error) {
           console.error("Error al bloquear:", error);
+          showError(t("dialog.blockError"));
         }
       }
     });
@@ -98,6 +108,7 @@ const UserProfileDialog = ({
       await blockService.unblockUser(blockId);
     } catch (error) {
       console.error("Error al desbloquear:", error);
+      showError(t("blocked.unblockError"));
     }
   };
 
@@ -131,6 +142,7 @@ const UserProfileDialog = ({
 
       <ReportDialog target={reportTarget} onHide={closeReport} />
       <ConfirmDialog group={CONFIRM_GROUP} />
+      <Toast ref={toast} />
     </>
   );
 };

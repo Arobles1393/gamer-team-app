@@ -37,7 +37,8 @@
   },
   "errors": {
     "markAll": "No se pudieron marcar como leídas. Intenta de nuevo.",
-    "deleteAll": "No se pudieron eliminar las notificaciones. Intenta de nuevo."
+    "deleteAll": "No se pudieron eliminar las notificaciones. Intenta de nuevo.",
+    "respond": "No se pudo responder la solicitud. Intenta de nuevo."
   },
   "confirmDelete": {
     "header": "Eliminar notificaciones",

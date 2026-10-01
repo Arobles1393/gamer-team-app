@@ -76,7 +76,9 @@
     "removeFriendMessage": "{{username}} will be removed from your friends list. You can send each other a request again whenever you want.",
     "blockMessage": "You won't see each other's posts or comments, you won't be able to chat or send friend requests, and you'll no longer be friends. You can unblock at any time.",
     "block": "Block",
-    "reportLabel": "{{username}}'s profile"
+    "reportLabel": "{{username}}'s profile",
+    "removeFriendError": "Couldn't unfriend. Please try again.",
+    "blockError": "Couldn't block. Please try again."
   },
   "links": {
     "title": "Socials",
