@@ -22,6 +22,7 @@ export * from "./profile/useProfileImages";
 export * from "./profile/useProfileDialog";
 export * from "./profile/useSteamStats";
 export * from "./profile/useSteamPresenceBatch";
+export * from "./profile/useTwitchPresenceBatch";
 export * from "./profile/useUserPresence";
 export * from "./profile/usePlayerSearch";
 

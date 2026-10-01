@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Skeleton } from "primereact/skeleton";
-import { useUserProfile, useSteamPresenceBatch } from "../../hooks";
+import { useUserProfile, useSteamPresenceBatch, useTwitchPresenceBatch } from "../../hooks";
 import { ProfileHero } from "../ProfileHero";
 import { ProfileSection } from "../ProfileSection";
 import { FavoriteGames } from "../FavoriteGames";
@@ -35,6 +35,7 @@ export default function UserProfile({ userId, actions, onClose }) {
     [userId, links]
   );
   const steamGames = useSteamPresenceBatch(players);
+  const twitchLive = useTwitchPresenceBatch(players);
 
   if (!userData) {
     return <UserProfileSkeleton />;
@@ -51,6 +52,7 @@ export default function UserProfile({ userId, actions, onClose }) {
         presence={getPresenceLabel(userData.lastSeen)}
         online={isOnline(userData.lastSeen)}
         steamGame={steamGames[userId]}
+        twitchLive={twitchLive[userId]}
         actions={actions}
         bannerAction={
           <button

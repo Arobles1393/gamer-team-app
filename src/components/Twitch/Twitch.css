@@ -1,0 +1,40 @@
+/* "En vivo" en Twitch: morado de Twitch, distinto del azul de Steam y del
+   verde de presencia de GamerMatch */
+.twitch-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #A970FF;
+}
+
+.twitch-live__icon {
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+  color: #9146FF;
+}
+
+.twitch-live__text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Tarjeta de jugador: igual que la línea de Steam */
+.player-card__twitch {
+  margin-top: -6px;
+}
+
+/* Hero del perfil: mismo tamaño que el resto de datos */
+.profile-hero__meta-item.profile-hero__twitch {
+  font-size: 14px;
+}
+
+.profile-hero__twitch .twitch-live__icon {
+  width: 13px;
+  height: 13px;
+}

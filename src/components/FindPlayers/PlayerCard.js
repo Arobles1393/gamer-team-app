@@ -4,6 +4,7 @@ import { Button } from "primereact/button";
 import { countries } from "../../data/countries";
 import { getPresenceLabel, isOnline } from "../../utils";
 import SteamIcon from "../Steam/SteamIcon";
+import { TwitchLive } from "../Twitch";
 
 const MAX_GAMES = 4;
 
@@ -52,8 +53,9 @@ function PlayerGames({ games }) {
 }
 
 // Con `onChat` (p. ej. en Amigos) muestra también el botón de mensaje.
-// `steamGame` lo resuelve el padre para toda la lista (useSteamPresenceBatch).
-function PlayerCard({ player, steamGame, onShowProfile, onChat }) {
+// `steamGame` y `twitchLive` los resuelve el padre para toda la lista
+// (useSteamPresenceBatch, useTwitchPresenceBatch). Pueden aparecer los dos.
+function PlayerCard({ player, steamGame, twitchLive, onShowProfile, onChat }) {
   const country = countries.find((c) => c.value === player.region);
   const openProfile = () => onShowProfile(player.id);
   const openChat = () => onChat(player.id);
@@ -82,6 +84,7 @@ function PlayerCard({ player, steamGame, onShowProfile, onChat }) {
         </div>
 
         {steamGame && <SteamGameStatus game={steamGame} />}
+        <TwitchLive live={twitchLive} className="player-card__twitch" />
 
         <PlayerGames games={player.games} />
 

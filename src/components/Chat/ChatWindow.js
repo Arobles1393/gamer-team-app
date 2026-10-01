@@ -1,7 +1,9 @@
 import ChatAvatar from "./ChatAvatar";
 import MessageList from "./MessageList";
 import MessageComposer from "./MessageComposer";
-import { useBlockStatus, useChatWindow, useUserProfile } from "../../hooks";
+import { useMemo } from "react";
+import { TwitchLive } from "../Twitch";
+import { useBlockStatus, useChatWindow, useTwitchPresenceBatch, useUserProfile } from "../../hooks";
 import { getPresenceLabel, isOnline } from "../../utils";
 import { useCurrentUser } from "../../context";
 
@@ -19,6 +21,14 @@ export default function ChatWindow({ chatId, onBack, onError }) {
   const { blocked } = useBlockStatus(user, otherUserId);
 
   const online = isOnline(otherUser?.lastSeen);
+
+  // ¿Está en vivo en Twitch? Misma consulta batcheada, con un solo usuario
+  const otherLinks = otherUser?.links;
+  const twitchPlayers = useMemo(
+    () => (otherUserId && otherLinks ? [{ id: otherUserId, links: otherLinks }] : []),
+    [otherUserId, otherLinks]
+  );
+  const twitchLive = useTwitchPresenceBatch(twitchPlayers)[otherUserId];
 
   const handleSend = async (text, file) => {
     try {
@@ -54,6 +64,7 @@ export default function ChatWindow({ chatId, onBack, onError }) {
           <span className={`chat-window__status${online ? " chat-window__status--online" : ""}`}>
             {getPresenceLabel(otherUser?.lastSeen)}
           </span>
+          <TwitchLive live={twitchLive} className="chat-window__twitch" />
         </div>
       </header>
 

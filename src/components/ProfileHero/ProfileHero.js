@@ -1,6 +1,7 @@
 import { UserAvatar } from "../UserAvatar";
 import { formatDates } from "../../utils";
 import SteamIcon from "../Steam/SteamIcon";
+import { TwitchLive } from "../Twitch";
 import "./ProfileHero.css";
 
 const formatMemberSince = (createdAt) => {
@@ -16,7 +17,8 @@ const NOT_UPLOADING = { avatar: false, banner: false };
  * Portada + avatar + identidad de un perfil.
  * - Mi perfil: `editable` muestra los botones para cambiar foto y portada.
  * - Diálogo de otro jugador: `presence` y `online` muestran su estado,
- *   `steamGame` lo que está jugando en Steam (si hay dato) y
+ *   `steamGame` lo que está jugando en Steam (si hay dato), `twitchLive`
+ *   si está en vivo en Twitch, y
  *   `bannerAction` va sobre la portada (p. ej. cerrar).
  * `actions` se dibuja a la derecha (Editar perfil, Agregar amigo, Mensaje…).
  */
@@ -27,6 +29,7 @@ export default function ProfileHero({
   presence,
   online = false,
   steamGame,
+  twitchLive,
   actions,
   bannerAction,
   editable = false,
@@ -116,6 +119,7 @@ export default function ProfileHero({
                 Jugando {steamGame}
               </span>
             )}
+            <TwitchLive live={twitchLive} className="profile-hero__meta-item profile-hero__twitch" />
             {userData?.region && (
               <span className="profile-hero__meta-item">
                 {country?.flag && <span aria-hidden="true">{country.flag}</span>}

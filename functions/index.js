@@ -14,6 +14,7 @@ const { syncGamingNews } = require("./gamingNews/gamingNews.functions");
 const { cleanupCommentMedia } = require("./postComments/postComments.functions");
 const { loginWithSteam } = require("./steamAuth/steamAuth.functions");
 const { logGameSearch } = require("./games/games.functions");
+const { getTwitchPresence } = require("./twitch/twitch.functions");
 
 exports.getSteamStats = getSteamStats;
 exports.getSteamPresence = getSteamPresence;
@@ -23,3 +24,4 @@ exports.syncGamingNews = syncGamingNews;
 exports.cleanupCommentMedia = cleanupCommentMedia;
 exports.loginWithSteam = loginWithSteam;
 exports.logGameSearch = logGameSearch;
+exports.getTwitchPresence = getTwitchPresence;

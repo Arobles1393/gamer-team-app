@@ -5,7 +5,7 @@ import PlayersHeader from "./PlayersHeader";
 import PlayerCard from "./PlayerCard";
 import PlayerCardSkeleton from "./PlayerCardSkeleton";
 import PlayersEmptyState from "./PlayersEmptyState";
-import { useBlockedIds, useFriendStatus, useProfileChat, useFriendRequest, usePlayerSearch, useProfileDialog, useSteamPresenceBatch } from "../../hooks";
+import { useBlockedIds, useFriendStatus, useProfileChat, useFriendRequest, usePlayerSearch, useProfileDialog, useSteamPresenceBatch, useTwitchPresenceBatch } from "../../hooks";
 import { excludeBlockedAuthors } from "../../utils";
 import { useCurrentUser } from "../../context";
 import "../Posts/Feed.css";
@@ -26,6 +26,7 @@ export default function FindPlayers() {
   );
   // Una sola consulta a Steam para todos los resultados
   const steamGames = useSteamPresenceBatch(players);
+  const twitchLive = useTwitchPresenceBatch(players);
 
   const {
     selectedUserId,
@@ -95,6 +96,7 @@ export default function FindPlayers() {
               key={player.id}
               player={player}
               steamGame={steamGames[player.id]}
+              twitchLive={twitchLive[player.id]}
               onShowProfile={openProfile}
             />
           ))}
