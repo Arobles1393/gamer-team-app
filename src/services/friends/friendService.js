@@ -8,7 +8,8 @@ import {
   writeBatch,
   doc,
   addDoc,
-  onSnapshot
+  onSnapshot,
+  deleteDoc
 } from "firebase/firestore";
 
 import { db } from "../../firebase/config";
@@ -251,10 +252,24 @@ const checkFriendStatus = async (userId, otherUserId) => {
   return "none";
 };
 
+// Termina la amistad (cualquiera de los dos puede hacerlo)
+const removeFriend = async (userId, otherUserId) => {
+  const snapshot = await getDocs(
+    query(collection(db, "friends"), where("users", "array-contains", userId))
+  );
+
+  const friendDocs = snapshot.docs.filter((friendDoc) =>
+    friendDoc.data().users.includes(otherUserId)
+  );
+
+  await Promise.all(friendDocs.map((friendDoc) => deleteDoc(friendDoc.ref)));
+};
+
 export const friendService = {
   sendFriendRequest,
   acceptFriendRequest,
   rejectFriendRequest,
   subscribeToFriends,
-  checkFriendStatus
+  checkFriendStatus,
+  removeFriend
 };

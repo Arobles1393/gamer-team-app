@@ -9,7 +9,7 @@ import PostFilters from "./PostFilters";
 import FeedEmptyState from "./FeedEmptyState";
 import "./Feed.css";
 import { UserProfileDialog } from "../UserProfile";
-import { useFriends, useGames, usePaginatedPosts, usePostListActions } from "../../hooks";
+import { useBlockedIds, useFriends, useGames, usePaginatedPosts, usePostListActions } from "../../hooks";
 import { useCurrentUser, useCurrentUserData } from "../../context";
 import {
   POST_CATEGORIES,
@@ -39,6 +39,7 @@ export default function ExplorePage({ setEditingPost, setShowCreatePost }) {
   const { requiresUser, empty } = POST_CATEGORIES[category];
 
   const { friendIds, loading: loadingFriends } = useFriends(user);
+  const { blockedIds } = useBlockedIds(user);
   const region = userData?.region;
 
   // "De tus amigos" y "Cerca de ti" esperan a tener los datos del usuario
@@ -56,7 +57,7 @@ export default function ExplorePage({ setEditingPost, setShowCreatePost }) {
     loadMore,
     retry,
     removePost
-  } = usePaginatedPosts({ category, platform, game, friendIds, region, ready });
+  } = usePaginatedPosts({ category, platform, game, friendIds, region, blockedIds, ready });
 
   const showToast = useCallback((severity, summary, detail) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });

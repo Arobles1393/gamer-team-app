@@ -1,7 +1,7 @@
 import ChatAvatar from "./ChatAvatar";
 import MessageList from "./MessageList";
 import MessageComposer from "./MessageComposer";
-import { useChatWindow, useUserProfile } from "../../hooks";
+import { useBlockStatus, useChatWindow, useUserProfile } from "../../hooks";
 import { getPresenceLabel, isOnline } from "../../utils";
 import { useCurrentUser } from "../../context";
 
@@ -14,6 +14,9 @@ export default function ChatWindow({ chatId, onBack, onError }) {
   );
 
   const { userData: otherUser } = useUserProfile(otherUserId);
+  // Con un bloqueo (en cualquier dirección) no se puede escribir;
+  // firestore.rules también lo impide
+  const { blocked } = useBlockStatus(user, otherUserId);
 
   const online = isOnline(otherUser?.lastSeen);
 
@@ -61,7 +64,14 @@ export default function ChatWindow({ chatId, onBack, onError }) {
         otherUsername={otherUser?.username}
       />
 
-      <MessageComposer onSend={handleSend} onError={onError} disabled={!otherUserId} />
+      {blocked ? (
+        <p className="chat-blocked" role="status">
+          <i className="pi pi-ban" aria-hidden="true" />
+          No puedes enviar mensajes en esta conversación.
+        </p>
+      ) : (
+        <MessageComposer onSend={handleSend} onError={onError} disabled={!otherUserId} />
+      )}
     </section>
   );
 }

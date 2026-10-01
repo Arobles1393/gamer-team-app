@@ -204,6 +204,11 @@
   color: var(--gm-subtle);
 }
 
+.post-card__report {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
 /* ---------- BOTONES ---------- */
 .post-card__actions {
   display: flex;

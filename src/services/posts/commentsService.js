@@ -7,7 +7,8 @@ import {
   where,
   orderBy,
   onSnapshot,
-  serverTimestamp
+  serverTimestamp,
+  getDoc
 } from "firebase/firestore";
 import {
   ref,
@@ -87,8 +88,15 @@ const deleteComment = (commentId) => {
   return deleteDoc(doc(db, "post_comments", commentId));
 };
 
+// Un comentario por id (p. ej. para ir a su post desde un reporte)
+const getComment = async (commentId) => {
+  const snap = await getDoc(doc(db, "post_comments", commentId));
+  return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+};
+
 export const commentsService = {
   subscribeToComments,
   addComment,
-  deleteComment
+  deleteComment,
+  getComment
 };

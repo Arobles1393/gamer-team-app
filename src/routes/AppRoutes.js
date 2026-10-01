@@ -7,7 +7,9 @@ import { Friends } from "../components/Friends";
 import { FindPlayers } from "../components/FindPlayers";
 import { GamingNews } from "../components/GamingNews";
 import { NotFound } from "../components/NotFound";
+import { AdminReports } from "../components/Admin";
 import RequireAuth from "./RequireAuth";
+import RequireAdmin from "./RequireAdmin";
 
 const AppRoutes = ({
 	setEditingPost,
@@ -109,6 +111,15 @@ const AppRoutes = ({
 			<Route
 				path="/news"
 				element={<GamingNews />}
+			/>
+			{/* Admin: sin enlace en ningún menú */}
+			<Route
+				path="/admin/reports"
+				element={
+					<RequireAdmin>
+						<AdminReports />
+					</RequireAdmin>
+				}
 			/>
 			<Route
 				path="*"

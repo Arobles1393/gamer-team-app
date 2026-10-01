@@ -3,6 +3,7 @@ import { UserAvatar } from "../UserAvatar";
 import { Button } from "primereact/button";
 import { memo, useCallback } from "react";
 import PostPlatforms from "./PostPlatforms";
+import { ReportButton } from "../Reports";
 import { useUserProfile } from "../../hooks";
 import { formatDates } from "../../utils";
 import "./PostCard.css";
@@ -134,6 +135,14 @@ function PostCard({
           </button>
           {relativeTime && (
             <span className="post-card__time">· {relativeTime}</span>
+          )}
+          {!isOwner && (
+            <ReportButton
+              targetType="post"
+              targetId={post.id}
+              label={`Publicación de ${author?.username || "un jugador"} · ${post.game}`}
+              className="post-card__report"
+            />
           )}
         </div>
 

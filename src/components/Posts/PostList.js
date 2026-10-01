@@ -8,7 +8,8 @@ import PostCardSkeleton from "./PostCardSkeleton";
 import FeedEmptyState from "./FeedEmptyState";
 import "./Feed.css";
 import { UserProfileDialog } from "../UserProfile";
-import { usePosts, useFilteredPosts, usePostFilters, usePostListActions } from "../../hooks";
+import { useBlockedIds, usePosts, useFilteredPosts, usePostFilters, usePostListActions } from "../../hooks";
+import { excludeBlockedAuthors } from "../../utils";
 import { useCurrentUser } from "../../context";
 
 // Vistas planas: "Mis publicaciones" (onlyMine) y "Mis partidas" (joined).
@@ -66,12 +67,15 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
     filterPlatform
   );
 
-  // Búsqueda por nombre de juego desde la top bar
+  const { blockedIds } = useBlockedIds(user);
+
+  // Búsqueda por nombre de juego desde la top bar; sin autores bloqueados
   const visiblePosts = useMemo(() => {
     const term = search.trim().toLowerCase();
-    if (!term) return filteredPosts;
-    return filteredPosts.filter((post) => post.game?.toLowerCase().includes(term));
-  }, [filteredPosts, search]);
+    const unblocked = excludeBlockedAuthors(filteredPosts, blockedIds);
+    if (!term) return unblocked;
+    return unblocked.filter((post) => post.game?.toLowerCase().includes(term));
+  }, [filteredPosts, search, blockedIds]);
 
   const hasFilters = Boolean(filterGame || filterPlatform || search.trim());
 

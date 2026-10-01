@@ -71,6 +71,18 @@
   color: var(--gm-muted);
 }
 
+.user-profile__badge--blocked {
+  background: var(--gm-accent-soft);
+  color: var(--gm-accent-text);
+}
+
+/* Menú "⋮": botón de icono redondo con el estilo ghost */
+.user-profile__more.gm-btn.p-button {
+  flex-shrink: 0;
+  width: 42px;
+  padding: 0;
+}
+
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 1023px) {
   .user-profile__grid {

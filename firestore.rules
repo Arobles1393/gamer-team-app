@@ -11,6 +11,18 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == uid;
     }
 
+    // Admin: custom claim `admin` (lo pone functions/scripts/setAdmin.js)
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    // Bloqueo en cualquier dirección. blocks usa id `${blockerId}_${blockedId}`
+    // justamente para poder comprobarlo aquí con exists()
+    function noBlockBetween(uid1, uid2) {
+      return !exists(/databases/$(database)/documents/blocks/$(uid1 + '_' + uid2))
+             && !exists(/databases/$(database)/documents/blocks/$(uid2 + '_' + uid1));
+    }
+
     // Solo cambia `field` y en exactamente ±1 (contadores que actualizan
     // usuarios que no son dueños del documento)
     function onlyStepsCounter(field) {
@@ -95,8 +107,12 @@ service cloud.firestore {
                   && request.auth.uid in resource.data.users;
       allow create: if isSignedIn()
                     && request.auth.uid in request.resource.data.users
-                    && request.resource.data.users.size() == 2;
-      allow update, delete: if false;
+                    && request.resource.data.users.size() == 2
+                    && noBlockBetween(request.resource.data.users[0], request.resource.data.users[1]);
+      // Cualquiera de los dos puede terminar la amistad (o bloquear)
+      allow delete: if isSignedIn()
+                    && request.auth.uid in resource.data.users;
+      allow update: if false;
     }
 
     // ===== friend_requests =====
@@ -105,7 +121,8 @@ service cloud.firestore {
                   && (request.auth.uid == resource.data.senderId
                       || request.auth.uid == resource.data.receiverId);
       allow create: if isSignedIn()
-                    && request.resource.data.senderId == request.auth.uid;
+                    && request.resource.data.senderId == request.auth.uid
+                    && noBlockBetween(request.auth.uid, request.resource.data.receiverId);
       allow update: if isSignedIn()
                     && request.auth.uid == resource.data.receiverId;
       allow delete: if false;
@@ -130,7 +147,8 @@ service cloud.firestore {
 
       allow create: if isSignedIn()
                     && request.auth.uid in request.resource.data.participants
-                    && request.resource.data.participants.size() == 2;
+                    && request.resource.data.participants.size() == 2
+                    && noBlockBetween(request.resource.data.participants[0], request.resource.data.participants[1]);
 
       allow update: if isSignedIn()
                     && request.auth.uid in resource.data.participants;
@@ -142,7 +160,10 @@ service cloud.firestore {
                     && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
         allow create: if isSignedIn()
                       && request.resource.data.senderId == request.auth.uid
-                      && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+                      && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants
+                      && noBlockBetween(
+                           get(/databases/$(database)/documents/chats/$(chatId)).data.participants[0],
+                           get(/databases/$(database)/documents/chats/$(chatId)).data.participants[1]);
         allow update, delete: if false;
       }
     }
@@ -151,6 +172,36 @@ service cloud.firestore {
     match /gaming_news/{newsId} {
       allow read: if true;
       allow write: if false;
+    }
+
+    // ===== blocks (id `${blockerId}_${blockedId}`) =====
+    match /blocks/{blockId} {
+      // resource == null: para consultar si existe un bloqueo con alguien
+      allow read: if isSignedIn()
+                  && (resource == null || request.auth.uid in resource.data.participants);
+      allow create: if isSignedIn()
+                    && request.resource.data.blockerId == request.auth.uid
+                    && blockId == request.auth.uid + '_' + request.resource.data.blockedId
+                    && request.resource.data.blockedId != request.auth.uid
+                    && request.resource.data.participants == [request.auth.uid, request.resource.data.blockedId];
+      // Solo quien bloqueó puede desbloquear
+      allow delete: if isSignedIn()
+                    && request.auth.uid == resource.data.blockerId;
+      allow update: if false;
+    }
+
+    // ===== reports (solo el admin los lee y los revisa) =====
+    match /reports/{reportId} {
+      allow read: if isAdmin();
+      allow create: if isSignedIn()
+                    && request.resource.data.reporterId == request.auth.uid
+                    && request.resource.data.status == 'pending'
+                    && request.resource.data.targetType in ['user', 'post', 'comment']
+                    && request.resource.data.reason in ['spam', 'inappropriate', 'harassment', 'impersonation', 'other'];
+      // Solo marcar como revisado
+      allow update: if isAdmin()
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedAt']);
+      allow delete: if false;
     }
 
     // ===== steamNonces (solo Admin SDK — anti-replay del login con Steam) =====

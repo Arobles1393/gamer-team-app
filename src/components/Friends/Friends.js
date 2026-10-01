@@ -152,6 +152,7 @@ export default function Friends() {
         friendStatus={friendStatus}
         onSendFriendRequest={handleFriendRequest}
         onChat={handleChat}
+        onFriendStatusChange={setFriendStatus}
       />
       <Toast ref={toast} />
     </div>

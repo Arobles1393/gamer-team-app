@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { Skeleton } from "primereact/skeleton";
 import { Button } from "primereact/button";
@@ -23,9 +23,10 @@ import {
   useProfileChat,
   useFriendRequest,
   useProfileDialog,
-  useRequireAuth
+  useRequireAuth,
+  useBlockedIds
 } from "../../hooks";
-import { confirmDeletePost, confirmDestructive } from "../../utils";
+import { confirmDeletePost, confirmDestructive, excludeBlockedAuthors } from "../../utils";
 import { useCurrentUser, useCurrentUserData } from "../../context";
 import "./Feed.css";
 import "./PostDetail.css";
@@ -62,10 +63,17 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
   const { post, loading, error } = usePost(id);
   const { userData: postAuthor } = useUserProfile(post?.userId, { publicOnly: !user });
 
-  const { comments, publishComment, removeComment } = usePostComments(
+  const { comments: allComments, publishComment, removeComment } = usePostComments(
     id,
     post?.userId,
     user?.uid
+  );
+
+  // Comentarios de usuarios bloqueados (en cualquier dirección) se ocultan
+  const { blockedIds } = useBlockedIds(user);
+  const comments = useMemo(
+    () => excludeBlockedAuthors(allComments, blockedIds),
+    [allComments, blockedIds]
   );
 
   const { interestedUserIds, interestedCount, isInterested, interestedDoc } =
@@ -298,6 +306,7 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
         friendStatus={friendStatus}
         onSendFriendRequest={handleFriendRequest}
         onChat={handleChat}
+        onFriendStatusChange={setFriendStatus}
       />
 
       <ConfirmDialog />

@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { postService } from "../../services/posts";
 import { gameTrendsService } from "../../services/games";
-import { collectFilteredPage } from "../../utils";
+import { collectFilteredPage, excludeBlockedAuthors } from "../../utils";
 
 const PAGE_SIZE = 15;
 
@@ -33,6 +33,7 @@ export const usePaginatedPosts = ({
   game,
   friendIds = [],
   region,
+  blockedIds = [],
   ready = true
 }) => {
   const [posts, setPosts] = useState([]);
@@ -122,8 +123,14 @@ export const usePaginatedPosts = ({
     setPosts((prev) => prev.filter((post) => post.id !== postId));
   }, []);
 
+  // Autores bloqueados: se ocultan de lo ya cargado sin volver a paginar
+  const visiblePosts = useMemo(
+    () => excludeBlockedAuthors(posts, blockedIds),
+    [posts, blockedIds]
+  );
+
   return {
-    posts,
+    posts: visiblePosts,
     loading,
     loadingMore,
     hasMore,

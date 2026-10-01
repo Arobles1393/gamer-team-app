@@ -87,7 +87,8 @@ export const usePostListActions = ({
       selectedUserId,
       friendStatus,
       onSendFriendRequest: handleFriendRequest,
-      onChat: handleChat
+      onChat: handleChat,
+      onFriendStatusChange: setFriendStatus
     }
   };
 };

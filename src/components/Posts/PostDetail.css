@@ -678,7 +678,8 @@
   color: var(--gm-subtle);
 }
 
-.comment__delete {
+.comment__delete,
+.comment__report {
   margin-left: auto;
 }
 

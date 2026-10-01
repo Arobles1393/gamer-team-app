@@ -1,11 +1,12 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Toast } from "primereact/toast";
 import { UserProfileDialog } from "../UserProfile";
 import PlayersHeader from "./PlayersHeader";
 import PlayerCard from "./PlayerCard";
 import PlayerCardSkeleton from "./PlayerCardSkeleton";
 import PlayersEmptyState from "./PlayersEmptyState";
-import { useFriendStatus, useProfileChat, useFriendRequest, usePlayerSearch, useProfileDialog, useSteamPresenceBatch } from "../../hooks";
+import { useBlockedIds, useFriendStatus, useProfileChat, useFriendRequest, usePlayerSearch, useProfileDialog, useSteamPresenceBatch } from "../../hooks";
+import { excludeBlockedAuthors } from "../../utils";
 import { useCurrentUser } from "../../context";
 import "../Posts/Feed.css";
 import "./FindPlayers.css";
@@ -15,7 +16,14 @@ export default function FindPlayers() {
   const [search, setSearch] = useState("");
   const toast = useRef(null);
 
-  const { players, loading, error, retry } = usePlayerSearch(search, user?.uid);
+  const { players: foundPlayers, loading, error, retry } = usePlayerSearch(search, user?.uid);
+
+  // Usuarios bloqueados (en cualquier dirección) no aparecen en la búsqueda
+  const { blockedIds } = useBlockedIds(user);
+  const players = useMemo(
+    () => excludeBlockedAuthors(foundPlayers, blockedIds, "id"),
+    [foundPlayers, blockedIds]
+  );
   // Una sola consulta a Steam para todos los resultados
   const steamGames = useSteamPresenceBatch(players);
 
@@ -108,6 +116,7 @@ export default function FindPlayers() {
         friendStatus={friendStatus}
         onSendFriendRequest={handleFriendRequest}
         onChat={handleChat}
+        onFriendStatusChange={setFriendStatus}
       />
       <Toast ref={toast} />
     </div>

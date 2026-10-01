@@ -3,6 +3,7 @@ import { UserAvatar } from "../UserAvatar";
 import { useUserProfile } from "../../hooks";
 import { formatDates } from "../../utils";
 import { useCurrentUser } from "../../context";
+import { ReportButton } from "../Reports";
 
 function CommentItem({
   comment,
@@ -42,7 +43,7 @@ function CommentItem({
             {formatDates.formatDateN(comment.createdAt)}
           </span>
 
-          {isOwn && (
+          {isOwn ? (
             <button
               type="button"
               className="comment__delete"
@@ -51,6 +52,13 @@ function CommentItem({
             >
               <i className="pi pi-trash" aria-hidden="true" />
             </button>
+          ) : (
+            <ReportButton
+              targetType="comment"
+              targetId={comment.id}
+              label={`Comentario de ${username}`}
+              className="comment__report"
+            />
           )}
         </div>
 

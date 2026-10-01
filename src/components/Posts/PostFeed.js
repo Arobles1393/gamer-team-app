@@ -10,6 +10,7 @@ import PostCategorySection from "./PostCategorySection";
 import "./Feed.css";
 import { UserProfileDialog } from "../UserProfile";
 import {
+  useBlockedIds,
   useFriends,
   useGames,
   useGameSearchLog,
@@ -57,12 +58,16 @@ export default function PostFeed({ setEditingPost, setShowCreatePost }) {
 
   const { friendIds } = useFriends(user);
 
+  // Autores bloqueados (en cualquier dirección) no aparecen en ninguna categoría
+  const { blockedIds } = useBlockedIds(user);
+
   const sections = usePostCategories({
     filterGame,
     filterPlatform,
     search,
     friendIds,
-    userRegion: userData?.region
+    userRegion: userData?.region,
+    blockedIds
   });
 
   useGameSearchLog({ user, search, filterGame, games });

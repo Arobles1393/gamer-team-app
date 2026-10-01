@@ -1,0 +1,148 @@
+/* =====================================================
+   ADMIN — reportes pendientes
+   ===================================================== */
+.admin-reports {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 820px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-report {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 20px;
+  border: 1px solid var(--gm-border-soft);
+  border-radius: var(--gm-radius-card);
+  background: var(--gm-surface);
+}
+
+.admin-report__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.admin-report__type,
+.admin-report__reason {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: var(--gm-radius-pill);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.admin-report__type {
+  background: var(--gm-primary-soft);
+  color: var(--gm-label);
+}
+
+.admin-report__reason {
+  background: var(--gm-accent-soft);
+  color: var(--gm-accent-text);
+}
+
+.admin-report__date {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--gm-subtle);
+}
+
+.admin-report__reporter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--gm-muted);
+}
+
+.admin-report__reporter strong {
+  color: var(--gm-text);
+}
+
+.admin .admin-report__avatar.p-avatar {
+  width: 30px;
+  height: 30px;
+  font-size: 12px;
+}
+
+.admin-report__note,
+.admin-report__quote {
+  margin: 0;
+  padding: 10px 14px;
+  border-left: 3px solid var(--gm-border);
+  border-radius: 0 10px 10px 0;
+  background: rgba(124, 58, 237, 0.06);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--gm-text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.admin-report__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-report__target {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+  min-width: 0;
+}
+
+.admin-report__link {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 8px;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gm-label);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.admin-report__link:hover {
+  color: var(--gm-text);
+  text-decoration: underline;
+}
+
+.admin-report__link:focus-visible {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.admin-report__muted {
+  font-size: 14px;
+  color: var(--gm-subtle);
+}
+
+@media (max-width: 767px) {
+  .admin-report {
+    padding: 16px;
+  }
+
+  .admin-report__footer .p-button {
+    width: 100%;
+  }
+}

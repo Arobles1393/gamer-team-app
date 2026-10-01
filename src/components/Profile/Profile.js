@@ -9,6 +9,7 @@ import { SteamSection } from "../Steam";
 import PersonalInfo from "./PersonalInfo/PersonalInfo";
 import ProfileAbout from "./ProfileAbout";
 import ProfileSaveBar from "./ProfileSaveBar";
+import BlockedUsers from "./BlockedUsers";
 import { useProfileForm, useGameSearch, useProfileImages } from "../../hooks";
 import { countries } from "../../data/countries";
 import { useCurrentUser, useCurrentUserData } from "../../context";
@@ -180,6 +181,8 @@ export default function Profile() {
             onLinksChange={setLinks}
             emptyText="Aún no agregas tus redes."
           />
+          {/* Solo aparece si bloqueaste a alguien */}
+          <BlockedUsers user={user} onError={showError} />
         </div>
       </div>
 

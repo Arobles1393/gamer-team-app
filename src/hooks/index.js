@@ -41,9 +41,16 @@ export * from "./notifications/useUnreadNotifications";
 export * from "./auth/useAuth";
 export * from "./auth/useProviderLogin";
 export * from "./auth/useRequireAuth";
+export * from "./auth/useIsAdmin";
 
 // Juegos
 export * from "./games/useGameSearch";
 export * from "./games/useGamingNews";
 export * from "./games/useGames";
 export * from "./games/useGameSearchLog";
+
+// Bloqueos y reportes
+export * from "./blocks/useBlockedIds";
+export * from "./blocks/useBlockStatus";
+export * from "./reports/useReportDialog";
+export * from "./reports/usePendingReports";
