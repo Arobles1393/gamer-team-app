@@ -223,6 +223,116 @@
   color: var(--gm-accent-text);
 }
 
+/* ---------- MÁS FILTROS (micrófono, nivel, idioma) ---------- */
+.more-filters__trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.more-filters__trigger .pi {
+  font-size: 13px;
+}
+
+/* Hay filtros de este panel activos */
+.more-filters__dot {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gm-accent);
+  box-shadow: 0 0 0 2px var(--gm-bg);
+}
+
+/* El panel se monta en <body>: colores directos del tema */
+.more-filters.p-overlaypanel {
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  border: 1px solid var(--gm-border);
+  border-radius: var(--gm-radius-card);
+  background: var(--gm-popover-bg);
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.8);
+  font-family: var(--gm-font-body);
+  color: var(--gm-text);
+}
+
+.more-filters.p-overlaypanel::before,
+.more-filters.p-overlaypanel::after {
+  display: none;
+}
+
+.more-filters .p-overlaypanel-content {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 18px;
+}
+
+.more-filters__group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.more-filters__label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--gm-label);
+}
+
+.more-filters__options {
+  display: flex;
+  gap: 8px;
+}
+
+.more-filters .more-filters__option {
+  flex: 1;
+  height: 38px;
+  padding: 0 12px;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+}
+
+.more-filters .more-filters__select.p-dropdown {
+  width: 100%;
+  height: 40px;
+  border: 1px solid var(--gm-border);
+  border-radius: var(--gm-radius-control);
+  background: var(--gm-surface);
+  box-shadow: none;
+}
+
+.more-filters .more-filters__select .p-dropdown-label {
+  display: flex;
+  align-items: center;
+  font-family: var(--gm-font-body);
+  font-size: 14px;
+  color: var(--gm-text);
+}
+
+.more-filters__clear {
+  align-self: flex-start;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gm-accent-text);
+  cursor: pointer;
+}
+
+.more-filters__clear:hover {
+  text-decoration: underline;
+}
+
 /* Chip-dropdown "Todos los juegos" (PrimeReact Dropdown) */
 .feed .feed-chip--select.p-dropdown {
   display: inline-flex;

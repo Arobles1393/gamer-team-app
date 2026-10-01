@@ -3,9 +3,10 @@ import { AutoComplete } from "primereact/autocomplete";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
+import { Dropdown } from "primereact/dropdown";
 import { useGameSearch, useCreatePost } from "../../hooks";
 import { CALENDAR_LOCALE } from "../../utils/calendarLocale";
-import { platforms } from "../../constants";
+import { LANGUAGES, SKILL_LEVELS, platforms } from "../../constants";
 import { getPlatformKey, platformIcons, platformLabels } from "../../utils";
 import { useCurrentUser, useCurrentUserData } from "../../context";
 import "./CreatePost.css";
@@ -102,6 +103,12 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
     setScheduled,
     scheduledAt,
     setScheduledAt,
+    requiresMic,
+    setRequiresMic,
+    skillLevel,
+    setSkillLevel,
+    language,
+    setLanguage,
     loading,
     handleSubmit
   } = useCreatePost({
@@ -211,6 +218,64 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
               </button>
             );
           })}
+        </div>
+      </Field>
+
+      <Field
+        id="create-details"
+        label="Detalles"
+        hint="Opcional: ayuda a encontrar jugadores afines."
+      >
+        <div className="create-post__details">
+          {/* Sin tocar = sin especificar (null), no "no hace falta" */}
+          <button
+            type="button"
+            role="switch"
+            aria-checked={requiresMic === true}
+            className={`create-post__platform${requiresMic ? " create-post__platform--active" : ""}`}
+            onClick={() => setRequiresMic(requiresMic ? null : true)}
+          >
+            <i className="pi pi-microphone" aria-hidden="true" />
+            Requiere micrófono
+          </button>
+
+          <div className="create-post__platforms" role="radiogroup" aria-label="Nivel">
+            {SKILL_LEVELS.map(({ label, value }) => {
+              const active = skillLevel === value;
+
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  className={`create-post__platform${active ? " create-post__platform--active" : ""}`}
+                  // Clic en el activo lo quita (sin especificar)
+                  onClick={() => setSkillLevel(active ? null : value)}
+                >
+                  <i className={`pi ${value === "competitive" ? "pi-trophy" : "pi-face-smile"}`} aria-hidden="true" />
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+
+          <Dropdown
+            inputId="create-language"
+            value={language}
+            options={LANGUAGES}
+            onChange={(e) => setLanguage(e.value ?? null)}
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Idioma: sin especificar"
+            filter
+            filterPlaceholder="Buscar idioma…"
+            emptyFilterMessage="Ningún idioma coincide"
+            showClear
+            aria-label="Idioma de la partida"
+            className="gm-select create-post__language"
+            panelClassName="gm-panel"
+          />
         </div>
       </Field>
 

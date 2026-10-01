@@ -9,7 +9,7 @@ import FeedEmptyState from "./FeedEmptyState";
 import "./Feed.css";
 import { UserProfileDialog } from "../UserProfile";
 import { useBlockedIds, usePosts, useFilteredPosts, usePostFilters, usePostListActions } from "../../hooks";
-import { excludeBlockedAuthors } from "../../utils";
+import { EMPTY_TAG_FILTERS, excludeBlockedAuthors, hasTagFilters } from "../../utils";
 import { useCurrentUser } from "../../context";
 
 // Vistas planas: "Mis publicaciones" (onlyMine) y "Mis partidas" (joined).
@@ -58,13 +58,16 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
     setFilterGame,
     filterPlatform,
     setFilterPlatform,
+    tagFilters,
+    setTagFilters,
     gameOptions
   } = usePostFilters(gameNames);
 
   const filteredPosts = useFilteredPosts(
     posts,
     filterGame,
-    filterPlatform
+    filterPlatform,
+    tagFilters
   );
 
   const { blockedIds } = useBlockedIds(user);
@@ -77,11 +80,12 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
     return unblocked.filter((post) => post.game?.toLowerCase().includes(term));
   }, [filteredPosts, search, blockedIds]);
 
-  const hasFilters = Boolean(filterGame || filterPlatform || search.trim());
+  const hasFilters = Boolean(filterGame || filterPlatform || search.trim() || hasTagFilters(tagFilters));
 
   const handleClearFilters = () => {
     setFilterGame(null);
     setFilterPlatform(null);
+    setTagFilters(EMPTY_TAG_FILTERS);
     setSearch("");
   };
 
@@ -99,6 +103,8 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
         filterPlatform={filterPlatform}
         onPlatformChange={setFilterPlatform}
         gameOptions={gameOptions}
+        tagFilters={tagFilters}
+        onTagFiltersChange={setTagFilters}
       />
       {loading ? (
         <div className="post-grid" aria-busy="true" aria-label="Cargando partidas">

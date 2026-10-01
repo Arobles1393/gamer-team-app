@@ -20,7 +20,7 @@ import {
   useRequireAuth
 } from "../../hooks";
 import { useCurrentUser, useCurrentUserData } from "../../context";
-import { buildExploreUrl } from "../../utils";
+import { EMPTY_TAG_FILTERS, buildExploreUrl, hasTagFilters } from "../../utils";
 
 // Feed principal por categorías. El buscador y los chips de plataforma
 // filtran todas las categorías a la vez.
@@ -53,6 +53,8 @@ export default function PostFeed({ setEditingPost, setShowCreatePost }) {
     setFilterGame,
     filterPlatform,
     setFilterPlatform,
+    tagFilters,
+    setTagFilters,
     gameOptions
   } = usePostFilters(games);
 
@@ -67,18 +69,20 @@ export default function PostFeed({ setEditingPost, setShowCreatePost }) {
     search,
     friendIds,
     userRegion: userData?.region,
-    blockedIds
+    blockedIds,
+    tags: tagFilters
   });
 
   useGameSearchLog({ user, search, filterGame, games });
 
   // Las categorías sin posts se omiten en vez de mostrarse vacías
   const visibleSections = sections.filter((section) => section.loading || section.posts.length > 0);
-  const hasFilters = Boolean(filterGame || filterPlatform || search.trim());
+  const hasFilters = Boolean(filterGame || filterPlatform || search.trim() || hasTagFilters(tagFilters));
 
   const handleClearFilters = () => {
     setFilterGame(null);
     setFilterPlatform(null);
+    setTagFilters(EMPTY_TAG_FILTERS);
     setSearch("");
   };
 
@@ -97,6 +101,8 @@ export default function PostFeed({ setEditingPost, setShowCreatePost }) {
         filterPlatform={filterPlatform}
         onPlatformChange={setFilterPlatform}
         gameOptions={gameOptions}
+        tagFilters={tagFilters}
+        onTagFiltersChange={setTagFilters}
       />
 
       {visibleSections.length === 0 ? (
@@ -116,7 +122,8 @@ export default function PostFeed({ setEditingPost, setShowCreatePost }) {
               onSeeMore={() => navigate(buildExploreUrl({
                 category: section.key,
                 platform: filterPlatform,
-                game: filterGame
+                game: filterGame,
+                tags: tagFilters
               }))}
               getInterestedDoc={getInterestedDoc}
               onToggleInterested={handleInterested}

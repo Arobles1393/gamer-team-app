@@ -105,7 +105,8 @@ export const usePostCategories = ({
   search,
   friendIds = [],
   userRegion,
-  blockedIds = []
+  blockedIds = [],
+  tags
 }) => {
   const recent = usePostsQuery({ sortBy: "recent", limitCount: WINDOW_SIZE });
   const upcoming = usePostsQuery({ sortBy: "upcoming", limitCount: WINDOW_SIZE });
@@ -129,7 +130,7 @@ export const usePostCategories = ({
   const trendingBySearch = useTrendingPosts(gameTrendsService.subscribeToTrendingBySearch);
 
   return useMemo(() => {
-    const filters = { game: filterGame, platform: filterPlatform, search, blockedIds };
+    const filters = { game: filterGame, platform: filterPlatform, search, blockedIds, tags };
 
     // Claves y títulos compartidos con /explorar (utils/postCategories)
     const section = (key, { posts, loading }, extraFilter) => {
@@ -161,6 +162,7 @@ export const usePostCategories = ({
     filterPlatform,
     search,
     blockedIds,
+    tags,
     recent,
     upcoming,
     friends,

@@ -158,6 +158,43 @@
   color: var(--gm-muted);
 }
 
+/* Etiquetas (micrófono, competitivo, idioma): solo si hay alguna */
+.post-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: -6px 0 14px;
+  padding: 0;
+  list-style: none;
+}
+
+.post-card__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 9px;
+  border: 1px solid var(--gm-border-soft);
+  border-radius: var(--gm-radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gm-muted);
+}
+
+.post-card__tag .pi {
+  font-size: 11px;
+  color: var(--gm-label);
+}
+
+.post-card__tag--competitive {
+  border-color: rgba(244, 63, 94, 0.4);
+  color: var(--gm-accent-text);
+}
+
+.post-card__tag--competitive .pi {
+  color: var(--gm-accent-text);
+}
+
 .post-card__meta .pi {
   font-size: 12px;
   color: var(--gm-subtle);

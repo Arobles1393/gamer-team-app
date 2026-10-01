@@ -1,5 +1,6 @@
 import { Dropdown } from "primereact/dropdown";
 import { platformLabels } from "../../utils";
+import MoreFiltersPanel from "./MoreFiltersPanel";
 
 function FilterChip({ label, active, onClick }) {
   return (
@@ -19,7 +20,9 @@ export default function PostFilters({
   onGameChange,
   filterPlatform,
   onPlatformChange,
-  gameOptions
+  gameOptions,
+  tagFilters,
+  onTagFiltersChange
 }) {
   // Clic en el chip activo lo desactiva (vuelve a "todas las plataformas")
   const handlePlatformClick = (value) => {
@@ -48,6 +51,11 @@ export default function PostFilters({
           onClick={() => handlePlatformClick(value)}
         />
       ))}
+
+      {/* Micrófono, nivel e idioma: en un panel para no saturar la fila */}
+      {onTagFiltersChange && (
+        <MoreFiltersPanel tagFilters={tagFilters} onChange={onTagFiltersChange} />
+      )}
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { UserAvatar } from "../UserAvatar";
 import { Button } from "primereact/button";
 import { memo, useCallback } from "react";
 import PostPlatforms from "./PostPlatforms";
+import PostTags from "./PostTags";
 import { ReportButton } from "../Reports";
 import { useUserProfile } from "../../hooks";
 import { formatDates } from "../../utils";
@@ -125,6 +126,12 @@ function PostCard({
           <i className="pi pi-user" aria-hidden="true" />
           {formatPlayersNeeded(post.playersNeeded)}
         </p>
+
+        <PostTags
+          requiresMic={post.requiresMic}
+          skillLevel={post.skillLevel}
+          language={post.language}
+        />
 
         <div className="post-card__author">
           <button

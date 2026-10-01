@@ -3,6 +3,7 @@ import { Button } from "primereact/button";
 import { ProfileSection } from "../ProfileSection";
 import { countries } from "../../data/countries";
 import { formatDates } from "../../utils";
+import { getLanguageLabel, getSkillLevelLabel } from "../../constants";
 
 function InfoRow({ icon, label, children }) {
   return (
@@ -81,6 +82,16 @@ export default function PostInfoCard({
           <InfoRow icon="pi-user" label="Buscan">
             {formatCount(playersNeeded, "jugador", "jugadores")}
           </InfoRow>
+        )}
+        {/* Etiquetas opcionales: solo las que tienen valor */}
+        {post.requiresMic === true && (
+          <InfoRow icon="pi-microphone" label="Micrófono">Requiere micrófono</InfoRow>
+        )}
+        {post.skillLevel && (
+          <InfoRow icon="pi-trophy" label="Nivel">{getSkillLevelLabel(post.skillLevel)}</InfoRow>
+        )}
+        {post.language && (
+          <InfoRow icon="pi-language" label="Idioma">{getLanguageLabel(post.language)}</InfoRow>
         )}
         <InfoRow icon="pi-users" label="Interesados">
           {formatCount(interestedCount, "jugador", "jugadores")}

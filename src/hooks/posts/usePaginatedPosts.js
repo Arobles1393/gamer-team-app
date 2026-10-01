@@ -36,6 +36,7 @@ export const usePaginatedPosts = ({
   friendIds = [],
   region,
   blockedIds = [],
+  tags,
   ready = true
 }) => {
   const [posts, setPosts] = useState([]);
@@ -51,12 +52,12 @@ export const usePaginatedPosts = ({
 
   // Clave estable de la consulta
   const friendsKey = friendIds.slice(0, 30).join(",");
-  const queryKey = JSON.stringify({ category, platform, game, friendsKey, region });
+  const queryKey = JSON.stringify({ category, platform, game, tags, friendsKey, region });
 
   const load = useCallback(async (reset) => {
     if (busyRef.current && !reset) return;
 
-    const { category: cat, platform: plat, game: gm, friendsKey: friends, region: reg } =
+    const { category: cat, platform: plat, game: gm, tags: tg, friendsKey: friends, region: reg } =
       JSON.parse(queryKey);
 
     const requestId = ++requestRef.current;
@@ -80,7 +81,7 @@ export const usePaginatedPosts = ({
           region: reg
         }),
         cursor: cursorRef.current,
-        filters: { platform: plat, game: gm },
+        filters: { platform: plat, game: gm, tags: tg },
         pageSize: PAGE_SIZE
       });
 

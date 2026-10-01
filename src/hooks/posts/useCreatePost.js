@@ -22,6 +22,10 @@ export const useCreatePost = ({
   // Programar para después: por defecto "ahora mismo" (scheduledAt null)
   const [scheduled, setScheduledState] = useState(false);
   const [scheduledAt, setScheduledAt] = useState(null);
+  // Etiquetas opcionales: null = "sin especificar" (no es lo mismo que false)
+  const [requiresMic, setRequiresMic] = useState(null);
+  const [skillLevel, setSkillLevel] = useState(null);
+  const [language, setLanguage] = useState(null);
   const [loading, setLoading] = useState(false);
 
   // Al volver a "ahora mismo" se descarta la fecha elegida
@@ -38,6 +42,9 @@ export const useCreatePost = ({
     setMultiplatform(false);
     setScheduledState(false);
     setScheduledAt(null);
+    setRequiresMic(null);
+    setSkillLevel(null);
+    setLanguage(null);
   }, []);
 
   useEffect(() => {
@@ -55,6 +62,9 @@ export const useCreatePost = ({
     const savedSchedule = formatDates.toDate(editingPost.scheduledAt);
     setScheduledState(Boolean(savedSchedule));
     setScheduledAt(savedSchedule);
+    setRequiresMic(editingPost.requiresMic ?? null);
+    setSkillLevel(editingPost.skillLevel ?? null);
+    setLanguage(editingPost.language ?? null);
   }, [editingPost, resetForm]);
 
   const handleSubmit = useCallback(async (e) => {
@@ -147,7 +157,10 @@ export const useCreatePost = ({
           null,
         multiplatform,
         // null = "ahora mismo"
-        scheduledAt: scheduled ? scheduledAt : null
+        scheduledAt: scheduled ? scheduledAt : null,
+        requiresMic,
+        skillLevel,
+        language
       };
 
       if (editingPost) {
@@ -203,6 +216,9 @@ export const useCreatePost = ({
     multiplatform,
     scheduled,
     scheduledAt,
+    requiresMic,
+    skillLevel,
+    language,
     editingPost,
     user,
     authorRegion,
@@ -226,6 +242,12 @@ export const useCreatePost = ({
     setScheduled,
     scheduledAt,
     setScheduledAt,
+    requiresMic,
+    setRequiresMic,
+    skillLevel,
+    setSkillLevel,
+    language,
+    setLanguage,
     loading,
     resetForm,
     handleSubmit

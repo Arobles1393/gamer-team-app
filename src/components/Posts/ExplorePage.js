@@ -11,7 +11,10 @@ import "./Feed.css";
 import { UserProfileDialog } from "../UserProfile";
 import { useBlockedIds, useFriends, useGames, usePaginatedPosts, usePostListActions } from "../../hooks";
 import { useCurrentUser, useCurrentUserData } from "../../context";
+import { LANGUAGES, SKILL_LEVELS } from "../../constants";
 import {
+  EMPTY_TAG_FILTERS,
+  hasTagFilters,
   POST_CATEGORIES,
   buildExploreUrl,
   getCategoryTitle,
@@ -36,6 +39,18 @@ export default function ExplorePage({ setEditingPost, setShowCreatePost }) {
   const platform = rawPlatform && platformLabels[rawPlatform] ? rawPlatform : null;
   const game = searchParams.get("game") || null;
 
+  // Panel "Más filtros": ?mic=1|0&level=casual|competitive&lang=es|en|...
+  const rawMic = searchParams.get("mic");
+  const rawLevel = searchParams.get("level");
+  const rawLang = searchParams.get("lang");
+  const tagMic = rawMic === "1" ? true : rawMic === "0" ? false : null;
+  const tagLevel = SKILL_LEVELS.some((level) => level.value === rawLevel) ? rawLevel : null;
+  const tagLang = LANGUAGES.some((language) => language.value === rawLang) ? rawLang : null;
+  const tags = useMemo(
+    () => ({ mic: tagMic, skillLevel: tagLevel, language: tagLang }),
+    [tagMic, tagLevel, tagLang]
+  );
+
   const { requiresUser, empty } = POST_CATEGORIES[category];
 
   const { friendIds, loading: loadingFriends } = useFriends(user);
@@ -57,7 +72,7 @@ export default function ExplorePage({ setEditingPost, setShowCreatePost }) {
     loadMore,
     retry,
     removePost
-  } = usePaginatedPosts({ category, platform, game, friendIds, region, blockedIds, ready });
+  } = usePaginatedPosts({ category, platform, game, tags, friendIds, region, blockedIds, ready });
 
   const showToast = useCallback((severity, summary, detail) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
@@ -90,12 +105,18 @@ export default function ExplorePage({ setEditingPost, setShowCreatePost }) {
   // Cambiar un filtro reescribe la URL (sin apilar historial por cada chip)
   const updateFilters = (changes) => {
     navigate(
-      buildExploreUrl({ category, platform, game, ...changes }),
+      buildExploreUrl({
+        category,
+        platform,
+        game,
+        ...changes,
+        tags: { ...tags, ...changes.tags }
+      }),
       { replace: true }
     );
   };
 
-  const hasFilters = Boolean(platform || game);
+  const hasFilters = Boolean(platform || game || hasTagFilters(tags));
 
   // Secciones personales: sin sesión, al login (y de vuelta aquí)
   if (requiresUser && !user) {
@@ -134,7 +155,7 @@ export default function ExplorePage({ setEditingPost, setShowCreatePost }) {
         <FeedEmptyState
           hasFilters={hasFilters}
           emptyText={emptyText}
-          onClearFilters={() => updateFilters({ platform: null, game: null })}
+          onClearFilters={() => updateFilters({ platform: null, game: null, tags: EMPTY_TAG_FILTERS })}
         />
       );
     }
@@ -190,6 +211,8 @@ export default function ExplorePage({ setEditingPost, setShowCreatePost }) {
         filterPlatform={platform}
         onPlatformChange={(value) => updateFilters({ platform: value })}
         gameOptions={gameOptions}
+        tagFilters={tags}
+        onTagFiltersChange={(changes) => updateFilters({ tags: changes })}
       />
 
       {renderResults()}
