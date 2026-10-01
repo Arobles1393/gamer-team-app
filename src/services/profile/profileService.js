@@ -31,6 +31,10 @@ const updateUserProfile = async (userId, profileData) => {
 const updateUserLanguage = (userId, language) =>
   updateDoc(doc(db, "users", userId), { language });
 
+// Correo de la cuenta: se copia de Firebase Auth, que es la fuente de verdad
+const updateUserEmail = (userId, email) =>
+  updateDoc(doc(db, "users", userId), { email });
+
 const createUserProfile = async (
   userId,
   profileData
@@ -65,5 +69,6 @@ export const profileService = {
   userProfileExists,
   updateUserProfile,
   updateUserLanguage,
+  updateUserEmail,
   createUserProfile
 };

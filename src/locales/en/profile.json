@@ -17,11 +17,13 @@
     "title": "Personal info",
     "nickname": "Nickname",
     "email": "Email",
-    "emailHint": "If you change it, you may be asked to log in again.",
+    "emailHint": "We'll send a link to the new email; the change applies once you confirm it.",
     "phone": "Phone",
     "region": "Region",
     "regionPlaceholder": "Select your region",
-    "missing": "Not added"
+    "missing": "Not added",
+    "emailManaged": "This is the email of the account you signed in with (for example, Google) and can't be changed here.",
+    "emailNone": "Your account has no email: you signed in with Steam."
   },
   "about": {
     "title": "About me",
@@ -128,7 +130,8 @@
     "invalidEmail": "Invalid email",
     "updated": "Profile updated",
     "reloginEmail": "For security, log in again to change your email.",
-    "saveError": "Couldn't save the profile. Please try again."
+    "saveError": "Couldn't save the profile. Please try again.",
+    "emailVerificationSent": "Profile updated. We sent a link to {{email}} to confirm your new email."
   },
   "images": {
     "avatarUpdated": "Profile picture updated",

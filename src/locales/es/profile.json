@@ -17,11 +17,13 @@
     "title": "Datos personales",
     "nickname": "Nickname",
     "email": "Correo",
-    "emailHint": "Si lo cambias, puede pedirte volver a iniciar sesión.",
+    "emailHint": "Te enviaremos un enlace al correo nuevo; el cambio se aplica cuando lo confirmes.",
     "phone": "Teléfono",
     "region": "Región",
     "regionPlaceholder": "Selecciona tu región",
-    "missing": "Sin agregar"
+    "missing": "Sin agregar",
+    "emailManaged": "Es el correo de la cuenta con la que iniciaste sesión (por ejemplo, Google) y no se cambia desde aquí.",
+    "emailNone": "Tu cuenta no tiene correo: iniciaste sesión con Steam."
   },
   "about": {
     "title": "Sobre mí",
@@ -128,7 +130,8 @@
     "invalidEmail": "Correo inválido",
     "updated": "Perfil actualizado",
     "reloginEmail": "Por seguridad, vuelve a iniciar sesión para cambiar tu correo.",
-    "saveError": "No se pudo guardar el perfil. Intenta de nuevo."
+    "saveError": "No se pudo guardar el perfil. Intenta de nuevo.",
+    "emailVerificationSent": "Perfil actualizado. Te enviamos un enlace a {{email}} para confirmar tu nuevo correo."
   },
   "images": {
     "avatarUpdated": "Foto de perfil actualizada",

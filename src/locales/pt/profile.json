@@ -17,11 +17,13 @@
     "title": "Dados pessoais",
     "nickname": "Nickname",
     "email": "E-mail",
-    "emailHint": "Se você alterá-lo, pode ser necessário entrar novamente.",
+    "emailHint": "Enviaremos um link para o novo e-mail; a alteração vale quando você confirmar.",
     "phone": "Telefone",
     "region": "Região",
     "regionPlaceholder": "Selecione sua região",
-    "missing": "Não adicionado"
+    "missing": "Não adicionado",
+    "emailManaged": "É o e-mail da conta com que você entrou (por exemplo, Google) e não pode ser alterado aqui.",
+    "emailNone": "Sua conta não tem e-mail: você entrou com a Steam."
   },
   "about": {
     "title": "Sobre mim",
@@ -128,7 +130,8 @@
     "invalidEmail": "E-mail inválido",
     "updated": "Perfil atualizado",
     "reloginEmail": "Por segurança, entre novamente para alterar seu e-mail.",
-    "saveError": "Não foi possível salvar o perfil. Tente novamente."
+    "saveError": "Não foi possível salvar o perfil. Tente novamente.",
+    "emailVerificationSent": "Perfil atualizado. Enviamos um link para {{email}} para confirmar seu novo e-mail."
   },
   "images": {
     "avatarUpdated": "Foto de perfil atualizada",

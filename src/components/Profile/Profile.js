@@ -54,6 +54,7 @@ export default function Profile() {
     setIsEditing,
     saving,
     email,
+    canChangeEmail,
     username,
     phone,
     description,
@@ -182,6 +183,7 @@ export default function Profile() {
             phone={phone}
             region={region}
             countries={countryOptions}
+            canChangeEmail={canChangeEmail}
             isEditing={isEditing}
             onEmailChange={setEmail}
             onUsernameChange={setUsername}

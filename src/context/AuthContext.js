@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { useAccountLanguage, useAuth } from "../hooks";
+import { useAccountEmail, useAccountLanguage, useAuth } from "../hooks";
 
 // Separados para que los componentes que solo usan `user` no se re-rendericen
 // cada vez que cambia `userData` (por ejemplo, el lastSeen de presencia).
@@ -11,6 +11,8 @@ export const AuthProvider = ({ children }) => {
   const { user, userData, ready } = useAuth();
   // El idioma guardado en la cuenta gana sobre el del navegador
   useAccountLanguage(userData);
+  // users.email sigue al correo de Firebase Auth (p. ej. tras confirmar un cambio)
+  useAccountEmail(user, userData);
 
   return (
     <AuthUserContext.Provider value={user}>

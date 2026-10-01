@@ -34,6 +34,7 @@ export default function PersonalInfo({
   phone,
   region,
   countries,
+  canChangeEmail,
   isEditing,
   onEmailChange,
   onUsernameChange,
@@ -43,6 +44,11 @@ export default function PersonalInfo({
   const { t } = useTranslation("profile");
   const country = countries.find((c) => c.value === region);
   const missing = <span className="personal-info__missing">{t("personal.missing")}</span>;
+
+  // Google: el correo es el de su cuenta de Google. Steam: no tiene correo
+  const emailHint = canChangeEmail
+    ? t("personal.emailHint")
+    : t(email ? "personal.emailManaged" : "personal.emailNone");
 
   return (
     <ProfileSection title={t("personal.title")} icon="pi-id-card" className="personal-info">
@@ -61,13 +67,14 @@ export default function PersonalInfo({
           <Field
             id="profile-email"
             label={t("personal.email")}
-            hint={t("personal.emailHint")}
+            hint={emailHint}
           >
             <InputText
               id="profile-email"
               type="email"
               value={email}
               onChange={(e) => onEmailChange(e.target.value)}
+              disabled={!canChangeEmail}
               autoComplete="email"
               className="gm-input"
             />
