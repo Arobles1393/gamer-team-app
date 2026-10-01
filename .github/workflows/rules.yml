@@ -1,0 +1,38 @@
+# Pruebas de firestore.rules en el emulador (npm run test:rules).
+# No usan secretos ni tocan producción: proyecto demo- del emulador.
+name: Reglas de Firestore
+
+on:
+  pull_request:
+  push:
+    branches: [main, dev]
+
+jobs:
+  rules:
+    name: Pruebas de reglas
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # El emulador de Firestore corre sobre Java
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      # El .jar del emulador se descarga la primera vez
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/firebase/emulators
+          key: firebase-emulators-13.35.1
+
+      - run: npm ci
+
+      - run: npm run test:rules
