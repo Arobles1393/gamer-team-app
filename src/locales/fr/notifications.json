@@ -1,0 +1,71 @@
+{
+  "title": "Notifications",
+  "loading": "Chargement des notifications",
+  "markAllRead": "Tout marquer comme lu",
+  "deleteAll": "Tout supprimer",
+  "viewAll": "Voir toutes les notifications",
+  "unreadCount": "{{count}} non lues",
+  "unreadSr": "(non lue)",
+  "someone": "Quelqu'un",
+  "accept": "Accepter",
+  "reject": "Refuser",
+  "status": {
+    "accepted": "Acceptée",
+    "rejected": "Refusée"
+  },
+  "actions": {
+    "friend_request": "veut vous ajouter en ami",
+    "friend_accepted": "a accepté votre demande d'ami",
+    "message": "vous a envoyé un message",
+    "group_message": "a écrit dans la discussion de groupe",
+    "group_message_game": "a écrit dans la discussion de {{game}}",
+    "comment": "a commenté votre publication",
+    "interested": "est intéressé par votre partie",
+    "default": "vous a envoyé une notification"
+  },
+  "sections": {
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "thisWeek": "Cette semaine",
+    "older": "Plus anciennes"
+  },
+  "filters": {
+    "label": "Filtrer les notifications",
+    "all": "Toutes",
+    "unread": "Non lues",
+    "requests": "Demandes"
+  },
+  "errors": {
+    "markAll": "Impossible de les marquer comme lues. Réessayez.",
+    "deleteAll": "Impossible de supprimer les notifications. Réessayez."
+  },
+  "confirmDelete": {
+    "header": "Supprimer les notifications",
+    "message": "Toutes vos notifications seront supprimées. Cette action est irréversible."
+  },
+  "overlayEmpty": {
+    "title": "Vous êtes à jour",
+    "text": "Vous n'avez aucune nouvelle notification."
+  },
+  "empty": {
+    "empty": {
+      "title": "Vous êtes à jour",
+      "text": "Vous verrez ici les demandes d'ami, les messages et l'activité de vos parties."
+    },
+    "unread": {
+      "title": "Rien en attente",
+      "text": "Vous avez lu toutes vos notifications.",
+      "action": "Voir tout"
+    },
+    "requests": {
+      "title": "Aucune demande en attente",
+      "text": "Quand quelqu'un voudra vous ajouter en ami, cela apparaîtra ici.",
+      "action": "Voir tout"
+    },
+    "error": {
+      "title": "Impossible de charger vos notifications",
+      "text": "Vérifiez votre connexion et réessayez.",
+      "action": "Réessayer"
+    }
+  }
+}

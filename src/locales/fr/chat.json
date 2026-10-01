@@ -1,0 +1,96 @@
+{
+  "list": {
+    "label": "Liste des discussions",
+    "title": "Discussions",
+    "loading": "Chargement des discussions",
+    "tabsLabel": "Type de discussion",
+    "tabDirect": "Discussions",
+    "tabGroup": "Discussions de partie",
+    "unreadBadge": "{{count}} non lues",
+    "searchDirect": "Rechercher une discussion…",
+    "searchDirectLabel": "Rechercher une discussion par nom d'utilisateur",
+    "searchGroup": "Rechercher par jeu…",
+    "searchGroupLabel": "Rechercher une discussion de partie par jeu",
+    "user": "Utilisateur",
+    "you": "Vous : {{message}}",
+    "noMessages": "Pas encore de messages",
+    "itemLabel": "Discussion avec {{username}}",
+    "itemLabelUnread": "Discussion avec {{username}}, messages non lus",
+    "groupFallback": "Discussion de groupe",
+    "groupItemLabel": "Discussion de groupe de {{title}}",
+    "groupItemLabelUnread": "Discussion de groupe de {{title}}, messages non lus"
+  },
+  "empty": {
+    "noChats": {
+      "title": "Aucune discussion pour l'instant",
+      "text": "Écrivez à l'un de vos amis pour commencer à organiser des parties.",
+      "action": "Voir mes amis"
+    },
+    "noGroupChats": {
+      "title": "Aucune discussion de partie pour l'instant",
+      "text": "Appuyez sur « Je veux jouer » sur une publication pour rejoindre sa discussion de groupe.",
+      "action": "Voir les parties"
+    },
+    "noMatch": {
+      "title": "Aucune discussion ne correspond",
+      "text": "Vous n'avez aucune discussion avec quelqu'un dont le pseudo contient « {{search}} ».",
+      "action": "Effacer la recherche"
+    },
+    "noGroupMatch": {
+      "title": "Aucune discussion de partie ne correspond",
+      "text": "Vous n'avez aucune discussion de partie pour un jeu contenant « {{search}} ».",
+      "action": "Effacer la recherche"
+    },
+    "error": {
+      "title": "Impossible de charger vos discussions",
+      "text": "Vérifiez votre connexion et réessayez.",
+      "action": "Réessayer"
+    },
+    "noSelection": {
+      "title": "Sélectionnez une discussion",
+      "text": "Choisissez une conversation dans la liste pour voir les messages."
+    },
+    "noMessages": {
+      "title": "Lancez la conversation",
+      "text": "Envoyez le premier message.",
+      "textTo": "Envoyez le premier message à {{username}}."
+    }
+  },
+  "window": {
+    "label": "Discussion avec {{username}}",
+    "groupLabel": "Discussion de groupe de {{title}}",
+    "back": "Retour aux discussions",
+    "blocked": "Vous ne pouvez pas envoyer de messages dans cette conversation.",
+    "leftGroup": "Vous ne faites plus partie de ce groupe.",
+    "participants_one": "{{count}} participant",
+    "participants_other": "{{count}} participants",
+    "wholeGroup": "tout le groupe",
+    "sendError": "Impossible d'envoyer le message. Réessayez.",
+    "sendFileError": "Impossible d'envoyer le fichier. Réessayez.",
+    "openError": "Impossible d'ouvrir la discussion. Réessayez."
+  },
+  "messages": {
+    "label": "Messages",
+    "loading": "Chargement des messages",
+    "player": "Joueur",
+    "openImage": "Ouvrir l'image dans un nouvel onglet",
+    "image": "Image",
+    "file": "Fichier"
+  },
+  "composer": {
+    "placeholder": "Écrivez un message…",
+    "label": "Écrivez un message",
+    "send": "Envoyer le message",
+    "attach": "Joindre un fichier",
+    "emoji": "Insérer un emoji",
+    "searchEmoji": "Rechercher un emoji",
+    "removeAttachment": "Retirer la pièce jointe",
+    "uploading": "Envoi…",
+    "tooBig": "Le fichier ne doit pas dépasser {{mb}} Mo."
+  },
+  "preview": {
+    "image": "📷 Image",
+    "video": "🎥 Vidéo",
+    "file": "📎 {{fileName}}"
+  }
+}

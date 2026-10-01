@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { postService } from "../../services/posts";
 import { formatDates, getGameDetail } from "../../utils";
+import i18n from "../../i18n";
 
 // Una fecha programada tiene que estar en el futuro
 const isFuture = (date) => date instanceof Date && date.getTime() > Date.now();
@@ -81,7 +82,7 @@ export const useCreatePost = ({
       !comments?.trim() ||
       (!multiplatform && !platform)
     ) {
-      onError?.("Completa todos los campos");
+      onError?.(i18n.t("posts:create.errors.incomplete"));
       return;
     }
 
@@ -91,7 +92,7 @@ export const useCreatePost = ({
     const scheduleChanged = scheduledAt?.getTime() !== savedSchedule?.getTime();
 
     if (scheduled && (!scheduledAt || (scheduleChanged && !isFuture(scheduledAt)))) {
-      onError?.("Elige una fecha y hora futuras para la partida");
+      onError?.(i18n.t("posts:create.errors.pastDate"));
       return;
     }
 
@@ -200,8 +201,8 @@ export const useCreatePost = ({
 
       onError?.(
         editingPost
-          ? "No se pudo actualizar la publicación"
-          : "No se pudo guardar la publicación"
+          ? i18n.t("posts:create.errors.update")
+          : i18n.t("posts:create.errors.save")
       );
 
     } finally {

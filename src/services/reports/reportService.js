@@ -11,13 +11,8 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase/config";
 
-export const REPORT_REASONS = [
-  { value: "spam", label: "Spam" },
-  { value: "inappropriate", label: "Contenido inapropiado" },
-  { value: "harassment", label: "Acoso" },
-  { value: "impersonation", label: "Suplantación de identidad" },
-  { value: "other", label: "Otro motivo" }
-];
+// Motivos de reporte. El texto está en reports:reasons.{value}
+export const REPORT_REASONS = ["spam", "inappropriate", "harassment", "impersonation", "other"];
 
 const createReport = ({ reporterId, targetType, targetId, reason, note = "" }) =>
   addDoc(collection(db, "reports"), {

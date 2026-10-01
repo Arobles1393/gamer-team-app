@@ -1,0 +1,96 @@
+{
+  "list": {
+    "label": "Chat list",
+    "title": "Chats",
+    "loading": "Loading chats",
+    "tabsLabel": "Chat type",
+    "tabDirect": "Chats",
+    "tabGroup": "Party chats",
+    "unreadBadge": "{{count}} unread",
+    "searchDirect": "Search chats…",
+    "searchDirectLabel": "Search chats by username",
+    "searchGroup": "Search by game…",
+    "searchGroupLabel": "Search party chats by game",
+    "user": "User",
+    "you": "You: {{message}}",
+    "noMessages": "No messages yet",
+    "itemLabel": "Chat with {{username}}",
+    "itemLabelUnread": "Chat with {{username}}, unread messages",
+    "groupFallback": "Group chat",
+    "groupItemLabel": "{{title}} group chat",
+    "groupItemLabelUnread": "{{title}} group chat, unread messages"
+  },
+  "empty": {
+    "noChats": {
+      "title": "No chats yet",
+      "text": "Message one of your friends to start coordinating parties.",
+      "action": "See friends"
+    },
+    "noGroupChats": {
+      "title": "No party chats yet",
+      "text": "Tap “I want to play” on a post to join its group chat.",
+      "action": "See parties"
+    },
+    "noMatch": {
+      "title": "No chats match",
+      "text": "You have no chats with anyone whose username contains \"{{search}}\".",
+      "action": "Clear search"
+    },
+    "noGroupMatch": {
+      "title": "No party chats match",
+      "text": "You have no party chats for a game containing \"{{search}}\".",
+      "action": "Clear search"
+    },
+    "error": {
+      "title": "Couldn't load your chats",
+      "text": "Check your connection and try again.",
+      "action": "Retry"
+    },
+    "noSelection": {
+      "title": "Select a chat",
+      "text": "Choose a conversation from the list to see its messages."
+    },
+    "noMessages": {
+      "title": "Start the conversation",
+      "text": "Send the first message.",
+      "textTo": "Send the first message to {{username}}."
+    }
+  },
+  "window": {
+    "label": "Chat with {{username}}",
+    "groupLabel": "{{title}} group chat",
+    "back": "Back to chats",
+    "blocked": "You can't send messages in this conversation.",
+    "leftGroup": "You're no longer part of this group.",
+    "participants_one": "{{count}} participant",
+    "participants_other": "{{count}} participants",
+    "wholeGroup": "the whole group",
+    "sendError": "Couldn't send the message. Please try again.",
+    "sendFileError": "Couldn't send the file. Please try again.",
+    "openError": "Couldn't open the chat. Please try again."
+  },
+  "messages": {
+    "label": "Messages",
+    "loading": "Loading messages",
+    "player": "Player",
+    "openImage": "Open image in a new tab",
+    "image": "Image",
+    "file": "File"
+  },
+  "composer": {
+    "placeholder": "Write a message…",
+    "label": "Write a message",
+    "send": "Send message",
+    "attach": "Attach file",
+    "emoji": "Insert emoji",
+    "searchEmoji": "Search emoji",
+    "removeAttachment": "Remove attachment",
+    "uploading": "Uploading…",
+    "tooBig": "The file must be {{mb}} MB or less."
+  },
+  "preview": {
+    "image": "📷 Image",
+    "video": "🎥 Video",
+    "file": "📎 {{fileName}}"
+  }
+}

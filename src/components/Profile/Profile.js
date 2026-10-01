@@ -1,4 +1,5 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "primereact/button";
 import { Skeleton } from "primereact/skeleton";
 import { Toast } from "primereact/toast";
@@ -10,14 +11,18 @@ import PersonalInfo from "./PersonalInfo/PersonalInfo";
 import ProfileAbout from "./ProfileAbout";
 import ProfileSaveBar from "./ProfileSaveBar";
 import BlockedUsers from "./BlockedUsers";
+import LanguageSection from "./LanguageSection";
 import { useProfileForm, useGameSearch, useProfileImages } from "../../hooks";
 import { countries } from "../../data/countries";
+import { getCountryOptions } from "../../utils";
 import { useCurrentUser, useCurrentUserData } from "../../context";
 import "./Profile.css";
 
 function ProfileSkeleton() {
+  const { t } = useTranslation("profile");
+
   return (
-    <div className="profile-page" aria-busy="true" aria-label="Cargando perfil">
+    <div className="profile-page" aria-busy="true" aria-label={t("page.loading")}>
       <Skeleton height="220px" borderRadius="16px" className="profile-skeleton" />
       <div className="profile-page__grid">
         <Skeleton height="260px" borderRadius="16px" className="profile-skeleton" />
@@ -28,6 +33,7 @@ function ProfileSkeleton() {
 }
 
 export default function Profile() {
+  const { t, i18n } = useTranslation("profile");
   const user = useCurrentUser();
   const userData = useCurrentUserData();
   const [gameQuery, setGameQuery] = useState("");
@@ -36,12 +42,12 @@ export default function Profile() {
   const toast = useRef(null);
 
   const showError = useCallback((detail) => {
-    toast.current?.show({ severity: "error", summary: "Error", detail, life: 3000 });
-  }, []);
+    toast.current?.show({ severity: "error", summary: t("common:status.error"), detail, life: 3000 });
+  }, [t]);
 
   const showSuccess = useCallback((detail) => {
-    toast.current?.show({ severity: "success", summary: "Listo", detail, life: 2500 });
-  }, []);
+    toast.current?.show({ severity: "success", summary: t("common:status.done"), detail, life: 2500 });
+  }, [t]);
 
   const {
     isEditing,
@@ -68,6 +74,13 @@ export default function Profile() {
   } = useProfileForm(user, userData, showError, showSuccess);
 
   const { suggestions, handleSearch } = useGameSearch();
+
+  // Nombres de países en el idioma actual
+  const countryOptions = useMemo(
+    () => getCountryOptions(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [i18n.resolvedLanguage]
+  );
 
   const { preview, bannerPreview, uploading, handleImageChange } = useProfileImages(
     user,
@@ -111,7 +124,7 @@ export default function Profile() {
       <ProfileHero
         userData={userData}
         country={country}
-        eyebrow="Mi perfil"
+        eyebrow={t("page.eyebrow")}
         editable
         avatarPreview={preview}
         bannerPreview={bannerPreview}
@@ -122,11 +135,11 @@ export default function Profile() {
           isEditing ? (
             <span className="profile-hero__editing">
               <i className="pi pi-pencil" aria-hidden="true" />
-              Editando perfil
+              {t("page.editing")}
             </span>
           ) : (
             <Button
-              label="Editar perfil"
+              label={t("page.edit")}
               icon="pi pi-pencil"
               className="gm-btn gm-btn--primary profile-hero__edit"
               onClick={() => setIsEditing(true)}
@@ -151,7 +164,7 @@ export default function Profile() {
             onGameQueryChange={setGameQuery}
             onAddGame={handleAddGame}
             onRemoveGame={removeGame}
-            emptyText="Aún no agregas juegos favoritos."
+            emptyText={t("page.emptyGames")}
             onEmptyAction={() => setIsEditing(true)}
           />
           {/* Usa los links guardados, no los que se están editando */}
@@ -168,7 +181,7 @@ export default function Profile() {
             username={username}
             phone={phone}
             region={region}
-            countries={countries}
+            countries={countryOptions}
             isEditing={isEditing}
             onEmailChange={setEmail}
             onUsernameChange={setUsername}
@@ -179,8 +192,10 @@ export default function Profile() {
             links={links}
             isEditing={isEditing}
             onLinksChange={setLinks}
-            emptyText="Aún no agregas tus redes."
+            emptyText={t("page.emptyLinks")}
           />
+          {/* Fuera del modo edición: el idioma se aplica y guarda al momento */}
+          <LanguageSection user={user} onError={showError} />
           {/* Solo aparece si bloqueaste a alguien */}
           <BlockedUsers user={user} onError={showError} />
         </div>

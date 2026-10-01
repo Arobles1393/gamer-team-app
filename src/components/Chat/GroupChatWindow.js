@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import MessageList from "./MessageList";
 import MessageComposer from "./MessageComposer";
@@ -35,6 +36,7 @@ function StackedAvatars({ users, total }) {
 
 // Chat del grupo de una partida (group_chats/{postId}): autor + interesados
 export default function GroupChatWindow({ postId, onBack, onError }) {
+  const { t } = useTranslation("chat");
   const user = useCurrentUser();
 
   const { messages, loading, participants, hasAccess, sendMessage } =
@@ -51,7 +53,7 @@ export default function GroupChatWindow({ postId, onBack, onError }) {
     [messages, blockedIds]
   );
 
-  const title = post?.game || "Chat del grupo";
+  const title = post?.game || t("list.groupFallback");
   const count = participants.length;
 
   const handleSend = async (text, file) => {
@@ -61,8 +63,8 @@ export default function GroupChatWindow({ postId, onBack, onError }) {
       console.error("Error enviando mensaje al grupo:", error);
       onError?.(
         file
-          ? "No se pudo enviar el archivo. Intenta de nuevo."
-          : "No se pudo enviar el mensaje. Intenta de nuevo."
+          ? t("window.sendFileError")
+          : t("window.sendError")
       );
       // El composer conserva el texto y el adjunto para reintentar
       throw error;
@@ -70,12 +72,12 @@ export default function GroupChatWindow({ postId, onBack, onError }) {
   };
 
   return (
-    <section className="chat-window chat-window--group" aria-label={`Chat del grupo de ${title}`}>
+    <section className="chat-window chat-window--group" aria-label={t("window.groupLabel", { title })}>
       <header className="chat-window__header">
         <button
           type="button"
           className="chat-window__back"
-          aria-label="Volver a los chats"
+          aria-label={t("window.back")}
           onClick={onBack}
         >
           <i className="pi pi-arrow-left" aria-hidden="true" />
@@ -93,7 +95,7 @@ export default function GroupChatWindow({ postId, onBack, onError }) {
           </h2>
           <span className="chat-window__status">
             <i className="pi pi-users" aria-hidden="true" />
-            {count === 1 ? "1 participante" : `${count} participantes`}
+            {t("window.participants", { count })}
           </span>
         </div>
       </header>
@@ -104,7 +106,7 @@ export default function GroupChatWindow({ postId, onBack, onError }) {
             messages={visibleMessages}
             loading={loading}
             currentUserId={user.uid}
-            otherUsername="todo el grupo"
+            otherUsername={t("window.wholeGroup")}
             senderProfiles={profiles}
           />
           <MessageComposer onSend={handleSend} onError={onError} disabled={!hasAccess} />
@@ -113,7 +115,7 @@ export default function GroupChatWindow({ postId, onBack, onError }) {
         <div className="chat-messages chat-messages--empty">
           <p className="chat-blocked" role="status">
             <i className="pi pi-lock" aria-hidden="true" />
-            Ya no formas parte de este grupo.
+            {t("window.leftGroup")}
           </p>
         </div>
       )}

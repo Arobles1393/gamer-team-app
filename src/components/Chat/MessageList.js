@@ -1,4 +1,6 @@
 import { useLayoutEffect, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { getIntlLocale } from "../../i18n";
 import { Skeleton } from "primereact/skeleton";
 import ChatEmptyState from "./ChatEmptyState";
 import MessageBubble from "./MessageBubble";
@@ -9,23 +11,25 @@ const GROUP_WINDOW_MS = 5 * 60 * 1000;
 // Si el usuario está a menos de esto del final, los mensajes nuevos lo mantienen abajo
 const STICK_THRESHOLD_PX = 120;
 
+// "Hoy" / "Ayer" (Intl, en el idioma actual) o "lunes, 28 de septiembre"
 const getDayLabel = (date) => {
-  const today = new Date();
-  const yesterday = new Date();
-  yesterday.setDate(today.getDate() - 1);
+  const startOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const days = Math.round((startOfDay(date) - startOfDay(new Date())) / 86400000);
 
-  if (date.toDateString() === today.toDateString()) return "Hoy";
-  if (date.toDateString() === yesterday.toDateString()) return "Ayer";
+  if (days === 0 || days === -1) {
+    const label = new Intl.RelativeTimeFormat(getIntlLocale(), { numeric: "auto" }).format(days, "day");
+    return label.charAt(0).toUpperCase() + label.slice(1);
+  }
 
-  return date.toLocaleDateString("es-MX", {
+  return new Intl.DateTimeFormat(getIntlLocale(), {
     weekday: "long",
     day: "numeric",
     month: "long"
-  });
+  }).format(date);
 };
 
 const formatTime = (date) =>
-  date.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
+  new Intl.DateTimeFormat(getIntlLocale(), { hour: "2-digit", minute: "2-digit" }).format(date);
 
 // Convierte la lista plana en separadores de día y grupos por autor
 const buildTimeline = (messages, currentUserId) => {
@@ -82,13 +86,15 @@ function MessagesSkeleton() {
 // senderProfiles (opcional, chat de grupo): { uid: perfil } para mostrar
 // quién escribió cada bloque de mensajes ajenos
 export default function MessageList({ messages, loading, currentUserId, otherUsername, senderProfiles }) {
+  const { t, i18n } = useTranslation("chat");
   const containerRef = useRef(null);
   const stickToBottomRef = useRef(true);
   const hasScrolledRef = useRef(false);
 
+  // El idioma entra en las dependencias: las etiquetas de día se recalculan al cambiarlo
   const timeline = useMemo(
     () => buildTimeline(messages, currentUserId),
-    [messages, currentUserId]
+    [messages, currentUserId, i18n.resolvedLanguage] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const handleScroll = () => {
@@ -115,7 +121,7 @@ export default function MessageList({ messages, loading, currentUserId, otherUse
 
   if (loading) {
     return (
-      <div className="chat-messages" aria-busy="true" aria-label="Cargando mensajes">
+      <div className="chat-messages" aria-busy="true" aria-label={t("messages.loading")}>
         <MessagesSkeleton />
       </div>
     );
@@ -135,7 +141,7 @@ export default function MessageList({ messages, loading, currentUserId, otherUse
       className="chat-messages"
       role="log"
       aria-live="polite"
-      aria-label="Mensajes"
+      aria-label={t("messages.label")}
       onScroll={handleScroll}
     >
       {timeline.map((item) =>
@@ -148,7 +154,7 @@ export default function MessageList({ messages, loading, currentUserId, otherUse
           >
             {senderProfiles && !item.mine && (
               <span className="chat-group__sender">
-                {senderProfiles[item.senderId]?.username || "Jugador"}
+                {senderProfiles[item.senderId]?.username || t("messages.player")}
               </span>
             )}
             {item.messages.map((message) => (

@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 /**
  * Botón de icono del rail. Con `to` navega (y marca activo según la ruta);
@@ -26,7 +27,8 @@ export default function RailButton({
     </>
   );
 
-  const accessibleLabel = badge > 0 ? `${label} (${badge} sin leer)` : label;
+  const { t } = useTranslation();
+  const accessibleLabel = badge > 0 ? t("nav.unreadCount", { label, count: badge }) : label;
 
   if (to) {
     return (

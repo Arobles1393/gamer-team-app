@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { postService } from "../../services/posts";
+import i18n from "../../i18n";
 import { confirmDeletePost } from "../../utils/confirmDeletePost";
 import { useInterestedPosts } from "./useInterestedPosts";
 import { usePostInterest } from "./usePostInterest";
@@ -34,7 +35,7 @@ export const usePostListActions = ({
     user,
     selectedUserId,
     closeProfile,
-    () => showToast("error", "Error", "No se pudo abrir el chat. Intenta de nuevo.")
+    () => showToast("error", i18n.t("common:status.error"), i18n.t("posts:actions.chatError"))
   );
 
   const { handleFriendRequest } = useFriendRequest(
@@ -45,7 +46,7 @@ export const usePostListActions = ({
 
   const { handleInterested } = usePostInterest(
     user,
-    () => showToast("error", "Error", "No se pudo guardar el interés")
+    () => showToast("error", i18n.t("common:status.error"), i18n.t("posts:actions.interestError"))
   );
 
   const getInterestedDoc = useCallback(
@@ -64,10 +65,10 @@ export const usePostListActions = ({
         try {
           await postService.deletePost(id);
           onPostDeleted?.(id);
-          showToast("success", "Eliminado", "Publicación eliminada correctamente");
+          showToast("success", i18n.t("posts:actions.deletedTitle"), i18n.t("posts:actions.deletedText"));
         } catch (error) {
           console.error("Error al eliminar:", error);
-          showToast("error", "Error", "No se pudo eliminar la publicación");
+          showToast("error", i18n.t("common:status.error"), i18n.t("posts:actions.deleteError"));
         }
       }
     });

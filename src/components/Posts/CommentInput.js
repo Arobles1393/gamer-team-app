@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { UserAvatar } from "../UserAvatar";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
@@ -7,6 +8,7 @@ import { MAX_MEDIA_MB, MAX_MEDIA_BYTES } from "../../utils";
 const MAX_LENGTH = 500;
 
 export default function CommentInput({ currentUser, onPublish, onError }) {
+  const { t } = useTranslation("posts");
   const [comment, setComment] = useState("");
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -36,12 +38,12 @@ export default function CommentInput({ currentUser, onPublish, onError }) {
     if (!selected) return;
 
     if (!selected.type.startsWith("image/") && !selected.type.startsWith("video/")) {
-      onError?.("Solo puedes adjuntar imágenes o videos.");
+      onError?.(t("comments.onlyMedia"));
       return;
     }
 
     if (selected.size > MAX_MEDIA_BYTES) {
-      onError?.(`El archivo debe pesar máximo ${MAX_MEDIA_MB} MB.`);
+      onError?.(t("comments.tooBig", { mb: MAX_MEDIA_MB }));
       return;
     }
 
@@ -87,8 +89,8 @@ export default function CommentInput({ currentUser, onPublish, onError }) {
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Escribe un comentario… ¿a qué hora juegan?"
-          aria-label="Escribe un comentario"
+          placeholder={t("comments.placeholder")}
+          aria-label={t("comments.label")}
           rows={2}
           autoResize
           maxLength={MAX_LENGTH}
@@ -110,7 +112,7 @@ export default function CommentInput({ currentUser, onPublish, onError }) {
             <button
               type="button"
               className="comment-composer__remove"
-              aria-label="Quitar archivo adjunto"
+              aria-label={t("comments.removeFile")}
               onClick={clearFile}
               disabled={publishing}
             >
@@ -135,7 +137,7 @@ export default function CommentInput({ currentUser, onPublish, onError }) {
             disabled={publishing}
           >
             <i className="pi pi-image" aria-hidden="true" />
-            <span>Imagen o video</span>
+            <span>{t("comments.attach")}</span>
           </button>
 
           <span className="comment-composer__counter">
@@ -143,7 +145,7 @@ export default function CommentInput({ currentUser, onPublish, onError }) {
           </span>
 
           <Button
-            label={publishing ? "Publicando…" : "Comentar"}
+            label={publishing ? t("comments.publishing") : t("comments.publish")}
             icon="pi pi-send"
             className="gm-btn gm-btn--primary"
             loading={publishing}

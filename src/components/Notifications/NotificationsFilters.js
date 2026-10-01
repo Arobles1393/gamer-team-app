@@ -1,13 +1,13 @@
-const FILTERS = [
-  { value: "all", label: "Todas" },
-  { value: "unread", label: "Sin leer" },
-  { value: "requests", label: "Solicitudes" }
-];
+import { useTranslation } from "react-i18next";
+
+const FILTERS = ["all", "unread", "requests"];
 
 export default function NotificationsFilters({ filter, onFilterChange, counts }) {
+  const { t } = useTranslation("notifications");
+
   return (
-    <div className="feed-filters" role="group" aria-label="Filtrar notificaciones">
-      {FILTERS.map(({ value, label }) => {
+    <div className="feed-filters" role="group" aria-label={t("filters.label")}>
+      {FILTERS.map((value) => {
         const active = filter === value;
 
         return (
@@ -18,7 +18,7 @@ export default function NotificationsFilters({ filter, onFilterChange, counts })
             aria-pressed={active}
             onClick={() => onFilterChange(value)}
           >
-            {label}
+            {t(`filters.${value}`)}
             <span className="feed-chip__count">{counts[value]}</span>
           </button>
         );

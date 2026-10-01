@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { platforms } from "../../constants";
 import { getPlatformKey, platformLabels } from "../../utils";
 
@@ -15,8 +16,6 @@ const getPlatformBadges = (post) => {
   return keys.map((key) => platformLabels[key]);
 };
 
-const formatPlayersNeeded = (count) =>
-  count === 1 ? "Busca 1 jugador" : `Busca ${count} jugadores`;
 
 const prefersReducedMotion = () =>
   window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
@@ -26,6 +25,7 @@ const prefersReducedMotion = () =>
  * logo o nombre del juego y badges de plataforma / jugadores.
  */
 export default function PostDetailHero({ post, onBack }) {
+  const { t } = useTranslation("posts");
   const badges = getPlatformBadges(post);
   const playersNeeded = Number(post.playersNeeded) || 0;
   const showClip = Boolean(post.clip) && !prefersReducedMotion();
@@ -49,14 +49,14 @@ export default function PostDetailHero({ post, onBack }) {
 
       <button type="button" className="post-hero__back" onClick={onBack}>
         <i className="pi pi-arrow-left" aria-hidden="true" />
-        <span>Volver</span>
+        <span>{t("detail.back")}</span>
       </button>
 
       <div className="post-hero__content">
         {post.portada && (
           <img
             src={post.portada}
-            alt={`Portada de ${post.game}`}
+            alt={t("detail.cover", { game: post.game })}
             className="post-hero__cover"
           />
         )}
@@ -83,7 +83,7 @@ export default function PostDetailHero({ post, onBack }) {
             {playersNeeded > 0 && (
               <span className="post-hero__badge">
                 <i className="pi pi-user" aria-hidden="true" />
-                {formatPlayersNeeded(playersNeeded)}
+                {t("detail.lookingFor", { count: playersNeeded })}
               </span>
             )}
           </div>

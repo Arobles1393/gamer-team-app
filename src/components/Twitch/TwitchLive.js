@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import TwitchIcon from "./TwitchIcon";
 import "./Twitch.css";
 
@@ -6,6 +7,8 @@ import "./Twitch.css";
 // stream (más corto y es lo que importa aquí).
 // live: { isLive, gameName, title }. className: variante según dónde va.
 export default function TwitchLive({ live, className = "" }) {
+  const { t } = useTranslation();
+
   if (!live?.isLive) return null;
 
   const detail = live.gameName || live.title;
@@ -13,11 +16,11 @@ export default function TwitchLive({ live, className = "" }) {
   return (
     <span
       className={`twitch-live ${className}`.trim()}
-      title={live.title ? `En vivo en Twitch: ${live.title}` : "En vivo en Twitch"}
+      title={live.title ? t("presence.liveOnTwitchTitle", { title: live.title }) : t("presence.liveOnTwitch")}
     >
       <TwitchIcon className="twitch-live__icon" />
       <span className="twitch-live__text">
-        En vivo{detail ? `: ${detail}` : ""}
+        {detail ? t("presence.liveWith", { detail }) : t("presence.live")}
       </span>
     </span>
   );

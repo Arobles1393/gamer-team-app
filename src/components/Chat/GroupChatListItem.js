@@ -1,13 +1,15 @@
 import { memo } from "react";
+import { useTranslation } from "react-i18next";
 import { formatDates } from "../../utils";
 
 // Fila de un chat de grupo en la lista: icono de grupo y el juego del post
 function GroupChatListItem({ group, game, currentUserId, active, unread, onSelect }) {
-  const title = game || "Chat del grupo";
+  const { t } = useTranslation("chat");
+  const title = game || t("list.groupFallback");
 
   const preview = group.lastMessage
-    ? `${group.lastSenderId === currentUserId ? "Tú: " : ""}${group.lastMessage}`
-    : "Sin mensajes todavía";
+    ? (group.lastSenderId === currentUserId ? t("list.you", { message: group.lastMessage }) : group.lastMessage)
+    : t("list.noMessages");
 
   const className = [
     "chat-item",
@@ -21,7 +23,7 @@ function GroupChatListItem({ group, game, currentUserId, active, unread, onSelec
         type="button"
         className={className}
         aria-current={active ? "true" : undefined}
-        aria-label={`Chat del grupo de ${title}${unread ? ", mensajes sin leer" : ""}`}
+        aria-label={t(unread ? "list.groupItemLabelUnread" : "list.groupItemLabel", { title })}
         onClick={() => onSelect({ type: "group", id: group.id })}
       >
         <span className="chat-item__group-icon" aria-hidden="true">

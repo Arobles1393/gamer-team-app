@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Navigate, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "primereact/button";
 import { ConfirmDialog } from "primereact/confirmdialog";
@@ -17,6 +18,7 @@ import {
   hasTagFilters,
   POST_CATEGORIES,
   buildExploreUrl,
+  getCategoryEmptyText,
   getCategoryTitle,
   isPostCategory,
   platformLabels
@@ -26,6 +28,7 @@ import {
 // Una categoría del home completa, 15 posts por página con "Cargar más".
 // Los filtros viven en la URL: cambiarlos reinicia la paginación.
 export default function ExplorePage({ setEditingPost, setShowCreatePost }) {
+  const { t } = useTranslation("posts");
   const user = useCurrentUser();
   const userData = useCurrentUserData();
   const navigate = useNavigate();
@@ -51,7 +54,8 @@ export default function ExplorePage({ setEditingPost, setShowCreatePost }) {
     [tagMic, tagLevel, tagLang]
   );
 
-  const { requiresUser, empty } = POST_CATEGORIES[category];
+  const { requiresUser } = POST_CATEGORIES[category];
+  const empty = getCategoryEmptyText(category);
 
   const { friendIds, loading: loadingFriends } = useFriends(user);
   const { blockedIds } = useBlockedIds(user);
@@ -96,10 +100,10 @@ export default function ExplorePage({ setEditingPost, setShowCreatePost }) {
   const games = useGames();
   const gameOptions = useMemo(
     () => [
-      { label: "Todos", value: "" },
+      { label: t("feed.allOption"), value: "" },
       ...games.map((name) => ({ label: name, value: name }))
     ],
-    [games]
+    [games, t]
   );
 
   // Cambiar un filtro reescribe la URL (sin apilar historial por cada chip)
@@ -125,7 +129,7 @@ export default function ExplorePage({ setEditingPost, setShowCreatePost }) {
 
   const emptyText =
     category === "nearby" && userData && !region
-      ? "Configura tu región en tu perfil para ver publicaciones cerca de ti."
+      ? t("categories.nearby.noRegion")
       : empty;
 
   const renderResults = () => {
@@ -135,16 +139,16 @@ export default function ExplorePage({ setEditingPost, setShowCreatePost }) {
           <span className="feed-empty__icon">
             <i className="pi pi-exclamation-triangle" aria-hidden="true" />
           </span>
-          <p className="feed-empty__title">No se pudieron cargar las partidas</p>
-          <p className="feed-empty__text">Revisa tu conexión e inténtalo de nuevo.</p>
-          <Button label="Reintentar" className="feed-empty__btn" onClick={retry} />
+          <p className="feed-empty__title">{t("explore.errorTitle")}</p>
+          <p className="feed-empty__text">{t("explore.errorText")}</p>
+          <Button label={t("common:actions.retry")} className="feed-empty__btn" onClick={retry} />
         </div>
       );
     }
 
     if (loading) {
       return (
-        <div className="post-grid" aria-busy="true" aria-label="Cargando partidas">
+        <div className="post-grid" aria-busy="true" aria-label={t("feed.loading")}>
           {Array.from({ length: 6 }, (_, i) => <PostCardSkeleton key={i} />)}
         </div>
       );
@@ -179,7 +183,7 @@ export default function ExplorePage({ setEditingPost, setShowCreatePost }) {
         {hasMore && (
           <div className="feed-load-more">
             <Button
-              label={loadingMore ? "Cargando…" : "Cargar más"}
+              label={loadingMore ? t("explore.loadingMore") : t("explore.loadMore")}
               icon={loadingMore ? "pi pi-spin pi-spinner" : "pi pi-angle-down"}
               className="gm-btn gm-btn--ghost"
               disabled={loadingMore}
@@ -198,9 +202,9 @@ export default function ExplorePage({ setEditingPost, setShowCreatePost }) {
           {/* Vuelve al home sin tocar esta URL, por si se quiere reabrir el link */}
           <button type="button" className="explore-header__back" onClick={() => navigate("/")}>
             <i className="pi pi-arrow-left" aria-hidden="true" />
-            Volver
+            {t("explore.back")}
           </button>
-          <span className="feed-header__eyebrow">Explorar</span>
+          <span className="feed-header__eyebrow">{t("explore.eyebrow")}</span>
           <h1 className="feed-header__title">{getCategoryTitle(category, platform)}</h1>
         </div>
       </header>

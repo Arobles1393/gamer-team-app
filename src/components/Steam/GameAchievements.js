@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Skeleton } from "primereact/skeleton";
 import { steamStatsService } from "../../services/steam";
 
 // Rareza según el % global de jugadores que lo desbloquearon
 const RARITIES = [
-  { max: 1, key: "ultra-rare", label: "Ultra raro" },
-  { max: 5, key: "very-rare", label: "Muy raro" },
-  { max: 10, key: "rare", label: "Raro" }
+  { max: 1, key: "ultra-rare", labelKey: "achievements.rarity.ultraRare" },
+  { max: 5, key: "very-rare", labelKey: "achievements.rarity.veryRare" },
+  { max: 10, key: "rare", labelKey: "achievements.rarity.rare" }
 ];
 
 const getRarity = (percent) =>
   RARITIES.find((rarity) => percent > 0 && percent < rarity.max) ?? null;
 
 function AchievementItem({ achievement, unlocked }) {
+  const { t } = useTranslation("profile");
   const rarity = getRarity(achievement.percent);
 
   return (
@@ -31,13 +33,14 @@ function AchievementItem({ achievement, unlocked }) {
       </span>
       <span className={`achievement__rarity${rarity ? ` achievement__rarity--${rarity.key}` : ""}`}>
         {achievement.percent.toFixed(1)}%
-        {rarity && <span className="achievement__rarity-label">{rarity.label}</span>}
+        {rarity && <span className="achievement__rarity-label">{t(rarity.labelKey)}</span>}
       </span>
     </li>
   );
 }
 
 export default function GameAchievements({ game, steamId }) {
+  const { t } = useTranslation("profile");
   const [achievements, setAchievements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -85,7 +88,7 @@ export default function GameAchievements({ game, steamId }) {
 
   if (loading) {
     return (
-      <div className="achievements" aria-busy="true" aria-label="Cargando logros">
+      <div className="achievements" aria-busy="true" aria-label={t("achievements.loading")}>
         <Skeleton height="56px" borderRadius="12px" className="steam-skeleton" />
         <ul className="achievements__list">
           {Array.from({ length: 4 }, (_, i) => (
@@ -100,18 +103,13 @@ export default function GameAchievements({ game, steamId }) {
 
   if (error) {
     return (
-      <p className="achievements__message">
-        No se pudieron cargar los logros. Intenta de nuevo más tarde.
-      </p>
+      <p className="achievements__message">{t("achievements.error")}</p>
     );
   }
 
   if (achievements.length === 0) {
     return (
-      <p className="achievements__message">
-        No hay logros disponibles para este juego. Puede que el juego no tenga logros
-        o que los logros de Steam del usuario sean privados.
-      </p>
+      <p className="achievements__message">{t("achievements.empty")}</p>
     );
   }
 
@@ -126,7 +124,7 @@ export default function GameAchievements({ game, steamId }) {
       <div className="achievements__progress">
         <div className="achievements__progress-top">
           <span className="achievements__progress-count">
-            {unlocked.length} / {achievements.length} logros
+            {t("achievements.progress", { unlocked: unlocked.length, total: achievements.length })}
           </span>
           <span className="achievements__progress-percent">{progress}%</span>
         </div>

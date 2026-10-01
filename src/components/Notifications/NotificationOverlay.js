@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { OverlayPanel } from "primereact/overlaypanel";
 import { useNavigate } from "react-router-dom";
 import NotificationItem from "./NotificationItem";
@@ -17,6 +18,7 @@ export default function NotificationOverlay({
   onMarkAsRead,
   onMarkAllAsRead
 }) {
+  const { t } = useTranslation("notifications");
   const navigate = useNavigate();
   const [markingAll, setMarkingAll] = useState(false);
 
@@ -58,7 +60,7 @@ export default function NotificationOverlay({
   const renderBody = () => {
     if (loading) {
       return (
-        <ul className="notif-list" aria-busy="true" aria-label="Cargando notificaciones">
+        <ul className="notif-list" aria-busy="true" aria-label={t("loading")}>
           {Array.from({ length: 3 }, (_, i) => <NotificationItemSkeleton key={i} compact />)}
         </ul>
       );
@@ -70,8 +72,8 @@ export default function NotificationOverlay({
           <span className="notif-panel__empty-icon">
             <i className="pi pi-bell" aria-hidden="true" />
           </span>
-          <p className="notif-panel__empty-title">Estás al día</p>
-          <p className="notif-panel__empty-text">No tienes notificaciones nuevas.</p>
+          <p className="notif-panel__empty-title">{t("overlayEmpty.title")}</p>
+          <p className="notif-panel__empty-text">{t("overlayEmpty.text")}</p>
         </div>
       );
     }
@@ -96,12 +98,12 @@ export default function NotificationOverlay({
     <OverlayPanel
       ref={notificationRef}
       className="gm-notif-overlay"
-      aria-label="Notificaciones"
+      aria-label={t("title")}
     >
       <header className="notif-panel__header">
-        <span className="notif-panel__title">Notificaciones</span>
+        <span className="notif-panel__title">{t("title")}</span>
         {unreadCount > 0 && (
-          <span className="notif-panel__count" aria-label={`${unreadCount} sin leer`}>
+          <span className="notif-panel__count" aria-label={t("unreadCount", { count: unreadCount })}>
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
@@ -111,7 +113,7 @@ export default function NotificationOverlay({
           onClick={handleMarkAllAsRead}
           disabled={unreadCount === 0 || markingAll}
         >
-          Marcar todas como leídas
+          {t("markAllRead")}
         </button>
       </header>
 
@@ -124,7 +126,7 @@ export default function NotificationOverlay({
         className="notif-panel__footer"
         onClick={handleViewAllNotifications}
       >
-        Ver todas las notificaciones
+        {t("viewAll")}
         <i className="pi pi-arrow-right" aria-hidden="true" />
       </button>
     </OverlayPanel>

@@ -1,0 +1,71 @@
+{
+  "title": "Notificaciones",
+  "loading": "Cargando notificaciones",
+  "markAllRead": "Marcar todas como leídas",
+  "deleteAll": "Eliminar todas",
+  "viewAll": "Ver todas las notificaciones",
+  "unreadCount": "{{count}} sin leer",
+  "unreadSr": "(sin leer)",
+  "someone": "Alguien",
+  "accept": "Aceptar",
+  "reject": "Rechazar",
+  "status": {
+    "accepted": "Aceptada",
+    "rejected": "Rechazada"
+  },
+  "actions": {
+    "friend_request": "quiere agregarte como amigo",
+    "friend_accepted": "aceptó tu solicitud de amistad",
+    "message": "te envió un mensaje",
+    "group_message": "escribió en el chat del grupo",
+    "group_message_game": "escribió en el chat de {{game}}",
+    "comment": "comentó en tu publicación",
+    "interested": "está interesado en tu partida",
+    "default": "te envió una notificación"
+  },
+  "sections": {
+    "today": "Hoy",
+    "yesterday": "Ayer",
+    "thisWeek": "Esta semana",
+    "older": "Anteriores"
+  },
+  "filters": {
+    "label": "Filtrar notificaciones",
+    "all": "Todas",
+    "unread": "Sin leer",
+    "requests": "Solicitudes"
+  },
+  "errors": {
+    "markAll": "No se pudieron marcar como leídas. Intenta de nuevo.",
+    "deleteAll": "No se pudieron eliminar las notificaciones. Intenta de nuevo."
+  },
+  "confirmDelete": {
+    "header": "Eliminar notificaciones",
+    "message": "Se eliminarán todas tus notificaciones. Esta acción no se puede deshacer."
+  },
+  "overlayEmpty": {
+    "title": "Estás al día",
+    "text": "No tienes notificaciones nuevas."
+  },
+  "empty": {
+    "empty": {
+      "title": "Estás al día",
+      "text": "Aquí verás solicitudes de amistad, mensajes y la actividad de tus partidas."
+    },
+    "unread": {
+      "title": "No tienes pendientes",
+      "text": "Ya leíste todas tus notificaciones.",
+      "action": "Ver todas"
+    },
+    "requests": {
+      "title": "Sin solicitudes pendientes",
+      "text": "Cuando alguien quiera agregarte como amigo, aparecerá aquí.",
+      "action": "Ver todas"
+    },
+    "error": {
+      "title": "No se pudieron cargar tus notificaciones",
+      "text": "Revisa tu conexión e inténtalo de nuevo.",
+      "action": "Reintentar"
+    }
+  }
+}

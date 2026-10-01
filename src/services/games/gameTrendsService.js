@@ -9,6 +9,7 @@ import {
   where
 } from "firebase/firestore";
 import { db } from "../../firebase/config";
+import { getIntlLocale } from "../../i18n";
 
 // Límite del operador "in" de Firestore
 const MAX_IN_VALUES = 30;
@@ -58,7 +59,7 @@ const subscribeToGames = (onSuccess, onError) => {
       onSuccess(
         snapshot.docs
           .map((doc) => doc.data().game)
-          .sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }))
+          .sort((a, b) => a.localeCompare(b, getIntlLocale(), { sensitivity: "base" }))
       );
     },
     onError

@@ -1,4 +1,5 @@
 import { Dropdown } from "primereact/dropdown";
+import { useTranslation } from "react-i18next";
 import { platformLabels } from "../../utils";
 import MoreFiltersPanel from "./MoreFiltersPanel";
 
@@ -24,23 +25,25 @@ export default function PostFilters({
   tagFilters,
   onTagFiltersChange
 }) {
+  const { t } = useTranslation("posts");
+
   // Clic en el chip activo lo desactiva (vuelve a "todas las plataformas")
   const handlePlatformClick = (value) => {
     onPlatformChange(filterPlatform === value ? null : value);
   };
 
   return (
-    <div className="feed-filters" role="group" aria-label="Filtros">
+    <div className="feed-filters" role="group" aria-label={t("feed.filters")}>
       <Dropdown
         value={filterGame}
         options={gameOptions}
         onChange={(e) => onGameChange(e.value)}
         optionLabel="label"
         optionValue="value"
-        placeholder="Todos los juegos"
+        placeholder={t("feed.allGames")}
         className="feed-chip feed-chip--select"
         panelClassName="feed-select-panel"
-        aria-label="Filtrar por juego"
+        aria-label={t("feed.filterByGame")}
       />
 
       {Object.entries(platformLabels).map(([value, label]) => (

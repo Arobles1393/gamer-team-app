@@ -1,12 +1,13 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { UserAvatar } from "../UserAvatar";
 import { Button } from "primereact/button";
 import { usePostSummary, useUserProfile } from "../../hooks";
 import { formatDates, getNotificationMeta } from "../../utils";
 
 const STATUS = {
-  accepted: { label: "Aceptada", icon: "pi-check" },
-  rejected: { label: "Rechazada", icon: "pi-times" }
+  accepted: { labelKey: "status.accepted", icon: "pi-check" },
+  rejected: { labelKey: "status.rejected", icon: "pi-times" }
 };
 
 /**
@@ -20,6 +21,7 @@ export default function NotificationItem({
   onAccept,
   onReject
 }) {
+  const { t } = useTranslation("notifications");
   const { userData: sender } = useUserProfile(notification.senderId);
   const [responding, setResponding] = useState(null);
 
@@ -27,11 +29,11 @@ export default function NotificationItem({
   // El juego del post se lee en vivo (no se copia en la notificación)
   const post = usePostSummary(isGroupMessage ? notification.relatedId : null);
 
-  const { icon, action: baseAction } = getNotificationMeta(notification.type);
+  const { icon, actionKey } = getNotificationMeta(notification.type);
   const action = isGroupMessage && post?.game
-    ? `escribió en el chat de ${post.game}`
-    : baseAction;
-  const username = sender?.username || "Alguien";
+    ? t("actions.group_message_game", { game: post.game })
+    : t(actionKey);
+  const username = sender?.username || t("someone");
   const unread = !notification.read;
 
   const isFriendRequest = notification.type === "friend_request";
@@ -82,7 +84,7 @@ export default function NotificationItem({
       {unread && (
         <>
           <span className="notif__dot" aria-hidden="true" />
-          <span className="notif__sr">(sin leer)</span>
+          <span className="notif__sr">{t("unreadSr")}</span>
         </>
       )}
     </>
@@ -101,14 +103,14 @@ export default function NotificationItem({
       {isPending && (
         <div className="notif__actions">
           <Button
-            label="Aceptar"
+            label={t("accept")}
             className="notif__btn notif__btn--primary"
             loading={responding === "accept"}
             disabled={Boolean(responding)}
             onClick={() => respond("accept", onAccept)}
           />
           <Button
-            label="Rechazar"
+            label={t("reject")}
             className="notif__btn notif__btn--ghost"
             loading={responding === "reject"}
             disabled={Boolean(responding)}
@@ -120,7 +122,7 @@ export default function NotificationItem({
       {status && (
         <span className={`notif__status notif__status--${notification.status}`}>
           <i className={`pi ${status.icon}`} aria-hidden="true" />
-          {status.label}
+          {t(status.labelKey)}
         </span>
       )}
     </li>

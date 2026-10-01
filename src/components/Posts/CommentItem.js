@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { useTranslation } from "react-i18next";
 import { UserAvatar } from "../UserAvatar";
 import { useUserProfile } from "../../hooks";
 import { formatDates } from "../../utils";
@@ -12,9 +13,10 @@ function CommentItem({
   onDelete,
   onOpenProfile
 }) {
+  const { t } = useTranslation("posts");
   const user = useCurrentUser();
   const { userData: author } = useUserProfile(comment.userId, { publicOnly: !user });
-  const username = author?.username || "Jugador";
+  const username = author?.username || t("comments.player");
 
   const openProfile = () => onOpenProfile(comment.userId);
 
@@ -23,7 +25,7 @@ function CommentItem({
       <button
         type="button"
         className="comment__avatar-btn"
-        aria-label={`Ver perfil de ${username}`}
+        aria-label={t("comments.viewProfile", { username })}
         onClick={openProfile}
       >
         <UserAvatar
@@ -38,7 +40,7 @@ function CommentItem({
           <button type="button" className="comment__author" onClick={openProfile}>
             {username}
           </button>
-          {isHost && <span className="comment__badge">Anfitrión</span>}
+          {isHost && <span className="comment__badge">{t("comments.host")}</span>}
           <span className="comment__time">
             {formatDates.formatDateN(comment.createdAt)}
           </span>
@@ -47,7 +49,7 @@ function CommentItem({
             <button
               type="button"
               className="comment__delete"
-              aria-label="Eliminar comentario"
+              aria-label={t("comments.delete")}
               onClick={() => onDelete(comment.id)}
             >
               <i className="pi pi-trash" aria-hidden="true" />
@@ -56,7 +58,7 @@ function CommentItem({
             <ReportButton
               targetType="comment"
               targetId={comment.id}
-              label={`Comentario de ${username}`}
+              label={t("comments.reportLabel", { username })}
               className="comment__report"
             />
           )}
@@ -70,11 +72,11 @@ function CommentItem({
             target="_blank"
             rel="noopener noreferrer"
             className="comment__media-link"
-            aria-label="Abrir imagen en otra pestaña"
+            aria-label={t("comments.openImage")}
           >
             <img
               src={comment.mediaUrl}
-              alt={`Imagen compartida por ${username}`}
+              alt={t("comments.imageAlt", { username })}
               loading="lazy"
               className="comment__media"
             />

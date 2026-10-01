@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
@@ -9,15 +10,10 @@ import "./ReportDialog.css";
 
 const NOTE_MAX = 500;
 
-const TARGET_TITLES = {
-  user: "Reportar usuario",
-  post: "Reportar publicación",
-  comment: "Reportar comentario"
-};
-
 // Diálogo de reporte compartido (perfil, post, comentario).
 // target: { targetType: "user" | "post" | "comment", targetId, label? }
 export default function ReportDialog({ target, onHide }) {
+  const { t } = useTranslation("reports");
   const user = useCurrentUser();
   const toast = useRef(null);
   const [reason, setReason] = useState(null);
@@ -52,8 +48,8 @@ export default function ReportDialog({ target, onHide }) {
 
       toast.current?.show({
         severity: "success",
-        summary: "Reporte enviado",
-        detail: "Gracias, lo revisaremos.",
+        summary: t("dialog.sentSummary"),
+        detail: t("dialog.sentDetail"),
         life: 3000
       });
       onHide();
@@ -61,8 +57,8 @@ export default function ReportDialog({ target, onHide }) {
       console.error("Error enviando reporte:", error);
       toast.current?.show({
         severity: "error",
-        summary: "Error",
-        detail: "No se pudo enviar el reporte. Intenta de nuevo.",
+        summary: t("common:status.error"),
+        detail: t("dialog.sendError"),
         life: 3000
       });
     } finally {
@@ -73,7 +69,7 @@ export default function ReportDialog({ target, onHide }) {
   return (
     <>
       <Dialog
-        header={target ? TARGET_TITLES[target.targetType] : ""}
+        header={target ? t(`titles.${target.targetType}`) : ""}
         visible={Boolean(target)}
         onHide={onHide}
         className="gm-dialog report-dialog"
@@ -90,29 +86,29 @@ export default function ReportDialog({ target, onHide }) {
           )}
 
           <fieldset className="report-dialog__reasons">
-            <legend className="gm-field__label">¿Cuál es el problema?</legend>
+            <legend className="gm-field__label">{t("dialog.question")}</legend>
 
-            {REPORT_REASONS.map((option) => (
+            {REPORT_REASONS.map((value) => (
               <label
-                key={option.value}
-                className={`report-dialog__reason${reason === option.value ? " report-dialog__reason--active" : ""}`}
+                key={value}
+                className={`report-dialog__reason${reason === value ? " report-dialog__reason--active" : ""}`}
               >
                 <input
                   type="radio"
                   name="report-reason"
-                  value={option.value}
-                  checked={reason === option.value}
-                  onChange={() => setReason(option.value)}
+                  value={value}
+                  checked={reason === value}
+                  onChange={() => setReason(value)}
                 />
-                {option.label}
+                {t(`reasons.${value}`)}
               </label>
             ))}
           </fieldset>
 
           <div className="gm-field">
             <label className="gm-field__label" htmlFor="report-note">
-              {needsNote ? "Cuéntanos qué pasa" : "Contexto"}
-              {!needsNote && <span className="gm-field__hint"> (opcional)</span>}
+              {needsNote ? t("dialog.noteRequired") : t("dialog.noteOptional")}
+              {!needsNote && <span className="gm-field__hint"> {t("dialog.optional")}</span>}
             </label>
             <InputTextarea
               id="report-note"
@@ -122,20 +118,20 @@ export default function ReportDialog({ target, onHide }) {
               maxLength={NOTE_MAX}
               autoResize
               className="gm-input"
-              placeholder="Detalles que nos ayuden a revisar el reporte"
+              placeholder={t("dialog.notePlaceholder")}
             />
           </div>
 
           <div className="report-dialog__actions">
             <Button
               type="button"
-              label="Cancelar"
+              label={t("common:actions.cancel")}
               className="gm-btn gm-btn--ghost"
               onClick={onHide}
             />
             <Button
               type="submit"
-              label="Enviar reporte"
+              label={t("dialog.send")}
               icon="pi pi-flag"
               className="gm-btn gm-btn--primary"
               loading={sending}

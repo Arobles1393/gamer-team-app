@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AutoComplete } from "primereact/autocomplete";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
 import { useGameSearch, useCreatePost } from "../../hooks";
-import { CALENDAR_LOCALE } from "../../utils/calendarLocale";
-import { LANGUAGES, SKILL_LEVELS, platforms } from "../../constants";
+import { SKILL_LEVELS, getLanguageOptions, platforms } from "../../constants";
 import { getPlatformKey, platformIcons, platformLabels } from "../../utils";
 import { useCurrentUser, useCurrentUserData } from "../../context";
 import "./CreatePost.css";
@@ -18,8 +18,8 @@ const MAX_DESCRIPTION = 300;
 
 // "Cuándo": por defecto ahora mismo; programar muestra el calendario
 const WHEN_OPTIONS = [
-  { value: false, label: "Ahora mismo", icon: "pi-bolt" },
-  { value: true, label: "Programar para después", icon: "pi-calendar" }
+  { value: false, labelKey: "create.now", icon: "pi-bolt" },
+  { value: true, labelKey: "create.schedule", icon: "pi-calendar" }
 ];
 
 const suggestionTemplate = (item) => (
@@ -51,6 +51,7 @@ function Field({ id, label, error, hint, children }) {
 }
 
 function SelectedGame({ name, image, gamePlatforms, locked, onClear }) {
+  const { t } = useTranslation("posts");
   const available = getAvailableLabel(gamePlatforms);
 
   return (
@@ -62,17 +63,17 @@ function SelectedGame({ name, image, gamePlatforms, locked, onClear }) {
         <span className="create-post__game-name">{name}</span>
         <span className="create-post__game-meta">
           {locked
-            ? "El juego no se puede cambiar al editar"
+            ? t("create.gameLocked")
             : available
-              ? `Disponible en: ${available}`
-              : "Juego seleccionado"}
+              ? t("create.gameAvailable", { platforms: available })
+              : t("create.gameSelected")}
         </span>
       </span>
       {!locked && (
         <button
           type="button"
           className="create-post__game-clear"
-          aria-label="Cambiar juego"
+          aria-label={t("create.changeGame")}
           onClick={onClear}
         >
           <i className="pi pi-times" aria-hidden="true" />
@@ -83,6 +84,7 @@ function SelectedGame({ name, image, gamePlatforms, locked, onClear }) {
 }
 
 export default function CreatePost({ editingPost, onClose, onSuccess, onError }) {
+  const { t, i18n } = useTranslation("posts");
   const user = useCurrentUser();
   const userData = useCurrentUserData();
   const [submitted, setSubmitted] = useState(false);
@@ -135,12 +137,15 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
   const description = comments ?? "";
 
   const errors = {
-    game: !gameName && "Elige el juego de la partida.",
-    platform: !selectedPlatform && "Elige una plataforma o marca Multiplataforma.",
-    description: !description.trim() && "Cuenta un poco de la partida.",
+    game: !gameName && t("create.errors.game"),
+    platform: !selectedPlatform && t("create.errors.platform"),
+    description: !description.trim() && t("create.errors.description"),
     // Que sea futura lo valida useCreatePost (con aviso)
-    schedule: scheduled && !scheduledAt && "Elige la fecha y hora de la partida."
+    schedule: scheduled && !scheduledAt && t("create.errors.schedule")
   };
+
+  // Nombres de idioma en el idioma de la interfaz
+  const languageOptions = useMemo(() => getLanguageOptions(), [i18n.resolvedLanguage]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSelectPlatform = (value) => {
     setMultiplatform(value === MULTI);
@@ -158,12 +163,12 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
 
   const platformOptions = [
     ...platforms,
-    { label: "Multiplataforma", value: MULTI }
+    { label: t("create.multiplatform"), value: MULTI }
   ];
 
   return (
     <form className="gm-form create-post" onSubmit={onSubmit} noValidate>
-      <Field id="create-game" label="Juego" error={submitted && errors.game}>
+      <Field id="create-game" label={t("create.game")} error={submitted && errors.game}>
         {selectedGame ? (
           <SelectedGame
             name={selectedGame.name}
@@ -181,7 +186,7 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
             onChange={(e) => setGame(e.value)}
             field="value"
             itemTemplate={suggestionTemplate}
-            placeholder="Busca el juego…"
+            placeholder={t("create.gamePlaceholder")}
             aria-labelledby="create-game-label"
             className="gm-autocomplete"
             inputClassName={`gm-input${submitted && errors.game ? " gm-input--invalid" : ""}`}
@@ -191,7 +196,7 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
         )}
       </Field>
 
-      <Field id="create-platform" label="Plataforma" error={submitted && errors.platform}>
+      <Field id="create-platform" label={t("create.platform")} error={submitted && errors.platform}>
         <div
           className="create-post__platforms"
           role="radiogroup"
@@ -223,8 +228,8 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
 
       <Field
         id="create-details"
-        label="Detalles"
-        hint="Opcional: ayuda a encontrar jugadores afines."
+        label={t("create.details")}
+        hint={t("create.detailsHint")}
       >
         <div className="create-post__details">
           {/* Sin tocar = sin especificar (null), no "no hace falta" */}
@@ -236,11 +241,11 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
             onClick={() => setRequiresMic(requiresMic ? null : true)}
           >
             <i className="pi pi-microphone" aria-hidden="true" />
-            Requiere micrófono
+            {t("create.micRequired")}
           </button>
 
-          <div className="create-post__platforms" role="radiogroup" aria-label="Nivel">
-            {SKILL_LEVELS.map(({ label, value }) => {
+          <div className="create-post__platforms" role="radiogroup" aria-label={t("create.level")}>
+            {SKILL_LEVELS.map(({ value }) => {
               const active = skillLevel === value;
 
               return (
@@ -254,7 +259,7 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
                   onClick={() => setSkillLevel(active ? null : value)}
                 >
                   <i className={`pi ${value === "competitive" ? "pi-trophy" : "pi-face-smile"}`} aria-hidden="true" />
-                  {label}
+                  {t(`skill.${value}`)}
                 </button>
               );
             })}
@@ -263,16 +268,16 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
           <Dropdown
             inputId="create-language"
             value={language}
-            options={LANGUAGES}
+            options={languageOptions}
             onChange={(e) => setLanguage(e.value ?? null)}
             optionLabel="label"
             optionValue="value"
-            placeholder="Idioma: sin especificar"
+            placeholder={t("create.languagePlaceholder")}
             filter
-            filterPlaceholder="Buscar idioma…"
-            emptyFilterMessage="Ningún idioma coincide"
+            filterPlaceholder={t("moreFilters.searchLanguage")}
+            emptyFilterMessage={t("moreFilters.noLanguage")}
             showClear
-            aria-label="Idioma de la partida"
+            aria-label={t("create.languageLabel")}
             className="gm-select create-post__language"
             panelClassName="gm-panel"
           />
@@ -281,14 +286,14 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
 
       <Field
         id="create-players"
-        label="Jugadores que buscas"
-        hint="Cuántos jugadores te faltan para completar la partida."
+        label={t("create.players")}
+        hint={t("create.playersHint")}
       >
         <div className="create-post__stepper" role="group" aria-labelledby="create-players-label">
           <button
             type="button"
             className="create-post__stepper-btn"
-            aria-label="Menos jugadores"
+            aria-label={t("create.fewerPlayers")}
             disabled={playerCount <= MIN_PLAYERS}
             onClick={() => setPlayers(playerCount - 1)}
           >
@@ -297,13 +302,13 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
           <span className="create-post__stepper-value" aria-live="polite">
             {playerCount}
             <span className="create-post__stepper-unit">
-              {playerCount === 1 ? "jugador" : "jugadores"}
+              {t("create.playerUnit", { count: playerCount })}
             </span>
           </span>
           <button
             type="button"
             className="create-post__stepper-btn"
-            aria-label="Más jugadores"
+            aria-label={t("create.morePlayers")}
             disabled={playerCount >= MAX_PLAYERS}
             onClick={() => setPlayers(playerCount + 1)}
           >
@@ -314,17 +319,17 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
 
       <Field
         id="create-when"
-        label="Cuándo"
+        label={t("create.when")}
         error={submitted && errors.schedule}
-        hint={scheduled ? "Aparecerá en «Próximamente» hasta esa hora." : undefined}
+        hint={scheduled ? t("create.scheduleHint") : undefined}
       >
         <div className="create-post__platforms" role="radiogroup" aria-labelledby="create-when-label">
-          {WHEN_OPTIONS.map(({ value, label, icon }) => {
+          {WHEN_OPTIONS.map(({ value, labelKey, icon }) => {
             const active = scheduled === value;
 
             return (
               <button
-                key={label}
+                key={labelKey}
                 type="button"
                 role="radio"
                 aria-checked={active}
@@ -332,7 +337,7 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
                 onClick={() => setScheduled(value)}
               >
                 <i className={`pi ${icon}`} aria-hidden="true" />
-                {label}
+                {t(labelKey)}
               </button>
             );
           })}
@@ -346,9 +351,8 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
             showTime
             hourFormat="24"
             minDate={new Date()}
-            locale={CALENDAR_LOCALE}
             dateFormat="dd/mm/yy"
-            placeholder="Fecha y hora"
+            placeholder={t("create.datePlaceholder")}
             showIcon
             readOnlyInput
             aria-labelledby="create-when-label"
@@ -359,12 +363,12 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
         )}
       </Field>
 
-      <Field id="create-description" label="Descripción" error={submitted && errors.description}>
+      <Field id="create-description" label={t("create.description")} error={submitted && errors.description}>
         <InputTextarea
           id="create-description"
           value={description}
           onChange={(e) => setComments(e.target.value)}
-          placeholder="Modo de juego, rango, horario, si usas micrófono…"
+          placeholder={t("create.descriptionPlaceholder")}
           aria-labelledby="create-description-label"
           rows={4}
           autoResize
@@ -379,14 +383,14 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
       <div className="create-post__footer">
         <Button
           type="button"
-          label="Cancelar"
+          label={t("common:actions.cancel")}
           className="gm-btn gm-btn--ghost"
           onClick={onClose}
           disabled={loading}
         />
         <Button
           type="submit"
-          label={loading ? "Publicando…" : isEditing ? "Guardar cambios" : "Publicar partida"}
+          label={loading ? t("create.publishing") : isEditing ? t("create.submitEdit") : t("create.submitNew")}
           icon={isEditing ? "pi pi-check" : "pi pi-send"}
           className="gm-btn gm-btn--primary"
           loading={loading}

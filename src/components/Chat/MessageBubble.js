@@ -1,7 +1,10 @@
+import { useTranslation } from "react-i18next";
 import { formatFileSize } from "../../utils";
 
 // Adjunto de un mensaje según mediaType
 function MessageMedia({ mediaUrl, mediaType, fileName, fileSize }) {
+  const { t } = useTranslation("chat");
+
   if (mediaType === "image") {
     return (
       <a
@@ -9,9 +12,9 @@ function MessageMedia({ mediaUrl, mediaType, fileName, fileSize }) {
         target="_blank"
         rel="noopener noreferrer"
         className="chat-media chat-media--image"
-        aria-label="Abrir imagen en una pestaña nueva"
+        aria-label={t("messages.openImage")}
       >
-        <img src={mediaUrl} alt={fileName || "Imagen"} loading="lazy" />
+        <img src={mediaUrl} alt={fileName || t("messages.image")} loading="lazy" />
       </a>
     );
   }
@@ -39,7 +42,7 @@ function MessageMedia({ mediaUrl, mediaType, fileName, fileSize }) {
         <i className="pi pi-file" />
       </span>
       <span className="chat-file__info">
-        <span className="chat-file__name">{fileName || "Archivo"}</span>
+        <span className="chat-file__name">{fileName || t("messages.file")}</span>
         <span className="chat-file__size">{formatFileSize(fileSize)}</span>
       </span>
       <i className="pi pi-download chat-file__action" aria-hidden="true" />

@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Toast } from "primereact/toast";
-import { countries } from "../../data/countries";
+import { useTranslation } from "react-i18next";
+import { getCountryOptions } from "../../utils/countryNames";
 import { getAuthErrorMessage } from "../../utils/authErrors";
 import { authService } from "../../services/auth";
 import { profileService } from "../../services/profile";
@@ -24,11 +25,14 @@ export default function Register({ onToggleMode, onBack }) {
   const [loading, setLoading] = useState(false);
 
   const toast = useRef(null);
+  const { t, i18n } = useTranslation("auth");
+  // Nombres de países en el idioma actual (se guarda el value, que no cambia)
+  const countryOptions = useMemo(() => getCountryOptions(), [i18n.resolvedLanguage]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { loadingProvider, loginWith } = useProviderLogin((message) => {
     toast.current?.show({
       severity: "error",
-      summary: "Error",
+      summary: t("common:status.error"),
       detail: message,
       life: 3000
     });
@@ -40,8 +44,8 @@ export default function Register({ onToggleMode, onBack }) {
     if (!email || !password || !username || !region) {
       toast.current?.show({
         severity: "warn",
-        summary: "Campos incompletos",
-        detail: "Completa todos los campos obligatorios",
+        summary: t("register.incompleteTitle"),
+        detail: t("register.incompleteDetail"),
         life: 3000
       });
       return;
@@ -68,15 +72,15 @@ export default function Register({ onToggleMode, onBack }) {
 
       toast.current?.show({
         severity: "success",
-        summary: "Cuenta creada",
-        detail: "Bienvenido a GamerMatch 🎮",
+        summary: t("register.createdTitle"),
+        detail: t("register.createdDetail"),
         life: 3000
       });
 
     } catch (error) {
       toast.current?.show({
         severity: "error",
-        summary: "Error",
+        summary: t("common:status.error"),
         detail: getAuthErrorMessage(error),
         life: 3000
       });
@@ -89,17 +93,17 @@ export default function Register({ onToggleMode, onBack }) {
     <>
       <AuthLayout
         compact
-        title="Crea tu cuenta"
-        subtitle="Únete a la comunidad y encuentra jugadores como tú."
-        tagline={"Tu próxima partida\nempieza aquí."}
+        title={t("register.title")}
+        subtitle={t("register.subtitle")}
+        tagline={t("register.tagline")}
         onSubmit={handleRegister}
         onBack={onBack}
       >
         <AuthInput
           id="email"
-          label="Correo"
+          label={t("fields.email")}
           type="email"
-          placeholder="tucorreo@ejemplo.com"
+          placeholder={t("fields.emailPlaceholder")}
           autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -107,7 +111,7 @@ export default function Register({ onToggleMode, onBack }) {
 
         <PasswordInput
           id="password"
-          label="Contraseña"
+          label={t("fields.password")}
           autoComplete="new-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -115,8 +119,8 @@ export default function Register({ onToggleMode, onBack }) {
 
         <AuthInput
           id="username"
-          label="Nickname"
-          placeholder="Cómo te van a reconocer"
+          label={t("fields.nickname")}
+          placeholder={t("fields.nicknamePlaceholder")}
           autoComplete="nickname"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -124,8 +128,8 @@ export default function Register({ onToggleMode, onBack }) {
 
         <AuthInput
           id="phone"
-          label="Teléfono"
-          hint="(opcional)"
+          label={t("fields.phone")}
+          hint={t("fields.optional")}
           type="tel"
           placeholder="55 1234 5678"
           autoComplete="tel"
@@ -135,17 +139,18 @@ export default function Register({ onToggleMode, onBack }) {
 
         <AuthSelect
           id="region"
-          label="Región"
+          label={t("fields.region")}
           value={region}
-          options={countries}
+          options={countryOptions}
           onChange={(e) => setRegion(e.value)}
           optionLabel="label"
-          placeholder="Selecciona tu región"
+          optionValue="value"
+          placeholder={t("fields.regionPlaceholder")}
           filter
         />
 
         <GradientButton
-          label="Crear cuenta"
+          label={t("register.submit")}
           loading={loading}
           disabled={!email || !password || !username || !region}
         />
@@ -157,8 +162,8 @@ export default function Register({ onToggleMode, onBack }) {
         />
 
         <AuthSwitch
-          question="¿Ya tienes cuenta?"
-          action="Iniciar sesión"
+          question={t("register.hasAccount")}
+          action={t("register.toLogin")}
           onClick={onToggleMode}
         />
       </AuthLayout>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { ProfileSection } from "../ProfileSection";
@@ -32,9 +33,9 @@ export default function SocialLinks({
   links = [],
   isEditing = false,
   onLinksChange,
-  emptyText = "Este jugador no ha agregado redes."
+  emptyText
 }) {
-
+  const { t } = useTranslation("profile");
   const handleChange = (index, value) => {
     const newLinks = [...links];
     newLinks[index] = value;
@@ -54,7 +55,7 @@ export default function SocialLinks({
 
   if (isEditing) {
     return (
-      <ProfileSection title="Redes sociales" icon="pi-share-alt" className="social-links">
+      <ProfileSection title={t("links.title")} icon="pi-share-alt" className="social-links">
         {links.length > 0 && (
           <ul className="social-links__edit-list">
             {links.map((link, index) => {
@@ -68,19 +69,19 @@ export default function SocialLinks({
                       value={link}
                       onChange={(e) => handleChange(index, e.target.value)}
                       placeholder="https://…"
-                      aria-label={`Link ${index + 1}`}
+                      aria-label={t("links.linkLabel", { number: index + 1 })}
                       aria-invalid={invalid}
                       className={`gm-input${invalid ? " gm-input--invalid" : ""}`}
                     />
                     <Button
                       icon="pi pi-trash"
                       className="gm-btn gm-btn--icon"
-                      aria-label={`Quitar link ${index + 1}`}
+                      aria-label={t("links.remove", { number: index + 1 })}
                       onClick={() => handleRemove(index)}
                     />
                   </div>
                   {invalid && (
-                    <p className="gm-field__error">El link debe comenzar con https://</p>
+                    <p className="gm-field__error">{t("links.invalid")}</p>
                   )}
                 </li>
               );
@@ -89,21 +90,19 @@ export default function SocialLinks({
         )}
 
         <Button
-          label="Agregar link"
+          label={t("links.add")}
           icon="pi pi-plus"
           className="gm-btn gm-btn--ghost social-links__add"
           onClick={handleAdd}
         />
 
-        <p className="gm-field__hint social-links__hint">
-          Pega el link de tu perfil de Steam para mostrar tus estadísticas.
-        </p>
+        <p className="gm-field__hint social-links__hint">{t("links.steamHint")}</p>
       </ProfileSection>
     );
   }
 
   return (
-    <ProfileSection title="Redes sociales" icon="pi-share-alt" className="social-links">
+    <ProfileSection title={t("links.title")} icon="pi-share-alt" className="social-links">
       {links.length > 0 ? (
         <ul className="social-links__list">
           {links.map((link, index) => (
@@ -125,7 +124,7 @@ export default function SocialLinks({
           ))}
         </ul>
       ) : (
-        <p className="gm-section__empty">{emptyText}</p>
+        <p className="gm-section__empty">{emptyText ?? t("links.empty")}</p>
       )}
     </ProfileSection>
   );

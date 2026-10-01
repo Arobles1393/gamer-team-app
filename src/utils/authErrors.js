@@ -1,15 +1,18 @@
-export const AUTH_ERROR_MESSAGES = {
-  "auth/invalid-credential": "Correo o contraseña incorrectos.",
-  "auth/invalid-email": "El correo no tiene un formato válido.",
-  "auth/too-many-requests": "Demasiados intentos. Intenta más tarde.",
-  "auth/user-disabled": "Esta cuenta fue deshabilitada.",
-  "auth/email-already-in-use": "Ya existe una cuenta con ese correo.",
-  "auth/weak-password": "La contraseña debe tener al menos 6 caracteres.",
-  "auth/account-exists-with-different-credential": "Ya existe una cuenta con ese correo usando otro método de inicio de sesión.",
-  "auth/popup-blocked": "Tu navegador bloqueó la ventana emergente. Permite popups para este sitio e intenta de nuevo.",
+import i18n from "../i18n";
+
+// Códigos de error con mensaje propio (texto en locales/{idioma}/auth.json)
+const KNOWN_ERRORS = [
+  "auth/invalid-credential",
+  "auth/invalid-email",
+  "auth/too-many-requests",
+  "auth/user-disabled",
+  "auth/email-already-in-use",
+  "auth/weak-password",
+  "auth/account-exists-with-different-credential",
+  "auth/popup-blocked",
   // loginWithSteam (Cloud Function): Steam no validó la respuesta
-  "functions/invalid-argument": "No se pudo verificar tu cuenta de Steam. Intenta de nuevo."
-};
+  "functions/invalid-argument"
+];
 
 // El usuario cerró o reemplazó la ventana del proveedor: es una cancelación, no una falla
 const SILENT_AUTH_ERRORS = [
@@ -20,5 +23,8 @@ const SILENT_AUTH_ERRORS = [
 // Devuelve null cuando no hay que mostrar nada
 export const getAuthErrorMessage = (error) => {
   if (SILENT_AUTH_ERRORS.includes(error.code)) return null;
-  return AUTH_ERROR_MESSAGES[error.code] || "Ocurrió un error. Intenta de nuevo.";
+
+  return KNOWN_ERRORS.includes(error.code)
+    ? i18n.t(`auth:errors.${error.code}`)
+    : i18n.t("common:errors.generic");
 };

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { AutoComplete } from "primereact/autocomplete";
 import { Button } from "primereact/button";
 import { ProfileSection } from "../ProfileSection";
@@ -27,14 +28,15 @@ export default function FavoriteGames({
   onGameQueryChange,
   onAddGame,
   onRemoveGame,
-  emptyText = "Este jugador aún no tiene juegos favoritos.",
+  emptyText,
   onEmptyAction
 }) {
+  const { t } = useTranslation("profile");
   const hasGames = games?.length > 0;
 
   return (
     <ProfileSection
-      title="Juegos favoritos"
+      title={t("games.title")}
       icon="pi-star"
       className="fav-games"
       action={hasGames && <span className="fav-games__count">{games.length}</span>}
@@ -49,8 +51,8 @@ export default function FavoriteGames({
             onSelect={(e) => onAddGame(e.value)}
             field="label"
             itemTemplate={suggestionTemplate}
-            placeholder="Busca un juego para agregarlo…"
-            aria-label="Buscar juego para agregar a favoritos"
+            placeholder={t("games.searchPlaceholder")}
+            aria-label={t("games.searchLabel")}
             className="gm-autocomplete"
             inputClassName="gm-input"
             panelClassName="gm-panel"
@@ -69,7 +71,7 @@ export default function FavoriteGames({
                 <button
                   type="button"
                   className="fav-game__remove"
-                  aria-label={`Quitar ${game.name} de favoritos`}
+                  aria-label={t("games.remove", { name: game.name })}
                   onClick={() => onRemoveGame(game.id)}
                 >
                   <i className="pi pi-times" aria-hidden="true" />
@@ -81,10 +83,10 @@ export default function FavoriteGames({
       ) : (
         !isEditing && (
           <div className="fav-games__empty">
-            <p className="gm-section__empty">{emptyText}</p>
+            <p className="gm-section__empty">{emptyText ?? t("games.empty")}</p>
             {onEmptyAction && (
               <Button
-                label="Agregar juegos"
+                label={t("games.add")}
                 icon="pi pi-plus"
                 className="gm-btn gm-btn--ghost"
                 onClick={onEmptyAction}

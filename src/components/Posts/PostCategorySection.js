@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import PostCard from "./PostCard";
 import PostCardSkeleton from "./PostCardSkeleton";
 
@@ -15,6 +16,7 @@ export default function PostCategorySection({
   onDelete,
   onShowProfile
 }) {
+  const { t } = useTranslation();
   const showSkeleton = loading && posts.length === 0;
 
   return (
@@ -28,7 +30,7 @@ export default function PostCategorySection({
             className="feed-section__more"
             onClick={onSeeMore}
           >
-            Ver más
+            {t("actions.seeMore")}
             <i className="pi pi-chevron-right" aria-hidden="true" />
           </button>
         )}

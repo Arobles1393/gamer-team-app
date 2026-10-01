@@ -1,6 +1,7 @@
 import { Dialog } from "primereact/dialog";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { memo } from "react";
+import { useTranslation } from "react-i18next";
 import UserProfile from "./UserProfile";
 import UserProfileActions from "./UserProfileActions";
 import { ReportDialog } from "../Reports";
@@ -41,6 +42,7 @@ const UserProfileDialog = ({
   onChat,
   onFriendStatusChange
 }) => {
+  const { t } = useTranslation("profile");
   const user = useCurrentUser();
   const { userData } = useUserProfile(selectedUserId);
   const { blocked, blockedByMe, blockId } = useBlockStatus(user, selectedUserId);
@@ -51,14 +53,14 @@ const UserProfileDialog = ({
     return null;
   }
 
-  const username = userData?.username || "este usuario";
+  const username = userData?.username || t("actions.thisUser");
 
   const handleRemoveFriend = () => {
     confirmDestructive({
       group: CONFIRM_GROUP,
-      header: "Dejar de ser amigos",
-      message: `${username} dejará de estar en tu lista de amigos. Podrán volver a enviarse una solicitud cuando quieran.`,
-      acceptLabel: "Dejar de ser amigos",
+      header: t("actions.removeFriend"),
+      message: t("dialog.removeFriendMessage", { username }),
+      acceptLabel: t("actions.removeFriend"),
       icon: "pi pi-user-minus",
       onAccept: async () => {
         try {
@@ -74,9 +76,9 @@ const UserProfileDialog = ({
   const handleBlock = () => {
     confirmDestructive({
       group: CONFIRM_GROUP,
-      header: `Bloquear a ${username}`,
-      message: "No verán sus publicaciones ni comentarios, no podrán chatear ni enviarse solicitudes de amistad, y dejarán de ser amigos. Puedes desbloquear cuando quieras.",
-      acceptLabel: "Bloquear",
+      header: t("actions.blockUser", { name: username }),
+      message: t("dialog.blockMessage"),
+      acceptLabel: t("dialog.block"),
       icon: "pi pi-ban",
       onAccept: async () => {
         try {
@@ -105,7 +107,7 @@ const UserProfileDialog = ({
         {...DIALOG_PROPS}
         visible={visible}
         onHide={onHide}
-        aria-label="Perfil de jugador"
+        aria-label={t("player.eyebrow")}
       >
         <UserProfile
           userId={selectedUserId}
@@ -121,7 +123,7 @@ const UserProfileDialog = ({
               onRemoveFriend={handleRemoveFriend}
               onBlock={handleBlock}
               onUnblock={handleUnblock}
-              onReport={() => openReport("user", selectedUserId, `Perfil de ${username}`)}
+              onReport={() => openReport("user", selectedUserId, t("dialog.reportLabel", { username }))}
             />
           }
         />

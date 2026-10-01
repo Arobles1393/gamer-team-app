@@ -1,10 +1,11 @@
+import i18n from "../i18n";
 import { confirmDestructive } from "./confirmDestructive";
 
 export const confirmDeletePost = ({ onAccept }) => {
   confirmDestructive({
-    header: "Eliminar publicación",
-    message: "Se eliminará la partida y ya no aparecerá en el feed. Esta acción no se puede deshacer.",
-    acceptLabel: "Eliminar partida",
+    header: i18n.t("common:confirm.deletePost.header"),
+    message: i18n.t("common:confirm.deletePost.message"),
+    acceptLabel: i18n.t("common:confirm.deletePost.accept"),
     onAccept
   });
 };

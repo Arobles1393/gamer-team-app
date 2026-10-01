@@ -2,6 +2,7 @@ import { Menu } from "primereact/menu";
 import { UserAvatar } from "../UserAvatar";
 import { useRef } from "react";
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useCurrentUserData } from "../../context";
 import RailButton from "./RailButton";
 import "./Header.css";
@@ -18,6 +19,7 @@ export default function AppHeader({
   onToggleNotifications,
   onLogin
 }) {
+  const { t } = useTranslation();
   const menuRef = useRef(null);
   const userData = useCurrentUserData();
 
@@ -27,20 +29,20 @@ export default function AppHeader({
   };
 
   return (
-    <nav className="app-rail" aria-label="Navegación principal">
-      <NavLink to="/" className="app-rail__logo" aria-label="GamerMatch — inicio">
+    <nav className="app-rail" aria-label={t("nav.main")}>
+      <NavLink to="/" className="app-rail__logo" aria-label={t("nav.homeLogo")}>
         GM
       </NavLink>
 
       <div className="app-rail__nav">
-        <RailButton to="/" end icon="pi-home" label="Inicio" />
-        <RailButton to="/findPlayers" icon="pi-search" label="Buscar jugadores" />
-        <RailButton to="/friends" icon="pi-users" label="Amigos" />
-        <RailButton to="/chat" icon="pi-comments" label="Chats" dot={hasUnreadMessages} />
-        <RailButton to="/news" icon="pi-megaphone" label="Noticias" />
+        <RailButton to="/" end icon="pi-home" label={t("nav.home")} />
+        <RailButton to="/findPlayers" icon="pi-search" label={t("nav.findPlayers")} />
+        <RailButton to="/friends" icon="pi-users" label={t("nav.friends")} />
+        <RailButton to="/chat" icon="pi-comments" label={t("nav.chats")} dot={hasUnreadMessages} />
+        <RailButton to="/news" icon="pi-megaphone" label={t("nav.news")} />
         <RailButton
           icon="pi-bell"
-          label="Notificaciones"
+          label={t("nav.notifications")}
           badge={unreadCount}
           onClick={onToggleNotifications}
         />
@@ -51,7 +53,7 @@ export default function AppHeader({
       {onLogin ? (
         <RailButton
           icon="pi-sign-in"
-          label="Iniciar sesión"
+          label={t("actions.login")}
           className="rail-btn--login"
           onClick={onLogin}
         />
@@ -61,7 +63,7 @@ export default function AppHeader({
           <button
             type="button"
             className="app-rail__avatar-btn"
-            aria-label="Menú de cuenta"
+            aria-label={t("nav.accountMenu")}
             aria-haspopup="menu"
             onClick={handleToggleMenu}
           >

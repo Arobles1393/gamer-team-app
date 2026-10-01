@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { useAuth } from "../hooks";
+import { useAccountLanguage, useAuth } from "../hooks";
 
 // Separados para que los componentes que solo usan `user` no se re-rendericen
 // cada vez que cambia `userData` (por ejemplo, el lastSeen de presencia).
@@ -9,6 +9,8 @@ const AuthReadyContext = createContext(false);
 
 export const AuthProvider = ({ children }) => {
   const { user, userData, ready } = useAuth();
+  // El idioma guardado en la cuenta gana sobre el del navegador
+  useAccountLanguage(userData);
 
   return (
     <AuthUserContext.Provider value={user}>

@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { Toast } from "primereact/toast";
+import { useTranslation } from "react-i18next";
 import { getAuthErrorMessage } from "../../utils/authErrors";
 import { authService } from "../../services/auth";
 import { useProviderLogin } from "../../hooks";
@@ -17,11 +18,12 @@ export default function Login({ onToggleMode, onBack }) {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const toast = useRef(null);
+  const { t } = useTranslation("auth");
 
   const { loadingProvider, loginWith } = useProviderLogin((message) => {
     toast.current?.show({
       severity: "error",
-      summary: "Error",
+      summary: t("common:status.error"),
       detail: message,
       life: 3000
     });
@@ -40,7 +42,7 @@ export default function Login({ onToggleMode, onBack }) {
     } catch (error) {
       toast.current?.show({
         severity: "error",
-        summary: "Error",
+        summary: t("common:status.error"),
         detail: getAuthErrorMessage(error),
         life: 3000
       });
@@ -52,17 +54,17 @@ export default function Login({ onToggleMode, onBack }) {
   return (
     <>
       <AuthLayout
-        title="Bienvenido de vuelta"
-        subtitle="Inicia sesión para encontrar tu próximo squad."
-        tagline={"Encuentra tu squad.\nCuando quieras jugar."}
+        title={t("login.title")}
+        subtitle={t("login.subtitle")}
+        tagline={t("login.tagline")}
         onSubmit={handleLogin}
         onBack={onBack}
       >
         <AuthInput
           id="email"
-          label="Correo"
+          label={t("fields.email")}
           type="email"
-          placeholder="tucorreo@ejemplo.com"
+          placeholder={t("fields.emailPlaceholder")}
           autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -70,14 +72,14 @@ export default function Login({ onToggleMode, onBack }) {
 
         <PasswordInput
           id="password"
-          label="Contraseña"
+          label={t("fields.password")}
           autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
         <GradientButton
-          label="Iniciar sesión"
+          label={t("login.submit")}
           loading={loading}
           disabled={!email || !password}
         />
@@ -89,8 +91,8 @@ export default function Login({ onToggleMode, onBack }) {
         />
 
         <AuthSwitch
-          question="¿No tienes cuenta?"
-          action="Crear cuenta"
+          question={t("login.noAccount")}
+          action={t("login.toRegister")}
           onClick={onToggleMode}
         />
       </AuthLayout>

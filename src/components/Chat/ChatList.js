@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
@@ -15,8 +16,10 @@ const getOtherUserId = (chat, currentUserId) =>
   chat.participants.find((id) => id !== currentUserId);
 
 function ListSkeleton() {
+  const { t } = useTranslation("chat");
+
   return (
-    <ul className="chat-list__items" aria-busy="true" aria-label="Cargando chats">
+    <ul className="chat-list__items" aria-busy="true" aria-label={t("list.loading")}>
       {Array.from({ length: 5 }, (_, i) => <ChatListItemSkeleton key={i} />)}
     </ul>
   );
@@ -26,6 +29,7 @@ function ListSkeleton() {
 // (grupos de cada publicación). Cada pestaña usa su propio hook.
 // activeChat / onSelectChat: { type: "direct" | "group", id }
 export default function ChatList({ activeChat, onSelectChat }) {
+  const { t } = useTranslation("chat");
   const user = useCurrentUser();
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
@@ -145,10 +149,10 @@ export default function ChatList({ activeChat, onSelectChat }) {
   const tabEmpty = isGroupTab ? groupChats.length === 0 : chats.length === 0;
 
   return (
-    <section className="chat-list" aria-label="Lista de chats">
+    <section className="chat-list" aria-label={t("list.label")}>
       <header className="chat-list__header">
         <span className="feed-header__eyebrow">GamerMatch</span>
-        <h1 className="chat-list__title">Chats</h1>
+        <h1 className="chat-list__title">{t("list.title")}</h1>
 
         <ChatTabs tab={tab} onTabChange={setTab} unread={unread} />
 
@@ -157,8 +161,8 @@ export default function ChatList({ activeChat, onSelectChat }) {
           <InputText
             type="search"
             className="feed-search__input"
-            placeholder={isGroupTab ? "Buscar por juego…" : "Buscar chat…"}
-            aria-label={isGroupTab ? "Buscar chat de partida por juego" : "Buscar chat por nombre de usuario"}
+            placeholder={isGroupTab ? t("list.searchGroup") : t("list.searchDirect")}
+            aria-label={isGroupTab ? t("list.searchGroupLabel") : t("list.searchDirectLabel")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             disabled={tabEmpty}

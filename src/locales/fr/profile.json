@@ -1,0 +1,141 @@
+{
+  "page": {
+    "eyebrow": "Mon profil",
+    "editing": "Modification du profil",
+    "edit": "Modifier le profil",
+    "loading": "Chargement du profil",
+    "emptyGames": "Vous n'avez pas encore ajouté de jeux favoris.",
+    "emptyLinks": "Vous n'avez pas encore ajouté vos réseaux."
+  },
+  "language": {
+    "title": "Langue",
+    "label": "Langue de l'interface",
+    "hint": "Elle est enregistrée dans votre compte et appliquée quand vous vous connectez sur n'importe quel appareil.",
+    "saveError": "Impossible d'enregistrer la langue dans votre compte."
+  },
+  "personal": {
+    "title": "Informations personnelles",
+    "nickname": "Pseudo",
+    "email": "E-mail",
+    "emailHint": "Si vous le modifiez, il faudra peut-être vous reconnecter.",
+    "phone": "Téléphone",
+    "region": "Région",
+    "regionPlaceholder": "Sélectionnez votre région",
+    "missing": "Non renseigné"
+  },
+  "about": {
+    "title": "À propos de moi",
+    "placeholder": "Dites aux autres joueurs à quoi vous jouez, vos horaires, votre style…",
+    "empty": "Vous n'avez encore rien écrit sur vous. Modifiez votre profil pour vous présenter."
+  },
+  "saveBar": {
+    "label": "Enregistrer les modifications du profil",
+    "unsaved": "Vous avez des modifications non enregistrées",
+    "noChanges": "Aucune modification pour l'instant",
+    "save": "Enregistrer les modifications"
+  },
+  "blocked": {
+    "title": "Utilisateurs bloqués",
+    "userFallback": "Utilisateur",
+    "since": "Bloqué {{time}}",
+    "unblock": "Débloquer",
+    "unblockHeader": "Débloquer {{username}}",
+    "unblockMessage": "Vous verrez à nouveau vos publications et commentaires respectifs, et pourrez discuter et vous envoyer des demandes d'ami. L'amitié précédente n'est pas rétablie.",
+    "unblockError": "Impossible de débloquer. Réessayez."
+  },
+  "hero": {
+    "fallbackName": "Gamer",
+    "uploading": "Envoi…",
+    "changeBanner": "Changer la couverture",
+    "changeAvatar": "Changer la photo de profil",
+    "memberSince": "Membre depuis {{date}}"
+  },
+  "player": {
+    "eyebrow": "Profil du joueur",
+    "close": "Fermer le profil",
+    "loading": "Chargement du profil"
+  },
+  "actions": {
+    "addFriend": "Ajouter en ami",
+    "acceptRequest": "Accepter la demande",
+    "requestSent": "Demande envoyée",
+    "friends": "Amis",
+    "blocked": "Bloqué",
+    "unavailable": "Indisponible",
+    "thisUser": "cet utilisateur",
+    "removeFriend": "Retirer des amis",
+    "unblockUser": "Débloquer {{name}}",
+    "blockUser": "Bloquer {{name}}",
+    "reportUser": "Signaler {{name}}",
+    "message": "Message",
+    "more": "Plus d'options"
+  },
+  "dialog": {
+    "removeFriendMessage": "{{username}} sera retiré de votre liste d'amis. Vous pourrez vous renvoyer une demande quand vous voudrez.",
+    "blockMessage": "Vous ne verrez plus vos publications ni vos commentaires respectifs, vous ne pourrez plus discuter ni vous envoyer de demandes d'ami, et vous ne serez plus amis. Vous pouvez débloquer à tout moment.",
+    "block": "Bloquer",
+    "reportLabel": "Profil de {{username}}"
+  },
+  "links": {
+    "title": "Réseaux sociaux",
+    "linkLabel": "Lien {{number}}",
+    "remove": "Retirer le lien {{number}}",
+    "invalid": "Le lien doit commencer par https://",
+    "add": "Ajouter un lien",
+    "steamHint": "Collez le lien de votre profil Steam pour afficher vos statistiques.",
+    "empty": "Ce joueur n'a ajouté aucun réseau.",
+    "genericProfile": "Profil"
+  },
+  "games": {
+    "title": "Jeux favoris",
+    "searchPlaceholder": "Recherchez un jeu à ajouter…",
+    "searchLabel": "Rechercher un jeu à ajouter aux favoris",
+    "remove": "Retirer {{name}} des favoris",
+    "empty": "Ce joueur n'a pas encore de jeux favoris.",
+    "add": "Ajouter des jeux"
+  },
+  "steam": {
+    "loading": "Chargement des statistiques Steam",
+    "connectHint": "Collez le lien de votre profil Steam dans Réseaux sociaux et nous afficherons ici vos heures et vos jeux les plus joués.",
+    "connect": "Connecter Steam",
+    "notConnected": "Ce joueur n'a pas connecté son Steam.",
+    "error": "Impossible de lire les statistiques Steam.",
+    "errorOwn": "Vérifiez que le lien est correct et que votre profil et les détails de vos jeux sont publics.",
+    "errorOther": "Son profil est peut-être privé.",
+    "noGames": "Le profil Steam n'affiche aucun jeu (la bibliothèque est peut-être privée).",
+    "hoursPlayed": "Heures de jeu",
+    "games": "Jeux",
+    "mostPlayed": "Le plus joué",
+    "subtitle": "Les plus joués · touchez-en un pour voir ses succès",
+    "viewOnSteam": "Voir sur Steam",
+    "hours": "{{hours}} h",
+    "viewAchievements": "Voir les succès de {{name}}"
+  },
+  "achievements": {
+    "loading": "Chargement des succès",
+    "error": "Impossible de charger les succès. Réessayez plus tard.",
+    "empty": "Aucun succès disponible pour ce jeu. Le jeu n'a peut-être pas de succès, ou les succès Steam de l'utilisateur sont privés.",
+    "progress": "{{unlocked}} / {{total}} succès",
+    "rarity": {
+      "ultraRare": "Ultra rare",
+      "veryRare": "Très rare",
+      "rare": "Rare"
+    }
+  },
+  "form": {
+    "usernameRequired": "Le pseudo ne peut pas être vide",
+    "linksHttps": "Tous les liens doivent commencer par https://",
+    "invalidEmail": "E-mail invalide",
+    "updated": "Profil mis à jour",
+    "reloginEmail": "Par sécurité, reconnectez-vous pour changer votre e-mail.",
+    "saveError": "Impossible d'enregistrer le profil. Réessayez."
+  },
+  "images": {
+    "avatarUpdated": "Photo de profil mise à jour",
+    "bannerUpdated": "Couverture mise à jour",
+    "onlyImages": "Seules les images sont autorisées",
+    "maxSize": "L'image ne doit pas dépasser {{mb}} Mo",
+    "avatarError": "Impossible d'envoyer la photo de profil.",
+    "bannerError": "Impossible d'envoyer la couverture."
+  }
+}

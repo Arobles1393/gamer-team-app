@@ -1,4 +1,5 @@
 import { useState, useRef, useMemo, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import PostCard from "./PostCard";
@@ -15,6 +16,7 @@ import { useCurrentUser } from "../../context";
 // Vistas planas: "Mis publicaciones" (onlyMine) y "Mis partidas" (joined).
 // El feed principal por categorías es PostFeed.
 export default function PostList({ setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
+  const { t } = useTranslation("posts");
   const user = useCurrentUser();
   const toast = useRef(null);
   const [search, setSearch] = useState("");
@@ -107,7 +109,7 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
         onTagFiltersChange={setTagFilters}
       />
       {loading ? (
-        <div className="post-grid" aria-busy="true" aria-label="Cargando partidas">
+        <div className="post-grid" aria-busy="true" aria-label={t("feed.loading")}>
           {Array.from({ length: 6 }, (_, i) => <PostCardSkeleton key={i} />)}
         </div>
       ) : visiblePosts.length === 0 ? (

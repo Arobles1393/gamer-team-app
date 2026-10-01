@@ -1,12 +1,16 @@
+import { useTranslation } from "react-i18next";
+
 const FILTERS = [
-  { value: "all", label: "Todos" },
-  { value: "online", label: "En línea" }
+  { value: "all", labelKey: "friends.filterAll" },
+  { value: "online", labelKey: "friends.filterOnline" }
 ];
 
 export default function FriendsFilters({ filter, onFilterChange, counts }) {
+  const { t } = useTranslation("friends");
+
   return (
-    <div className="feed-filters" role="group" aria-label="Filtrar amigos">
-      {FILTERS.map(({ value, label }) => {
+    <div className="feed-filters" role="group" aria-label={t("friends.filtersLabel")}>
+      {FILTERS.map(({ value, labelKey }) => {
         const active = filter === value;
 
         return (
@@ -17,7 +21,7 @@ export default function FriendsFilters({ filter, onFilterChange, counts }) {
             aria-pressed={active}
             onClick={() => onFilterChange(value)}
           >
-            {label}
+            {t(labelKey)}
             <span className="feed-chip__count">{counts[value]}</span>
           </button>
         );

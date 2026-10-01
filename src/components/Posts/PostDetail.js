@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { Skeleton } from "primereact/skeleton";
@@ -32,8 +33,10 @@ import "./Feed.css";
 import "./PostDetail.css";
 
 function PostDetailSkeleton() {
+  const { t } = useTranslation("posts");
+
   return (
-    <div className="post-detail" aria-busy="true" aria-label="Cargando partida">
+    <div className="post-detail" aria-busy="true" aria-label={t("detail.loading")}>
       <Skeleton height="340px" borderRadius="16px" className="post-detail-skeleton" />
       <div className="post-detail__grid">
         <div className="post-detail__main">
@@ -49,6 +52,7 @@ function PostDetailSkeleton() {
 }
 
 export default function PostDetail({ setEditingPost, setShowCreatePost }) {
+  const { t } = useTranslation("posts");
   const user = useCurrentUser();
   const currentUserData = useCurrentUserData();
   const navigate = useNavigate();
@@ -80,15 +84,15 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
     usePostInterestStatus(id, user?.uid);
 
   const showError = useCallback((detail) => {
-    toast.current?.show({ severity: "error", summary: "Error", detail, life: 3000 });
-  }, []);
+    toast.current?.show({ severity: "error", summary: t("common:status.error"), detail, life: 3000 });
+  }, [t]);
 
   const showSuccess = useCallback((detail) => {
-    toast.current?.show({ severity: "success", summary: "Listo", detail, life: 2500 });
-  }, []);
+    toast.current?.show({ severity: "success", summary: t("common:status.done"), detail, life: 2500 });
+  }, [t]);
 
   const { handleInterested } = usePostInterest(user, () => {
-    showError("No se pudo guardar tu interés. Intenta de nuevo.");
+    showError(t("detail.errors.interest"));
   });
 
   const {
@@ -127,10 +131,10 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
           <span className="feed-empty__icon">
             <i className="pi pi-exclamation-triangle" aria-hidden="true" />
           </span>
-          <p className="feed-empty__title">No se pudo cargar la partida</p>
-          <p className="feed-empty__text">Revisa tu conexión e inténtalo de nuevo.</p>
+          <p className="feed-empty__title">{t("detail.errorTitle")}</p>
+          <p className="feed-empty__text">{t("detail.errorText")}</p>
           <Button
-            label="Volver al inicio"
+            label={t("detail.home")}
             className="feed-empty__btn"
             onClick={() => navigate("/")}
           />
@@ -188,7 +192,7 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
           navigate("/");
         } catch (error) {
           console.error("Error al eliminar la publicación:", error);
-          showError("No se pudo eliminar la publicación. Intenta de nuevo.");
+          showError(t("detail.errors.deletePost"));
         }
       }
     });
@@ -199,23 +203,23 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
       return await publishComment(comment, file);
     } catch (error) {
       console.error("Error al publicar comentario:", error);
-      showError("No se pudo guardar el comentario. Intenta de nuevo.");
+      showError(t("detail.errors.saveComment"));
       return false;
     }
   };
 
   const confirmDeleteComment = (commentId) => {
     confirmDestructive({
-      header: "Eliminar comentario",
-      message: "El comentario y su imagen o video se eliminarán. Esta acción no se puede deshacer.",
-      acceptLabel: "Eliminar comentario",
+      header: t("detail.deleteComment.header"),
+      message: t("detail.deleteComment.message"),
+      acceptLabel: t("detail.deleteComment.accept"),
       onAccept: async () => {
         try {
           await removeComment(commentId);
-          showSuccess("Comentario eliminado");
+          showSuccess(t("detail.deleteComment.done"));
         } catch (error) {
           console.error("Error al eliminar comentario:", error);
-          showError("No se pudo eliminar el comentario. Intenta de nuevo.");
+          showError(t("detail.errors.deleteComment"));
         }
       }
     });
@@ -227,16 +231,16 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
 
       <div className="post-detail__grid">
         <div className="post-detail__main">
-          <ProfileSection title="Sobre la partida" icon="pi-align-left">
+          <ProfileSection title={t("detail.about")} icon="pi-align-left">
             {post.comments ? (
               <p className="post-detail__description">{post.comments}</p>
             ) : (
-              <p className="gm-section__empty">El anfitrión no agregó una descripción.</p>
+              <p className="gm-section__empty">{t("detail.noDescription")}</p>
             )}
           </ProfileSection>
 
           <ProfileSection
-            title="Comentarios"
+            title={t("detail.comments")}
             icon="pi-comments"
             className="post-comments"
             action={comments.length > 0 && (
@@ -268,7 +272,7 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
               </ul>
             ) : (
               <p className="gm-section__empty post-comments__empty">
-                Todavía no hay comentarios. ¡Rompe el hielo y coordina la partida!
+                {t("detail.noComments")}
               </p>
             )}
           </ProfileSection>

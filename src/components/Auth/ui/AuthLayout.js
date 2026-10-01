@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import "../Auth.css";
 
 function Brand({ className }) {
@@ -18,6 +19,8 @@ export default function AuthLayout({
   onBack,
   children
 }) {
+  const { t } = useTranslation("auth");
+
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit?.();
@@ -48,7 +51,7 @@ export default function AuthLayout({
         {onBack && (
           <button type="button" className="auth__back" onClick={onBack}>
             <i className="pi pi-arrow-left" aria-hidden="true" />
-            Seguir explorando
+            {t("keepExploring")}
           </button>
         )}
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Button } from "primereact/button";
 import { UserAvatar } from "../UserAvatar";
@@ -6,17 +7,15 @@ import { commentsService } from "../../services/posts";
 import { REPORT_REASONS } from "../../services/reports";
 import { formatDates } from "../../utils";
 
-const TYPE_LABELS = {
-  user: { label: "Usuario", icon: "pi-user" },
-  post: { label: "Publicación", icon: "pi-file" },
-  comment: { label: "Comentario", icon: "pi-comment" }
+const TYPE_ICONS = {
+  user: "pi-user",
+  post: "pi-file",
+  comment: "pi-comment"
 };
-
-const reasonLabel = (reason) =>
-  REPORT_REASONS.find((option) => option.value === reason)?.label || reason;
 
 // Link al contenido reportado: perfil (diálogo), post o el post del comentario
 function ReportTarget({ report, targetUser, onOpenProfile }) {
+  const { t } = useTranslation("reports");
   const [comment, setComment] = useState(undefined);
 
   useEffect(() => {
@@ -37,7 +36,7 @@ function ReportTarget({ report, targetUser, onOpenProfile }) {
     return (
       <button type="button" className="admin-report__link" onClick={() => onOpenProfile(report.targetId)}>
         <i className="pi pi-external-link" aria-hidden="true" />
-        Ver perfil de {targetUser?.username || "usuario"}
+        {t("admin.viewProfile", { username: targetUser?.username || t("admin.userFallback") })}
       </button>
     );
   }
@@ -46,17 +45,17 @@ function ReportTarget({ report, targetUser, onOpenProfile }) {
     return (
       <Link to={`/post/${report.targetId}`} className="admin-report__link">
         <i className="pi pi-external-link" aria-hidden="true" />
-        Ver publicación
+        {t("admin.viewPost")}
       </Link>
     );
   }
 
   if (comment === undefined) {
-    return <span className="admin-report__muted">Cargando comentario…</span>;
+    return <span className="admin-report__muted">{t("admin.loadingComment")}</span>;
   }
 
   if (!comment) {
-    return <span className="admin-report__muted">El comentario ya no existe</span>;
+    return <span className="admin-report__muted">{t("admin.commentGone")}</span>;
   }
 
   return (
@@ -64,15 +63,20 @@ function ReportTarget({ report, targetUser, onOpenProfile }) {
       {comment.text && <blockquote className="admin-report__quote">{comment.text}</blockquote>}
       <Link to={`/post/${comment.postId}`} className="admin-report__link">
         <i className="pi pi-external-link" aria-hidden="true" />
-        Ver comentario en su publicación
+        {t("admin.viewComment")}
       </Link>
     </>
   );
 }
 
 export default function AdminReportItem({ report, reporter, targetUser, onOpenProfile, onMarkReviewed }) {
+  const { t } = useTranslation("reports");
   const [marking, setMarking] = useState(false);
-  const type = TYPE_LABELS[report.targetType] ?? TYPE_LABELS.post;
+  const type = TYPE_ICONS[report.targetType] ? report.targetType : "post";
+  // Motivos desconocidos (datos viejos) se muestran tal cual
+  const reason = REPORT_REASONS.includes(report.reason)
+    ? t(`reasons.${report.reason}`)
+    : report.reason;
 
   const handleMark = async () => {
     setMarking(true);
@@ -88,10 +92,10 @@ export default function AdminReportItem({ report, reporter, targetUser, onOpenPr
     <li className="admin-report">
       <div className="admin-report__head">
         <span className="admin-report__type">
-          <i className={`pi ${type.icon}`} aria-hidden="true" />
-          {type.label}
+          <i className={`pi ${TYPE_ICONS[type]}`} aria-hidden="true" />
+          {t(`admin.types.${type}`)}
         </span>
-        <span className="admin-report__reason">{reasonLabel(report.reason)}</span>
+        <span className="admin-report__reason">{reason}</span>
         <span className="admin-report__date">{formatDates.formatDateN(report.createdAt)}</span>
       </div>
 
@@ -102,7 +106,7 @@ export default function AdminReportItem({ report, reporter, targetUser, onOpenPr
           className="admin-report__avatar"
         />
         <span>
-          Reportado por <strong>{reporter?.username || "usuario"}</strong>
+          {t("admin.reportedBy")} <strong>{reporter?.username || t("admin.userFallback")}</strong>
         </span>
       </div>
 
@@ -114,7 +118,7 @@ export default function AdminReportItem({ report, reporter, targetUser, onOpenPr
         </div>
 
         <Button
-          label="Marcar como revisado"
+          label={t("admin.markReviewed")}
           icon="pi pi-check"
           className="gm-btn gm-btn--ghost"
           loading={marking}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { updateEmail } from "firebase/auth";
+import i18n from "../../i18n";
 import { profileService } from "../../services/profile";
 
 export const useProfileForm = (user, userData, onError, onSuccess) => {
@@ -33,7 +34,7 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
 
   const handleSave = async () => {
     if (!username.trim()) {
-      onError?.("El nickname no puede quedar vacío");
+      onError?.(i18n.t("profile:form.usernameRequired"));
       return;
     }
 
@@ -45,13 +46,13 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
       );
 
       if (invalid) {
-        onError?.("Todos los links deben comenzar con https://");
+        onError?.(i18n.t("profile:form.linksHttps"));
         return;
       }
 
       if (email !== user.email) {
         if (!email.includes("@")) {
-          onError?.("Correo inválido");
+          onError?.(i18n.t("profile:form.invalidEmail"));
           return;
         }
 
@@ -69,14 +70,14 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
       });
 
       setIsEditing(false);
-      onSuccess?.("Perfil actualizado");
+      onSuccess?.(i18n.t("profile:form.updated"));
     } catch (error) {
       console.error("Error actualizando perfil:", error);
 
       const message =
         error.code === "auth/requires-recent-login"
-          ? "Por seguridad, vuelve a iniciar sesión para cambiar tu correo."
-          : "No se pudo guardar el perfil. Intenta de nuevo.";
+          ? i18n.t("profile:form.reloginEmail")
+          : i18n.t("profile:form.saveError");
 
       onError?.(message);
     } finally {

@@ -1,0 +1,141 @@
+{
+  "page": {
+    "eyebrow": "Meu perfil",
+    "editing": "Editando perfil",
+    "edit": "Editar perfil",
+    "loading": "Carregando perfil",
+    "emptyGames": "Você ainda não adicionou jogos favoritos.",
+    "emptyLinks": "Você ainda não adicionou suas redes."
+  },
+  "language": {
+    "title": "Idioma",
+    "label": "Idioma da interface",
+    "hint": "Fica salvo na sua conta e é aplicado quando você entra em qualquer dispositivo.",
+    "saveError": "Não foi possível salvar o idioma na sua conta."
+  },
+  "personal": {
+    "title": "Dados pessoais",
+    "nickname": "Nickname",
+    "email": "E-mail",
+    "emailHint": "Se você alterá-lo, pode ser necessário entrar novamente.",
+    "phone": "Telefone",
+    "region": "Região",
+    "regionPlaceholder": "Selecione sua região",
+    "missing": "Não adicionado"
+  },
+  "about": {
+    "title": "Sobre mim",
+    "placeholder": "Conte aos outros jogadores o que você joga, seus horários, seu estilo…",
+    "empty": "Você ainda não escreveu nada sobre você. Edite seu perfil para se apresentar."
+  },
+  "saveBar": {
+    "label": "Salvar alterações do perfil",
+    "unsaved": "Você tem alterações não salvas",
+    "noChanges": "Nenhuma alteração ainda",
+    "save": "Salvar alterações"
+  },
+  "blocked": {
+    "title": "Usuários bloqueados",
+    "userFallback": "Usuário",
+    "since": "Bloqueado {{time}}",
+    "unblock": "Desbloquear",
+    "unblockHeader": "Desbloquear {{username}}",
+    "unblockMessage": "Vocês voltarão a ver as publicações e comentários um do outro, e poderão conversar e enviar solicitações de amizade. A amizade anterior não é restaurada.",
+    "unblockError": "Não foi possível desbloquear. Tente novamente."
+  },
+  "hero": {
+    "fallbackName": "Gamer",
+    "uploading": "Enviando…",
+    "changeBanner": "Alterar capa",
+    "changeAvatar": "Alterar foto de perfil",
+    "memberSince": "Membro desde {{date}}"
+  },
+  "player": {
+    "eyebrow": "Perfil de jogador",
+    "close": "Fechar perfil",
+    "loading": "Carregando perfil"
+  },
+  "actions": {
+    "addFriend": "Adicionar amigo",
+    "acceptRequest": "Aceitar solicitação",
+    "requestSent": "Solicitação enviada",
+    "friends": "Amigos",
+    "blocked": "Bloqueado",
+    "unavailable": "Indisponível",
+    "thisUser": "este usuário",
+    "removeFriend": "Desfazer amizade",
+    "unblockUser": "Desbloquear {{name}}",
+    "blockUser": "Bloquear {{name}}",
+    "reportUser": "Denunciar {{name}}",
+    "message": "Mensagem",
+    "more": "Mais opções"
+  },
+  "dialog": {
+    "removeFriendMessage": "{{username}} sairá da sua lista de amigos. Vocês poderão enviar uma nova solicitação quando quiserem.",
+    "blockMessage": "Vocês não verão as publicações nem os comentários um do outro, não poderão conversar nem enviar solicitações de amizade, e deixarão de ser amigos. Você pode desbloquear quando quiser.",
+    "block": "Bloquear",
+    "reportLabel": "Perfil de {{username}}"
+  },
+  "links": {
+    "title": "Redes sociais",
+    "linkLabel": "Link {{number}}",
+    "remove": "Remover link {{number}}",
+    "invalid": "O link deve começar com https://",
+    "add": "Adicionar link",
+    "steamHint": "Cole o link do seu perfil da Steam para mostrar suas estatísticas.",
+    "empty": "Este jogador não adicionou redes.",
+    "genericProfile": "Perfil"
+  },
+  "games": {
+    "title": "Jogos favoritos",
+    "searchPlaceholder": "Busque um jogo para adicionar…",
+    "searchLabel": "Buscar jogo para adicionar aos favoritos",
+    "remove": "Remover {{name}} dos favoritos",
+    "empty": "Este jogador ainda não tem jogos favoritos.",
+    "add": "Adicionar jogos"
+  },
+  "steam": {
+    "loading": "Carregando estatísticas da Steam",
+    "connectHint": "Cole o link do seu perfil da Steam em Redes sociais e mostraremos aqui suas horas e os jogos mais jogados.",
+    "connect": "Conectar Steam",
+    "notConnected": "Este jogador não conectou sua Steam.",
+    "error": "Não conseguimos ler as estatísticas da Steam.",
+    "errorOwn": "Verifique se o link está correto e se seu perfil e os detalhes de jogos são públicos.",
+    "errorOther": "É possível que o perfil seja privado.",
+    "noGames": "O perfil da Steam não mostra jogos (a biblioteca pode ser privada).",
+    "hoursPlayed": "Horas jogadas",
+    "games": "Jogos",
+    "mostPlayed": "Mais jogado",
+    "subtitle": "Mais jogados · toque em um para ver suas conquistas",
+    "viewOnSteam": "Ver na Steam",
+    "hours": "{{hours}} h",
+    "viewAchievements": "Ver conquistas de {{name}}"
+  },
+  "achievements": {
+    "loading": "Carregando conquistas",
+    "error": "Não foi possível carregar as conquistas. Tente novamente mais tarde.",
+    "empty": "Não há conquistas disponíveis para este jogo. Talvez o jogo não tenha conquistas ou as conquistas da Steam do usuário sejam privadas.",
+    "progress": "{{unlocked}} / {{total}} conquistas",
+    "rarity": {
+      "ultraRare": "Ultra rara",
+      "veryRare": "Muito rara",
+      "rare": "Rara"
+    }
+  },
+  "form": {
+    "usernameRequired": "O nickname não pode ficar vazio",
+    "linksHttps": "Todos os links devem começar com https://",
+    "invalidEmail": "E-mail inválido",
+    "updated": "Perfil atualizado",
+    "reloginEmail": "Por segurança, entre novamente para alterar seu e-mail.",
+    "saveError": "Não foi possível salvar o perfil. Tente novamente."
+  },
+  "images": {
+    "avatarUpdated": "Foto de perfil atualizada",
+    "bannerUpdated": "Capa atualizada",
+    "onlyImages": "Somente imagens são permitidas",
+    "maxSize": "A imagem deve ter no máximo {{mb}} MB",
+    "avatarError": "Não foi possível enviar a foto de perfil.",
+    "bannerError": "Não foi possível enviar a capa."
+  }
+}

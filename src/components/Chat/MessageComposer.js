@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
 import { OverlayPanel } from "primereact/overlaypanel";
@@ -19,6 +20,7 @@ const MAX_LENGTH = 1000;
 
 // Vista previa del adjunto antes de enviar, con X para quitarlo
 function AttachmentPreview({ file, previewUrl, uploading, onRemove }) {
+  const { t } = useTranslation("chat");
   const type = getMediaType(file.type);
 
   return (
@@ -34,14 +36,14 @@ function AttachmentPreview({ file, previewUrl, uploading, onRemove }) {
       <span className="chat-attachment__info">
         <span className="chat-attachment__name">{file.name}</span>
         <span className="chat-attachment__size">
-          {uploading ? "Subiendo…" : formatFileSize(file.size)}
+          {uploading ? t("composer.uploading") : formatFileSize(file.size)}
         </span>
       </span>
 
       <button
         type="button"
         className="chat-attachment__remove"
-        aria-label="Quitar adjunto"
+        aria-label={t("composer.removeAttachment")}
         disabled={uploading}
         onClick={onRemove}
       >
@@ -52,6 +54,7 @@ function AttachmentPreview({ file, previewUrl, uploading, onRemove }) {
 }
 
 export default function MessageComposer({ onSend, onError, disabled = false }) {
+  const { t } = useTranslation("chat");
   const [text, setText] = useState("");
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -88,7 +91,7 @@ export default function MessageComposer({ onSend, onError, disabled = false }) {
     if (!selected) return;
 
     if (selected.size > MAX_MEDIA_BYTES) {
-      onError?.(`El archivo debe pesar máximo ${MAX_MEDIA_MB} MB.`);
+      onError?.(t("composer.tooBig", { mb: MAX_MEDIA_MB }));
       return;
     }
 
@@ -165,7 +168,7 @@ export default function MessageComposer({ onSend, onError, disabled = false }) {
           type="button"
           icon="pi pi-paperclip"
           className="chat-composer__tool"
-          aria-label="Adjuntar archivo"
+          aria-label={t("composer.attach")}
           disabled={disabled || sending}
           onClick={() => fileInputRef.current?.click()}
         />
@@ -174,7 +177,7 @@ export default function MessageComposer({ onSend, onError, disabled = false }) {
           type="button"
           icon="pi pi-face-smile"
           className="chat-composer__tool"
-          aria-label="Insertar emoji"
+          aria-label={t("composer.emoji")}
           aria-haspopup="dialog"
           disabled={disabled}
           onClick={(e) => emojiPanelRef.current?.toggle(e)}
@@ -185,8 +188,8 @@ export default function MessageComposer({ onSend, onError, disabled = false }) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Escribe un mensaje…"
-          aria-label="Escribe un mensaje"
+          placeholder={t("composer.placeholder")}
+          aria-label={t("composer.label")}
           rows={1}
           autoResize
           maxLength={MAX_LENGTH}
@@ -199,7 +202,7 @@ export default function MessageComposer({ onSend, onError, disabled = false }) {
           type="submit"
           icon={sending ? "pi pi-spin pi-spinner" : "pi pi-send"}
           className="chat-composer__send"
-          aria-label="Enviar mensaje"
+          aria-label={t("composer.send")}
           disabled={!canSend}
         />
       </div>
@@ -211,7 +214,7 @@ export default function MessageComposer({ onSend, onError, disabled = false }) {
             // Emojis nativos del sistema: no descarga imágenes de un CDN
             emojiStyle="native"
             lazyLoadEmojis
-            searchPlaceholder="Buscar emoji"
+            searchPlaceholder={t("composer.searchEmoji")}
             previewConfig={{ showPreview: false }}
             width={320}
             height={380}

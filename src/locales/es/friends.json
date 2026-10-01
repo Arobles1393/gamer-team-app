@@ -1,0 +1,66 @@
+{
+  "friends": {
+    "title": "Mis amigos",
+    "searchPlaceholder": "Buscar amigo…",
+    "searchLabel": "Buscar entre tus amigos",
+    "filtersLabel": "Filtrar amigos",
+    "filterAll": "Todos",
+    "filterOnline": "En línea",
+    "loading": "Cargando amigos",
+    "empty": {
+      "empty": {
+        "title": "Aún no tienes amigos",
+        "text": "Busca jugadores y envíales una solicitud para armar tu squad.",
+        "action": "Buscar jugadores"
+      },
+      "noMatch": {
+        "title": "Ningún amigo coincide",
+        "text": "Ninguno de tus amigos tiene un usuario que contenga \"{{search}}\".",
+        "action": "Limpiar búsqueda"
+      },
+      "offline": {
+        "title": "Nadie está en línea",
+        "text": "Ninguno de tus amigos está conectado ahora mismo.",
+        "action": "Ver todos"
+      },
+      "error": {
+        "title": "No se pudieron cargar tus amigos",
+        "text": "Revisa tu conexión e inténtalo de nuevo.",
+        "action": "Reintentar"
+      }
+    }
+  },
+  "players": {
+    "title": "Buscar jugadores",
+    "searchPlaceholder": "Nombre de usuario…",
+    "searchLabel": "Buscar jugador por nombre de usuario",
+    "searching": "Buscando jugadores",
+    "found_one": "{{count}} jugador encontrado",
+    "found_other": "{{count}} jugadores encontrados",
+    "chatError": "No se pudo abrir el chat. Intenta de nuevo.",
+    "empty": {
+      "idle": {
+        "title": "Encuentra a tu próximo squad",
+        "text": "Escribe el nombre de usuario de un jugador para empezar."
+      },
+      "empty": {
+        "title": "Ningún jugador coincide",
+        "text": "No encontramos a nadie cuyo usuario empiece por \"{{search}}\".",
+        "action": "Limpiar búsqueda"
+      },
+      "error": {
+        "title": "No se pudieron cargar los jugadores",
+        "text": "Revisa tu conexión e inténtalo de nuevo.",
+        "action": "Reintentar"
+      }
+    }
+  },
+  "card": {
+    "noGames": "Sin juegos favoritos",
+    "gamesLabel": "Juegos favoritos",
+    "message": "Mensaje",
+    "messageLabel": "Enviar mensaje a {{username}}",
+    "viewProfile": "Ver perfil",
+    "viewProfileLabel": "Ver perfil de {{username}}"
+  }
+}

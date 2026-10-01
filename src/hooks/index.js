@@ -47,6 +47,7 @@ export * from "./auth/useAuth";
 export * from "./auth/useProviderLogin";
 export * from "./auth/useRequireAuth";
 export * from "./auth/useIsAdmin";
+export * from "./auth/useAccountLanguage";
 
 // Juegos
 export * from "./games/useGameSearch";

@@ -1,0 +1,230 @@
+{
+  "feed": {
+    "title": "Available parties",
+    "myPosts": "My posts",
+    "myParties": "My parties",
+    "searchPlaceholder": "Search for a game…",
+    "searchLabel": "Search for a game",
+    "publish": "Post",
+    "allGames": "All games",
+    "filterByGame": "Filter by game",
+    "allOption": "All",
+    "loading": "Loading parties",
+    "filters": "Filters"
+  },
+  "empty": {
+    "noMatchTitle": "Nothing matches your search",
+    "noMatchText": "Try another game or platform.",
+    "emptyTitle": "No parties here yet",
+    "emptyText": "When someone posts a party, it'll show up in this list."
+  },
+  "categories": {
+    "withPlatform": "{{title}} on {{platform}}",
+    "recent": {
+      "title": "Recent",
+      "empty": "No parties have been posted yet."
+    },
+    "upcoming": {
+      "title": "Coming up",
+      "empty": "No upcoming scheduled parties."
+    },
+    "friends": {
+      "title": "From your friends",
+      "empty": "None of your friends have posted yet."
+    },
+    "nearby": {
+      "title": "Near you",
+      "empty": "No posts in your region yet.",
+      "noRegion": "Set your region in your profile to see posts near you."
+    },
+    "mostInterested": {
+      "title": "Most interested",
+      "empty": "No party has interested players yet."
+    },
+    "trendingVolume": {
+      "title": "Trending in posts",
+      "empty": "No trending games yet."
+    },
+    "trendingSearch": {
+      "title": "Trending in searches",
+      "empty": "No games trending in searches yet."
+    }
+  },
+  "explore": {
+    "eyebrow": "Explore",
+    "back": "Back",
+    "loadMore": "Load more",
+    "loadingMore": "Loading…",
+    "errorTitle": "Couldn't load the parties",
+    "errorText": "Check your connection and try again."
+  },
+  "card": {
+    "playersNeeded_one": "{{count}} player needed",
+    "playersNeeded_other": "{{count}} players needed",
+    "open": "View {{game}} party",
+    "interestedBadge": "You're interested",
+    "scheduledTitle": "Scheduled party",
+    "reportLabel": "Post by {{username}} · {{game}}",
+    "aPlayer": "a player",
+    "join": "I want to play",
+    "leave": "Not interested anymore",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "tags": {
+    "label": "Party tags",
+    "mic": "Mic",
+    "micRequired": "Mic required",
+    "competitive": "Competitive",
+    "languageTitle": "Language: {{language}}"
+  },
+  "skill": {
+    "casual": "Casual",
+    "competitive": "Competitive"
+  },
+  "moreFilters": {
+    "button": "More filters",
+    "buttonActive": "More filters (filters active)",
+    "mic": "Mic",
+    "withMic": "With mic",
+    "withoutMic": "Without mic",
+    "level": "Level",
+    "language": "Language",
+    "anyLanguage": "Any",
+    "searchLanguage": "Search language…",
+    "noLanguage": "No language matches",
+    "clear": "Clear these filters"
+  },
+  "detail": {
+    "loading": "Loading party",
+    "errorTitle": "Couldn't load the party",
+    "errorText": "Check your connection and try again.",
+    "home": "Back to home",
+    "back": "Back",
+    "about": "About the party",
+    "noDescription": "The host didn't add a description.",
+    "comments": "Comments",
+    "noComments": "No comments yet. Break the ice and coordinate the party!",
+    "cover": "{{game}} cover",
+    "lookingFor_one": "Looking for {{count}} player",
+    "lookingFor_other": "Looking for {{count}} players",
+    "errors": {
+      "interest": "Couldn't save your interest. Please try again.",
+      "deletePost": "Couldn't delete the post. Please try again.",
+      "saveComment": "Couldn't save the comment. Please try again.",
+      "deleteComment": "Couldn't delete the comment. Please try again."
+    },
+    "deleteComment": {
+      "header": "Delete comment",
+      "message": "The comment and its image or video will be deleted. This action can't be undone.",
+      "accept": "Delete comment",
+      "done": "Comment deleted"
+    }
+  },
+  "info": {
+    "host": "Host",
+    "hostYou": "Host · you",
+    "scheduled": "Scheduled",
+    "published": "Posted",
+    "region": "Region",
+    "noRegion": "No region",
+    "lookingFor": "Looking for",
+    "players_one": "{{count}} player",
+    "players_other": "{{count}} players",
+    "mic": "Mic",
+    "level": "Level",
+    "language": "Language",
+    "interested": "Interested",
+    "comments": "Comments",
+    "groupChat": "Group chat",
+    "editPost": "Edit party",
+    "delete": "Delete",
+    "messageHost": "Message the host"
+  },
+  "interested": {
+    "title": "Interested players",
+    "loading": "Loading interested players",
+    "emptyOwner": "Nobody has joined yet. When someone taps “I want to play”, they'll show up here.",
+    "empty": "Nobody has joined yet. Be the first!"
+  },
+  "comments": {
+    "placeholder": "Write a comment… what time are you playing?",
+    "label": "Write a comment",
+    "removeFile": "Remove attachment",
+    "attach": "Image or video",
+    "publish": "Comment",
+    "publishing": "Posting…",
+    "onlyMedia": "You can only attach images or videos.",
+    "tooBig": "The file must be {{mb}} MB or less.",
+    "player": "Player",
+    "viewProfile": "View {{username}}'s profile",
+    "host": "Host",
+    "delete": "Delete comment",
+    "reportLabel": "Comment by {{username}}",
+    "openImage": "Open image in a new tab",
+    "imageAlt": "Image shared by {{username}}",
+    "loginPrompt": "Log in to comment and coordinate the party."
+  },
+  "nudge": {
+    "text": "Add your region so other players know where you play from.",
+    "cta": "Complete profile",
+    "close": "Dismiss notice"
+  },
+  "create": {
+    "titleNew": "Post a party",
+    "titleEdit": "Edit party",
+    "game": "Game",
+    "gamePlaceholder": "Search for the game…",
+    "gameLocked": "The game can't be changed when editing",
+    "gameAvailable": "Available on: {{platforms}}",
+    "gameSelected": "Selected game",
+    "changeGame": "Change game",
+    "platform": "Platform",
+    "multiplatform": "Cross-platform",
+    "details": "Details",
+    "detailsHint": "Optional: helps you find like-minded players.",
+    "micRequired": "Mic required",
+    "level": "Level",
+    "languagePlaceholder": "Language: not specified",
+    "languageLabel": "Party language",
+    "players": "Players you're looking for",
+    "playersHint": "How many players you need to complete the party.",
+    "fewerPlayers": "Fewer players",
+    "morePlayers": "More players",
+    "playerUnit_one": "player",
+    "playerUnit_other": "players",
+    "when": "When",
+    "now": "Right now",
+    "schedule": "Schedule for later",
+    "scheduleHint": "It'll appear in “Coming up” until that time.",
+    "datePlaceholder": "Date and time",
+    "description": "Description",
+    "descriptionPlaceholder": "Game mode, rank, schedule, whether you use a mic…",
+    "submitNew": "Post party",
+    "submitEdit": "Save changes",
+    "publishing": "Posting…",
+    "errors": {
+      "game": "Choose the party's game.",
+      "platform": "Choose a platform or check Cross-platform.",
+      "description": "Tell us a bit about the party.",
+      "schedule": "Choose the party's date and time.",
+      "incomplete": "Fill in all the fields",
+      "pastDate": "Choose a future date and time for the party",
+      "update": "Couldn't update the post",
+      "save": "Couldn't save the post"
+    },
+    "done": {
+      "updatedTitle": "Party updated",
+      "updatedText": "The changes are now visible in the feed.",
+      "createdTitle": "Party posted",
+      "createdText": "Your party now shows up in the feed."
+    }
+  },
+  "actions": {
+    "chatError": "Couldn't open the chat. Please try again.",
+    "interestError": "Couldn't save your interest",
+    "deletedTitle": "Deleted",
+    "deletedText": "Post deleted successfully",
+    "deleteError": "Couldn't delete the post"
+  }
+}

@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const PLATFORM_OPTIONS = [
   { label: "Todas", value: "" },
@@ -12,6 +13,7 @@ const PLATFORM_OPTIONS = [
 // gameNames: juegos para el filtro (los de la lista en vistas planas, o
 // todos los de game_stats en el feed por categorías)
 export const usePostFilters = (gameNames) => {
+  const { t } = useTranslation("posts");
   const [filterGame, setFilterGame] = useState(null);
   const [filterPlatform, setFilterPlatform] = useState(null);
   // Panel "Más filtros": micrófono, nivel e idioma (null = cualquiera)
@@ -35,13 +37,13 @@ export const usePostFilters = (gameNames) => {
     const games = [...new Set(gameNames)].filter(Boolean);
 
     return [
-      { label: "Todos", value: "" },
+      { label: t("feed.allOption"), value: "" },
       ...games.map(game => ({
         label: game,
         value: game
       }))
     ];
-  }, [gameNames]);
+  }, [gameNames, t]);
 
   return {
     filterGame,

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "primereact/button";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { ProfileSection } from "../ProfileSection";
@@ -14,6 +15,7 @@ const CONFIRM_GROUP = "blocked-users";
 // Si alguien me bloqueó a mí no sale aquí (solo quien bloquea desbloquea).
 // Sin bloqueos, la sección no se muestra.
 export default function BlockedUsers({ user, onError }) {
+  const { t } = useTranslation("profile");
   const { blocks } = useBlockedIds(user);
   const [unblockingId, setUnblockingId] = useState(null);
 
@@ -31,9 +33,9 @@ export default function BlockedUsers({ user, onError }) {
   const handleUnblock = (block, username) => {
     confirmDestructive({
       group: CONFIRM_GROUP,
-      header: `Desbloquear a ${username}`,
-      message: "Volverán a ver sus publicaciones y comentarios, y podrán chatear y enviarse solicitudes de amistad. La amistad anterior no se restaura.",
-      acceptLabel: "Desbloquear",
+      header: t("blocked.unblockHeader", { username }),
+      message: t("blocked.unblockMessage"),
+      acceptLabel: t("blocked.unblock"),
       icon: "pi pi-lock-open",
       onAccept: async () => {
         setUnblockingId(block.id);
@@ -42,7 +44,7 @@ export default function BlockedUsers({ user, onError }) {
           await blockService.unblockUser(block.id);
         } catch (error) {
           console.error("Error al desbloquear:", error);
-          onError?.("No se pudo desbloquear. Intenta de nuevo.");
+          onError?.(t("blocked.unblockError"));
         } finally {
           setUnblockingId(null);
         }
@@ -51,11 +53,11 @@ export default function BlockedUsers({ user, onError }) {
   };
 
   return (
-    <ProfileSection title="Usuarios bloqueados" icon="pi-ban" className="blocked-users">
+    <ProfileSection title={t("blocked.title")} icon="pi-ban" className="blocked-users">
       <ul className="blocked-users__list">
         {myBlocks.map((block) => {
           const profile = profiles[block.otherId];
-          const username = profile?.username || "Usuario";
+          const username = profile?.username || t("blocked.userFallback");
           const since = formatDates.formatDateN(block.createdAt);
 
           return (
@@ -67,10 +69,14 @@ export default function BlockedUsers({ user, onError }) {
               />
               <span className="blocked-users__info">
                 <span className="blocked-users__name">{username}</span>
-                {since && <span className="blocked-users__date">Bloqueado {since.toLowerCase()}</span>}
+                {since && (
+                  <span className="blocked-users__date">
+                    {t("blocked.since", { time: since.toLowerCase() })}
+                  </span>
+                )}
               </span>
               <Button
-                label="Desbloquear"
+                label={t("blocked.unblock")}
                 className="gm-btn gm-btn--ghost blocked-users__btn"
                 loading={unblockingId === block.id}
                 onClick={() => handleUnblock(block, username)}

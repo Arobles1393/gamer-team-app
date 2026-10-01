@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { Toast } from "primereact/toast";
 import ChatList from "./ChatList";
@@ -9,6 +10,7 @@ import "../Posts/Feed.css";
 import "./Chat.css";
 
 export default function ChatPage() {
+  const { t } = useTranslation();
   const { state } = useLocation();
 
   // Llega con chatId (1:1: perfil, card, notificación) o con groupChatId
@@ -34,11 +36,11 @@ export default function ChatPage() {
   const showError = useCallback((detail) => {
     toast.current?.show({
       severity: "error",
-      summary: "Error",
+      summary: t("status.error"),
       detail,
       life: 3000
     });
-  }, []);
+  }, [t]);
 
   return (
     <>

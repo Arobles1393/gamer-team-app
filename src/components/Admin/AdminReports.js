@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Skeleton } from "primereact/skeleton";
 import { Toast } from "primereact/toast";
 import AdminReportItem from "./AdminReportItem";
@@ -14,6 +15,7 @@ const noop = () => {};
 // /admin/reports: reportes pendientes. Solo ver y marcar como revisado;
 // las acciones correctivas (borrar, bloquear) se hacen a mano.
 export default function AdminReports() {
+  const { t } = useTranslation("reports");
   const user = useCurrentUser();
   const toast = useRef(null);
   const { reports, loading, error } = usePendingReports();
@@ -44,7 +46,7 @@ export default function AdminReports() {
       await reportService.markReportReviewed(reportId);
     } catch (err) {
       console.error("Error marcando reporte:", err);
-      showToast("error", "Error", "No se pudo marcar el reporte como revisado.");
+      showToast("error", t("common:status.error"), t("admin.markError"));
     }
   };
 
@@ -65,8 +67,8 @@ export default function AdminReports() {
           <span className="feed-empty__icon">
             <i className="pi pi-exclamation-triangle" aria-hidden="true" />
           </span>
-          <p className="feed-empty__title">No se pudieron cargar los reportes</p>
-          <p className="feed-empty__text">Revisa que tu cuenta tenga permiso de admin.</p>
+          <p className="feed-empty__title">{t("admin.errorTitle")}</p>
+          <p className="feed-empty__text">{t("admin.errorText")}</p>
         </div>
       );
     }
@@ -77,8 +79,8 @@ export default function AdminReports() {
           <span className="feed-empty__icon">
             <i className="pi pi-check-circle" aria-hidden="true" />
           </span>
-          <p className="feed-empty__title">No hay reportes pendientes</p>
-          <p className="feed-empty__text">Cuando alguien reporte algo, aparecerá aquí.</p>
+          <p className="feed-empty__title">{t("admin.emptyTitle")}</p>
+          <p className="feed-empty__text">{t("admin.emptyText")}</p>
         </div>
       );
     }
@@ -103,9 +105,11 @@ export default function AdminReports() {
     <div className="feed admin">
       <header className="feed-header">
         <div className="feed-header__titles">
-          <span className="feed-header__eyebrow">Admin</span>
+          <span className="feed-header__eyebrow">{t("admin.eyebrow")}</span>
           <h1 className="feed-header__title">
-            Reportes{reports.length > 0 ? ` (${reports.length})` : ""}
+            {reports.length > 0
+              ? t("admin.titleCount", { count: reports.length })
+              : t("admin.title")}
           </h1>
         </div>
       </header>

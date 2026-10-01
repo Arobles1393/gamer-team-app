@@ -1,0 +1,102 @@
+{
+  "appName": "GamerMatch",
+  "actions": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "close": "Fermer",
+    "back": "Retour",
+    "retry": "Réessayer",
+    "yes": "Oui",
+    "no": "Non",
+    "loading": "Chargement…",
+    "seeMore": "Voir plus",
+    "clearFilters": "Effacer les filtres",
+    "clearSearch": "Effacer la recherche",
+    "login": "Se connecter",
+    "logout": "Se déconnecter"
+  },
+  "status": {
+    "error": "Erreur",
+    "done": "C'est fait"
+  },
+  "nav": {
+    "main": "Navigation principale",
+    "homeLogo": "GamerMatch — accueil",
+    "home": "Accueil",
+    "findPlayers": "Trouver des joueurs",
+    "friends": "Amis",
+    "chats": "Discussions",
+    "news": "Actus",
+    "notifications": "Notifications",
+    "unreadCount": "{{label}} ({{count}} non lues)",
+    "accountMenu": "Menu du compte",
+    "myProfile": "Mon profil",
+    "myPosts": "Mes publications",
+    "myParties": "Mes parties"
+  },
+  "presence": {
+    "online": "En ligne",
+    "seen": "Vu {{time}}",
+    "offline": "Hors ligne",
+    "activeNow": "Actif maintenant",
+    "lastSeen": "Dernière connexion : {{time}}",
+    "playing": "Joue à {{game}}",
+    "playingOnSteam": "Joue à {{game}} sur Steam",
+    "live": "En direct",
+    "liveWith": "En direct : {{detail}}",
+    "liveOnTwitch": "En direct sur Twitch",
+    "liveOnTwitchTitle": "En direct sur Twitch : {{title}}"
+  },
+  "prime": {
+    "today": "Aujourd'hui",
+    "clear": "Effacer",
+    "chooseDate": "Choisir une date",
+    "chooseTime": "Choisir une heure",
+    "emptyMessage": "Aucune option",
+    "emptyFilterMessage": "Aucun résultat",
+    "searchMessage": "{0} résultats disponibles",
+    "selectionMessage": "{0} éléments sélectionnés"
+  },
+  "notFound": {
+    "eyebrow": "Erreur 404",
+    "title": "Game over : niveau introuvable",
+    "text": "La page que vous cherchez n'existe pas ou a été déplacée. Revenez à l'accueil pour continuer à chercher des parties.",
+    "home": "Retour à l'accueil",
+    "back": "Revenir"
+  },
+  "confirm": {
+    "deletePost": {
+      "header": "Supprimer la publication",
+      "message": "La partie sera supprimée et n'apparaîtra plus dans le fil. Cette action est irréversible.",
+      "accept": "Supprimer la partie"
+    }
+  },
+  "errors": {
+    "generic": "Une erreur est survenue. Réessayez."
+  },
+  "news": {
+    "title": "Actus gaming",
+    "searchPlaceholder": "Rechercher une actu…",
+    "searchLabel": "Rechercher une actu par titre",
+    "filtersLabel": "Filtrer par source",
+    "all": "Toutes",
+    "empty": {
+      "empty": {
+        "title": "Aucune actu pour l'instant",
+        "text": "Les actus d'IGN et de GameSpot sont synchronisées régulièrement. Revenez plus tard."
+      },
+      "noMatch": {
+        "title": "Aucune actu ne correspond",
+        "text": "Nous n'avons trouvé aucune actu sur « {{search}} ».",
+        "action": "Effacer la recherche"
+      },
+      "error": {
+        "title": "Impossible de charger les actus",
+        "text": "Vérifiez votre connexion et réessayez.",
+        "action": "Réessayer"
+      }
+    }
+  }
+}

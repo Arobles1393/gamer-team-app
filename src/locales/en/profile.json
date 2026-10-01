@@ -1,0 +1,141 @@
+{
+  "page": {
+    "eyebrow": "My profile",
+    "editing": "Editing profile",
+    "edit": "Edit profile",
+    "loading": "Loading profile",
+    "emptyGames": "You haven't added favorite games yet.",
+    "emptyLinks": "You haven't added your socials yet."
+  },
+  "language": {
+    "title": "Language",
+    "label": "Interface language",
+    "hint": "It's saved to your account and applied when you log in on any device.",
+    "saveError": "Couldn't save the language to your account."
+  },
+  "personal": {
+    "title": "Personal info",
+    "nickname": "Nickname",
+    "email": "Email",
+    "emailHint": "If you change it, you may be asked to log in again.",
+    "phone": "Phone",
+    "region": "Region",
+    "regionPlaceholder": "Select your region",
+    "missing": "Not added"
+  },
+  "about": {
+    "title": "About me",
+    "placeholder": "Tell other players what you play, your schedule, your style…",
+    "empty": "You haven't written anything about yourself yet. Edit your profile to introduce yourself."
+  },
+  "saveBar": {
+    "label": "Save profile changes",
+    "unsaved": "You have unsaved changes",
+    "noChanges": "No changes yet",
+    "save": "Save changes"
+  },
+  "blocked": {
+    "title": "Blocked users",
+    "userFallback": "User",
+    "since": "Blocked {{time}}",
+    "unblock": "Unblock",
+    "unblockHeader": "Unblock {{username}}",
+    "unblockMessage": "You'll see each other's posts and comments again, and you'll be able to chat and send friend requests. The previous friendship isn't restored.",
+    "unblockError": "Couldn't unblock. Please try again."
+  },
+  "hero": {
+    "fallbackName": "Gamer",
+    "uploading": "Uploading…",
+    "changeBanner": "Change cover",
+    "changeAvatar": "Change profile picture",
+    "memberSince": "Member since {{date}}"
+  },
+  "player": {
+    "eyebrow": "Player profile",
+    "close": "Close profile",
+    "loading": "Loading profile"
+  },
+  "actions": {
+    "addFriend": "Add friend",
+    "acceptRequest": "Accept request",
+    "requestSent": "Request sent",
+    "friends": "Friends",
+    "blocked": "Blocked",
+    "unavailable": "Unavailable",
+    "thisUser": "this user",
+    "removeFriend": "Unfriend",
+    "unblockUser": "Unblock {{name}}",
+    "blockUser": "Block {{name}}",
+    "reportUser": "Report {{name}}",
+    "message": "Message",
+    "more": "More options"
+  },
+  "dialog": {
+    "removeFriendMessage": "{{username}} will be removed from your friends list. You can send each other a request again whenever you want.",
+    "blockMessage": "You won't see each other's posts or comments, you won't be able to chat or send friend requests, and you'll no longer be friends. You can unblock at any time.",
+    "block": "Block",
+    "reportLabel": "{{username}}'s profile"
+  },
+  "links": {
+    "title": "Socials",
+    "linkLabel": "Link {{number}}",
+    "remove": "Remove link {{number}}",
+    "invalid": "The link must start with https://",
+    "add": "Add link",
+    "steamHint": "Paste your Steam profile link to show your stats.",
+    "empty": "This player hasn't added any socials.",
+    "genericProfile": "Profile"
+  },
+  "games": {
+    "title": "Favorite games",
+    "searchPlaceholder": "Search for a game to add…",
+    "searchLabel": "Search for a game to add to favorites",
+    "remove": "Remove {{name}} from favorites",
+    "empty": "This player has no favorite games yet.",
+    "add": "Add games"
+  },
+  "steam": {
+    "loading": "Loading Steam stats",
+    "connectHint": "Paste your Steam profile link in Socials and we'll show your hours and most played games here.",
+    "connect": "Connect Steam",
+    "notConnected": "This player hasn't connected their Steam.",
+    "error": "We couldn't read the Steam stats.",
+    "errorOwn": "Make sure the link is correct and that your profile and game details are public.",
+    "errorOther": "Their profile may be private.",
+    "noGames": "The Steam profile shows no games (the library may be private).",
+    "hoursPlayed": "Hours played",
+    "games": "Games",
+    "mostPlayed": "Most played",
+    "subtitle": "Most played · tap one to see its achievements",
+    "viewOnSteam": "View on Steam",
+    "hours": "{{hours}} h",
+    "viewAchievements": "View {{name}} achievements"
+  },
+  "achievements": {
+    "loading": "Loading achievements",
+    "error": "Couldn't load the achievements. Try again later.",
+    "empty": "No achievements available for this game. The game may have no achievements, or the user's Steam achievements may be private.",
+    "progress": "{{unlocked}} / {{total}} achievements",
+    "rarity": {
+      "ultraRare": "Ultra rare",
+      "veryRare": "Very rare",
+      "rare": "Rare"
+    }
+  },
+  "form": {
+    "usernameRequired": "Nickname can't be empty",
+    "linksHttps": "All links must start with https://",
+    "invalidEmail": "Invalid email",
+    "updated": "Profile updated",
+    "reloginEmail": "For security, log in again to change your email.",
+    "saveError": "Couldn't save the profile. Please try again."
+  },
+  "images": {
+    "avatarUpdated": "Profile picture updated",
+    "bannerUpdated": "Cover updated",
+    "onlyImages": "Only images are allowed",
+    "maxSize": "The image must be {{mb}} MB or less",
+    "avatarError": "Couldn't upload the profile picture.",
+    "bannerError": "Couldn't upload the cover."
+  }
+}

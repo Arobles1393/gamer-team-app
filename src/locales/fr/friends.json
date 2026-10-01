@@ -1,0 +1,66 @@
+{
+  "friends": {
+    "title": "Mes amis",
+    "searchPlaceholder": "Rechercher un ami…",
+    "searchLabel": "Rechercher parmi vos amis",
+    "filtersLabel": "Filtrer les amis",
+    "filterAll": "Tous",
+    "filterOnline": "En ligne",
+    "loading": "Chargement des amis",
+    "empty": {
+      "empty": {
+        "title": "Vous n'avez pas encore d'amis",
+        "text": "Cherchez des joueurs et envoyez-leur une demande pour former votre squad.",
+        "action": "Trouver des joueurs"
+      },
+      "noMatch": {
+        "title": "Aucun ami ne correspond",
+        "text": "Aucun de vos amis n'a un pseudo contenant « {{search}} ».",
+        "action": "Effacer la recherche"
+      },
+      "offline": {
+        "title": "Personne n'est en ligne",
+        "text": "Aucun de vos amis n'est connecté pour le moment.",
+        "action": "Voir tout"
+      },
+      "error": {
+        "title": "Impossible de charger vos amis",
+        "text": "Vérifiez votre connexion et réessayez.",
+        "action": "Réessayer"
+      }
+    }
+  },
+  "players": {
+    "title": "Trouver des joueurs",
+    "searchPlaceholder": "Nom d'utilisateur…",
+    "searchLabel": "Rechercher un joueur par nom d'utilisateur",
+    "searching": "Recherche de joueurs",
+    "found_one": "{{count}} joueur trouvé",
+    "found_other": "{{count}} joueurs trouvés",
+    "chatError": "Impossible d'ouvrir la discussion. Réessayez.",
+    "empty": {
+      "idle": {
+        "title": "Trouvez votre prochaine squad",
+        "text": "Saisissez le nom d'utilisateur d'un joueur pour commencer."
+      },
+      "empty": {
+        "title": "Aucun joueur ne correspond",
+        "text": "Nous n'avons trouvé personne dont le pseudo commence par « {{search}} ».",
+        "action": "Effacer la recherche"
+      },
+      "error": {
+        "title": "Impossible de charger les joueurs",
+        "text": "Vérifiez votre connexion et réessayez.",
+        "action": "Réessayer"
+      }
+    }
+  },
+  "card": {
+    "noGames": "Aucun jeu favori",
+    "gamesLabel": "Jeux favoris",
+    "message": "Message",
+    "messageLabel": "Envoyer un message à {{username}}",
+    "viewProfile": "Voir le profil",
+    "viewProfileLabel": "Voir le profil de {{username}}"
+  }
+}

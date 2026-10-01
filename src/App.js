@@ -9,6 +9,8 @@ import { useAuthReady, useCurrentUser } from "./context";
 import { AppRoutes } from "./routes";
 import { CreatePostDialog } from "./components/Posts";
 import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next";
+import { resetAppLanguage } from "./i18n";
 import "./styles/theme.css";
 import "./styles/layout.css";
 import "./styles/confirm.css";
@@ -26,6 +28,7 @@ function App() {
 
   // Navigation
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Hooks
   const user = useCurrentUser();
@@ -75,14 +78,18 @@ function App() {
 
   // Al cerrar sesión se vuelve al feed (público) en vez de quedar en una
   // página privada que mandaría al login
+  // El idioma elegido por esta cuenta se olvida: la siguiente sesión
+  // empieza con el del navegador (o el guardado en su propia cuenta)
   const handleLogout = () => {
     navigate("/");
     logout();
+    resetAppLanguage();
   };
 
   const items = createHeaderMenu(
     navigate,
-    handleLogout
+    handleLogout,
+    t
   );
 
   return (

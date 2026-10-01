@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
@@ -25,6 +26,7 @@ import { EMPTY_TAG_FILTERS, buildExploreUrl, hasTagFilters } from "../../utils";
 // Feed principal por categorías. El buscador y los chips de plataforma
 // filtran todas las categorías a la vez.
 export default function PostFeed({ setEditingPost, setShowCreatePost }) {
+  const { t } = useTranslation("posts");
   const user = useCurrentUser();
   const userData = useCurrentUserData();
   const requireAuth = useRequireAuth(user);
@@ -89,7 +91,7 @@ export default function PostFeed({ setEditingPost, setShowCreatePost }) {
   return (
     <div className="feed">
       <FeedHeader
-        title="Partidas disponibles"
+        title={t("feed.title")}
         search={search}
         onSearchChange={setSearch}
         onCreatePost={() => requireAuth() && setShowCreatePost(true)}

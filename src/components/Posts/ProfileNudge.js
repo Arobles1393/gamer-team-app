@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Button } from "primereact/button";
 
 // Aviso para perfiles sin región (p. ej. creados con Google, que no la provee)
 export default function ProfileNudge() {
+  const { t } = useTranslation("posts");
   const [dismissed, setDismissed] = useState(false);
   const navigate = useNavigate();
 
@@ -13,10 +15,10 @@ export default function ProfileNudge() {
     <div className="profile-nudge" role="status">
       <i className="pi pi-map-marker profile-nudge__icon" aria-hidden="true" />
       <p className="profile-nudge__text">
-        Agrega tu región para que otros jugadores sepan desde dónde juegas.
+        {t("nudge.text")}
       </p>
       <Button
-        label="Completar perfil"
+        label={t("nudge.cta")}
         className="gm-btn gm-btn--ghost profile-nudge__cta"
         onClick={() => navigate("/profile")}
       />
@@ -25,7 +27,7 @@ export default function ProfileNudge() {
         text
         rounded
         className="profile-nudge__close"
-        aria-label="Cerrar aviso"
+        aria-label={t("nudge.close")}
         onClick={() => setDismissed(true)}
       />
     </div>

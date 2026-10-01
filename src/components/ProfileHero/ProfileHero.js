@@ -1,5 +1,7 @@
+import { useTranslation } from "react-i18next";
 import { UserAvatar } from "../UserAvatar";
-import { formatDates } from "../../utils";
+import { formatDates, getCountryLabel } from "../../utils";
+import { getIntlLocale } from "../../i18n";
 import SteamIcon from "../Steam/SteamIcon";
 import { TwitchLive } from "../Twitch";
 import "./ProfileHero.css";
@@ -8,7 +10,7 @@ const formatMemberSince = (createdAt) => {
   const date = formatDates.toDate(createdAt);
   if (!date) return null;
 
-  return date.toLocaleDateString("es-MX", { month: "long", year: "numeric" });
+  return date.toLocaleDateString(getIntlLocale(), { month: "long", year: "numeric" });
 };
 
 const NOT_UPLOADING = { avatar: false, banner: false };
@@ -39,9 +41,10 @@ export default function ProfileHero({
   onAvatarEdit,
   onBannerEdit
 }) {
+  const { t } = useTranslation("profile");
   const avatarImage = avatarPreview || userData?.avatar;
   const bannerImage = bannerPreview || userData?.banner;
-  const username = userData?.username || "Gamer";
+  const username = userData?.username || t("hero.fallbackName");
   const memberSince = formatMemberSince(userData?.createdAt);
 
   return (
@@ -61,7 +64,7 @@ export default function ProfileHero({
               className={`pi ${uploading.banner ? "pi-spin pi-spinner" : "pi-camera"}`}
               aria-hidden="true"
             />
-            <span>{uploading.banner ? "Subiendo…" : "Cambiar portada"}</span>
+            <span>{uploading.banner ? t("hero.uploading") : t("hero.changeBanner")}</span>
           </button>
         ) : (
           bannerAction
@@ -90,7 +93,7 @@ export default function ProfileHero({
             <button
               type="button"
               className="profile-hero__avatar-btn"
-              aria-label="Cambiar foto de perfil"
+              aria-label={t("hero.changeAvatar")}
               onClick={onAvatarEdit}
               disabled={uploading.avatar}
             >
@@ -113,23 +116,23 @@ export default function ProfileHero({
             {steamGame && (
               <span
                 className="profile-hero__meta-item profile-hero__steam"
-                title={`Jugando ${steamGame} en Steam`}
+                title={t("common:presence.playingOnSteam", { game: steamGame })}
               >
                 <SteamIcon className="profile-hero__steam-icon" />
-                Jugando {steamGame}
+                {t("common:presence.playing", { game: steamGame })}
               </span>
             )}
             <TwitchLive live={twitchLive} className="profile-hero__meta-item profile-hero__twitch" />
             {userData?.region && (
               <span className="profile-hero__meta-item">
                 {country?.flag && <span aria-hidden="true">{country.flag}</span>}
-                {userData.region}
+                {getCountryLabel(userData.region)}
               </span>
             )}
             {memberSince && (
               <span className="profile-hero__meta-item">
                 <i className="pi pi-calendar" aria-hidden="true" />
-                Miembro desde {memberSince}
+                {t("hero.memberSince", { date: memberSince })}
               </span>
             )}
           </div>

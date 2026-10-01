@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { chatService } from "../../services/chat";
+import i18n from "../../i18n";
 import { useRequireAuth } from "../auth/useRequireAuth";
 
 export const useProfileChat = (
@@ -36,7 +37,7 @@ export const useProfileChat = (
       );
 
       onError?.(
-        "No se pudo abrir el chat. Intenta de nuevo."
+        i18n.t("chat:window.openError")
       );
     }
   }, [user, navigate, onClose, onError, requireAuth]);

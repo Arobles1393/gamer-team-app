@@ -1,5 +1,5 @@
 import { db } from "../../firebase/config";
-import { doc, getDoc, writeBatch } from "firebase/firestore";
+import { doc, getDoc, updateDoc, writeBatch } from "firebase/firestore";
 import { publicProfileRef, pickPublicFields } from "./publicProfileService";
 
 const userProfileExists = async (userId) => {
@@ -26,6 +26,10 @@ const updateUserProfile = async (userId, profileData) => {
   batch.set(publicProfileRef(userId), pickPublicFields(data), { merge: true });
   await batch.commit();
 };
+
+// Idioma de la interfaz elegido en Mi perfil. Solo vive en users (no es público)
+const updateUserLanguage = (userId, language) =>
+  updateDoc(doc(db, "users", userId), { language });
 
 const createUserProfile = async (
   userId,
@@ -60,5 +64,6 @@ const createUserProfile = async (
 export const profileService = {
   userProfileExists,
   updateUserProfile,
+  updateUserLanguage,
   createUserProfile
 };

@@ -1,25 +1,27 @@
 // Menú del avatar: solo lo que no está ya en el rail
 // (Inicio, Buscar jugadores, Amigos, Chats, Noticias y Notificaciones van en el rail).
+// `t`: función de traducción del componente que arma el menú
 export const createHeaderMenu = (
     navigate,
-    onLogout
+    onLogout,
+    t
 ) => [
   {
-    label: "Mi perfil",
+    label: t("nav.myProfile"),
     icon: "pi pi-user",
     command: () => {
       navigate("/profile");
     }
   },
   {
-    label: "Mis publicaciones",
+    label: t("nav.myPosts"),
     icon: "pi pi-file",
     command: () => {
       navigate("/myposts");
     }
   },
   {
-    label: "Mis partidas",
+    label: t("nav.myParties"),
     icon: "pi pi-flag",
     command: () => {
       navigate("/myparties");
@@ -27,7 +29,7 @@ export const createHeaderMenu = (
   },
   { separator: true },
   {
-    label: "Cerrar sesión",
+    label: t("actions.logout"),
     icon: "pi pi-sign-out",
     className: "gm-menu__danger",
     command: onLogout

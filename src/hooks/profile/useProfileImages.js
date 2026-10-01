@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import { profileImageService } from "../../services/profile";
+import i18n from "../../i18n";
 
-const SUCCESS_MESSAGES = {
-  avatar: "Foto de perfil actualizada",
-  banner: "Portada actualizada"
+const MAX_IMAGE_MB = 5;
+
+// Claves de profile:images.* por tipo de imagen
+const MESSAGES = {
+  avatar: { success: "avatarUpdated", error: "avatarError" },
+  banner: { success: "bannerUpdated", error: "bannerError" }
 };
 
 // Las imágenes se suben en cuanto se eligen (no dependen de Guardar del formulario)
@@ -19,12 +23,12 @@ export const useProfileImages = (user, onError, onSuccess) => {
 
   const validateImage = (file) => {
     if (!file.type.startsWith("image/")) {
-      onError?.("Solo se permiten imágenes");
+      onError?.(i18n.t("profile:images.onlyImages"));
       return false;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      onError?.("La imagen debe pesar máximo 5 MB");
+    if (file.size > MAX_IMAGE_MB * 1024 * 1024) {
+      onError?.(i18n.t("profile:images.maxSize", { mb: MAX_IMAGE_MB }));
       return false;
     }
 
@@ -46,12 +50,12 @@ export const useProfileImages = (user, onError, onSuccess) => {
 
     try {
       await profileImageService.uploadProfileImage(user.uid, file, type);
-      onSuccess?.(SUCCESS_MESSAGES[type]);
+      onSuccess?.(i18n.t(`profile:images.${MESSAGES[type].success}`));
     } catch (error) {
       console.error(`Error subiendo ${type}:`, error);
       // Vuelve a la imagen guardada
       setPreviewFor(type, null);
-      onError?.(`No se pudo subir la imagen de ${type === "avatar" ? "perfil" : "portada"}.`);
+      onError?.(i18n.t(`profile:images.${MESSAGES[type].error}`));
     } finally {
       setUploading((prev) => ({ ...prev, [type]: false }));
     }

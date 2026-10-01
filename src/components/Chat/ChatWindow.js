@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import ChatAvatar from "./ChatAvatar";
 import MessageList from "./MessageList";
 import MessageComposer from "./MessageComposer";
@@ -8,6 +9,7 @@ import { getPresenceLabel, isOnline } from "../../utils";
 import { useCurrentUser } from "../../context";
 
 export default function ChatWindow({ chatId, onBack, onError }) {
+  const { t } = useTranslation("chat");
   const user = useCurrentUser();
 
   const { messages, loading, otherUserId, sendMessage } = useChatWindow(
@@ -37,8 +39,8 @@ export default function ChatWindow({ chatId, onBack, onError }) {
       console.error("Error enviando mensaje:", error);
       onError?.(
         file
-          ? "No se pudo enviar el archivo. Intenta de nuevo."
-          : "No se pudo enviar el mensaje. Intenta de nuevo."
+          ? t("window.sendFileError")
+          : t("window.sendError")
       );
       // El composer conserva el texto y el adjunto para reintentar
       throw error;
@@ -46,12 +48,12 @@ export default function ChatWindow({ chatId, onBack, onError }) {
   };
 
   return (
-    <section className="chat-window" aria-label={`Chat con ${otherUser?.username || "usuario"}`}>
+    <section className="chat-window" aria-label={t("window.label", { username: otherUser?.username || t("list.user") })}>
       <header className="chat-window__header">
         <button
           type="button"
           className="chat-window__back"
-          aria-label="Volver a los chats"
+          aria-label={t("window.back")}
           onClick={onBack}
         >
           <i className="pi pi-arrow-left" aria-hidden="true" />
@@ -60,7 +62,7 @@ export default function ChatWindow({ chatId, onBack, onError }) {
         <ChatAvatar user={otherUser} size="sm" />
 
         <div className="chat-window__who">
-          <h2 className="chat-window__name">{otherUser?.username || "Usuario"}</h2>
+          <h2 className="chat-window__name">{otherUser?.username || t("list.user")}</h2>
           <span className={`chat-window__status${online ? " chat-window__status--online" : ""}`}>
             {getPresenceLabel(otherUser?.lastSeen)}
           </span>
@@ -78,7 +80,7 @@ export default function ChatWindow({ chatId, onBack, onError }) {
       {blocked ? (
         <p className="chat-blocked" role="status">
           <i className="pi pi-ban" aria-hidden="true" />
-          No puedes enviar mensajes en esta conversación.
+          {t("window.blocked")}
         </p>
       ) : (
         <MessageComposer onSend={handleSend} onError={onError} disabled={!otherUserId} />
