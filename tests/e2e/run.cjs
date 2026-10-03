@@ -11,6 +11,8 @@
 //   E2E_BROWSER   canal del navegador (msedge por defecto; chrome, etc.)
 //   E2E_BASE_URL  URL de la app (http://localhost:3000 por defecto)
 //   E2E_PUBLISH=1 incluye la prueba de publicar (crea una partida real cada vez)
+//   E2E_GUIDES_EXTERNAL=1 incluye la guía de link externo (necesita el
+//                         emulador de functions con fetchLinkPreview)
 const fs = require("fs");
 const path = require("path");
 const { spawnSync } = require("child_process");
@@ -51,6 +53,7 @@ const node = (file, args = []) =>
     ["reset.cjs"],
     ["more.e2e.cjs"],
     ["welcome.e2e.cjs"],
+    ["guides.e2e.cjs"],
     ["reset.cjs"]
   ];
 

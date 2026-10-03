@@ -431,6 +431,78 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // ===== guides (guías: escritas en la app o links externos) =====
+    // Entran como "pending"; las aprobadas las ve cualquiera (como el feed),
+    // las demás solo su autor y el admin, que es quien las aprueba o rechaza.
+    match /guides/{guideId} {
+      function httpsUrl(value) {
+        return value is string && value.size() <= 2048 && value.matches('^https://[^\\s]+$');
+      }
+
+      function optionalText(value, max) {
+        return value == null || (value is string && value.size() <= max);
+      }
+
+      // Escrita en la app: HTML (lo sanitiza el cliente al guardar y al mostrar)
+      function validOriginal(data) {
+        return data.type == 'original'
+               && data.content is string && data.content.size() > 0 && data.content.size() <= 100000
+               && (data.coverImage == null || httpsUrl(data.coverImage))
+               && (data.youtubeVideoId == null
+                   || (data.youtubeVideoId is string && data.youtubeVideoId.matches('^[A-Za-z0-9_-]{11}$')))
+               && data.externalUrl == null
+               && data.externalPreview == null;
+      }
+
+      // Link a otro sitio, con su vista previa opcional
+      function validExternal(data) {
+        return data.type == 'external'
+               && data.content == null
+               && data.coverImage == null
+               && data.youtubeVideoId == null
+               && data.externalUrl is string && data.externalUrl.size() <= 2048
+               && data.externalUrl.matches('^https?://[^\\s]+$')
+               && (data.externalPreview == null
+                   || (data.externalPreview is map
+                       && data.externalPreview.keys().hasOnly(['title', 'description', 'image'])
+                       && optionalText(data.externalPreview.get('title', null), 200)
+                       && optionalText(data.externalPreview.get('description', null), 500)
+                       && (data.externalPreview.get('image', null) == null || httpsUrl(data.externalPreview.image))));
+      }
+
+      // resource == null: abrir una guía que no existe no es un error de permisos
+      allow read: if resource == null
+                  || resource.data.status == 'approved'
+                  || (isSignedIn() && (resource.data.authorId == request.auth.uid || isAdmin()));
+
+      allow create: if isSignedIn()
+                    && request.resource.data.keys().hasOnly([
+                         'authorId', 'game', 'title', 'type', 'status', 'content', 'coverImage',
+                         'youtubeVideoId', 'externalUrl', 'externalPreview', 'reviewNote',
+                         'reviewedAt', 'createdAt'
+                       ])
+                    && request.resource.data.authorId == request.auth.uid
+                    && request.resource.data.status == 'pending'
+                    && request.resource.data.game is string
+                    && request.resource.data.game.size() > 0 && request.resource.data.game.size() <= 200
+                    && request.resource.data.title is string
+                    && request.resource.data.title.size() >= 3 && request.resource.data.title.size() <= 150
+                    && request.resource.data.reviewNote == null
+                    && request.resource.data.reviewedAt == null
+                    && request.resource.data.createdAt == request.time
+                    && (validOriginal(request.resource.data) || validExternal(request.resource.data));
+
+      // Solo el admin, y solo para aprobar o rechazar (con nota opcional)
+      allow update: if isAdmin()
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['status', 'reviewNote', 'reviewedAt'])
+                    && request.resource.data.status in ['approved', 'rejected']
+                    && request.resource.data.reviewedAt == request.time
+                    && optionalText(request.resource.data.reviewNote, 500);
+
+      allow delete: if false;
+    }
+
     // ===== steamNonces (solo Admin SDK — anti-replay del login con Steam) =====
     match /steamNonces/{nonceId} {
       allow read, write: if false;

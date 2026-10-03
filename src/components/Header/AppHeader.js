@@ -39,6 +39,7 @@ export default function AppHeader({
         <RailButton to="/findPlayers" icon="pi-search" label={t("nav.findPlayers")} />
         <RailButton to="/friends" icon="pi-users" label={t("nav.friends")} />
         <RailButton to="/chat" icon="pi-comments" label={t("nav.chats")} dot={hasUnreadMessages} />
+        <RailButton to="/guias" icon="pi-book" label={t("nav.guides")} />
         <RailButton to="/news" icon="pi-megaphone" label={t("nav.news")} />
         <RailButton
           icon="pi-bell"

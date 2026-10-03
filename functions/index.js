@@ -15,6 +15,7 @@ const { cleanupCommentMedia } = require("./postComments/postComments.functions")
 const { loginWithSteam } = require("./steamAuth/steamAuth.functions");
 const { logGameSearch } = require("./games/games.functions");
 const { getTwitchPresence } = require("./twitch/twitch.functions");
+const { fetchLinkPreview } = require("./guides/guides.functions");
 
 exports.getSteamStats = getSteamStats;
 exports.getSteamPresence = getSteamPresence;
@@ -25,3 +26,4 @@ exports.cleanupCommentMedia = cleanupCommentMedia;
 exports.loginWithSteam = loginWithSteam;
 exports.logGameSearch = logGameSearch;
 exports.getTwitchPresence = getTwitchPresence;
+exports.fetchLinkPreview = fetchLinkPreview;

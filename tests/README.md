@@ -1,15 +1,15 @@
 # Pruebas de GamerMatch
 
-Hay dos tipos de pruebas:
+Hay tres tipos de pruebas:
 
-| | Reglas de Firestore | Interfaz |
-|---|---|---|
-| Comando | `npm run test:rules` | `npm run test:e2e` |
-| Carpeta | `tests/rules/` | `tests/e2e/` |
-| Contra qué corre | Emulador de Firestore (proyecto `demo-`) | La app local con el Firebase de **producción** |
-| ¿Toca datos reales? | No | Sí, en las cuentas de prueba `qa_*` |
-| ¿Corre sola en GitHub? | Sí, en cada PR y en cada push a `main` y `dev` | No |
-| Tiempo aproximado | 2 minutos | 5 minutos |
+| | Reglas de Firestore | Functions | Interfaz |
+|---|---|---|---|
+| Comando | `npm run test:rules` | `npm run test:functions` | `npm run test:e2e` |
+| Carpeta | `tests/rules/` | `tests/functions/` | `tests/e2e/` |
+| Contra qué corre | Emulador de Firestore (proyecto `demo-`) | El código de `functions/` directamente | La app local con el Firebase de **producción** |
+| ¿Toca datos reales? | No | No (ni usa internet) | Sí, en las cuentas de prueba `qa_*` |
+| ¿Corre sola en GitHub? | Sí, en cada PR y en cada push a `main` y `dev` | Sí, junto con las de reglas | No |
+| Tiempo aproximado | 2 minutos | Segundos | 6 minutos |
 
 ## Pruebas de reglas (`npm run test:rules`)
 
@@ -29,15 +29,19 @@ RULES_SUITES=chats,friends npm run test:rules
 $env:RULES_SUITES="chats,friends"; npm run test:rules; Remove-Item Env:RULES_SUITES
 ```
 
-Suites disponibles: `users-privacy`, `public-profiles`, `friends`, `chats`, `blocks`, `counters`, `posts-delete`, `queries`, `text-lengths`.
+Suites disponibles: `users-privacy`, `public-profiles`, `friends`, `chats`, `blocks`, `counters`, `posts-delete`, `queries`, `text-lengths`, `guides`.
 
 **Al cambiar `firestore.rules`:** agrega o ajusta la prueba de lo que cambió en la suite correspondiente (`tests/rules/<suite>.rules.cjs`). Una suite es una función que recibe `{ env, test, expect }`; `env` es el entorno de `@firebase/rules-unit-testing`.
 
 El emulador usa los puertos 8181 (Firestore) y 4410 (hub), distintos de los de `firebase emulators:start`, así que puede correr aunque tengas el emulador de functions abierto.
 
+## Pruebas de functions (`npm run test:functions`)
+
+Comprueban la protección contra SSRF de `fetchLinkPreview` (la vista previa de las guías de link externo): IPs internas en IPv4 e IPv6, nombres internos como `metadata.google.internal` o `localhost`, IPs escritas en hexadecimal o decimal, puertos y credenciales en la URL, y la lectura de las etiquetas Open Graph. Ninguna se conecta a internet.
+
 ## Pruebas de interfaz (`npm run test:e2e`)
 
-Abren la app en un navegador (Edge por defecto) e inician sesión con las cuentas de prueba para recorrer los flujos principales: registro, amistad, chat 1:1 y de grupo, idioma de la cuenta, bloqueos, reportes y panel de admin, partidas programadas, filtros, estados vacíos, privacidad y la vista en celular.
+Abren la app en un navegador (Edge por defecto) e inician sesión con las cuentas de prueba para recorrer los flujos principales: registro, amistad, chat 1:1 y de grupo, idioma de la cuenta, bloqueos, reportes y panel de admin, guías (escritura, moderación y HTML malicioso), partidas programadas, filtros, estados vacíos, privacidad y la vista en celular.
 
 > **Importante:** la app local se conecta al Firebase de producción, así que estas pruebas **escriben datos reales** en las cuentas `qa_*` (siempre las mismas, y al terminar se dejan como estaban). Para probar el panel de admin le dan permiso de admin a `qa_diego` y se lo quitan al terminar.
 
@@ -69,6 +73,7 @@ Abren la app en un navegador (Edge por defecto) e inician sesión con las cuenta
 |---|---|
 | `E2E_BROWSER` | Navegador: `msedge` (por defecto), `chrome`... |
 | `E2E_BASE_URL` | URL de la app (por defecto `http://localhost:3000`) |
+| `E2E_GUIDES_EXTERNAL=1` | Incluye la guía de link externo y el intento de SSRF desde la interfaz. Necesita el emulador de functions corriendo (`firebase emulators:start --only functions`) |
 | `E2E_PUBLISH=1` | Incluye la prueba de publicar una partida (crea una partida real en cada corrida, por eso viene apagada) |
 
 Las capturas de cada escenario quedan en `tests/e2e/screenshots/` (ignorada por git).

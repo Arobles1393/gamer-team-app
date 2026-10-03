@@ -7,7 +7,13 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^13.5.0",
+    "@tiptap/core": "3.31.4",
+    "@tiptap/extension-image": "3.31.4",
+    "@tiptap/pm": "3.31.4",
+    "@tiptap/react": "3.31.4",
+    "@tiptap/starter-kit": "3.31.4",
     "axios": "^1.16.1",
+    "dompurify": "3.4.16",
     "emoji-picker-react": "4.19.1",
     "firebase": "^12.11.0",
     "framer-motion": "^13.4.4",
@@ -31,7 +37,8 @@
     "test:e2e": "node tests/e2e/run.cjs",
     "qa:setup": "node tests/e2e/setup.cjs",
     "qa:reset": "node tests/e2e/reset.cjs",
-    "qa:cleanup": "node tests/e2e/cleanup.cjs"
+    "qa:cleanup": "node tests/e2e/cleanup.cjs",
+    "test:functions": "node tests/functions/link-preview.test.cjs"
   },
   "eslintConfig": {
     "extends": [

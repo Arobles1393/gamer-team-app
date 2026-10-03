@@ -12,6 +12,7 @@ import ProfileAbout from "./ProfileAbout";
 import ProfileSaveBar from "./ProfileSaveBar";
 import BlockedUsers from "./BlockedUsers";
 import LanguageSection from "./LanguageSection";
+import { MyGuides } from "../Guides";
 import { useProfileForm, useGameSearch, useProfileImages } from "../../hooks";
 import { countries } from "../../data/countries";
 import { getCountryOptions } from "../../utils";
@@ -168,6 +169,7 @@ export default function Profile() {
             emptyText={t("page.emptyGames")}
             onEmptyAction={() => setIsEditing(true)}
           />
+          <MyGuides user={user} />
           {/* Usa los links guardados, no los que se están editando */}
           <SteamSection
             links={userData.links}

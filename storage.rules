@@ -33,6 +33,20 @@ service firebase.storage {
              && request.resource.size < 20 * 1024 * 1024;
     }
 
+    // Imágenes de guías (portada e insertadas en el texto): las mismas que
+    // valida el cliente (services/guides/guideService.js)
+    function isValidGuideImage() {
+      return request.resource.contentType in ['image/png', 'image/jpeg', 'image/webp']
+             && request.resource.size < 5 * 1024 * 1024;
+    }
+
+    // ===== guides/{authorId}/{fileName} =====
+    match /guides/{authorId}/{fileName} {
+      allow read: if isSignedIn();
+      allow create: if isOwner(authorId) && isValidGuideImage();
+      allow update, delete: if false;
+    }
+
     // ===== avatars/{userId} =====
     match /avatars/{userId} {
       allow read: if isSignedIn();

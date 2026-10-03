@@ -1,0 +1,99 @@
+/* Selector de juego (buscador de RAWG + juego elegido) */
+.game-select__suggestion {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.game-select__suggestion-img {
+  flex-shrink: 0;
+  width: 56px;
+  height: 34px;
+  border-radius: 6px;
+  background: var(--gm-primary-soft);
+  object-fit: cover;
+}
+
+.game-select__game {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px;
+  border: 1px solid var(--gm-border);
+  border-radius: 12px;
+  background: rgba(124, 58, 237, 0.1);
+}
+
+.game-select__game-cover {
+  flex-shrink: 0;
+  width: 112px;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--gm-gradient);
+}
+
+.game-select__game-cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.game-select__game-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 4px;
+  min-width: 0;
+}
+
+.game-select__game-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--gm-font-display);
+  font-size: 16px;
+}
+
+.game-select__game-meta {
+  font-size: 12px;
+  color: var(--gm-muted);
+}
+
+.game-select__game-clear {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(15, 15, 35, 0.6);
+  color: var(--gm-muted);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.game-select__game-clear:hover {
+  background: var(--gm-accent-soft);
+  color: var(--gm-accent-text);
+}
+
+.game-select__game-clear:focus-visible {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+  .game-select__game-cover {
+    width: 84px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-select__game-clear {
+    transition: none;
+  }
+}

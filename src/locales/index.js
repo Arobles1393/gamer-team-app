@@ -17,5 +17,6 @@ export const NAMESPACES = [
   "friends",
   "notifications",
   "profile",
-  "reports"
+  "reports",
+  "guides"
 ];

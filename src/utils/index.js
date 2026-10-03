@@ -20,3 +20,5 @@ export { collectFilteredPage } from "./collectFilteredPage";
 export { buildExploreUrl } from "./exploreUrl";
 export { excludeBlockedAuthors } from "./excludeBlocked";
 export { MAX_MEDIA_MB, MAX_MEDIA_BYTES, CHAT_FILE_ACCEPT, fitsMediaLimit, isAllowedChatFile, getMediaType, formatFileSize } from "./media";
+export { extractYoutubeId, youtubeEmbedUrl } from "./extractYoutubeId";
+export { sanitizeGuideHtml, guideHtmlToText, isSafeImageUrl, MAX_GUIDE_HTML } from "./guideHtml";

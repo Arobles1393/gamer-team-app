@@ -7,7 +7,8 @@ import { Friends } from "../components/Friends";
 import { FindPlayers } from "../components/FindPlayers";
 import { GamingNews } from "../components/GamingNews";
 import { NotFound } from "../components/NotFound";
-import { AdminReports } from "../components/Admin";
+import { AdminReports, AdminGuides } from "../components/Admin";
+import { GuidesPage, GuideCreate, GuideDetail } from "../components/Guides";
 import RequireAuth from "./RequireAuth";
 import RequireAdmin from "./RequireAdmin";
 
@@ -112,7 +113,32 @@ const AppRoutes = ({
 				path="/news"
 				element={<GamingNews />}
 			/>
+			{/* Guías: las aprobadas se ven sin sesión; escribir pide sesión */}
+			<Route
+				path="/guias"
+				element={<GuidesPage />}
+			/>
+			<Route
+				path="/guias/nueva"
+				element={
+					<RequireAuth>
+						<GuideCreate />
+					</RequireAuth>
+				}
+			/>
+			<Route
+				path="/guias/:id"
+				element={<GuideDetail />}
+			/>
 			{/* Admin: sin enlace en ningún menú */}
+			<Route
+				path="/admin/guides"
+				element={
+					<RequireAdmin>
+						<AdminGuides />
+					</RequireAdmin>
+				}
+			/>
 			<Route
 				path="/admin/reports"
 				element={

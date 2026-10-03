@@ -1,5 +1,6 @@
-# Pruebas de firestore.rules en el emulador (npm run test:rules).
-# No usan secretos ni tocan producción: proyecto demo- del emulador.
+# Pruebas que no tocan producción ni usan secretos:
+# - firestore.rules en el emulador (npm run test:rules, proyecto demo-)
+# - protección SSRF de fetchLinkPreview (npm run test:functions, sin internet)
 name: Reglas de Firestore
 
 on:
@@ -20,6 +21,9 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            functions/package-lock.json
 
       # El emulador de Firestore corre sobre Java
       - uses: actions/setup-java@v4
@@ -35,4 +39,9 @@ jobs:
 
       - run: npm ci
 
+      - run: npm ci
+        working-directory: functions
+
       - run: npm run test:rules
+
+      - run: npm run test:functions

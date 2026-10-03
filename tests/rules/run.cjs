@@ -16,7 +16,8 @@ const SUITES = [
   "counters",
   "posts-delete",
   "queries",
-  "text-lengths"
+  "text-lengths",
+  "guides"
 ];
 
 const results = [];

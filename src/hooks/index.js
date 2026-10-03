@@ -58,6 +58,14 @@ export * from "./games/useGamingNews";
 export * from "./games/useGames";
 export * from "./games/useGameSearchLog";
 
+// Guías
+export * from "./guides/useApprovedGuides";
+export * from "./guides/useMyGuides";
+export * from "./guides/useGuideReview";
+export * from "./guides/useGuide";
+export * from "./guides/useLinkPreview";
+export * from "./guides/useCreateGuide";
+
 // Bloqueos y reportes
 export * from "./blocks/useBlockedIds";
 export * from "./blocks/useBlockStatus";
