@@ -130,7 +130,7 @@ const AppRoutes = ({
 				path="/guias/:id"
 				element={<GuideDetail />}
 			/>
-			{/* Admin: sin enlace en ningún menú */}
+			{/* Admin: accesos en el menú del avatar, solo para cuentas admin */}
 			<Route
 				path="/admin/guides"
 				element={

@@ -48,6 +48,7 @@ export * from "./auth/useAuth";
 export * from "./auth/useProviderLogin";
 export * from "./auth/useRequireAuth";
 export * from "./auth/useIsAdmin";
+export * from "./admin/useAdminPendingCounts";
 export * from "./auth/useAccountLanguage";
 export * from "./auth/useAccountEmail";
 export * from "./auth/useWelcomeNotice";

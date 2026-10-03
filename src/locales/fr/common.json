@@ -35,7 +35,12 @@
     "myProfile": "Mon profil",
     "myPosts": "Mes publications",
     "myParties": "Mes parties",
-    "guides": "Guides"
+    "guides": "Guides",
+    "admin": "Administration",
+    "adminReports": "Signalements",
+    "adminGuides": "Guides à valider",
+    "withCount": "{{label}} ({{count}})",
+    "accountMenuPending": "Menu du compte ({{count}} en attente de validation)"
   },
   "presence": {
     "online": "En ligne",

@@ -134,6 +134,10 @@ const body = (page) => page.locator("body").innerText();
     // ---------- 3. Mis guías ----------
     console.log("\n=== mis guías");
     page = await session(QA.ana);
+    await page.locator(".app-rail__avatar-btn").click();
+    await page.locator(".gm-menu").waitFor({ timeout: 5000 });
+    check("menú de una cuenta normal: sin Administración", !/Administración/.test(await page.locator(".gm-menu").innerText()));
+    await page.keyboard.press("Escape");
     await page.goto(`${BASE}/profile`);
     const mine = page.locator(".my-guides__item", { hasText: TITLE });
     await mine.waitFor({ timeout: 10000 });
@@ -146,7 +150,22 @@ const body = (page) => page.locator("body").innerText();
     await admin.auth().setCustomUserClaims(QA.diego.uid, { ...previous, admin: true });
     try {
       page = await session(QA.diego);
-      await page.goto(`${BASE}/admin/guides`);
+      // Desde el menú del avatar, sin escribir la URL
+      const dot = await page.locator(".app-rail__avatar-dot").waitFor({ timeout: 10000 }).then(() => true, () => false);
+      check("admin: punto en el avatar por haber pendientes", dot);
+      await page.locator(".app-rail__avatar-btn").click();
+      const menu = page.locator(".gm-menu");
+      await menu.waitFor({ timeout: 5000 });
+      const menuText = await menu.innerText();
+      check("admin: el menú muestra Administración con Reportes y Guías por revisar (n)",
+        /Administración/i.test(menuText) && /Reportes/.test(menuText) && /Guías por revisar \(\d+\)/.test(menuText), menuText.replace(/\s+/g, " "));
+      await page.screenshot({ path: `${SHOTS}/menu-admin.png` });
+      await menu.getByText("Reportes", { exact: false }).click();
+      await page.waitForURL(/\/admin\/reports$/, { timeout: 10000 });
+      check("admin: Reportes lleva a /admin/reports", true);
+      await page.locator(".app-rail__avatar-btn").click();
+      await page.locator(".gm-menu").getByText("Guías por revisar", { exact: false }).click();
+      await page.waitForURL(/\/admin\/guides$/, { timeout: 10000 });
       const item = page.locator(".admin-guide", { hasText: TITLE });
       await item.waitFor({ timeout: 15000 });
       check("admin: ve la guía con su video e imagen", await item.locator("iframe").count() === 1 && await item.locator(".guide-content img").count() === 1);

@@ -35,7 +35,12 @@
     "myProfile": "Mi perfil",
     "myPosts": "Mis publicaciones",
     "myParties": "Mis partidas",
-    "guides": "Guías"
+    "guides": "Guías",
+    "admin": "Administración",
+    "adminReports": "Reportes",
+    "adminGuides": "Guías por revisar",
+    "withCount": "{{label}} ({{count}})",
+    "accountMenuPending": "Menú de cuenta ({{count}} pendientes de revisión)"
   },
   "presence": {
     "online": "En línea",

@@ -4,7 +4,7 @@ import { AppHeader, createHeaderMenu } from "./components/Header";
 import { NotificationOverlay } from "./components/Notifications";
 import { notificationService } from "./services/notifications";
 import { friendService } from "./services/friends";
-import { useNotifications, useUnreadNotifications, useUserPresence, useRequireAuth, useWelcomeNotice } from "./hooks";
+import { useNotifications, useUnreadNotifications, useUserPresence, useRequireAuth, useWelcomeNotice, useIsAdmin, useAdminPendingCounts } from "./hooks";
 import { useAuthReady, useCurrentUser } from "./context";
 import { AppRoutes } from "./routes";
 import { CreatePostDialog } from "./components/Posts";
@@ -40,6 +40,9 @@ function App() {
   // Badge y punto rosa en "Chats" del rail: cuentan todas las no leídas, no solo las 10 del overlay
   const { unreadCount, hasUnreadMessages } = useUnreadNotifications(user);
   useUserPresence(user);
+  // Accesos de admin en el menú del avatar, con lo que hay por revisar
+  const { isAdmin } = useIsAdmin(user);
+  const adminPending = useAdminPendingCounts(isAdmin);
   // "Cuenta creada": el formulario de registro ya no está en pantalla
   useWelcomeNotice(user, () => {
     toast.current?.show({
@@ -100,7 +103,8 @@ function App() {
   const items = createHeaderMenu(
     navigate,
     handleLogout,
-    t
+    t,
+    isAdmin ? adminPending : null
   );
 
   return (
@@ -109,6 +113,7 @@ function App() {
         unreadCount={unreadCount}
         hasUnreadMessages={hasUnreadMessages}
         items={items}
+        adminPendingCount={isAdmin ? adminPending.reports + adminPending.guides : 0}
         onToggleNotifications={handleToggleNotifications}
         onLogin={user ? undefined : requireAuth}
       />
