@@ -72,6 +72,45 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // ===== matchProfiles (preferencias de juego para "Compatibles contigo") =====
+    // No se muestran en ningún perfil: solo se usan para calcular la
+    // compatibilidad, por eso las lee cualquiera con sesión (no sin ella).
+    // Valores de listas fijas, igual que constants/ (timeBlocks,
+    // playerValues, platforms, matchPreferences). gameIds y region son una
+    // copia de lo público del perfil para acotar la búsqueda.
+    match /matchProfiles/{userId} {
+      function validPreferences(p) {
+        return p is map
+               && p.keys().hasOnly(['schedule', 'platforms', 'requiresMic', 'groupSize', 'skillLevel', 'languages', 'values'])
+               && p.keys().hasAll(['schedule', 'platforms', 'requiresMic', 'groupSize', 'skillLevel', 'languages', 'values'])
+               && p.schedule is list && p.schedule.size() <= 4
+               && p.schedule.hasOnly(['dawn', 'morning', 'afternoon', 'evening'])
+               && p.platforms is list && p.platforms.size() <= 6
+               && p.platforms.hasOnly(['playstation', 'xbox', 'switch', 'pc', 'mobile', 'wii'])
+               && (p.requiresMic == null || p.requiresMic is bool)
+               && (p.groupSize == null || p.groupSize in ['solo', 'duo', 'squad', 'any'])
+               && (p.skillLevel == null || p.skillLevel in ['casual', 'competitive', 'any'])
+               && p.languages is list && p.languages.size() <= 5
+               && p.values is list && p.values.size() <= 6
+               && p.values.hasOnly(['no_rage', 'no_toxicity', 'no_quitting', 'team_player', 'patient_beginners', 'positive_attitude']);
+      }
+
+      function validMatchProfile() {
+        let data = request.resource.data;
+        return data.keys().hasOnly(['preferences', 'gameIds', 'region', 'updatedAt'])
+               && data.keys().hasAll(['preferences', 'gameIds', 'region', 'updatedAt'])
+               && validPreferences(data.preferences)
+               && data.gameIds is list && data.gameIds.size() <= 200
+               && (data.region == null || (data.region is string && data.region.size() <= 10))
+               && data.updatedAt == request.time;
+      }
+
+      allow read: if isSignedIn();
+      allow create, update: if isOwner(userId) && validMatchProfile();
+      // Quitar todas las preferencias = salir de las sugerencias
+      allow delete: if isOwner(userId);
+    }
+
     // Rutas que usan posts, game_stats y post_interested para validarse entre sí
     function postPath(postId) {
       return /databases/$(database)/documents/posts/$(postId);

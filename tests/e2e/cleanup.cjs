@@ -1,5 +1,5 @@
 // Borra TODO lo de las cuentas qa_* (las de qa-users.json): cuentas de Auth,
-// users, publicProfiles, posts (con su grupo, mensajes, comentarios,
+// users, publicProfiles, matchProfiles, guías, posts (con su grupo, mensajes, comentarios,
 // interesados y el -1 de game_stats), chats, amistades, solicitudes,
 // bloqueos y notificaciones. Lo de otros usuarios no se toca, salvo
 // notificaciones o comentarios que las cuentas qa_ hayan dejado.
@@ -62,6 +62,7 @@ const byField = async (collection, field, op = "in") => {
   uids.forEach((uid) => {
     refs.set(`users/${uid}`, db.doc(`users/${uid}`));
     refs.set(`publicProfiles/${uid}`, db.doc(`publicProfiles/${uid}`));
+    refs.set(`matchProfiles/${uid}`, db.doc(`matchProfiles/${uid}`));
   });
 
   const counts = {};

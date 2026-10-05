@@ -54,6 +54,7 @@ const node = (file, args = []) =>
     ["more.e2e.cjs"],
     ["welcome.e2e.cjs"],
     ["guides.e2e.cjs"],
+    ["matching.e2e.cjs"],
     ["reset.cjs"]
   ];
 

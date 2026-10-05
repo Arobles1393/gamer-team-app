@@ -17,7 +17,8 @@ const SUITES = [
   "posts-delete",
   "queries",
   "text-lengths",
-  "guides"
+  "guides",
+  "matching"
 ];
 
 const results = [];

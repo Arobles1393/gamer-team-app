@@ -1,13 +1,16 @@
 import { db } from "../../firebase/config";
 import { doc, getDoc, updateDoc, writeBatch } from "firebase/firestore";
 import { publicProfileRef, pickPublicFields } from "./publicProfileService";
+import { buildMatchProfile, matchProfileRef } from "../matching/matchService";
 
 const userProfileExists = async (userId) => {
   const snapshot = await getDoc(doc(db, "users", userId));
   return snapshot.exists();
 };
 
-// users y publicProfiles se escriben juntos para que no se desincronicen
+// users, publicProfiles y matchProfiles se escriben juntos para que no se
+// desincronicen. profileData.matchPreferences: undefined = no tocar
+// matchProfiles (todavía no se cargaron); sin ningún dato = se borra.
 const updateUserProfile = async (userId, profileData) => {
   const userRef = doc(db, "users", userId);
 
@@ -24,6 +27,21 @@ const updateUserProfile = async (userId, profileData) => {
   const batch = writeBatch(db);
   batch.update(userRef, data);
   batch.set(publicProfileRef(userId), pickPublicFields(data), { merge: true });
+
+  if (profileData.matchPreferences !== undefined) {
+    const matchProfile = buildMatchProfile({
+      preferences: profileData.matchPreferences,
+      games: data.games,
+      region: data.region
+    });
+
+    if (matchProfile) {
+      batch.set(matchProfileRef(userId), matchProfile);
+    } else {
+      batch.delete(matchProfileRef(userId));
+    }
+  }
+
   await batch.commit();
 };
 

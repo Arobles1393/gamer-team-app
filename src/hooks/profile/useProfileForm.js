@@ -3,6 +3,8 @@ import i18n from "../../i18n";
 import { authService } from "../../services/auth";
 import { profileService } from "../../services/profile";
 import { getAuthErrorMessage } from "../../utils";
+import { EMPTY_MATCH_PREFERENCES } from "../../constants";
+import { useMatchProfile } from "../matching/useMatchProfile";
 
 // Errores del cambio de correo con mensaje propio
 const EMAIL_ERRORS = ["auth/email-already-in-use", "auth/invalid-email", "auth/too-many-requests"];
@@ -24,6 +26,10 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
   const [links, setLinks] = useState([]);
   const [games, setGames] = useState([]);
   const [region, setRegion] = useState("");
+  // Preferencias de juego (matchProfiles): se guardan con el resto del perfil
+  const { profile: matchProfile } = useMatchProfile(user);
+  const savedPreferences = matchProfile?.preferences ?? EMPTY_MATCH_PREFERENCES;
+  const [preferences, setPreferences] = useState(EMPTY_MATCH_PREFERENCES);
 
   // El correo sale de Firebase Auth (users.email es una copia que puede ir
   // atrasada hasta que se confirma un cambio). Solo las cuentas con
@@ -43,6 +49,11 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
     setGames(userData.games || []);
     setRegion(userData.region || "");
   }, [userData, isEditing, savedEmail]);
+
+  useEffect(() => {
+    if (!matchProfile || isEditing) return;
+    setPreferences(matchProfile.preferences);
+  }, [matchProfile, isEditing]);
 
   const isValidLink = (url) => {
     return url.startsWith("https://");
@@ -88,7 +99,9 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
         links: links.map((link) => link.trim()).filter(Boolean),
         description,
         games,
-        region
+        region,
+        // Si todavía no se cargaron, matchProfiles no se toca (undefined)
+        matchPreferences: matchProfile ? preferences : undefined
       });
 
       setIsEditing(false);
@@ -113,6 +126,7 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
     setLinks(userData?.links || []);
     setGames(userData?.games || []);
     setRegion(userData?.region || "");
+    setPreferences(savedPreferences);
 
     setIsEditing(false);
   };
@@ -127,7 +141,8 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
       JSON.stringify(links) !==
         JSON.stringify(userData?.links || []) ||
       JSON.stringify(games) !==
-        JSON.stringify(userData?.games || [])
+        JSON.stringify(userData?.games || []) ||
+      JSON.stringify(preferences) !== JSON.stringify(savedPreferences)
     );
   };
 
@@ -164,6 +179,7 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
     links,
     games,
     region,
+    preferences,
 
     setEmail,
     setUsername,
@@ -171,6 +187,7 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
     setDescription,
     setLinks,
     setRegion,
+    setPreferences,
 
     handleSave,
     handleCancel,

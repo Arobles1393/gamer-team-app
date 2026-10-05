@@ -72,3 +72,5 @@ export * from "./blocks/useBlockedIds";
 export * from "./blocks/useBlockStatus";
 export * from "./reports/useReportDialog";
 export * from "./reports/usePendingReports";
+export * from "./matching/useMatchProfile";
+export * from "./matching/useCompatibleMatches";

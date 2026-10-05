@@ -6,6 +6,7 @@ import { blockService } from "../../services/blocks";
 export const useBlockedIds = (user) => {
   const [blocks, setBlocks] = useState([]);
   const [loading, setLoading] = useState(Boolean(user));
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -15,6 +16,7 @@ export const useBlockedIds = (user) => {
     }
 
     setLoading(true);
+    setError(false);
 
     return blockService.subscribeToBlocks(
       user.uid,
@@ -25,6 +27,7 @@ export const useBlockedIds = (user) => {
       (error) => {
         console.error("Error obteniendo bloqueos:", error);
         setBlocks([]);
+        setError(true);
         setLoading(false);
       }
     );
@@ -35,5 +38,5 @@ export const useBlockedIds = (user) => {
     [blocks]
   );
 
-  return { blockedIds, blocks, loading };
+  return { blockedIds, blocks, loading, error };
 };

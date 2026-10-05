@@ -1,0 +1,90 @@
+{
+  "tabs": {
+    "label": "How to find players",
+    "search": "Search by name",
+    "compatible": "Compatible with you"
+  },
+  "prefs": {
+    "title": "My gaming preferences",
+    "private": "They're private: they don't show on your profile and are only used to find players compatible with you.",
+    "empty": "Tell us how you like to play and we'll show you compatible players.",
+    "configure": "Set up",
+    "schedule": "Usual play times",
+    "platforms": "Platforms",
+    "mic": "Microphone",
+    "groupSize": "Group size",
+    "skillLevel": "Level",
+    "languages": "Languages",
+    "languagesPlaceholder": "Pick up to {{count}} languages",
+    "values": "What you value when playing",
+    "valuesHint": "Describe how you play; it can't be used to rate other people."
+  },
+  "time": {
+    "dawn": "Late night (12am-6am)",
+    "morning": "Morning (6am-12pm)",
+    "afternoon": "Afternoon (12pm-6pm)",
+    "evening": "Evening (6pm-12am)"
+  },
+  "timeShort": {
+    "dawn": "Late night",
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "evening": "Evening"
+  },
+  "mic": {
+    "yes": "With mic",
+    "no": "Without mic",
+    "any": "No preference"
+  },
+  "group": {
+    "solo": "Solo",
+    "duo": "Duo",
+    "squad": "Squad",
+    "any": "Any"
+  },
+  "level": {
+    "casual": "Casual",
+    "competitive": "Competitive",
+    "any": "Any"
+  },
+  "values": {
+    "no_rage": "No rage",
+    "no_toxicity": "Healthy vibe, no toxicity",
+    "no_quitting": "Doesn't quit matches",
+    "team_player": "Team player",
+    "patient_beginners": "Patient with beginners",
+    "positive_attitude": "Positive attitude"
+  },
+  "signal": {
+    "game": "Game in common",
+    "mic": "Microphone",
+    "more": "{{label}} +{{count}}"
+  },
+  "compatible": {
+    "loading": "Finding compatible players",
+    "percent": "{{score}}% compatible",
+    "signalsLabel": "What you have in common",
+    "count_one": "{{count}} compatible player",
+    "count_other": "{{count}} compatible players"
+  },
+  "setup": {
+    "title": "Set up your gaming preferences",
+    "text": "Tell us your play times, platforms and how you like to play so we can work out how compatible you are with other players.",
+    "action": "Set up preferences"
+  },
+  "noGames": {
+    "title": "Add your favorite games",
+    "text": "We look for compatible players among people who play the same games as you. Add at least one favorite game to your profile.",
+    "action": "Go to my profile"
+  },
+  "empty": {
+    "title": "No compatible players yet",
+    "text": "Nobody who plays the same games as you has set up their preferences yet. Add more favorite games or check back later.",
+    "action": "Edit my preferences"
+  },
+  "error": {
+    "title": "Couldn't load compatible players",
+    "text": "Check your connection and try again.",
+    "action": "Try again"
+  }
+}

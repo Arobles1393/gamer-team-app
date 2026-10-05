@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "primereact/button";
 import { Skeleton } from "primereact/skeleton";
@@ -13,6 +13,8 @@ import ProfileSaveBar from "./ProfileSaveBar";
 import BlockedUsers from "./BlockedUsers";
 import LanguageSection from "./LanguageSection";
 import { MyGuides } from "../Guides";
+import { MatchPreferences, MATCH_PREFERENCES_ID } from "../Matching";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useProfileForm, useGameSearch, useProfileImages } from "../../hooks";
 import { countries } from "../../data/countries";
 import { getCountryOptions } from "../../utils";
@@ -62,12 +64,14 @@ export default function Profile() {
     links,
     games,
     region,
+    preferences,
     setEmail,
     setUsername,
     setPhone,
     setDescription,
     setLinks,
     setRegion,
+    setPreferences,
     addGame,
     removeGame,
     handleSave,
@@ -76,6 +80,26 @@ export default function Profile() {
   } = useProfileForm(user, userData, showError, showSuccess);
 
   const { suggestions, handleSearch } = useGameSearch();
+
+  // Desde "Compatibles contigo": entra en modo edición y baja a las
+  // preferencias. El state se limpia para que recargar no lo repita.
+  const location = useLocation();
+  const navigate = useNavigate();
+  const editPreferences = Boolean(location.state?.editPreferences);
+  const hasUserData = Boolean(userData);
+
+  const openPreferences = useCallback(() => {
+    setIsEditing(true);
+    requestAnimationFrame(() => {
+      document.getElementById(MATCH_PREFERENCES_ID)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, [setIsEditing]);
+
+  useEffect(() => {
+    if (!editPreferences || !hasUserData) return;
+    openPreferences();
+    navigate(location.pathname, { replace: true, state: null });
+  }, [editPreferences, hasUserData, openPreferences, navigate, location.pathname]);
 
   // Nombres de países en el idioma actual
   const countryOptions = useMemo(
@@ -168,6 +192,12 @@ export default function Profile() {
             onRemoveGame={removeGame}
             emptyText={t("page.emptyGames")}
             onEmptyAction={() => setIsEditing(true)}
+          />
+          <MatchPreferences
+            preferences={preferences}
+            isEditing={isEditing}
+            onChange={setPreferences}
+            onConfigure={openPreferences}
           />
           <MyGuides user={user} />
           {/* Usa los links guardados, no los que se están editando */}

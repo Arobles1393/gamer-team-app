@@ -1,0 +1,90 @@
+{
+  "tabs": {
+    "label": "Como buscar jogadores",
+    "search": "Buscar por nome",
+    "compatible": "Compatíveis com você"
+  },
+  "prefs": {
+    "title": "Minhas preferências de jogo",
+    "private": "São privadas: não aparecem no seu perfil e só servem para encontrar jogadores compatíveis com você.",
+    "empty": "Conte como você gosta de jogar e mostraremos jogadores compatíveis.",
+    "configure": "Configurar",
+    "schedule": "Horários habituais",
+    "platforms": "Plataformas",
+    "mic": "Microfone",
+    "groupSize": "Tamanho do grupo",
+    "skillLevel": "Nível",
+    "languages": "Idiomas",
+    "languagesPlaceholder": "Escolha até {{count}} idiomas",
+    "values": "O que você valoriza ao jogar",
+    "valuesHint": "Descreva como você joga; não serve para avaliar outras pessoas."
+  },
+  "time": {
+    "dawn": "Madrugada (0h-6h)",
+    "morning": "Manhã (6h-12h)",
+    "afternoon": "Tarde (12h-18h)",
+    "evening": "Noite (18h-0h)"
+  },
+  "timeShort": {
+    "dawn": "Madrugada",
+    "morning": "Manhã",
+    "afternoon": "Tarde",
+    "evening": "Noite"
+  },
+  "mic": {
+    "yes": "Com microfone",
+    "no": "Sem microfone",
+    "any": "Sem preferência"
+  },
+  "group": {
+    "solo": "Solo",
+    "duo": "Dupla",
+    "squad": "Squad",
+    "any": "Qualquer"
+  },
+  "level": {
+    "casual": "Casual",
+    "competitive": "Competitivo",
+    "any": "Qualquer"
+  },
+  "values": {
+    "no_rage": "Sem rage",
+    "no_toxicity": "Ambiente saudável, sem toxicidade",
+    "no_quitting": "Não abandona partidas",
+    "team_player": "Joga em equipe",
+    "patient_beginners": "Paciente com iniciantes",
+    "positive_attitude": "Atitude positiva"
+  },
+  "signal": {
+    "game": "Jogo em comum",
+    "mic": "Microfone",
+    "more": "{{label}} +{{count}}"
+  },
+  "compatible": {
+    "loading": "Buscando jogadores compatíveis",
+    "percent": "{{score}}% compatível",
+    "signalsLabel": "O que vocês têm em comum",
+    "count_one": "{{count}} jogador compatível",
+    "count_other": "{{count}} jogadores compatíveis"
+  },
+  "setup": {
+    "title": "Configure suas preferências de jogo",
+    "text": "Diga seus horários, plataformas e como gosta de jogar para calcularmos o quanto você é compatível com outros jogadores.",
+    "action": "Configurar preferências"
+  },
+  "noGames": {
+    "title": "Adicione seus jogos favoritos",
+    "text": "Buscamos jogadores compatíveis entre quem joga o mesmo que você. Adicione pelo menos um jogo favorito ao seu perfil.",
+    "action": "Ir para meu perfil"
+  },
+  "empty": {
+    "title": "Ainda não há jogadores compatíveis",
+    "text": "Ninguém que joga o mesmo que você configurou suas preferências ainda. Adicione mais jogos favoritos ou volte mais tarde.",
+    "action": "Editar minhas preferências"
+  },
+  "error": {
+    "title": "Não foi possível carregar os jogadores compatíveis",
+    "text": "Verifique sua conexão e tente novamente.",
+    "action": "Tentar novamente"
+  }
+}

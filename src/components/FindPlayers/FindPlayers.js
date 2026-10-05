@@ -1,11 +1,14 @@
 import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Toast } from "primereact/toast";
+import { useSearchParams } from "react-router-dom";
 import { UserProfileDialog } from "../UserProfile";
 import PlayersHeader from "./PlayersHeader";
 import PlayerCard from "./PlayerCard";
 import PlayerCardSkeleton from "./PlayerCardSkeleton";
 import PlayersEmptyState from "./PlayersEmptyState";
+import PlayersTabs, { PLAYER_TABS } from "./PlayersTabs";
+import { CompatibleMatches } from "../Matching";
 import { useBlockedIds, useFriendStatus, useProfileChat, useFriendRequest, usePlayerSearch, useProfileDialog, useSteamPresenceBatch, useTwitchPresenceBatch } from "../../hooks";
 import { excludeBlockedAuthors } from "../../utils";
 import { useCurrentUser } from "../../context";
@@ -17,6 +20,13 @@ export default function FindPlayers() {
   const user = useCurrentUser();
   const [search, setSearch] = useState("");
   const toast = useRef(null);
+
+  // Pestaña en la URL (?tab=compatible) para poder volver o compartirla
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tab = PLAYER_TABS.includes(searchParams.get("tab")) ? searchParams.get("tab") : "search";
+  const handleTabChange = (value) => {
+    setSearchParams(value === "search" ? {} : { tab: value }, { replace: true });
+  };
 
   const { players: foundPlayers, loading, error, retry } = usePlayerSearch(search, user?.uid);
 
@@ -109,9 +119,17 @@ export default function FindPlayers() {
 
   return (
     <div className="feed players">
-      <PlayersHeader search={search} onSearchChange={setSearch} />
+      <PlayersHeader search={search} onSearchChange={setSearch} showSearch={tab === "search"} />
 
-      {renderResults()}
+      <PlayersTabs tab={tab} onTabChange={handleTabChange} />
+
+      <div id="players-panel" role="tabpanel" aria-labelledby={`players-tab-${tab}`}>
+        {tab === "search" ? (
+          renderResults()
+        ) : (
+          <CompatibleMatches user={user} onShowProfile={openProfile} />
+        )}
+      </div>
 
       <UserProfileDialog
         visible={showProfile}

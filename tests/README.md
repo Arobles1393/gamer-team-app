@@ -29,7 +29,7 @@ RULES_SUITES=chats,friends npm run test:rules
 $env:RULES_SUITES="chats,friends"; npm run test:rules; Remove-Item Env:RULES_SUITES
 ```
 
-Suites disponibles: `users-privacy`, `public-profiles`, `friends`, `chats`, `blocks`, `counters`, `posts-delete`, `queries`, `text-lengths`, `guides`.
+Suites disponibles: `users-privacy`, `public-profiles`, `friends`, `chats`, `blocks`, `counters`, `posts-delete`, `queries`, `text-lengths`, `guides`, `matching`.
 
 **Al cambiar `firestore.rules`:** agrega o ajusta la prueba de lo que cambió en la suite correspondiente (`tests/rules/<suite>.rules.cjs`). Una suite es una función que recibe `{ env, test, expect }`; `env` es el entorno de `@firebase/rules-unit-testing`.
 
@@ -41,7 +41,7 @@ Comprueban la protección contra SSRF de `fetchLinkPreview` (la vista previa de 
 
 ## Pruebas de interfaz (`npm run test:e2e`)
 
-Abren la app en un navegador (Edge por defecto) e inician sesión con las cuentas de prueba para recorrer los flujos principales: registro, amistad, chat 1:1 y de grupo, idioma de la cuenta, bloqueos, reportes y panel de admin, guías (escritura, moderación y HTML malicioso), partidas programadas, filtros, estados vacíos, privacidad y la vista en celular.
+Abren la app en un navegador (Edge por defecto) e inician sesión con las cuentas de prueba para recorrer los flujos principales: registro, amistad, chat 1:1 y de grupo, idioma de la cuenta, bloqueos, reportes y panel de admin, guías (escritura, moderación y HTML malicioso), jugadores compatibles (preferencias, % y que no salgan amigos ni bloqueados), partidas programadas, filtros, estados vacíos, privacidad y la vista en celular.
 
 > **Importante:** la app local se conecta al Firebase de producción, así que estas pruebas **escriben datos reales** en las cuentas `qa_*` (siempre las mismas, y al terminar se dejan como estaban). Para probar el panel de admin le dan permiso de admin a `qa_diego` y se lo quitan al terminar.
 
