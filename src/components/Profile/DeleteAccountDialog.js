@@ -39,6 +39,7 @@ export default function DeleteAccountDialog({ visible, onHide, user, username, o
       onHide={close}
       header={t("danger.dialogTitle")}
       className="gm-dialog delete-account"
+      maskClassName="gm-dialog-mask"
       modal
       closable={!deleting}
       closeOnEscape={!deleting}

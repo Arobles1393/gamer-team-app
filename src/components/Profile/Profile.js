@@ -13,6 +13,7 @@ import ProfileSaveBar from "./ProfileSaveBar";
 import BlockedUsers from "./BlockedUsers";
 import LanguageSection from "./LanguageSection";
 import DangerZone from "./DangerZone";
+import GuideSection from "./GuideSection";
 import { LegalLinks } from "../Legal";
 import { MyGuides } from "../Guides";
 import { MatchPreferences, MATCH_PREFERENCES_ID } from "../Matching";
@@ -228,6 +229,7 @@ export default function Profile() {
           />
           {/* Fuera del modo edición: el idioma se aplica y guarda al momento */}
           <LanguageSection user={user} onError={showError} />
+          <GuideSection />
           {/* Solo aparece si bloqueaste a alguien */}
           <BlockedUsers user={user} onError={showError} />
         </div>

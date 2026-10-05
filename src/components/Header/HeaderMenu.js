@@ -8,7 +8,8 @@ export const createHeaderMenu = (
     navigate,
     onLogout,
     t,
-    adminPending = null
+    adminPending = null,
+    onOpenGuide = null
 ) => [
   {
     label: t("nav.myProfile"),
@@ -65,6 +66,13 @@ export const createHeaderMenu = (
       ]
     : []),
   { separator: true },
+  ...(onOpenGuide
+    ? [{
+        label: t("nav.guide"),
+        icon: "pi pi-question-circle",
+        command: onOpenGuide
+      }]
+    : []),
   {
     label: t("nav.privacy"),
     icon: "pi pi-shield",

@@ -31,6 +31,8 @@ $env:RULES_SUITES="chats,friends"; npm run test:rules; Remove-Item Env:RULES_SUI
 
 Suites disponibles: `users-privacy`, `public-profiles`, `friends`, `chats`, `blocks`, `counters`, `posts-delete`, `queries`, `text-lengths`, `guides`, `matching`, `email-verification`.
 
+**Cuentas de prueba y guía de bienvenida:** la guía se abre sola a quien no la ha completado (`users/{uid}/private/preferences`). `qa:setup` y `qa:reset` la dejan como vista en las cuentas `qa_*`; las pruebas que crean cuentas temporales la cierran o la marcan igual.
+
 **Cuentas de prueba y verificación de correo:** las reglas piden el correo verificado para crear contenido social (salvo Steam). `npm run qa:setup` crea las cuentas `qa_*` ya verificadas; para marcar otra cuenta: `admin.auth().updateUser(uid, { emailVerified: true })` con el Admin SDK.
 
 **Al cambiar `firestore.rules`:** agrega o ajusta la prueba de lo que cambió en la suite correspondiente (`tests/rules/<suite>.rules.cjs`). Una suite es una función que recibe `{ env, test, expect }`; `env` es el entorno de `@firebase/rules-unit-testing`.

@@ -1,0 +1,76 @@
+{
+  "header": "Guía de GamerMatch",
+  "roleDescription": "paso",
+  "progress": "Paso {{current}} de {{total}}",
+  "skip": "Saltar",
+  "back": "Atrás",
+  "next": "Siguiente",
+  "finish": "Terminar",
+  "keyboardHint": "Usa las flechas ← → para moverte y Esc para saltar.",
+  "steps": {
+    "welcome": {
+      "title": "¡Bienvenido a GamerMatch!",
+      "body": "Aquí encuentras con quién jugar: partidas abiertas, jugadores compatibles y gente que juega lo mismo que tú."
+    },
+    "feed": {
+      "title": "Partidas",
+      "body": "En Inicio ves las partidas por categorías. Toca «Ver más» para explorar una categoría completa y «Quiero jugar» para unirte."
+    },
+    "publish": {
+      "title": "Publica tu partida",
+      "body": "Con «Publicar» creas una partida al momento o la programas para una fecha y hora. Puedes indicar si pides micrófono, el nivel y el idioma."
+    },
+    "players": {
+      "title": "Busca jugadores",
+      "body": "Encuentra gente por su nombre o mira «Compatibles contigo»: jugadores parecidos a ti según tus preferencias de juego."
+    },
+    "friends": {
+      "title": "Amigos",
+      "body": "Envía solicitudes de amistad y acepta las que te lleguen. En Amigos ves quién está en línea."
+    },
+    "chats": {
+      "title": "Chats",
+      "body": "Habla en privado con cualquier jugador o en el chat de cada partida, con emojis y adjuntos."
+    },
+    "notifications": {
+      "title": "Notificaciones",
+      "body": "La campana te avisa de solicitudes, mensajes, comentarios y de quién quiere jugar en tus partidas."
+    },
+    "profile": {
+      "title": "Tu perfil",
+      "body": "Agrega tus juegos favoritos y tus redes, conecta Steam para mostrar tus estadísticas, configura tus preferencias de juego y elige el idioma."
+    },
+    "discover": {
+      "title": "Noticias, guías y comunidad",
+      "body": "Lee noticias de videojuegos, aprende con las guías de otros jugadores (o escribe la tuya) y mira en Comunidad dónde juega todo el mundo."
+    },
+    "safety": {
+      "title": "Tu seguridad",
+      "body": "Si alguien te molesta, repórtalo o bloquéalo desde su perfil. Los usuarios bloqueados se gestionan en Mi perfil."
+    },
+    "closing": {
+      "title": "¡Listo para jugar!",
+      "body": "Puedes volver a abrir esta guía cuando quieras desde el menú de tu avatar o desde Mi perfil."
+    }
+  },
+  "question": {
+    "title": "¿Quieres que esta guía vuelva a aparecer?",
+    "text": "Si dices que sí, la verás una vez más la próxima vez que inicies sesión.",
+    "yes": "Sí, mostrármela de nuevo",
+    "no": "No, no volver a mostrar"
+  },
+  "reopen": {
+    "title": "Guía cerrada",
+    "detail": "Puedes volver a abrirla desde el menú cuando quieras."
+  },
+  "saveError": {
+    "title": "No se pudo guardar tu respuesta",
+    "detail": "Revisa tu conexión e inténtalo otra vez.",
+    "retry": "Reintentar"
+  },
+  "profile": {
+    "title": "Guía de la app",
+    "text": "Repasa en un minuto todo lo que puedes hacer en GamerMatch.",
+    "open": "Ver la guía"
+  }
+}

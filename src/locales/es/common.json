@@ -43,7 +43,8 @@
     "accountMenuPending": "Menú de cuenta ({{count}} pendientes de revisión)",
     "community": "Comunidad",
     "privacy": "Privacidad",
-    "terms": "Términos"
+    "terms": "Términos",
+    "guide": "Guía de la app"
   },
   "presence": {
     "online": "En línea",

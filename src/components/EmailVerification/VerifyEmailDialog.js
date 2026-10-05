@@ -18,6 +18,7 @@ export default function VerifyEmailDialog() {
       onHide={closePrompt}
       header={t("verify.dialogTitle")}
       className="gm-dialog verify-dialog"
+      maskClassName="gm-dialog-mask"
       modal
       dismissableMask
       draggable={false}

@@ -38,6 +38,10 @@ const QA = JSON.parse(fs.readFileSync(`${__dirname}/.qa-users.json`, "utf8"));
     .forEach((d) => batch.delete(d.ref));
   // Reportes que hizo carla en pruebas anteriores
   (await db.collection("reports").where("reporterId", "==", carla).get()).forEach((d) => batch.delete(d.ref));
+  // Guía de bienvenida ya vista en todas las cuentas qa_ (si no, se abre sola)
+  for (const account of Object.values(QA).filter((u) => u && u.uid)) {
+    batch.set(db.doc(`users/${account.uid}/private/preferences`), { onboarding: { completed: true, showAgain: false, completedVersion: 1 } }, { merge: true });
+  }
   await batch.commit();
   console.log("escenario reiniciado");
 })().catch((e) => { console.error(e.message); process.exit(1); });

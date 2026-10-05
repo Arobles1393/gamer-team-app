@@ -52,6 +52,8 @@ const createAccount = async (acc) => {
   const profile = { username: acc.username, usernameLower: acc.username.toLowerCase(), avatar: null, region: "México", description: "", games: [], links: [], createdAt: new Date() };
   await db.doc(`users/${acc.uid}`).set(profile);
   await db.doc(`publicProfiles/${acc.uid}`).set(profile);
+  // Guía de bienvenida ya vista (si no, se abre sola y tapa la prueba)
+  await db.doc(`users/${acc.uid}/private/preferences`).set({ onboarding: { completed: true, showAgain: false, completedVersion: 1 } });
 };
 
 // Todo lo que puede quedar ligado a un uid

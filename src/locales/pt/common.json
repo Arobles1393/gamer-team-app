@@ -43,7 +43,8 @@
     "accountMenuPending": "Menu da conta ({{count}} aguardando revisão)",
     "community": "Comunidade",
     "privacy": "Privacidade",
-    "terms": "Termos"
+    "terms": "Termos",
+    "guide": "Guia do app"
   },
   "presence": {
     "online": "Online",

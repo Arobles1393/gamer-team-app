@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { EmailVerificationBanner } from "./components/EmailVerification";
 import { subscribeToAppNotices } from "./utils/appNotice";
+import { useOpenOnboarding } from "./components/Onboarding";
+import { clearOnboardingSession } from "./hooks/onboarding/useOnboarding";
 import { logout } from "./services/auth";
 import { AppHeader, createHeaderMenu } from "./components/Header";
 import { NotificationOverlay } from "./components/Notifications";
@@ -39,6 +41,8 @@ function App() {
   const authReady = useAuthReady();
   const requireAuth = useRequireAuth(user);
   const requireVerified = useRequireVerified(user);
+  // "Guía de la app" del menú del avatar
+  const openOnboarding = useOpenOnboarding();
   const { notifications, loading: loadingNotifications } = useNotifications(user, { limitCount: 10 });
   // Badge y punto rosa en "Chats" del rail: cuentan todas las no leídas, no solo las 10 del overlay
   const { unreadCount, hasUnreadMessages } = useUnreadNotifications(user);
@@ -116,13 +120,16 @@ function App() {
     navigate("/");
     logout();
     resetAppLanguage();
+    // Con "volver a mostrarla", la guía sale otra vez en el próximo inicio de sesión
+    clearOnboardingSession();
   };
 
   const items = createHeaderMenu(
     navigate,
     handleLogout,
     t,
-    isAdmin ? adminPending : null
+    isAdmin ? adminPending : null,
+    openOnboarding
   );
 
   return (

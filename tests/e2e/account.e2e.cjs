@@ -46,6 +46,15 @@ const close = async (name, page) => {
   check(`${name}: sin errores de JS`, page.errors.length === 0, page.errors.join(" | ").slice(0, 200));
   await page.context().close();
 };
+// Cuenta nueva: la guía de bienvenida se abre sola; se cierra con "No"
+const dismissGuide = async (page) => {
+  const opened = await page.locator(".onboarding").waitFor({ timeout: 10000 }).then(() => true, () => false);
+  if (!opened) return false;
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "No, no volver a mostrar" }).click();
+  await page.locator(".onboarding-question").waitFor({ state: "detached", timeout: 10000 }).catch(() => {});
+  return true;
+};
 const toastText = (page) => page.locator(".p-toast-message").last().innerText({ timeout: 10000 }).catch(() => "");
 
 const removeTmp = async () => {
@@ -60,7 +69,8 @@ const removeTmp = async () => {
       await db.doc(`group_chats/${postId}`).update({ participants: admin.firestore.FieldValue.arrayRemove(user.uid) }).catch(() => {});
     }
     for (const comment of (await db.collection("post_comments").where("userId", "==", user.uid).get()).docs) await comment.ref.delete();
-    await Promise.all(["users", "publicProfiles", "matchProfiles"].map((c) => db.doc(`${c}/${user.uid}`).delete()));
+    await db.recursiveDelete(db.doc(`users/${user.uid}`));
+    await Promise.all(["publicProfiles", "matchProfiles"].map((c) => db.doc(`${c}/${user.uid}`).delete()));
     await admin.auth().deleteUser(user.uid);
   }
 };
@@ -86,6 +96,7 @@ const removeTmp = async () => {
     await page.screenshot({ path: `${SHOTS}/registro-sin-telefono.png` });
     await page.locator("button[type=submit]").click();
     await page.waitForURL((url) => !url.pathname.startsWith("/login"), { timeout: 15000 });
+    check("cuenta nueva: la guía de bienvenida se abre sola", await dismissGuide(page));
     const authUser = await admin.auth().getUserByEmail(TMP.email);
     const [priv, pub] = await Promise.all([db.doc(`users/${authUser.uid}`).get(), db.doc(`publicProfiles/${authUser.uid}`).get()]);
     check("la cuenta se crea con el correo en Firebase Auth", authUser.email === TMP.email);
@@ -234,6 +245,15 @@ const removeTmp = async () => {
     await page.locator("button[type=submit]").click();
     await page.waitForURL((url) => !url.pathname.startsWith("/login"), { timeout: 15000 });
     const verUser = await admin.auth().getUserByEmail(VER.email);
+    check("sin verificar: la guía se abre y su respuesta se guarda", await dismissGuide(page)
+      && await (async () => {
+        for (let i = 0; i < 10; i += 1) {
+          const saved = (await db.doc(`users/${verUser.uid}/private/preferences`).get()).data()?.onboarding;
+          if (saved?.completed === true && saved.showAgain === false) return true;
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+        return false;
+      })());
     const banner = page.locator(".verify-banner");
     await banner.waitFor({ timeout: 15000 }).catch(() => {});
     check("usuario nuevo: ve el aviso con su correo", await banner.isVisible() && (await banner.innerText()).includes(VER.email));

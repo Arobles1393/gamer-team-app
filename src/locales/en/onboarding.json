@@ -1,0 +1,76 @@
+{
+  "header": "GamerMatch guide",
+  "roleDescription": "step",
+  "progress": "Step {{current}} of {{total}}",
+  "skip": "Skip",
+  "back": "Back",
+  "next": "Next",
+  "finish": "Finish",
+  "keyboardHint": "Use the ← → arrows to move and Esc to skip.",
+  "steps": {
+    "welcome": {
+      "title": "Welcome to GamerMatch!",
+      "body": "Find people to play with: open matches, compatible players and people who play the same games as you."
+    },
+    "feed": {
+      "title": "Matches",
+      "body": "Home shows matches by category. Tap \"See more\" to explore a whole category and \"I want to play\" to join."
+    },
+    "publish": {
+      "title": "Post your match",
+      "body": "With \"Post\" you create a match right away or schedule it for a date and time. You can say if you need a mic, the level and the language."
+    },
+    "players": {
+      "title": "Find players",
+      "body": "Look people up by name or check \"Compatible with you\": players like you based on your gaming preferences."
+    },
+    "friends": {
+      "title": "Friends",
+      "body": "Send friend requests and accept the ones you get. In Friends you can see who's online."
+    },
+    "chats": {
+      "title": "Chats",
+      "body": "Talk privately with any player or in each match's chat, with emojis and attachments."
+    },
+    "notifications": {
+      "title": "Notifications",
+      "body": "The bell tells you about requests, messages, comments and who wants to play in your matches."
+    },
+    "profile": {
+      "title": "Your profile",
+      "body": "Add your favorite games and social links, connect Steam to show your stats, set your gaming preferences and pick your language."
+    },
+    "discover": {
+      "title": "News, guides and community",
+      "body": "Read gaming news, learn from other players' guides (or write your own) and see in Community where everyone plays."
+    },
+    "safety": {
+      "title": "Your safety",
+      "body": "If someone bothers you, report or block them from their profile. Blocked users are managed in My profile."
+    },
+    "closing": {
+      "title": "Ready to play!",
+      "body": "You can reopen this guide anytime from your avatar menu or from My profile."
+    }
+  },
+  "question": {
+    "title": "Do you want this guide to show up again?",
+    "text": "If you say yes, you'll see it once more the next time you sign in.",
+    "yes": "Yes, show it again",
+    "no": "No, don't show it again"
+  },
+  "reopen": {
+    "title": "Guide closed",
+    "detail": "You can reopen it from the menu anytime."
+  },
+  "saveError": {
+    "title": "Couldn't save your answer",
+    "detail": "Check your connection and try again.",
+    "retry": "Try again"
+  },
+  "profile": {
+    "title": "App guide",
+    "text": "Go over everything you can do in GamerMatch in a minute.",
+    "open": "See the guide"
+  }
+}

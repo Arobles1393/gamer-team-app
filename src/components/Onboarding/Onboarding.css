@@ -1,0 +1,189 @@
+/* =====================================================
+   GUÍA DE BIENVENIDA
+   ===================================================== */
+.onboarding.p-dialog {
+  width: min(520px, calc(100vw - 24px));
+}
+
+.onboarding__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: var(--gm-text);
+}
+
+.onboarding__icon {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 16px;
+  border-radius: 50%;
+  background: var(--gm-primary-soft);
+  box-shadow: 0 0 0 1px var(--gm-border), var(--gm-glow);
+  color: var(--gm-label);
+}
+
+.onboarding__icon .pi {
+  font-size: 28px;
+}
+
+.onboarding__title {
+  margin: 0 0 10px;
+  font-family: var(--gm-font-display);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--gm-text);
+}
+
+.onboarding__text {
+  max-width: 420px;
+  min-height: 4.8em;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--gm-muted);
+}
+
+.onboarding__progress-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.onboarding__dots {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.onboarding__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gm-border);
+  transition: width 0.2s ease, background-color 0.2s ease;
+}
+
+.onboarding__dot--done {
+  background: var(--gm-label);
+}
+
+.onboarding__dot--active {
+  width: 22px;
+  border-radius: var(--gm-radius-pill);
+  background: var(--gm-accent);
+}
+
+.onboarding__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.onboarding__nav {
+  display: flex;
+  gap: 8px;
+}
+
+.onboarding__hint {
+  margin: 14px 0 0;
+  font-size: 12px;
+  text-align: center;
+  color: var(--gm-subtle);
+}
+
+/* Pregunta final */
+.onboarding-question.p-dialog {
+  width: min(440px, calc(100vw - 24px));
+}
+
+.onboarding-question__text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--gm-muted);
+}
+
+.onboarding-question__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+/* Aviso de error al guardar, con "Reintentar" */
+.onboarding-toast {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.onboarding-toast .p-button {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+/* Celular: casi toda la pantalla, abajo, dejando visible la parte de
+   arriba (donde está el aviso de verificar el correo) */
+@media (max-width: 767px) {
+  .onboarding.p-dialog {
+    width: calc(100vw - 16px);
+    height: calc(100dvh - 210px);
+    max-height: none;
+    margin: 0 8px 8px;
+  }
+
+  .onboarding.p-dialog .p-dialog-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .onboarding__body {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .onboarding__actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .onboarding__nav {
+    justify-content: space-between;
+  }
+
+  .onboarding__nav .p-button {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .onboarding__dot {
+    transition: none;
+  }
+
+  .onboarding-mask,
+  .onboarding-mask .p-dialog,
+  .p-dialog-mask:has(.onboarding-question),
+  .onboarding-question {
+    transition: none !important;
+    animation: none !important;
+  }
+}
