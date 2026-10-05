@@ -13,6 +13,7 @@ import ProfileSaveBar from "./ProfileSaveBar";
 import BlockedUsers from "./BlockedUsers";
 import LanguageSection from "./LanguageSection";
 import DangerZone from "./DangerZone";
+import { LegalLinks } from "../Legal";
 import { MyGuides } from "../Guides";
 import { MatchPreferences, MATCH_PREFERENCES_ID } from "../Matching";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -233,6 +234,8 @@ export default function Profile() {
       </div>
 
       <DangerZone user={user} username={userData.username} onError={showError} />
+
+      <LegalLinks className="profile-page__legal" />
 
       {isEditing && (
         <ProfileSaveBar

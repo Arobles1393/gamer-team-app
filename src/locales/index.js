@@ -20,5 +20,6 @@ export const NAMESPACES = [
   "reports",
   "guides",
   "matching",
-  "community"
+  "community",
+  "legal"
 ];

@@ -66,6 +66,21 @@ export const createHeaderMenu = (
     : []),
   { separator: true },
   {
+    label: t("nav.privacy"),
+    icon: "pi pi-shield",
+    command: () => {
+      navigate("/privacidad");
+    }
+  },
+  {
+    label: t("nav.terms"),
+    icon: "pi pi-file",
+    command: () => {
+      navigate("/terminos");
+    }
+  },
+  { separator: true },
+  {
     label: t("actions.logout"),
     icon: "pi pi-sign-out",
     className: "gm-menu__danger",

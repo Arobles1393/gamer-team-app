@@ -19,7 +19,8 @@ const SUITES = [
   "text-lengths",
   "guides",
   "matching",
-  "email-verification"
+  "email-verification",
+  "private-preferences"
 ];
 
 const results = [];

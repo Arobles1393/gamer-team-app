@@ -41,7 +41,9 @@
     "adminGuides": "Guías por revisar",
     "withCount": "{{label}} ({{count}})",
     "accountMenuPending": "Menú de cuenta ({{count}} pendientes de revisión)",
-    "community": "Comunidad"
+    "community": "Comunidad",
+    "privacy": "Privacidad",
+    "terms": "Términos"
   },
   "presence": {
     "online": "En línea",

@@ -3,6 +3,8 @@ import { httpsCallable } from "firebase/functions";
 import { auth, googleProvider, functions } from "../../firebase/config";
 import i18n from "../../i18n";
 import { postAppNotice } from "../../utils/appNotice";
+import { REQUIRE_LEGAL_CONSENT } from "../../legal/legalConfig";
+import { preferencesService } from "../preferences";
 import { profileService } from "../profile";
 import { requestSteamOpenIdParams } from "./steamPopup";
 
@@ -19,7 +21,8 @@ const login = async (
 
 // Crea la cuenta y su perfil (users + publicProfiles), igual que el primer
 // login con Google o Steam. El correo queda solo en Firebase Auth.
-const register = async ({ email, password, username, region }) => {
+// acceptedLegal: marcó "He leído y acepto..." (solo con REQUIRE_LEGAL_CONSENT)
+const register = async ({ email, password, username, region, acceptedLegal = false }) => {
   const userCredential = await createUserWithEmailAndPassword(
     auth,
     email,
@@ -30,6 +33,10 @@ const register = async ({ email, password, username, region }) => {
     username,
     region
   });
+
+  if (REQUIRE_LEGAL_CONSENT && acceptedLegal) {
+    await preferencesService.saveLegalConsent(userCredential.user.uid);
+  }
 
   // Si el correo de verificación no sale, el registro igual termina: se
   // puede reenviar desde el aviso (EmailVerificationBanner)
@@ -68,6 +75,8 @@ const refreshUser = async (user, { forceToken = true } = {}) => {
 // Crea el perfil solo en el primer login con Google; si ya existe
 // no se toca, para no pisar lo que el usuario haya personalizado.
 // Google no da región: queda en null y se completa desde el perfil.
+// TODO: el login con Google y Steam también necesitará un paso de
+// aceptación de Términos y Privacidad cuando REQUIRE_LEGAL_CONSENT se active.
 const loginWithGoogle = async () => {
   const userCredential = await signInWithPopup(
     auth,

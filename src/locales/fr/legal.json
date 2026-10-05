@@ -1,0 +1,19 @@
+{
+  "eyebrow": "Mentions légales",
+  "titles": {
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation"
+  },
+  "updatedAt": "Dernière mise à jour : {{date}}",
+  "pending": "En attente",
+  "draftNotice": "Brouillon : ce document n'est pas encore complet.",
+  "onlySpanish": "Ce document n'est disponible qu'en espagnol pour le moment.",
+  "toc": "Sommaire",
+  "tocLabel": "Sommaire du document",
+  "linksLabel": "Documents légaux",
+  "links": {
+    "privacy": "Confidentialité",
+    "terms": "Conditions"
+  },
+  "consent": "J'ai lu et j'accepte les <terms>Conditions</terms> et la <privacy>Politique de confidentialité</privacy>"
+}

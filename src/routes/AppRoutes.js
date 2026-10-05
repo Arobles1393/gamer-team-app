@@ -10,6 +10,7 @@ import { NotFound } from "../components/NotFound";
 import { AdminReports, AdminGuides } from "../components/Admin";
 import { GuidesPage, GuideCreate, GuideDetail } from "../components/Guides";
 import { CommunityPage } from "../components/Community";
+import { LegalPage } from "../components/Legal";
 import RequireAuth from "./RequireAuth";
 import RequireAdmin from "./RequireAdmin";
 
@@ -28,6 +29,15 @@ const AppRoutes = ({
 						setShowCreatePost={setShowCreatePost}
 					/>
 				}
+			/>
+			{/* Legales: públicas (tiendas y servicios piden una URL abierta) */}
+			<Route
+				path="/privacidad"
+				element={<LegalPage type="privacy" />}
+			/>
+			<Route
+				path="/terminos"
+				element={<LegalPage type="terms" />}
 			/>
 			<Route
 				path="/profile"

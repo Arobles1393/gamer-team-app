@@ -1,0 +1,19 @@
+{
+  "eyebrow": "Legal",
+  "titles": {
+    "privacy": "Política de privacidad",
+    "terms": "Términos de uso"
+  },
+  "updatedAt": "Última actualización: {{date}}",
+  "pending": "Pendiente",
+  "draftNotice": "Borrador: este documento aún no está completo.",
+  "onlySpanish": "Este documento solo está disponible en español por ahora.",
+  "toc": "Contenido",
+  "tocLabel": "Índice del documento",
+  "linksLabel": "Documentos legales",
+  "links": {
+    "privacy": "Privacidad",
+    "terms": "Términos"
+  },
+  "consent": "He leído y acepto los <terms>Términos</terms> y la <privacy>Política de privacidad</privacy>"
+}

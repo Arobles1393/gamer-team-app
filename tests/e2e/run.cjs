@@ -60,6 +60,7 @@ const node = (file, args = []) =>
     ["guides.e2e.cjs"],
     ["matching.e2e.cjs"],
     ["account.e2e.cjs"],
+    ["legal.e2e.cjs"],
     ...(process.env.E2E_COMMUNITY === "1" ? [["community.e2e.cjs"]] : []),
     ...(process.env.E2E_DELETE_ACCOUNT === "1" ? [["delete-account.e2e.cjs"]] : []),
     ["reset.cjs"]

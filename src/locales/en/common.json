@@ -41,7 +41,9 @@
     "adminGuides": "Guides to review",
     "withCount": "{{label}} ({{count}})",
     "accountMenuPending": "Account menu ({{count}} pending review)",
-    "community": "Community"
+    "community": "Community",
+    "privacy": "Privacy",
+    "terms": "Terms"
   },
   "presence": {
     "online": "Online",

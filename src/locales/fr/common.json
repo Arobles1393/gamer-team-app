@@ -41,7 +41,9 @@
     "adminGuides": "Guides à valider",
     "withCount": "{{label}} ({{count}})",
     "accountMenuPending": "Menu du compte ({{count}} en attente de validation)",
-    "community": "Communauté"
+    "community": "Communauté",
+    "privacy": "Confidentialité",
+    "terms": "Conditions"
   },
   "presence": {
     "online": "En ligne",

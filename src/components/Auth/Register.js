@@ -6,6 +6,8 @@ import { getAuthErrorMessage } from "../../utils/authErrors";
 import { authService } from "../../services/auth";
 import { clearWelcomeNotice, queueWelcomeNotice } from "../../utils/welcomeNotice";
 import { useProviderLogin } from "../../hooks";
+import { REQUIRE_LEGAL_CONSENT } from "../../legal";
+import { LegalConsentCheckbox } from "../Legal";
 import {
   AuthLayout,
   AuthInput,
@@ -21,6 +23,9 @@ export default function Register({ onToggleMode, onBack }) {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [region, setRegion] = useState(null);
+  // Solo cuenta con REQUIRE_LEGAL_CONSENT (si no, no se muestra la casilla)
+  const [acceptedLegal, setAcceptedLegal] = useState(false);
+  const missingConsent = REQUIRE_LEGAL_CONSENT && !acceptedLegal;
   const [loading, setLoading] = useState(false);
 
   const toast = useRef(null);
@@ -40,7 +45,7 @@ export default function Register({ onToggleMode, onBack }) {
   const handleRegister = async () => {
     if (loading) return;
 
-    if (!email || !password || !username || !region) {
+    if (!email || !password || !username || !region || missingConsent) {
       toast.current?.show({
         severity: "warn",
         summary: t("register.incompleteTitle"),
@@ -61,7 +66,8 @@ export default function Register({ onToggleMode, onBack }) {
         email,
         password,
         username,
-        region
+        region,
+        acceptedLegal
       });
     } catch (error) {
       clearWelcomeNotice();
@@ -125,10 +131,14 @@ export default function Register({ onToggleMode, onBack }) {
           filter
         />
 
+        {REQUIRE_LEGAL_CONSENT && (
+          <LegalConsentCheckbox checked={acceptedLegal} onChange={setAcceptedLegal} />
+        )}
+
         <GradientButton
           label={t("register.submit")}
           loading={loading}
-          disabled={!email || !password || !username || !region}
+          disabled={!email || !password || !username || !region || missingConsent}
         />
 
         <AuthProviders

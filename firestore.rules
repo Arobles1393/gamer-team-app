@@ -61,6 +61,20 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // ===== users/{uid}/private/{docId} (preferencias privadas) =====
+    // Solo el dueño. Las reglas de subcolecciones NO se heredan de users.
+    // read no toca resource.data, así que funciona aunque el documento
+    // todavía no exista. Sin canWriteSocial: una cuenta sin verificar tiene
+    // que poder guardar su respuesta de la guía de bienvenida.
+    // deleteAccount la borra con recursiveDelete sobre users/{uid}.
+    match /users/{userId}/private/{docId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId)
+                            && docId == "preferences"
+                            && request.resource.data.keys().hasOnly(["onboarding", "legalConsent"]);
+      allow delete: if false;
+    }
+
     // ===== publicProfiles (todo lo del perfil que pueden ver los demás) =====
     // users/{uid} además guarda correo, teléfono e idioma, que solo ve su
     // dueño. Misma lista de campos en services/profile/publicProfileService.js
