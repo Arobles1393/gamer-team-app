@@ -14,7 +14,7 @@ module.exports = async ({ env, test, expect }) => {
   // Igual que profileService.createUserProfile
   await test("Crear perfil: users + publicProfiles con los campos públicos", () => {
     const f = db(A);
-    const userData = { email: "a@b.com", username: "Alfa", avatar: null, region: "México", usernameLower: "alfa", createdAt: new Date() };
+    const userData = { username: "Alfa", avatar: null, region: "México", usernameLower: "alfa", createdAt: new Date() };
     const batch = writeBatch(f);
     batch.set(doc(f, "users", A), userData);
     batch.set(pub(f, A), pick({ avatar: null, region: null, ...userData }));
@@ -24,7 +24,7 @@ module.exports = async ({ env, test, expect }) => {
   // Igual que profileService.updateUserProfile
   await test("Editar perfil: los campos públicos nuevos se copian", () => {
     const f = db(A);
-    const data = { username: "Alfa", usernameLower: "alfa", phone: "555", links: ["https://x.com/a"], description: "hola", games: [{ id: 1, name: "Valorant" }], region: "Chile" };
+    const data = { username: "Alfa", usernameLower: "alfa", links: ["https://x.com/a"], description: "hola", games: [{ id: 1, name: "Valorant" }], region: "Chile" };
     const batch = writeBatch(f);
     batch.update(doc(f, "users", A), data);
     batch.set(pub(f, A), pick(data), { merge: true });

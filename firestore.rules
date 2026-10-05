@@ -35,9 +35,16 @@ service cloud.firestore {
     // Solo lo lee su dueño: guarda correo, teléfono e idioma. Lo que ven los
     // demás está en publicProfiles/{uid}
     match /users/{userId} {
+      // Sin correo ni teléfono: el correo vive solo en Firebase Auth y el
+      // teléfono ya no se pide (functions/scripts/removeSensitiveFields.js
+      // los quitó de los documentos existentes)
+      function noSensitiveFields() {
+        return !request.resource.data.keys().hasAny(['phone', 'email']);
+      }
+
       allow read: if isOwner(userId);
-      allow create: if isOwner(userId) && textUpTo('description', 500);
-      allow update: if isOwner(userId) && textUpTo('description', 500);
+      allow create: if isOwner(userId) && textUpTo('description', 500) && noSensitiveFields();
+      allow update: if isOwner(userId) && textUpTo('description', 500) && noSensitiveFields();
       allow delete: if false;
     }
 

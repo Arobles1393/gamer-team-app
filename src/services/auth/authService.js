@@ -16,8 +16,8 @@ const login = async (
 };
 
 // Crea la cuenta y su perfil (users + publicProfiles), igual que el primer
-// login con Google o Steam
-const register = async ({ email, password, username, phone, region }) => {
+// login con Google o Steam. El correo queda solo en Firebase Auth.
+const register = async ({ email, password, username, region }) => {
   const userCredential = await createUserWithEmailAndPassword(
     auth,
     email,
@@ -25,9 +25,7 @@ const register = async ({ email, password, username, phone, region }) => {
   );
 
   await profileService.createUserProfile(userCredential.user.uid, {
-    email,
     username,
-    phone,
     region
   });
 
@@ -52,7 +50,6 @@ const loginWithGoogle = async () => {
 
   if (!exists) {
     await profileService.createUserProfile(uid, {
-      email,
       username: displayName || email.split("@")[0],
       avatar: photoURL,
       region: null
@@ -85,7 +82,6 @@ const loginWithSteam = async () => {
 
   if (!exists) {
     await profileService.createUserProfile(uid, {
-      email: null,
       username: data.username || `steam_${data.steamId64.slice(-6)}`,
       avatar: data.avatar,
       region: null,
@@ -103,8 +99,9 @@ const hasPasswordSignIn = (user) =>
   Boolean(user?.providerData?.some((provider) => provider.providerId === "password"));
 
 // Manda un enlace al correo nuevo; Firebase Auth lo cambia cuando el usuario
-// lo confirma (y cierra las sesiones abiertas). users.email se sincroniza al
-// volver a entrar (useAccountEmail).
+// lo confirma (y cierra las sesiones abiertas). Hasta entonces sigue el
+// actual. verifyBeforeUpdateEmail (no updateEmail): funciona con la
+// protección contra enumeración de correos activada.
 const requestEmailChange = (user, newEmail) =>
   verifyBeforeUpdateEmail(user, newEmail);
 

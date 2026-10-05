@@ -17,7 +17,6 @@ const updateUserProfile = async (userId, profileData) => {
   const data = {
     username: profileData.username,
     usernameLower: profileData.username.trim().toLowerCase(),
-    phone: profileData.phone,
     links: profileData.links,
     description: profileData.description,
     games: profileData.games,
@@ -49,13 +48,13 @@ const updateUserProfile = async (userId, profileData) => {
 const updateUserLanguage = (userId, language) =>
   updateDoc(doc(db, "users", userId), { language });
 
-// Correo de la cuenta: se copia de Firebase Auth, que es la fuente de verdad
-const updateUserEmail = (userId, email) =>
-  updateDoc(doc(db, "users", userId), { email });
-
+// users/{uid} no guarda correo ni teléfono: el correo vive solo en Firebase
+// Auth (user.email) y el teléfono ya no se pide. firestore.rules rechaza
+// esos campos.
 const createUserProfile = async (
   userId,
-  profileData
+  // eslint-disable-next-line no-unused-vars
+  { email, phone, ...profileData }
 ) => {
   const batch = writeBatch(db);
 
@@ -89,6 +88,5 @@ export const profileService = {
   userProfileExists,
   updateUserProfile,
   updateUserLanguage,
-  updateUserEmail,
   createUserProfile
 };

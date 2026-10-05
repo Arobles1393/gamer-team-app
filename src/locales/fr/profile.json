@@ -18,12 +18,10 @@
     "nickname": "Pseudo",
     "email": "E-mail",
     "emailHint": "Nous enverrons un lien à la nouvelle adresse ; le changement s'applique une fois confirmé.",
-    "phone": "Téléphone",
     "region": "Région",
     "regionPlaceholder": "Sélectionnez votre région",
     "missing": "Non renseigné",
-    "emailManaged": "C'est l'e-mail du compte avec lequel vous vous êtes connecté (par exemple Google) ; il ne se modifie pas ici.",
-    "emailNone": "Votre compte n'a pas d'e-mail : vous vous êtes connecté avec Steam."
+    "emailManaged": "C'est l'e-mail du compte avec lequel vous vous êtes connecté (par exemple Google) ; il ne se modifie pas ici."
   },
   "about": {
     "title": "À propos de moi",
@@ -133,7 +131,7 @@
     "updated": "Profil mis à jour",
     "reloginEmail": "Par sécurité, reconnectez-vous pour changer votre e-mail.",
     "saveError": "Impossible d'enregistrer le profil. Réessayez.",
-    "emailVerificationSent": "Profil mis à jour. Nous avons envoyé un lien à {{email}} pour confirmer votre nouvelle adresse."
+    "emailVerificationSent": "Profil mis à jour. Nous avons envoyé un e-mail à {{email}} pour confirmer le changement ; votre adresse actuelle reste active d'ici là."
   },
   "images": {
     "avatarUpdated": "Photo de profil mise à jour",

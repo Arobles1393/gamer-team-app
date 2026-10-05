@@ -59,7 +59,6 @@ export default function Profile() {
     email,
     canChangeEmail,
     username,
-    phone,
     description,
     links,
     games,
@@ -67,7 +66,6 @@ export default function Profile() {
     preferences,
     setEmail,
     setUsername,
-    setPhone,
     setDescription,
     setLinks,
     setRegion,
@@ -212,14 +210,12 @@ export default function Profile() {
           <PersonalInfo
             email={email}
             username={username}
-            phone={phone}
             region={region}
             countries={countryOptions}
             canChangeEmail={canChangeEmail}
             isEditing={isEditing}
             onEmailChange={setEmail}
             onUsernameChange={setUsername}
-            onPhoneChange={setPhone}
             onRegionChange={setRegion}
           />
           <SocialLinks

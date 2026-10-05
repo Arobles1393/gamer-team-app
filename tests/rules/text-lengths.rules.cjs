@@ -54,7 +54,7 @@ module.exports = async ({ env, test, expect }) => {
   await test("Descripción de 501 solo en users (sin pasar por publicProfiles): no", () =>
     assertFails(updateDoc(doc(a, "users", A), { description: txt(501) })));
   await test("Editar el perfil sin descripción sigue funcionando", () =>
-    assertSucceeds(updateDoc(doc(a, "users", A), { phone: "555" })));
+    assertSucceeds(updateDoc(doc(a, "users", A), { region: "Chile" })));
 
   await test("Nota de reporte de 500: sí; de 501: no", async () => {
     await assertSucceeds(report(b, txt(500)));

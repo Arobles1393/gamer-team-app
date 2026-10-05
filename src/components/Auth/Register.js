@@ -20,7 +20,6 @@ export default function Register({ onToggleMode, onBack }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [phone, setPhone] = useState("");
   const [region, setRegion] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -62,7 +61,6 @@ export default function Register({ onToggleMode, onBack }) {
         email,
         password,
         username,
-        phone,
         region
       });
     } catch (error) {
@@ -113,17 +111,6 @@ export default function Register({ onToggleMode, onBack }) {
           autoComplete="nickname"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-        />
-
-        <AuthInput
-          id="phone"
-          label={t("fields.phone")}
-          hint={t("fields.optional")}
-          type="tel"
-          placeholder="55 1234 5678"
-          autoComplete="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
         />
 
         <AuthSelect

@@ -57,6 +57,7 @@ const node = (file, args = []) =>
     ["welcome.e2e.cjs"],
     ["guides.e2e.cjs"],
     ["matching.e2e.cjs"],
+    ["account.e2e.cjs"],
     ...(process.env.E2E_COMMUNITY === "1" ? [["community.e2e.cjs"]] : []),
     ["reset.cjs"]
   ];

@@ -31,24 +31,22 @@ const countryTemplate = (option) =>
 export default function PersonalInfo({
   email,
   username,
-  phone,
   region,
   countries,
   canChangeEmail,
   isEditing,
   onEmailChange,
   onUsernameChange,
-  onPhoneChange,
   onRegionChange
 }) {
   const { t } = useTranslation("profile");
   const country = countries.find((c) => c.value === region);
   const missing = <span className="personal-info__missing">{t("personal.missing")}</span>;
 
-  // Google: el correo es el de su cuenta de Google. Steam: no tiene correo
-  const emailHint = canChangeEmail
-    ? t("personal.emailHint")
-    : t(email ? "personal.emailManaged" : "personal.emailNone");
+  // El correo es el de Firebase Auth. Google: el de su cuenta de Google (no
+  // se cambia aquí). Steam: no tiene correo, así que el campo no se muestra
+  const showEmail = canChangeEmail || Boolean(email);
+  const emailHint = canChangeEmail ? t("personal.emailHint") : t("personal.emailManaged");
 
   return (
     <ProfileSection title={t("personal.title")} icon="pi-id-card" className="personal-info">
@@ -64,33 +62,23 @@ export default function PersonalInfo({
             />
           </Field>
 
-          <Field
-            id="profile-email"
-            label={t("personal.email")}
-            hint={emailHint}
-          >
-            <InputText
+          {showEmail && (
+            <Field
               id="profile-email"
-              type="email"
-              value={email}
-              onChange={(e) => onEmailChange(e.target.value)}
-              disabled={!canChangeEmail}
-              autoComplete="email"
-              className="gm-input"
-            />
-          </Field>
-
-          <Field id="profile-phone" label={t("personal.phone")}>
-            <InputText
-              id="profile-phone"
-              type="tel"
-              value={phone}
-              onChange={(e) => onPhoneChange(e.target.value)}
-              placeholder="55 1234 5678"
-              autoComplete="tel"
-              className="gm-input"
-            />
-          </Field>
+              label={t("personal.email")}
+              hint={emailHint}
+            >
+              <InputText
+                id="profile-email"
+                type="email"
+                value={email}
+                onChange={(e) => onEmailChange(e.target.value)}
+                disabled={!canChangeEmail}
+                autoComplete="email"
+                className="gm-input"
+              />
+            </Field>
+          )}
 
           <Field id="profile-region" label={t("personal.region")}>
             <Dropdown
@@ -112,8 +100,9 @@ export default function PersonalInfo({
       ) : (
         <dl className="personal-info__list">
           <InfoRow icon="pi-user" label={t("personal.nickname")}>{username || missing}</InfoRow>
-          <InfoRow icon="pi-envelope" label={t("personal.email")}>{email || missing}</InfoRow>
-          <InfoRow icon="pi-phone" label={t("personal.phone")}>{phone || missing}</InfoRow>
+          {showEmail && (
+            <InfoRow icon="pi-envelope" label={t("personal.email")}>{email || missing}</InfoRow>
+          )}
           <InfoRow icon="pi-globe" label={t("personal.region")}>
             {region ? `${country?.flag ?? ""} ${getCountryLabel(region)}`.trim() : missing}
           </InfoRow>

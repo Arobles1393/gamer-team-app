@@ -24,20 +24,20 @@ const GAMES = {
 
 const USERS = [
   {
-    key: "ana", email: "qa.ana@example.com", username: "qa_ana", region: "México", phone: "55 1111 1111", language: "es",
+    key: "ana", email: "qa.ana@example.com", username: "qa_ana", region: "México", language: "es",
     description: "Cuenta de prueba (QA). Juego shooters por las noches.",
     games: [GAMES.valorant, GAMES.fortnite], links: ["https://www.twitch.tv/qa_ana_test", "https://x.com/qa_ana_test"]
   },
   {
-    key: "bruno", email: "qa.bruno@example.com", username: "qa_bruno", region: "Argentina", phone: "11 2222 2222", language: "en",
+    key: "bruno", email: "qa.bruno@example.com", username: "qa_bruno", region: "Argentina", language: "en",
     description: "QA test account. Casual player.", games: [GAMES.fortnite], links: []
   },
   {
-    key: "carla", email: "qa.carla@example.com", username: "qa_carla", region: "España", phone: null, language: "pt",
+    key: "carla", email: "qa.carla@example.com", username: "qa_carla", region: "España", language: "pt",
     description: "", games: [GAMES.tombraider], links: []
   },
   {
-    key: "diego", email: "qa.diego@example.com", username: "qa_diego", region: "Chile", phone: null, language: null,
+    key: "diego", email: "qa.diego@example.com", username: "qa_diego", region: "Chile", language: null,
     description: "Cuenta QA para probar bloqueos.", games: [], links: []
   }
 ];
@@ -85,7 +85,8 @@ const createPost = async (batch, id, uid, region, game, extra = {}) => {
     const pwd = password();
     const uid = await ensureAuthUser(u, pwd);
     const userData = {
-      email: u.email, username: u.username, usernameLower: u.username.toLowerCase(), phone: u.phone,
+      // Sin correo ni teléfono, como la app (el correo vive en Firebase Auth)
+      username: u.username, usernameLower: u.username.toLowerCase(),
       region: u.region, avatar: null, description: u.description, games: u.games, links: u.links,
       createdAt: new Date(), lastSeen: Timestamp.now(), ...(u.language ? { language: u.language } : {})
     };

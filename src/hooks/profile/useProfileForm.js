@@ -21,7 +21,6 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
 
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
-  const [phone, setPhone] = useState("");
   const [description, setDescription] = useState("");
   const [links, setLinks] = useState([]);
   const [games, setGames] = useState([]);
@@ -31,10 +30,9 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
   const savedPreferences = matchProfile?.preferences ?? EMPTY_MATCH_PREFERENCES;
   const [preferences, setPreferences] = useState(EMPTY_MATCH_PREFERENCES);
 
-  // El correo sale de Firebase Auth (users.email es una copia que puede ir
-  // atrasada hasta que se confirma un cambio). Solo las cuentas con
-  // contraseña lo cambian desde aquí.
-  const savedEmail = user?.email ?? userData?.email ?? "";
+  // El correo vive solo en Firebase Auth (users/{uid} no lo guarda). Solo
+  // las cuentas con contraseña lo cambian desde aquí.
+  const savedEmail = user?.email ?? "";
   const canChangeEmail = authService.hasPasswordSignIn(user);
 
   useEffect(() => {
@@ -43,7 +41,6 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
 
     setEmail(savedEmail);
     setUsername(userData.username || "");
-    setPhone(userData.phone || "");
     setDescription(userData.description || "");
     setLinks(userData.links || []);
     setGames(userData.games || []);
@@ -94,7 +91,6 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
 
       await profileService.updateUserProfile(user.uid, {
         username: username.trim(),
-        phone,
         // Los renglones vacíos no se guardan
         links: links.map((link) => link.trim()).filter(Boolean),
         description,
@@ -121,7 +117,6 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
   const handleCancel = () => {
     setEmail(savedEmail);
     setUsername(userData?.username || "");
-    setPhone(userData?.phone || "");
     setDescription(userData?.description || "");
     setLinks(userData?.links || []);
     setGames(userData?.games || []);
@@ -135,7 +130,6 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
     return (
       email !== savedEmail ||
       username !== (userData?.username || "") ||
-      phone !== (userData?.phone || "") ||
       region !== (userData?.region || "") ||
       description !== (userData?.description || "") ||
       JSON.stringify(links) !==
@@ -174,7 +168,6 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
     email,
     canChangeEmail,
     username,
-    phone,
     description,
     links,
     games,
@@ -183,7 +176,6 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
 
     setEmail,
     setUsername,
-    setPhone,
     setDescription,
     setLinks,
     setRegion,
