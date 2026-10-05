@@ -18,7 +18,8 @@ const SUITES = [
   "queries",
   "text-lengths",
   "guides",
-  "matching"
+  "matching",
+  "email-verification"
 ];
 
 const results = [];

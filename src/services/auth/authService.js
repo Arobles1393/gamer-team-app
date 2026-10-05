@@ -1,7 +1,8 @@
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signInWithCustomToken, verifyBeforeUpdateEmail, sendPasswordResetEmail, onAuthStateChanged } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signInWithCustomToken, verifyBeforeUpdateEmail, sendPasswordResetEmail, sendEmailVerification, onAuthStateChanged, onIdTokenChanged } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
 import { auth, googleProvider, functions } from "../../firebase/config";
 import i18n from "../../i18n";
+import { postAppNotice } from "../../utils/appNotice";
 import { profileService } from "../profile";
 import { requestSteamOpenIdParams } from "./steamPopup";
 
@@ -30,11 +31,39 @@ const register = async ({ email, password, username, region }) => {
     region
   });
 
+  // Si el correo de verificación no sale, el registro igual termina: se
+  // puede reenviar desde el aviso (EmailVerificationBanner)
+  sendVerificationEmail(userCredential.user).catch((error) => {
+    console.error("Error enviando el correo de verificación:", error.code);
+    postAppNotice({ severity: "warn", summaryKey: "auth:verify.sendFailedTitle", detailKey: "auth:verify.sendFailedDetail" });
+  });
+
   return userCredential;
 };
 
 // Cambios de sesión (entrar, salir, recargar): devuelve la función para dejar de escuchar
 const subscribeToAuthState = (callback) => onAuthStateChanged(auth, callback);
+
+// También avisa cuando se renueva el token (getIdToken(true)): así se
+// entera de que el correo ya se verificó sin volver a iniciar sesión
+const subscribeToIdToken = (callback) => onIdTokenChanged(auth, callback);
+
+// Correo de verificación en el idioma de la interfaz; el enlace vuelve al inicio
+const sendVerificationEmail = (user) => {
+  setEmailLanguage();
+  return sendEmailVerification(user, { url: `${window.location.origin}/` });
+};
+
+// Trae de Firebase el estado actual (p. ej. emailVerified después de abrir
+// el enlace) y renueva el token para que las reglas lo vean también.
+// forceToken false (revisión automática): solo renueva si ya se verificó
+const refreshUser = async (user, { forceToken = true } = {}) => {
+  await user.reload();
+  if (forceToken || auth.currentUser?.emailVerified) {
+    await user.getIdToken(true);
+  }
+  return auth.currentUser;
+};
 
 // Crea el perfil solo en el primer login con Google; si ya existe
 // no se toca, para no pisar lo que el usuario haya personalizado.
@@ -124,6 +153,9 @@ export const authService = {
   hasPasswordSignIn,
   requestEmailChange,
   sendPasswordReset,
+  sendVerificationEmail,
+  refreshUser,
+  subscribeToIdToken,
   subscribeToAuthState,
   login,
   register,

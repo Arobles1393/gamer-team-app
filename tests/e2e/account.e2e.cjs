@@ -17,6 +17,8 @@ fs.mkdirSync(SHOTS, { recursive: true });
 
 const STAMP = Date.now().toString(36);
 const TMP = { email: `qa.tmp.${STAMP}@example.com`, username: `qa_tmp_${STAMP}`, password: `Qa-${STAMP}x9` };
+// Sin verificar (restablecer la contraseña con el enlace marca el correo como verificado)
+const VER = { email: `qa.ver.${STAMP}@example.com`, username: `qa_ver_${STAMP}`, password: `Qa-${STAMP}v9` };
 
 const results = [];
 const check = (name, ok, extra = "") => {
@@ -47,10 +49,20 @@ const close = async (name, page) => {
 const toastText = (page) => page.locator(".p-toast-message").last().innerText({ timeout: 10000 }).catch(() => "");
 
 const removeTmp = async () => {
-  const user = await admin.auth().getUserByEmail(TMP.email).catch(() => null);
-  if (!user) return;
-  await Promise.all(["users", "publicProfiles", "matchProfiles"].map((c) => db.doc(`${c}/${user.uid}`).delete()));
-  await admin.auth().deleteUser(user.uid);
+  for (const account of [TMP, VER]) {
+    const user = await admin.auth().getUserByEmail(account.email).catch(() => null);
+    if (!user) continue;
+    // Lo que haya escrito en partidas de otros (si una corrida se cortó a medias)
+    for (const interest of (await db.collection("post_interested").where("userId", "==", user.uid).get()).docs) {
+      const { postId } = interest.data();
+      await interest.ref.delete();
+      await db.doc(`posts/${postId}`).update({ interestedCount: admin.firestore.FieldValue.increment(-1) }).catch(() => {});
+      await db.doc(`group_chats/${postId}`).update({ participants: admin.firestore.FieldValue.arrayRemove(user.uid) }).catch(() => {});
+    }
+    for (const comment of (await db.collection("post_comments").where("userId", "==", user.uid).get()).docs) await comment.ref.delete();
+    await Promise.all(["users", "publicProfiles", "matchProfiles"].map((c) => db.doc(`${c}/${user.uid}`).delete()));
+    await admin.auth().deleteUser(user.uid);
+  }
 };
 
 (async () => {
@@ -188,10 +200,107 @@ const removeTmp = async () => {
     await login(page, { email: TMP.email, password: newPassword });
     check("con el enlace se fija una contraseña nueva y se entra con ella", !page.url().includes("/login"));
     await close("enlace de restablecimiento", page);
+
+    // ---------- 6. Verificación de correo ----------
+    console.log("\n=== verificación de correo");
+    const KEY = fs.readFileSync(path.join(__dirname, "../../.env"), "utf8").match(/REACT_APP_FIREBASE_API_KEY=(.*)/)[1].trim().replace(/^["']|["']$/g, "");
+    const idTokenOf = async (email, password) => (await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${KEY}`,
+      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password, returnSecureToken: true }) }
+    ).then((res) => res.json())).idToken;
+    // Escribir un comentario directo a Firestore (REST), sin pasar por la app
+    const directComment = (idToken) => fetch(
+      "https://firestore.googleapis.com/v1/projects/gamerteam-4ed20/databases/(default)/documents/post_comments",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken}` },
+        body: JSON.stringify({ fields: {
+          postId: { stringValue: "qa_post_ana" }, userId: { stringValue: verUser.uid },
+          text: { stringValue: "comentario directo (QA)" }, createdAt: { timestampValue: new Date().toISOString() }
+        } })
+      }
+    );
+    // Registro desde la app: crea la cuenta y manda el correo de verificación
+    page = await newPage();
+    await page.goto(`${BASE}/login`);
+    await page.getByRole("button", { name: "Crear cuenta" }).click();
+    await page.locator("#email").fill(VER.email);
+    await page.locator("#password").fill(VER.password);
+    await page.locator("#username").fill(VER.username);
+    await page.locator(".auth__select").click();
+    const regionFilter = page.locator(".p-dropdown-filter");
+    if (await regionFilter.count()) await regionFilter.fill("Méxi");
+    await page.locator(".p-dropdown-item", { hasText: "México" }).first().click();
+    await page.locator("button[type=submit]").click();
+    await page.waitForURL((url) => !url.pathname.startsWith("/login"), { timeout: 15000 });
+    const verUser = await admin.auth().getUserByEmail(VER.email);
+    const banner = page.locator(".verify-banner");
+    await banner.waitFor({ timeout: 15000 }).catch(() => {});
+    check("usuario nuevo: ve el aviso con su correo", await banner.isVisible() && (await banner.innerText()).includes(VER.email));
+    check("el correo de verificación salió (sin aviso de error)", !(await page.locator("body").innerText()).includes("No pudimos enviar"));
+    await page.screenshot({ path: `${SHOTS}/verificacion-aviso.png` });
+    const verifyDialog = page.locator(".verify-dialog");
+    const expectDialog = async (name) => {
+      const opened = await verifyDialog.waitFor({ timeout: 5000 }).then(() => true, () => false);
+      check(`${name}: abre "Verifica tu correo para continuar"`, opened);
+      if (opened) {
+        await page.keyboard.press("Escape");
+        await verifyDialog.waitFor({ state: "detached", timeout: 5000 }).catch(() => {});
+      }
+    };
+
+    await page.goto(`${BASE}/`);
+    await page.getByRole("button", { name: /Publicar/ }).first().click();
+    await expectDialog("publicar");
+    check("y no abre el formulario de publicar", await page.locator(".p-dialog", { hasText: "Publicar partida" }).count() === 0);
+
+    await page.goto(`${BASE}/post/qa_post_ana`);
+    await page.getByRole("button", { name: /Quiero jugar/i }).first().click();
+    await expectDialog("Quiero jugar");
+    await page.getByRole("textbox", { name: "Escribe un comentario" }).fill("Hola, ¿jugamos?");
+    await page.locator(".comment-composer").getByRole("button", { name: "Comentar" }).click();
+    await expectDialog("comentar");
+    check("el comentario se queda escrito", (await page.getByRole("textbox", { name: "Escribe un comentario" }).inputValue()) === "Hola, ¿jugamos?");
+
+    await page.goto(`${BASE}/guias`);
+    await page.getByRole("button", { name: "Escribir guía" }).first().click();
+    await expectDialog("escribir guía");
+
+    const unverifiedToken = await idTokenOf(VER.email, VER.password);
+    const denied = await directComment(unverifiedToken);
+    check("saltándose la app, firestore.rules rechaza el comentario", denied.status === 403, `HTTP ${denied.status}`);
+
+    // Reenviar: aviso y cuenta regresiva
+    await banner.getByRole("button", { name: "Reenviar correo" }).click();
+    const resent = await toastText(page);
+    check("reenviar el correo avisa", /Correo enviado/.test(resent), resent.replace(/\s+/g, " "));
+    const resendLabel = (await banner.locator("button").first().innerText()).trim();
+    check("y bloquea el botón con cuenta regresiva", /Reenviar en \d+ s/i.test(resendLabel), resendLabel);
+
+    // Verificar (como al abrir el enlace) y esperar la revisión automática
+    await admin.auth().updateUser(verUser.uid, { emailVerified: true });
+    const hidden = await banner.waitFor({ state: "detached", timeout: 25000 }).then(() => true, () => false);
+    check("al verificar, el aviso desaparece solo (sin recargar)", hidden);
+    const verifiedToast = await toastText(page);
+    check("con aviso de correo verificado", /Correo verificado/.test(verifiedToast), verifiedToast.replace(/\s+/g, " "));
+    await page.goto(`${BASE}/`);
+    await page.getByRole("button", { name: /Publicar/ }).first().click();
+    const formOpened = await page.locator(".p-dialog", { hasText: "Publicar partida" }).waitFor({ timeout: 10000 }).then(() => true, () => false);
+    check("ya verificado, Publicar abre el formulario", formOpened && await verifyDialog.count() === 0);
+    const allowed = await directComment(await idTokenOf(VER.email, VER.password));
+    check("y firestore.rules ya acepta sus escrituras", allowed.status === 200, `HTTP ${allowed.status}`);
+    if (allowed.ok) await db.doc(new URL((await allowed.json()).name, "https://x/").pathname.split("/documents/")[1]).delete().catch(() => {});
+    await close("verificación", page);
+
+    // Cuentas verificadas (qa_ana) no ven el aviso
+    page = await newPage();
+    await login(page, QA.ana);
+    check("cuenta verificada: sin aviso", await page.locator(".verify-banner").count() === 0);
+    await close("cuenta verificada", page);
   } finally {
     await browser.close();
     await removeTmp();
-    console.log(`\nCuenta temporal ${TMP.username} borrada`);
+    console.log(`\nCuentas temporales ${TMP.username} y ${VER.username} borradas`);
   }
 
   const failed = results.filter((ok) => !ok).length;

@@ -22,13 +22,15 @@ const QA = JSON.parse(fs.readFileSync(`${__dirname}/.qa-users.json`, "utf8"));
   extraNotifs.forEach((d) => batch.delete(d.ref));
   batch.update(db.doc(`chats/${chatId}`), { lastMessage: "Mensaje QA 60", lastSenderId: bruno });
   if (QA.eva) batch.delete(db.doc(`blocks/${QA.diego.uid}_${QA.eva.uid}`));
-  // Interés de carla en la partida de ana (lo crea la prueba del grupo)
-  const carlaInterest = await db.doc(`post_interested/qa_post_ana_${carla}`).get();
-  if (carlaInterest.exists) {
-    batch.delete(carlaInterest.ref);
-    batch.update(db.doc("posts/qa_post_ana"), { interestedCount: admin.firestore.FieldValue.increment(-1) });
-  }
-  batch.update(db.doc("group_chats/qa_post_ana"), { participants: admin.firestore.FieldValue.arrayRemove(carla) });
+  // Partida de ana: solo el interés de bruno, como en setup.cjs (quita el de
+  // carla de la prueba del grupo y cualquiera que haya quedado de otra prueba)
+  const interests = await db.collection("post_interested").where("postId", "==", "qa_post_ana").get();
+  interests.forEach((d) => { if (d.data().userId !== bruno) batch.delete(d.ref); });
+  batch.update(db.doc("posts/qa_post_ana"), { interestedCount: 1 });
+  batch.update(db.doc("group_chats/qa_post_ana"), { participants: [ana, bruno] });
+  // La partida programada de carla siempre a 3 días (si no, con el tiempo
+  // queda en el pasado y deja de salir en "Próximamente")
+  batch.update(db.doc("posts/qa_post_carla"), { scheduledAt: admin.firestore.Timestamp.fromMillis(Date.now() + 3 * 86400000) });
   // Chat del grupo de la partida de ana: sin mensajes ni sus notificaciones
   (await db.collection("group_chats/qa_post_ana/messages").get()).forEach((d) => batch.delete(d.ref));
   batch.update(db.doc("group_chats/qa_post_ana"), { lastMessage: "", lastMessageAt: null, lastSenderId: null });

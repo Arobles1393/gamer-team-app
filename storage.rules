@@ -11,6 +11,17 @@ service firebase.storage {
       return isSignedIn() && request.auth.uid == userId;
     }
 
+    // Subir adjuntos de contenido social pide el correo verificado, igual
+    // que en firestore.rules. Excepción: Steam entra con custom token
+    // (sign_in_provider == "custom") y no tiene correo. Avatar y portada no
+    // lo piden (son parte del perfil).
+    function canWriteSocial() {
+      return isSignedIn() && (
+        request.auth.token.get('email_verified', false) == true
+        || request.auth.token.firebase.sign_in_provider == 'custom'
+      );
+    }
+
     function isValidImage() {
       return request.resource.contentType.matches('image/.*')
              && request.resource.size < 5 * 1024 * 1024;
@@ -43,7 +54,7 @@ service firebase.storage {
     // ===== guides/{authorId}/{fileName} =====
     match /guides/{authorId}/{fileName} {
       allow read: if isSignedIn();
-      allow create: if isOwner(authorId) && isValidGuideImage();
+      allow create: if isOwner(authorId) && canWriteSocial() && isValidGuideImage();
       allow update, delete: if false;
     }
 
@@ -64,8 +75,8 @@ service firebase.storage {
     // ===== comments/{userId}/{fileName} =====
     match /comments/{userId}/{fileName} {
       allow read: if isSignedIn();
-      allow create: if isOwner(userId) && isValidMedia();
-      allow update: if isOwner(userId) && isValidMedia();
+      allow create: if isOwner(userId) && canWriteSocial() && isValidMedia();
+      allow update: if isOwner(userId) && canWriteSocial() && isValidMedia();
       allow delete: if isOwner(userId);
     }
 
@@ -76,6 +87,7 @@ service firebase.storage {
       allow read: if isSignedIn()
                   && request.auth.uid in firestore.get(/databases/(default)/documents/chats/$(chatId)).data.participants;
       allow create: if isOwner(userId)
+                    && canWriteSocial()
                     && request.auth.uid in firestore.get(/databases/(default)/documents/chats/$(chatId)).data.participants
                     && isValidChatMedia();
       allow update, delete: if false;
@@ -88,6 +100,7 @@ service firebase.storage {
                   && firestore.get(/databases/(default)/documents/group_chats/$(postId)).data.active == true
                   && request.auth.uid in firestore.get(/databases/(default)/documents/group_chats/$(postId)).data.participants;
       allow create: if isOwner(userId)
+                    && canWriteSocial()
                     && firestore.get(/databases/(default)/documents/group_chats/$(postId)).data.active == true
                     && request.auth.uid in firestore.get(/databases/(default)/documents/group_chats/$(postId)).data.participants
                     && isValidChatMedia();

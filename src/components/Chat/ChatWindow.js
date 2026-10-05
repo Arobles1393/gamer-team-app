@@ -4,13 +4,14 @@ import MessageList from "./MessageList";
 import MessageComposer from "./MessageComposer";
 import { useMemo } from "react";
 import { TwitchLive } from "../Twitch";
-import { useBlockStatus, useChatWindow, useTwitchPresenceBatch, useUserProfile } from "../../hooks";
+import { useBlockStatus, useChatWindow, useRequireVerified, useTwitchPresenceBatch, useUserProfile } from "../../hooks";
 import { getPresenceLabel, isOnline } from "../../utils";
 import { useCurrentUser } from "../../context";
 
 export default function ChatWindow({ chatId, onBack, onError }) {
   const { t } = useTranslation("chat");
   const user = useCurrentUser();
+  const requireVerified = useRequireVerified(user);
 
   const { messages, loading, error, retry, hasOlder, loadingOlder, loadOlder, otherUserId, sendMessage } = useChatWindow(
     chatId,
@@ -33,6 +34,8 @@ export default function ChatWindow({ chatId, onBack, onError }) {
   const twitchLive = useTwitchPresenceBatch(twitchPlayers)[otherUserId];
 
   const handleSend = async (text, file) => {
+    // Sin verificar: abre el diálogo; el composer conserva el texto
+    if (!requireVerified()) throw new Error("email-not-verified");
     try {
       await sendMessage(text, file);
     } catch (error) {

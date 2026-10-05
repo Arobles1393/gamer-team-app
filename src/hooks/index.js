@@ -53,6 +53,8 @@ export * from "./auth/useAccountLanguage";
 export * from "./auth/useWelcomeNotice";
 export * from "./auth/useCooldown";
 export * from "./auth/usePasswordReset";
+export * from "./auth/useEmailVerificationState";
+export * from "./auth/useRequireVerified";
 
 // Juegos
 export * from "./games/useGameSearch";

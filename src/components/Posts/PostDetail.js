@@ -25,6 +25,7 @@ import {
   useFriendRequest,
   useProfileDialog,
   useRequireAuth,
+  useRequireVerified,
   useBlockedIds
 } from "../../hooks";
 import { confirmDeletePost, confirmDestructive, excludeBlockedAuthors } from "../../utils";
@@ -63,6 +64,7 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
   const [openingChat, setOpeningChat] = useState(false);
 
   const requireAuth = useRequireAuth(user);
+  const requireVerified = useRequireVerified(user);
 
   const { post, loading, error } = usePost(id);
   const { userData: postAuthor } = useUserProfile(post?.userId);
@@ -218,6 +220,8 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
   };
 
   const handlePublish = async (comment, file) => {
+    // Sin verificar: abre el diálogo y el comentario se queda en el campo
+    if (!requireVerified()) return false;
     try {
       return await publishComment(comment, file);
     } catch (error) {

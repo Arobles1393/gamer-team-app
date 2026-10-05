@@ -84,6 +84,8 @@ const body = (page) => page.locator("body").innerText();
     const [priv, pub] = await Promise.all([db.doc(`users/${user.uid}`).get(), db.doc(`publicProfiles/${user.uid}`).get()]);
     check("registro: users sin correo ni teléfono (el correo vive en Auth)", priv.exists && !("email" in priv.data()) && !("phone" in priv.data()) && user.email === "qa.eva@example.com");
     check("registro: publicProfiles sin correo ni teléfono, con región", pub.exists && !("email" in pub.data()) && !("phone" in pub.data()) && pub.data().region === "México", JSON.stringify(Object.keys(pub.data() || {})));
+    // Como el resto de cuentas qa_: verificada (las reglas lo piden para publicar)
+    await admin.auth().updateUser(user.uid, { emailVerified: true });
     QA.eva = { uid: user.uid, email: "qa.eva@example.com", password, username: "qa_eva" };
     fs.writeFileSync(`${__dirname}/.qa-users.json`, JSON.stringify(QA, null, 2));
     await page.screenshot({ path: `${SHOTS}/registro.png` });

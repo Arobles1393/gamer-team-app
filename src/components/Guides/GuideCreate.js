@@ -5,7 +5,7 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { GameSelect } from "../GameSelect";
-import { useCreateGuide, useLinkPreview } from "../../hooks";
+import { useCreateGuide, useLinkPreview, useRequireVerified } from "../../hooks";
 import { GUIDE_IMAGE_TYPES } from "../../services/guides";
 import { useCurrentUser } from "../../context";
 import { isSafeImageUrl } from "../../utils";
@@ -119,6 +119,8 @@ export default function GuideCreate() {
   const { t } = useTranslation("guides");
   const navigate = useNavigate();
   const user = useCurrentUser();
+  // Por si se entra directo a /guias/nueva sin verificar el correo
+  const requireVerified = useRequireVerified(user);
   const toast = useRef(null);
   const [submitted, setSubmitted] = useState(false);
 
@@ -138,6 +140,7 @@ export default function GuideCreate() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (!requireVerified()) return;
     setSubmitted(true);
     if (!form.isValid) return;
 

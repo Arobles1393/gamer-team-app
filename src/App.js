@@ -1,10 +1,12 @@
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
+import { EmailVerificationBanner } from "./components/EmailVerification";
+import { subscribeToAppNotices } from "./utils/appNotice";
 import { logout } from "./services/auth";
 import { AppHeader, createHeaderMenu } from "./components/Header";
 import { NotificationOverlay } from "./components/Notifications";
 import { notificationService } from "./services/notifications";
 import { friendService } from "./services/friends";
-import { useNotifications, useUnreadNotifications, useUserPresence, useRequireAuth, useWelcomeNotice, useIsAdmin, useAdminPendingCounts } from "./hooks";
+import { useNotifications, useUnreadNotifications, useUserPresence, useRequireAuth, useRequireVerified, useWelcomeNotice, useIsAdmin, useAdminPendingCounts } from "./hooks";
 import { useAuthReady, useCurrentUser } from "./context";
 import { AppRoutes } from "./routes";
 import { CreatePostDialog } from "./components/Posts";
@@ -36,6 +38,7 @@ function App() {
   const user = useCurrentUser();
   const authReady = useAuthReady();
   const requireAuth = useRequireAuth(user);
+  const requireVerified = useRequireVerified(user);
   const { notifications, loading: loadingNotifications } = useNotifications(user, { limitCount: 10 });
   // Badge y punto rosa en "Chats" del rail: cuentan todas las no leídas, no solo las 10 del overlay
   const { unreadCount, hasUnreadMessages } = useUnreadNotifications(user);
@@ -52,6 +55,11 @@ function App() {
       life: 4000
     });
   });
+  // Avisos que llegan después de que su pantalla se desmontó (p. ej. si no
+  // salió el correo de verificación al registrarse)
+  useEffect(() => subscribeToAppNotices(({ severity, summaryKey, detailKey }) => {
+    toast.current?.show({ severity, summary: t(summaryKey), detail: t(detailKey), life: 6000 });
+  }), [t]);
 
   // UI Handlers
   const handleToggleNotifications = (e) => {
@@ -60,6 +68,8 @@ function App() {
   };
   const handleCloseCreatePost = () => { setShowCreatePost(false); setEditingPost(null); };
   const handleAcceptFriendRequest = (notification) => {
+    // Aceptar crea la amistad: pide el correo verificado
+    if (!requireVerified()) return Promise.resolve(false);
     return friendService.acceptFriendRequest(
       notification,
       user
@@ -138,6 +148,7 @@ function App() {
         </>
       )}
       <main className="app-content">
+        {user && <EmailVerificationBanner />}
         <AppRoutes
           setEditingPost={setEditingPost}
           setShowCreatePost={setShowCreatePost}

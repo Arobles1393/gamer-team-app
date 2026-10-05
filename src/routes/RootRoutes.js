@@ -1,6 +1,7 @@
 import { Routes, Route, Outlet } from "react-router-dom";
 import App from "../App";
-import { AuthProvider } from "../context";
+import { AuthProvider, VerifyPromptProvider } from "../context";
+import { VerifyEmailDialog } from "../components/EmailVerification";
 import { LoginPage, PasswordReset, SteamReturn } from "../components/Auth";
 
 // Rutas de primer nivel: el retorno de Steam no necesita sesión; /login y la
@@ -29,9 +30,14 @@ const RootRoutes = () => {
 					path="/recuperar"
 					element={<PasswordReset />}
 				/>
+				{/* Verificación de correo: diálogo y reenvío compartidos por toda la app */}
 				<Route
 					path="*"
-					element={<App />}
+					element={
+						<VerifyPromptProvider dialog={<VerifyEmailDialog />}>
+							<App />
+						</VerifyPromptProvider>
+					}
 				/>
 			</Route>
 		</Routes>

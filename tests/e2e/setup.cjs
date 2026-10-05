@@ -48,11 +48,12 @@ const pick = (data) => Object.fromEntries(PUBLIC_FIELDS.filter((f) => data[f] !=
 const ensureAuthUser = async ({ email, username }, pwd) => {
   try {
     const existing = await admin.auth().getUserByEmail(email);
-    await admin.auth().updateUser(existing.uid, { password: pwd });
+    // Verificadas: firestore.rules pide el correo verificado para publicar
+    await admin.auth().updateUser(existing.uid, { password: pwd, emailVerified: true });
     return existing.uid;
   } catch (error) {
     if (error.code !== "auth/user-not-found") throw error;
-    return (await admin.auth().createUser({ email, password: pwd, displayName: username })).uid;
+    return (await admin.auth().createUser({ email, password: pwd, displayName: username, emailVerified: true })).uid;
   }
 };
 

@@ -5,7 +5,7 @@ import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { Skeleton } from "primereact/skeleton";
 import { EmptyState } from "../EmptyState";
-import { useApprovedGuides, useRequireAuth } from "../../hooks";
+import { useApprovedGuides, useRequireVerified } from "../../hooks";
 import { useCurrentUser } from "../../context";
 import { getIntlLocale } from "../../i18n";
 import GuideCard from "./GuideCard";
@@ -31,7 +31,7 @@ export default function GuidesPage() {
   const { t, i18n } = useTranslation("guides");
   const navigate = useNavigate();
   const user = useCurrentUser();
-  const requireAuth = useRequireAuth(user);
+  const requireVerified = useRequireVerified(user);
   const [game, setGame] = useState(null);
   // Juegos con guías aprobadas: se aprenden de la lista sin filtro
   const [knownGames, setKnownGames] = useState([]);
@@ -55,7 +55,7 @@ export default function GuidesPage() {
   );
 
   const handleWrite = () => {
-    if (requireAuth()) navigate("/guias/nueva");
+    if (requireVerified()) navigate("/guias/nueva");
   };
 
   const renderResults = () => {

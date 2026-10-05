@@ -1,14 +1,14 @@
 import { useCallback } from "react";
 import { interestService } from "../../services/posts";
-import { useRequireAuth } from "../auth/useRequireAuth";
+import { useRequireVerified } from "../auth/useRequireVerified";
 
 export const usePostInterest = (user, onError) => {
-  const requireAuth = useRequireAuth(user);
+  const requireVerified = useRequireVerified(user);
 
 
   const handleInterested = useCallback(
     async (post, interestedDoc) => {
-      if (!requireAuth()) return false;
+      if (!requireVerified()) return false;
 
       try {
         return await interestService.toggleInterested({
@@ -21,7 +21,7 @@ export const usePostInterest = (user, onError) => {
         return false;
       }
     },
-    [user, onError, requireAuth]
+    [user, onError, requireVerified]
   );
 
   return {

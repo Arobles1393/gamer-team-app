@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { chatService } from "../../services/chat";
 import i18n from "../../i18n";
-import { useRequireAuth } from "../auth/useRequireAuth";
+import { useRequireVerified } from "../auth/useRequireVerified";
 
 export const useProfileChat = (
   user,
@@ -11,11 +11,11 @@ export const useProfileChat = (
   onError
 ) => {
   const navigate = useNavigate();
-  const requireAuth = useRequireAuth(user);
+  const requireVerified = useRequireVerified(user);
 
   // Abre (o crea) el chat con cualquier usuario, p. ej. desde una card de amigo
   const openChatWith = useCallback(async (otherUserId) => {
-    if (!requireAuth()) return;
+    if (!requireVerified()) return;
 
     try {
       const chatId = await chatService.createOrGetChat(
@@ -40,7 +40,7 @@ export const useProfileChat = (
         i18n.t("chat:window.openError")
       );
     }
-  }, [user, navigate, onClose, onError, requireAuth]);
+  }, [user, navigate, onClose, onError, requireVerified]);
 
   // Chat con el usuario del diálogo de perfil
   const handleChat = () => openChatWith(selectedUserId);
