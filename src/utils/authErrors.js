@@ -13,6 +13,9 @@ const KNOWN_ERRORS = [
   // Recuperar contraseña y verificación de correo
   "auth/missing-email",
   "auth/requires-recent-login",
+  // Eliminar cuenta: confirmar con la contraseña
+  "auth/wrong-password",
+  "auth/missing-password",
   // loginWithSteam (Cloud Function): Steam no validó la respuesta
   "functions/invalid-argument"
 ];

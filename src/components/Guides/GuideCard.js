@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { UserAvatar } from "../UserAvatar";
 import { useUserProfile } from "../../hooks";
-import { formatDates } from "../../utils";
+import { formatDates, getDisplayName } from "../../utils";
 import { GuideStatusBadge, GuideTypeBadge } from "./GuideBadges";
 
 // Imagen de la card: la portada (escrita) o la de la vista previa (externa)
@@ -14,8 +14,8 @@ const coverOf = (guide) =>
 function GuideCard({ guide, showStatus = false }) {
   const { t } = useTranslation("guides");
   // El autor se resuelve en vivo: la guía solo guarda authorId
-  const { userData: author } = useUserProfile(guide.authorId);
-  const username = author?.username || t("player");
+  const { userData: author, missing } = useUserProfile(guide.authorId);
+  const username = getDisplayName(author, t("player"), missing);
   const cover = coverOf(guide);
 
   return (

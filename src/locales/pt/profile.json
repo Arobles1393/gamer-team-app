@@ -140,5 +140,33 @@
     "maxSize": "A imagem deve ter no máximo {{mb}} MB",
     "avatarError": "Não foi possível enviar a foto de perfil.",
     "bannerError": "Não foi possível enviar a capa."
+  },
+  "danger": {
+    "title": "Zona de perigo",
+    "text": "Excluir sua conta apaga seu perfil e tudo o que você publicou. Não dá para desfazer.",
+    "delete": "Excluir minha conta",
+    "dialogTitle": "Excluir minha conta",
+    "irreversible": "Isso é irreversível: não há como recuperar a conta nem os dados.",
+    "whatIsDeleted": "Tudo isto será apagado:",
+    "items": {
+      "profile": "Seu perfil, suas preferências e seus guias",
+      "posts": "Suas partidas, com os comentários e os chats de partida",
+      "comments": "Seus comentários, seus \"Quero jogar\" e suas mensagens em partidas de outros",
+      "chats": "Seus chats 1:1 (também somem para a outra pessoa)",
+      "friends": "Suas amizades, solicitações, bloqueios e notificações",
+      "files": "As imagens e arquivos que você enviou"
+    },
+    "chatsNote": "As denúncias que você fez são mantidas como registro de moderação.",
+    "typeUsername": "Para confirmar, digite seu nickname: {{username}}",
+    "password": "Sua senha",
+    "reauth": {
+      "google": "Ao confirmar, a janela do Google vai abrir para verificar que é você.",
+      "steam": "Ao confirmar, a janela da Steam vai abrir para verificar que é você."
+    },
+    "confirm": "Excluir definitivamente",
+    "deleting": "Excluindo…",
+    "error": "Não foi possível excluir a conta. Tente novamente.",
+    "deletedTitle": "Conta excluída",
+    "deletedDetail": "Sua conta foi excluída. Obrigado por jogar com a gente!"
   }
 }

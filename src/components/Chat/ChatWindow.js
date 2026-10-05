@@ -5,7 +5,7 @@ import MessageComposer from "./MessageComposer";
 import { useMemo } from "react";
 import { TwitchLive } from "../Twitch";
 import { useBlockStatus, useChatWindow, useRequireVerified, useTwitchPresenceBatch, useUserProfile } from "../../hooks";
-import { getPresenceLabel, isOnline } from "../../utils";
+import { getDisplayName, getPresenceLabel, isOnline } from "../../utils";
 import { useCurrentUser } from "../../context";
 
 export default function ChatWindow({ chatId, onBack, onError }) {
@@ -18,7 +18,8 @@ export default function ChatWindow({ chatId, onBack, onError }) {
     user.uid
   );
 
-  const { userData: otherUser } = useUserProfile(otherUserId);
+  const { userData: otherUser, missing: otherMissing } = useUserProfile(otherUserId);
+  const otherName = getDisplayName(otherUser, t("list.user"), otherMissing);
   // Con un bloqueo (en cualquier dirección) no se puede escribir;
   // firestore.rules también lo impide
   const { blocked } = useBlockStatus(user, otherUserId);
@@ -51,7 +52,7 @@ export default function ChatWindow({ chatId, onBack, onError }) {
   };
 
   return (
-    <section className="chat-window" aria-label={t("window.label", { username: otherUser?.username || t("list.user") })}>
+    <section className="chat-window" aria-label={t("window.label", { username: otherName })}>
       <header className="chat-window__header">
         <button
           type="button"
@@ -65,7 +66,7 @@ export default function ChatWindow({ chatId, onBack, onError }) {
         <ChatAvatar user={otherUser} size="sm" />
 
         <div className="chat-window__who">
-          <h2 className="chat-window__name">{otherUser?.username || t("list.user")}</h2>
+          <h2 className="chat-window__name">{otherName}</h2>
           <span className={`chat-window__status${online ? " chat-window__status--online" : ""}`}>
             {getPresenceLabel(otherUser?.lastSeen)}
           </span>

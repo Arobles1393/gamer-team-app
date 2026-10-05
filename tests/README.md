@@ -29,7 +29,9 @@ RULES_SUITES=chats,friends npm run test:rules
 $env:RULES_SUITES="chats,friends"; npm run test:rules; Remove-Item Env:RULES_SUITES
 ```
 
-Suites disponibles: `users-privacy`, `public-profiles`, `friends`, `chats`, `blocks`, `counters`, `posts-delete`, `queries`, `text-lengths`, `guides`, `matching`.
+Suites disponibles: `users-privacy`, `public-profiles`, `friends`, `chats`, `blocks`, `counters`, `posts-delete`, `queries`, `text-lengths`, `guides`, `matching`, `email-verification`.
+
+**Cuentas de prueba y verificación de correo:** las reglas piden el correo verificado para crear contenido social (salvo Steam). `npm run qa:setup` crea las cuentas `qa_*` ya verificadas; para marcar otra cuenta: `admin.auth().updateUser(uid, { emailVerified: true })` con el Admin SDK.
 
 **Al cambiar `firestore.rules`:** agrega o ajusta la prueba de lo que cambió en la suite correspondiente (`tests/rules/<suite>.rules.cjs`). Una suite es una función que recibe `{ env, test, expect }`; `env` es el entorno de `@firebase/rules-unit-testing`.
 
@@ -37,7 +39,7 @@ El emulador usa los puertos 8181 (Firestore) y 4410 (hub), distintos de los de `
 
 ## Pruebas de functions (`npm run test:functions`)
 
-Comprueban el conteo por país del mapa de la comunidad (`aggregateActiveUsers`: enmascarado, filtro por juego, masa crítica) y la protección contra SSRF de `fetchLinkPreview` (la vista previa de las guías de link externo): IPs internas en IPv4 e IPv6, nombres internos como `metadata.google.internal` o `localhost`, IPs escritas en hexadecimal o decimal, puertos y credenciales en la URL, y la lectura de las etiquetas Open Graph. Ninguna se conecta a internet.
+Comprueban la reautenticación reciente que exige `deleteAccount` (menos de 5 minutos), el conteo por país del mapa de la comunidad (`aggregateActiveUsers`: enmascarado, filtro por juego, masa crítica) y la protección contra SSRF de `fetchLinkPreview` (la vista previa de las guías de link externo): IPs internas en IPv4 e IPv6, nombres internos como `metadata.google.internal` o `localhost`, IPs escritas en hexadecimal o decimal, puertos y credenciales en la URL, y la lectura de las etiquetas Open Graph. Ninguna se conecta a internet.
 
 ## Pruebas de interfaz (`npm run test:e2e`)
 
@@ -73,6 +75,7 @@ Abren la app en un navegador (Edge por defecto) e inician sesión con las cuenta
 |---|---|
 | `E2E_BROWSER` | Navegador: `msedge` (por defecto), `chrome`... |
 | `E2E_BASE_URL` | URL de la app (por defecto `http://localhost:3000`) |
+| `E2E_DELETE_ACCOUNT=1` | Incluye eliminar cuenta. Necesita el emulador de functions corriendo; crea cuentas temporales `qa_del_*` con datos cruzados, borra una desde la interfaz y comprueba que no quede rastro. Tarda unos 6 minutos: espera a que una sesión tenga más de 5 para probar que se exige reautenticación |
 | `E2E_COMMUNITY=1` | Incluye el mapa de la comunidad. Necesita el emulador de functions corriendo; crea documentos temporales `users/qa_map_*` (sin cuenta) para llegar a 20 activos y los borra al terminar. Tarda unos 3 minutos por la caché de 60 s de la función |
 | `E2E_GUIDES_EXTERNAL=1` | Incluye la guía de link externo y el intento de SSRF desde la interfaz. Necesita el emulador de functions corriendo (`firebase emulators:start --only functions`) |
 | `E2E_PUBLISH=1` | Incluye la prueba de publicar una partida (crea una partida real en cada corrida, por eso viene apagada) |

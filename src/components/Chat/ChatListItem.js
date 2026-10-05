@@ -1,11 +1,11 @@
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import ChatAvatar from "./ChatAvatar";
-import { formatDates } from "../../utils";
+import { formatDates, getDisplayName } from "../../utils";
 
 function ChatListItem({ chat, otherUser, currentUserId, active, unread, onSelect }) {
   const { t } = useTranslation("chat");
-  const username = otherUser?.username || t("list.user");
+  const username = getDisplayName(otherUser, t("list.user"));
 
   const preview = chat.lastMessage
     ? (chat.lastSenderId === currentUserId ? t("list.you", { message: chat.lastMessage }) : chat.lastMessage)

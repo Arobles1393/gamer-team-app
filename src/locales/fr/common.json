@@ -105,5 +105,6 @@
         "action": "Réessayer"
       }
     }
-  }
+  },
+  "deletedUser": "Utilisateur supprimé"
 }

@@ -56,10 +56,18 @@ function App() {
     });
   });
   // Avisos que llegan después de que su pantalla se desmontó (p. ej. si no
-  // salió el correo de verificación al registrarse)
-  useEffect(() => subscribeToAppNotices(({ severity, summaryKey, detailKey }) => {
-    toast.current?.show({ severity, summary: t(summaryKey), detail: t(detailKey), life: 6000 });
-  }), [t]);
+  // salió el correo de verificación al registrarse, o la cuenta eliminada).
+  // Solo cuando ya se dibujó el Toast: antes de authReady la app devuelve null
+  useEffect(() => {
+    if (!authReady) return undefined;
+    return subscribeToAppNotices(({ severity, summaryKey, detailKey }) => {
+      // Un instante después: en desarrollo, StrictMode vuelve a montar el
+      // Toast justo tras el primer montaje y se llevaría el aviso
+      setTimeout(() => {
+        toast.current?.show({ severity, summary: t(summaryKey), detail: t(detailKey), life: 6000 });
+      }, 0);
+    });
+  }, [t, authReady]);
 
   // UI Handlers
   const handleToggleNotifications = (e) => {

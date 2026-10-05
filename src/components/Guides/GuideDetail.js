@@ -6,7 +6,7 @@ import { EmptyState } from "../EmptyState";
 import { UserAvatar } from "../UserAvatar";
 import { useBlockedIds, useGuide, useUserProfile } from "../../hooks";
 import { useCurrentUser } from "../../context";
-import { formatDates, sanitizeGuideHtml } from "../../utils";
+import { formatDates, getDisplayName, sanitizeGuideHtml } from "../../utils";
 import { GuideStatusBadge, GuideTypeBadge } from "./GuideBadges";
 import LinkPreviewCard from "./LinkPreviewCard";
 import YoutubeEmbed from "./YoutubeEmbed";
@@ -36,7 +36,7 @@ export default function GuideDetail() {
   const { state } = useLocation();
   const user = useCurrentUser();
   const { guide, loading, error } = useGuide(id);
-  const { userData: author } = useUserProfile(guide?.authorId);
+  const { userData: author, missing: authorMissing } = useUserProfile(guide?.authorId);
   const { blockedIds, loading: loadingBlocks } = useBlockedIds(user);
 
   const safeHtml = useMemo(
@@ -64,7 +64,7 @@ export default function GuideDetail() {
     );
   }
 
-  const username = author?.username || t("player");
+  const username = getDisplayName(author, t("player"), authorMissing);
   const isAuthor = user?.uid === guide.authorId;
 
   return (

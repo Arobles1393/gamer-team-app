@@ -2,7 +2,7 @@ import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { UserAvatar } from "../UserAvatar";
 import { useUserProfile } from "../../hooks";
-import { formatDates } from "../../utils";
+import { formatDates, getDisplayName } from "../../utils";
 import { ReportButton } from "../Reports";
 
 function CommentItem({
@@ -13,8 +13,8 @@ function CommentItem({
   onOpenProfile
 }) {
   const { t } = useTranslation("posts");
-  const { userData: author } = useUserProfile(comment.userId);
-  const username = author?.username || t("comments.player");
+  const { userData: author, missing } = useUserProfile(comment.userId);
+  const username = getDisplayName(author, t("comments.player"), missing);
 
   const openProfile = () => onOpenProfile(comment.userId);
 

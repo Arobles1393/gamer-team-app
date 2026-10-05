@@ -140,5 +140,33 @@
     "maxSize": "The image must be {{mb}} MB or less",
     "avatarError": "Couldn't upload the profile picture.",
     "bannerError": "Couldn't upload the cover."
+  },
+  "danger": {
+    "title": "Danger zone",
+    "text": "Deleting your account removes your profile and everything you posted. It can't be undone.",
+    "delete": "Delete my account",
+    "dialogTitle": "Delete my account",
+    "irreversible": "This is irreversible: there's no way to recover the account or its data.",
+    "whatIsDeleted": "All of this will be deleted:",
+    "items": {
+      "profile": "Your profile, preferences and guides",
+      "posts": "Your matches, with their comments and match chats",
+      "comments": "Your comments, your \"I want to play\" and your messages in other people's matches",
+      "chats": "Your 1:1 chats (they disappear for the other person too)",
+      "friends": "Your friendships, requests, blocks and notifications",
+      "files": "The images and files you uploaded"
+    },
+    "chatsNote": "Reports you made are kept as a moderation record.",
+    "typeUsername": "To confirm, type your nickname: {{username}}",
+    "password": "Your password",
+    "reauth": {
+      "google": "When you confirm, the Google window will open to check it's you.",
+      "steam": "When you confirm, the Steam window will open to check it's you."
+    },
+    "confirm": "Delete permanently",
+    "deleting": "Deleting…",
+    "error": "Couldn't delete the account. Please try again.",
+    "deletedTitle": "Account deleted",
+    "deletedDetail": "Your account was deleted. Thanks for playing with us!"
   }
 }

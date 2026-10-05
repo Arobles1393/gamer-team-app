@@ -5,7 +5,7 @@ import { Button } from "primereact/button";
 import { UserAvatar } from "../UserAvatar";
 import { commentsService } from "../../services/posts";
 import { REPORT_REASONS } from "../../services/reports";
-import { formatDates } from "../../utils";
+import { formatDates, getDisplayName } from "../../utils";
 
 const TYPE_ICONS = {
   user: "pi-user",
@@ -36,7 +36,7 @@ function ReportTarget({ report, targetUser, onOpenProfile }) {
     return (
       <button type="button" className="admin-report__link" onClick={() => onOpenProfile(report.targetId)}>
         <i className="pi pi-external-link" aria-hidden="true" />
-        {t("admin.viewProfile", { username: targetUser?.username || t("admin.userFallback") })}
+        {t("admin.viewProfile", { username: getDisplayName(targetUser, t("admin.userFallback")) })}
       </button>
     );
   }
@@ -106,7 +106,7 @@ export default function AdminReportItem({ report, reporter, targetUser, onOpenPr
           className="admin-report__avatar"
         />
         <span>
-          {t("admin.reportedBy")} <strong>{reporter?.username || t("admin.userFallback")}</strong>
+          {t("admin.reportedBy")} <strong>{getDisplayName(reporter, t("admin.userFallback"))}</strong>
         </span>
       </div>
 

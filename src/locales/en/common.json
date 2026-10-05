@@ -105,5 +105,6 @@
         "action": "Retry"
       }
     }
-  }
+  },
+  "deletedUser": "Deleted user"
 }

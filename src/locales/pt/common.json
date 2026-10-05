@@ -105,5 +105,6 @@
         "action": "Tentar novamente"
       }
     }
-  }
+  },
+  "deletedUser": "Usuário excluído"
 }

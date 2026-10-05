@@ -140,5 +140,33 @@
     "maxSize": "La imagen debe pesar máximo {{mb}} MB",
     "avatarError": "No se pudo subir la foto de perfil.",
     "bannerError": "No se pudo subir la portada."
+  },
+  "danger": {
+    "title": "Zona de peligro",
+    "text": "Eliminar tu cuenta borra tu perfil y todo lo que publicaste. No se puede deshacer.",
+    "delete": "Eliminar mi cuenta",
+    "dialogTitle": "Eliminar mi cuenta",
+    "irreversible": "Esto es irreversible: no hay forma de recuperar la cuenta ni sus datos.",
+    "whatIsDeleted": "Se borrará todo esto:",
+    "items": {
+      "profile": "Tu perfil, tus preferencias y tus guías",
+      "posts": "Tus partidas, con sus comentarios y sus chats de partida",
+      "comments": "Tus comentarios, tus \"Quiero jugar\" y tus mensajes en partidas de otros",
+      "chats": "Tus chats 1:1 (también desaparecen para la otra persona)",
+      "friends": "Tus amistades, solicitudes, bloqueos y notificaciones",
+      "files": "Las imágenes y archivos que subiste"
+    },
+    "chatsNote": "Los reportes que hiciste se conservan como registro de moderación.",
+    "typeUsername": "Para confirmar, escribe tu nickname: {{username}}",
+    "password": "Tu contraseña",
+    "reauth": {
+      "google": "Al confirmar se abrirá la ventana de Google para verificar que eres tú.",
+      "steam": "Al confirmar se abrirá la ventana de Steam para verificar que eres tú."
+    },
+    "confirm": "Eliminar definitivamente",
+    "deleting": "Eliminando…",
+    "error": "No se pudo eliminar la cuenta. Intenta de nuevo.",
+    "deletedTitle": "Cuenta eliminada",
+    "deletedDetail": "Tu cuenta fue eliminada. ¡Gracias por haber jugado con nosotros!"
   }
 }

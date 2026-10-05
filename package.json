@@ -41,7 +41,7 @@
     "qa:setup": "node tests/e2e/setup.cjs",
     "qa:reset": "node tests/e2e/reset.cjs",
     "qa:cleanup": "node tests/e2e/cleanup.cjs",
-    "test:functions": "node tests/functions/link-preview.test.cjs && node tests/functions/community.test.cjs"
+    "test:functions": "node tests/functions/link-preview.test.cjs && node tests/functions/community.test.cjs && node tests/functions/account.test.cjs"
   },
   "eslintConfig": {
     "extends": [

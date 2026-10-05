@@ -105,5 +105,6 @@
         "action": "Reintentar"
       }
     }
-  }
+  },
+  "deletedUser": "Usuario eliminado"
 }

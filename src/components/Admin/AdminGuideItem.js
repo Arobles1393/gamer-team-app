@@ -4,7 +4,7 @@ import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
 import { UserAvatar } from "../UserAvatar";
 import { GuideTypeBadge, LinkPreviewCard, YoutubeEmbed } from "../Guides";
-import { formatDates, sanitizeGuideHtml } from "../../utils";
+import { formatDates, getDisplayName, sanitizeGuideHtml } from "../../utils";
 
 const NOTE_MAX = 500;
 
@@ -42,7 +42,7 @@ export default function AdminGuideItem({ guide, author, onReview }) {
       <div className="admin-report__reporter">
         <UserAvatar image={author?.avatar} username={author?.username} className="admin-report__avatar" />
         <span>
-          {t("admin.sentBy")} <strong>{author?.username || t("player")}</strong>
+          {t("admin.sentBy")} <strong>{getDisplayName(author, t("player"))}</strong>
         </span>
       </div>
 

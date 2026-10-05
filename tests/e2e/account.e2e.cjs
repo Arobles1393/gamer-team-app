@@ -273,7 +273,10 @@ const removeTmp = async () => {
     // Reenviar: aviso y cuenta regresiva
     await banner.getByRole("button", { name: "Reenviar correo" }).click();
     const resent = await toastText(page);
-    check("reenviar el correo avisa", /Correo enviado/.test(resent), resent.replace(/\s+/g, " "));
+    // Justo después del registro Firebase puede limitar el reenvío
+    // (auth/too-many-requests): también es una respuesta válida, con aviso
+    check("reenviar el correo avisa (enviado o 'demasiados intentos')",
+      /Correo enviado|Demasiados intentos/.test(resent), resent.replace(/\s+/g, " "));
     const resendLabel = (await banner.locator("button").first().innerText()).trim();
     check("y bloquea el botón con cuenta regresiva", /Reenviar en \d+ s/i.test(resendLabel), resendLabel);
 

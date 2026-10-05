@@ -17,6 +17,7 @@ const { logGameSearch } = require("./games/games.functions");
 const { getTwitchPresence } = require("./twitch/twitch.functions");
 const { fetchLinkPreview } = require("./guides/guides.functions");
 const { getCommunityStats } = require("./community/community.functions");
+const { deleteAccount } = require("./account/account.functions");
 
 exports.getSteamStats = getSteamStats;
 exports.getSteamPresence = getSteamPresence;
@@ -29,3 +30,4 @@ exports.logGameSearch = logGameSearch;
 exports.getTwitchPresence = getTwitchPresence;
 exports.fetchLinkPreview = fetchLinkPreview;
 exports.getCommunityStats = getCommunityStats;
+exports.deleteAccount = deleteAccount;

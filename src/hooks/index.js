@@ -78,3 +78,4 @@ export * from "./reports/usePendingReports";
 export * from "./matching/useMatchProfile";
 export * from "./matching/useCompatibleMatches";
 export * from "./community/useCommunityStats";
+export * from "./account/useDeleteAccount";

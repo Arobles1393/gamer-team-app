@@ -140,5 +140,33 @@
     "maxSize": "L'image ne doit pas dépasser {{mb}} Mo",
     "avatarError": "Impossible d'envoyer la photo de profil.",
     "bannerError": "Impossible d'envoyer la couverture."
+  },
+  "danger": {
+    "title": "Zone de danger",
+    "text": "Supprimer votre compte efface votre profil et tout ce que vous avez publié. C'est définitif.",
+    "delete": "Supprimer mon compte",
+    "dialogTitle": "Supprimer mon compte",
+    "irreversible": "C'est irréversible : impossible de récupérer le compte ou ses données.",
+    "whatIsDeleted": "Tout ceci sera supprimé :",
+    "items": {
+      "profile": "Votre profil, vos préférences et vos guides",
+      "posts": "Vos parties, avec leurs commentaires et leurs chats de partie",
+      "comments": "Vos commentaires, vos « Je veux jouer » et vos messages dans les parties des autres",
+      "chats": "Vos chats 1:1 (ils disparaissent aussi pour l'autre personne)",
+      "friends": "Vos amitiés, demandes, blocages et notifications",
+      "files": "Les images et fichiers que vous avez envoyés"
+    },
+    "chatsNote": "Vos signalements sont conservés comme registre de modération.",
+    "typeUsername": "Pour confirmer, saisissez votre pseudo : {{username}}",
+    "password": "Votre mot de passe",
+    "reauth": {
+      "google": "En confirmant, la fenêtre Google s'ouvrira pour vérifier que c'est bien vous.",
+      "steam": "En confirmant, la fenêtre Steam s'ouvrira pour vérifier que c'est bien vous."
+    },
+    "confirm": "Supprimer définitivement",
+    "deleting": "Suppression…",
+    "error": "Impossible de supprimer le compte. Réessayez.",
+    "deletedTitle": "Compte supprimé",
+    "deletedDetail": "Votre compte a été supprimé. Merci d'avoir joué avec nous !"
   }
 }

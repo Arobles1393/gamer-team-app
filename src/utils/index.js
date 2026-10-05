@@ -23,3 +23,4 @@ export { MAX_MEDIA_MB, MAX_MEDIA_BYTES, CHAT_FILE_ACCEPT, fitsMediaLimit, isAllo
 export { extractYoutubeId, youtubeEmbedUrl } from "./extractYoutubeId";
 export { sanitizeGuideHtml, guideHtmlToText, isSafeImageUrl, MAX_GUIDE_HTML } from "./guideHtml";
 export { computeCompatibility, COMPATIBILITY_WEIGHTS } from "./computeCompatibility";
+export { getDisplayName } from "./displayName";
