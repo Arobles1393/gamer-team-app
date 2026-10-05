@@ -56,7 +56,9 @@
     "loadMore": "Charger plus",
     "loadingMore": "Chargement…",
     "errorTitle": "Impossible de charger les parties",
-    "errorText": "Vérifiez votre connexion et réessayez."
+    "errorText": "Vérifiez votre connexion et réessayez.",
+    "regionTitle": "Parties de {{country}}",
+    "clearRegion": "Retirer le filtre {{country}}"
   },
   "card": {
     "playersNeeded_one": "{{count}} joueur recherché",

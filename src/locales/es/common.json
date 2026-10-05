@@ -40,7 +40,8 @@
     "adminReports": "Reportes",
     "adminGuides": "Guías por revisar",
     "withCount": "{{label}} ({{count}})",
-    "accountMenuPending": "Menú de cuenta ({{count}} pendientes de revisión)"
+    "accountMenuPending": "Menú de cuenta ({{count}} pendientes de revisión)",
+    "community": "Comunidad"
   },
   "presence": {
     "online": "En línea",

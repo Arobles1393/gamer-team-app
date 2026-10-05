@@ -1,0 +1,44 @@
+{
+  "eyebrow": "GamerMatch",
+  "title": "Community",
+  "activeNow_one": "{{count}} player active now",
+  "activeNow_other": "{{count}} players active now",
+  "activeNowApprox_one": "More than {{count}} player active now",
+  "activeNowApprox_other": "More than {{count}} players active now",
+  "privacy": "We only count the country each player chose on their profile, never their location, and we don't show who's online.",
+  "loading": "Loading community activity",
+  "filter": {
+    "label": "Filter by game",
+    "placeholder": "Search for a game…",
+    "all": "All games",
+    "remove": "Remove the {{game}} filter"
+  },
+  "view": {
+    "label": "View",
+    "list": "List",
+    "map": "Map"
+  },
+  "building": {
+    "title": "The community is growing",
+    "text": "Here you'll see where everyone plays once more players are online. Invite your friends!",
+    "textGame": "There aren't enough {{game}} players online yet to show the map. Try all games.",
+    "showAll": "See all games"
+  },
+  "error": {
+    "title": "Couldn't load community activity",
+    "text": "Check your connection and try again.",
+    "toast": "Couldn't refresh community activity."
+  },
+  "list": {
+    "label": "Countries with active players",
+    "players_one": "{{count}} active player",
+    "players_other": "{{count}} active players",
+    "masked_one": "Fewer than {{count}} active player",
+    "masked_other": "Fewer than {{count}} active players"
+  },
+  "panel": {
+    "label": "Selected country",
+    "close": "Close",
+    "viewPosts": "See matches from {{country}}"
+  }
+}

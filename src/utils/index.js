@@ -13,7 +13,7 @@ export { platformLabels } from "./platformLabels";
 export { getLastSeenMs, isOnline, getPresenceLabel } from "./presence";
 export { getSteamIdFromLinks } from "./steamLinks";
 export { getTwitchUsernameFromLinks } from "./twitchLinks";
-export { getCountryLabel, getCountryOptions } from "./countryNames";
+export { getCountryLabel, getCountryOptions, getCountryByCode, getCountryLabelByCode } from "./countryNames";
 export { filterPosts, EMPTY_TAG_FILTERS, hasTagFilters } from "./postFilters";
 export { POST_CATEGORIES, isPostCategory, getCategoryTitle, getCategoryEmptyText } from "./postCategories";
 export { collectFilteredPage } from "./collectFilteredPage";

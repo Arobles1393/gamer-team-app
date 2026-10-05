@@ -1,5 +1,5 @@
 // Menú del avatar: solo lo que no está ya en el rail
-// (Inicio, Buscar jugadores, Amigos, Chats, Noticias y Notificaciones van en el rail).
+// (Inicio, Buscar jugadores, Amigos, Chats, Guías, Noticias y Notificaciones van en el rail).
 // `t`: función de traducción del componente que arma el menú
 // `adminPending`: { reports, guides } por revisar; null si la cuenta no es admin
 const withCount = (t, label, count) => (count > 0 ? t("nav.withCount", { label, count }) : label);
@@ -29,6 +29,14 @@ export const createHeaderMenu = (
     icon: "pi pi-flag",
     command: () => {
       navigate("/myparties");
+    }
+  },
+  // Aquí y no en el rail, para no saturarlo
+  {
+    label: t("nav.community"),
+    icon: "pi pi-globe",
+    command: () => {
+      navigate("/comunidad");
     }
   },
   ...(adminPending

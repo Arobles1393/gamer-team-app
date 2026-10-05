@@ -40,7 +40,8 @@
     "adminReports": "Reports",
     "adminGuides": "Guides to review",
     "withCount": "{{label}} ({{count}})",
-    "accountMenuPending": "Account menu ({{count}} pending review)"
+    "accountMenuPending": "Account menu ({{count}} pending review)",
+    "community": "Community"
   },
   "presence": {
     "online": "Online",

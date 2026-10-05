@@ -56,7 +56,9 @@
     "loadMore": "Cargar más",
     "loadingMore": "Cargando…",
     "errorTitle": "No se pudieron cargar las partidas",
-    "errorText": "Revisa tu conexión e inténtalo de nuevo."
+    "errorText": "Revisa tu conexión e inténtalo de nuevo.",
+    "regionTitle": "Partidas de {{country}}",
+    "clearRegion": "Quitar el filtro de {{country}}"
   },
   "card": {
     "playersNeeded_one": "{{count}} jugador necesario",

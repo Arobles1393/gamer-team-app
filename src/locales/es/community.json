@@ -1,0 +1,44 @@
+{
+  "eyebrow": "GamerMatch",
+  "title": "Comunidad",
+  "activeNow_one": "{{count}} jugador activo ahora",
+  "activeNow_other": "{{count}} jugadores activos ahora",
+  "activeNowApprox_one": "Más de {{count}} jugador activo ahora",
+  "activeNowApprox_other": "Más de {{count}} jugadores activos ahora",
+  "privacy": "Solo contamos el país que cada jugador eligió en su perfil, nunca su ubicación, y no mostramos quién está conectado.",
+  "loading": "Cargando la actividad de la comunidad",
+  "filter": {
+    "label": "Filtrar por juego",
+    "placeholder": "Busca un juego…",
+    "all": "Todos los juegos",
+    "remove": "Quitar el filtro de {{game}}"
+  },
+  "view": {
+    "label": "Vista",
+    "list": "Lista",
+    "map": "Mapa"
+  },
+  "building": {
+    "title": "La comunidad está creciendo",
+    "text": "Aquí verás dónde juega todo el mundo cuando haya más jugadores conectados. ¡Invita a tus amigos!",
+    "textGame": "Todavía no hay suficientes jugadores de {{game}} conectados para mostrar el mapa. Prueba con todos los juegos.",
+    "showAll": "Ver todos los juegos"
+  },
+  "error": {
+    "title": "No se pudo cargar la actividad de la comunidad",
+    "text": "Revisa tu conexión e inténtalo de nuevo.",
+    "toast": "No se pudo actualizar la actividad de la comunidad."
+  },
+  "list": {
+    "label": "Países con jugadores activos",
+    "players_one": "{{count}} jugador activo",
+    "players_other": "{{count}} jugadores activos",
+    "masked_one": "Menos de {{count}} jugador activo",
+    "masked_other": "Menos de {{count}} jugadores activos"
+  },
+  "panel": {
+    "label": "País seleccionado",
+    "close": "Cerrar",
+    "viewPosts": "Ver partidas de {{country}}"
+  }
+}

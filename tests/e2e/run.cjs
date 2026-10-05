@@ -11,6 +11,8 @@
 //   E2E_BROWSER   canal del navegador (msedge por defecto; chrome, etc.)
 //   E2E_BASE_URL  URL de la app (http://localhost:3000 por defecto)
 //   E2E_PUBLISH=1 incluye la prueba de publicar (crea una partida real cada vez)
+//   E2E_COMMUNITY=1 incluye el mapa de la comunidad (necesita el emulador
+//                   de functions con getCommunityStats; tarda ~3 min)
 //   E2E_GUIDES_EXTERNAL=1 incluye la guía de link externo (necesita el
 //                         emulador de functions con fetchLinkPreview)
 const fs = require("fs");
@@ -55,6 +57,7 @@ const node = (file, args = []) =>
     ["welcome.e2e.cjs"],
     ["guides.e2e.cjs"],
     ["matching.e2e.cjs"],
+    ...(process.env.E2E_COMMUNITY === "1" ? [["community.e2e.cjs"]] : []),
     ["reset.cjs"]
   ];
 

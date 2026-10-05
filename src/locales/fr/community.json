@@ -1,0 +1,44 @@
+{
+  "eyebrow": "GamerMatch",
+  "title": "Communauté",
+  "activeNow_one": "{{count}} joueur actif en ce moment",
+  "activeNow_other": "{{count}} joueurs actifs en ce moment",
+  "activeNowApprox_one": "Plus de {{count}} joueur actif en ce moment",
+  "activeNowApprox_other": "Plus de {{count}} joueurs actifs en ce moment",
+  "privacy": "Nous comptons seulement le pays choisi par chaque joueur sur son profil, jamais sa position, et nous ne montrons pas qui est connecté.",
+  "loading": "Chargement de l'activité de la communauté",
+  "filter": {
+    "label": "Filtrer par jeu",
+    "placeholder": "Cherchez un jeu…",
+    "all": "Tous les jeux",
+    "remove": "Retirer le filtre {{game}}"
+  },
+  "view": {
+    "label": "Affichage",
+    "list": "Liste",
+    "map": "Carte"
+  },
+  "building": {
+    "title": "La communauté grandit",
+    "text": "Vous verrez ici où tout le monde joue quand il y aura plus de joueurs connectés. Invitez vos amis !",
+    "textGame": "Il n'y a pas encore assez de joueurs de {{game}} connectés pour afficher la carte. Essayez avec tous les jeux.",
+    "showAll": "Voir tous les jeux"
+  },
+  "error": {
+    "title": "Impossible de charger l'activité de la communauté",
+    "text": "Vérifiez votre connexion et réessayez.",
+    "toast": "Impossible d'actualiser l'activité de la communauté."
+  },
+  "list": {
+    "label": "Pays avec des joueurs actifs",
+    "players_one": "{{count}} joueur actif",
+    "players_other": "{{count}} joueurs actifs",
+    "masked_one": "Moins de {{count}} joueur actif",
+    "masked_other": "Moins de {{count}} joueurs actifs"
+  },
+  "panel": {
+    "label": "Pays sélectionné",
+    "close": "Fermer",
+    "viewPosts": "Voir les parties de {{country}}"
+  }
+}

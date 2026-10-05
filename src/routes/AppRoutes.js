@@ -9,6 +9,7 @@ import { GamingNews } from "../components/GamingNews";
 import { NotFound } from "../components/NotFound";
 import { AdminReports, AdminGuides } from "../components/Admin";
 import { GuidesPage, GuideCreate, GuideDetail } from "../components/Guides";
+import { CommunityPage } from "../components/Community";
 import RequireAuth from "./RequireAuth";
 import RequireAdmin from "./RequireAdmin";
 
@@ -112,6 +113,14 @@ const AppRoutes = ({
 			<Route
 				path="/news"
 				element={<GamingNews />}
+			/>
+			<Route
+				path="/comunidad"
+				element={
+					<RequireAuth>
+						<CommunityPage />
+					</RequireAuth>
+				}
 			/>
 			{/* Guías: las aprobadas se ven sin sesión; escribir pide sesión */}
 			<Route

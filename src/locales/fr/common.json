@@ -40,7 +40,8 @@
     "adminReports": "Signalements",
     "adminGuides": "Guides à valider",
     "withCount": "{{label}} ({{count}})",
-    "accountMenuPending": "Menu du compte ({{count}} en attente de validation)"
+    "accountMenuPending": "Menu du compte ({{count}} en attente de validation)",
+    "community": "Communauté"
   },
   "presence": {
     "online": "En ligne",

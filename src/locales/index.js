@@ -19,5 +19,6 @@ export const NAMESPACES = [
   "profile",
   "reports",
   "guides",
-  "matching"
+  "matching",
+  "community"
 ];

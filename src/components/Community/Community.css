@@ -1,0 +1,356 @@
+/* =====================================================
+   COMUNIDAD (/comunidad)
+   ===================================================== */
+.community__total {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gm-muted);
+}
+
+.community__live {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22C55E;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+}
+
+.community__privacy {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: 720px;
+  margin: 28px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--gm-subtle);
+}
+
+.community__privacy .pi {
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--gm-label);
+}
+
+/* Filtro por juego */
+.community-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.community-filter__label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gm-label);
+}
+
+.community-filter .community-filter__search {
+  flex: 1;
+  min-width: min(100%, 240px);
+  max-width: 380px;
+}
+
+.community-filter .community-filter__search .p-autocomplete-input {
+  width: 100%;
+}
+
+.community-filter .community-filter__chip.feed-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 16px;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+.community-filter__chip .pi {
+  font-size: 11px;
+}
+
+/* Vista lista/mapa: solo en pantallas chicas */
+.community-views {
+  display: none;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.community-views .feed-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 16px;
+  font-size: 13px;
+}
+
+.community-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.community-layout[aria-busy="true"] {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+/* ---------- Mapa ---------- */
+.community-map {
+  overflow: hidden;
+  border: 1px solid var(--gm-border-soft);
+  border-radius: var(--gm-radius-card);
+  background: radial-gradient(ellipse at 50% 40%, rgba(124, 58, 237, 0.12), transparent 70%), var(--gm-surface);
+  box-shadow: var(--gm-glow);
+}
+
+.community-map__loading {
+  aspect-ratio: 960 / 500;
+}
+
+.world-map {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.world-map__country {
+  fill: #1E1C35;
+  stroke: rgba(124, 58, 237, 0.3);
+  stroke-width: 0.5;
+  transition: fill 0.2s ease, filter 0.2s ease;
+}
+
+.world-map__country--active {
+  cursor: pointer;
+}
+
+.world-map__country--active:hover {
+  filter: brightness(1.45);
+}
+
+.world-map__country--selected {
+  stroke: #F43F5E;
+  stroke-width: 1.5;
+}
+
+.world-map__dot {
+  pointer-events: none;
+}
+
+.world-map__core {
+  fill: #E2E8F0;
+}
+
+.world-map__pulse {
+  fill: rgba(167, 139, 250, 0.55);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: world-map-pulse 2.4s ease-out infinite;
+}
+
+@keyframes world-map-pulse {
+  from { transform: scale(0.6); opacity: 0.9; }
+  to { transform: scale(2.6); opacity: 0; }
+}
+
+/* ---------- Lista de países ---------- */
+.community-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.country-rank {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.country-rank__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 14px;
+  border: 1px solid var(--gm-border-soft);
+  border-radius: 12px;
+  background: var(--gm-surface);
+  font-family: var(--gm-font-body);
+  text-align: left;
+  color: var(--gm-text);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.country-rank__row:hover {
+  border-color: var(--gm-border);
+  background: var(--gm-surface-strong);
+}
+
+.country-rank__row:focus-visible {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 2px;
+}
+
+.country-rank__row--selected,
+.country-rank__row--selected:hover {
+  border-color: #F43F5E;
+  background: var(--gm-accent-soft);
+}
+
+.country-rank__position {
+  width: 18px;
+  flex-shrink: 0;
+  font-family: var(--gm-font-display);
+  font-size: 13px;
+  text-align: center;
+  color: var(--gm-subtle);
+}
+
+.country-rank__flag {
+  flex-shrink: 0;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.country-rank__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.country-rank__count {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gm-label);
+}
+
+.country-rank__count--masked {
+  font-weight: 500;
+  color: var(--gm-subtle);
+}
+
+/* ---------- Panel del país ---------- */
+.country-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid rgba(244, 63, 94, 0.45);
+  border-radius: var(--gm-radius-card);
+  background: linear-gradient(180deg, var(--gm-surface-strong), rgba(22, 21, 46, 0.85));
+  box-shadow: var(--gm-glow);
+}
+
+.country-panel__info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.country-panel__flag {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.country-panel__name {
+  margin: 0;
+  font-family: var(--gm-font-display);
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--gm-text);
+}
+
+.country-panel__count {
+  margin: 4px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gm-label);
+}
+
+.country-panel__count--masked {
+  color: var(--gm-muted);
+}
+
+.country-panel__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.country-panel__actions .gm-btn--primary {
+  flex: 1;
+  justify-content: center;
+}
+
+/* ---------- Carga ---------- */
+.community-skeleton {
+  background: var(--gm-surface) !important;
+}
+
+.community-skeleton--map.p-skeleton {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 960 / 500;
+}
+
+.community-skeleton__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ---------- Pantallas chicas: la lista primero, el mapa con el toggle ---------- */
+@media (max-width: 1023px) {
+  .community-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  .community-views {
+    display: flex;
+  }
+
+  .community-layout--list .community-map {
+    display: none;
+  }
+
+  .country-rank__count {
+    max-width: 45%;
+    white-space: normal;
+    text-align: right;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-map__pulse {
+    animation: none;
+    opacity: 0.5;
+  }
+
+  .world-map__country,
+  .country-rank__row,
+  .community-layout[aria-busy="true"] {
+    transition: none;
+  }
+}

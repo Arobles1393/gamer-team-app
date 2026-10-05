@@ -714,3 +714,20 @@
     transform: none;
   }
 }
+
+/* /explorar?region=XX: país elegido en el mapa de la comunidad */
+.feed .explore-region.feed-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  height: 36px;
+  margin-top: 12px;
+  padding: 0 14px;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+.feed .explore-region .pi {
+  font-size: 11px;
+}

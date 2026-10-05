@@ -19,6 +19,8 @@ import {
   hasTagFilters,
   POST_CATEGORIES,
   buildExploreUrl,
+  getCountryByCode,
+  getCountryLabelByCode,
   getCategoryEmptyText,
   getCategoryTitle,
   isPostCategory,
@@ -42,6 +44,11 @@ export default function ExplorePage({ setEditingPost, setShowCreatePost }) {
   const rawPlatform = searchParams.get("platform");
   const platform = rawPlatform && platformLabels[rawPlatform] ? rawPlatform : null;
   const game = searchParams.get("game") || null;
+
+  // ?region=MX (desde el mapa de la comunidad): "Recientes" de ese país.
+  // posts.authorRegion guarda el nombre en español, como users.region
+  const regionCountry = category === "recent" ? getCountryByCode(searchParams.get("region")) : null;
+  const regionCode = regionCountry?.code ?? null;
 
   // Panel "Más filtros": ?mic=1|0&level=casual|competitive&lang=es|en|...
   const rawMic = searchParams.get("mic");
@@ -77,7 +84,17 @@ export default function ExplorePage({ setEditingPost, setShowCreatePost }) {
     loadMore,
     retry,
     removePost
-  } = usePaginatedPosts({ category, platform, game, tags, friendIds, region, blockedIds, ready });
+  } = usePaginatedPosts({
+    category,
+    platform,
+    game,
+    tags,
+    friendIds,
+    region,
+    authorRegion: regionCountry?.value ?? null,
+    blockedIds,
+    ready
+  });
 
   const showToast = useCallback((severity, summary, detail) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
@@ -112,6 +129,7 @@ export default function ExplorePage({ setEditingPost, setShowCreatePost }) {
     navigate(
       buildExploreUrl({
         category,
+        region: regionCode,
         platform,
         game,
         ...changes,
@@ -206,7 +224,23 @@ export default function ExplorePage({ setEditingPost, setShowCreatePost }) {
             {t("explore.back")}
           </button>
           <span className="feed-header__eyebrow">{t("explore.eyebrow")}</span>
-          <h1 className="feed-header__title">{getCategoryTitle(category, platform)}</h1>
+          <h1 className="feed-header__title">
+            {regionCountry
+              ? t("explore.regionTitle", { country: getCountryLabelByCode(regionCountry.code) })
+              : getCategoryTitle(category, platform)}
+          </h1>
+          {regionCountry && (
+            <button
+              type="button"
+              className="feed-chip feed-chip--active explore-region"
+              aria-label={t("explore.clearRegion", { country: getCountryLabelByCode(regionCountry.code) })}
+              onClick={() => updateFilters({ region: null })}
+            >
+              <span aria-hidden="true">{regionCountry.flag}</span>
+              {getCountryLabelByCode(regionCountry.code)}
+              <i className="pi pi-times" aria-hidden="true" />
+            </button>
+          )}
         </div>
       </header>
 

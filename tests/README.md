@@ -37,7 +37,7 @@ El emulador usa los puertos 8181 (Firestore) y 4410 (hub), distintos de los de `
 
 ## Pruebas de functions (`npm run test:functions`)
 
-Comprueban la protección contra SSRF de `fetchLinkPreview` (la vista previa de las guías de link externo): IPs internas en IPv4 e IPv6, nombres internos como `metadata.google.internal` o `localhost`, IPs escritas en hexadecimal o decimal, puertos y credenciales en la URL, y la lectura de las etiquetas Open Graph. Ninguna se conecta a internet.
+Comprueban el conteo por país del mapa de la comunidad (`aggregateActiveUsers`: enmascarado, filtro por juego, masa crítica) y la protección contra SSRF de `fetchLinkPreview` (la vista previa de las guías de link externo): IPs internas en IPv4 e IPv6, nombres internos como `metadata.google.internal` o `localhost`, IPs escritas en hexadecimal o decimal, puertos y credenciales en la URL, y la lectura de las etiquetas Open Graph. Ninguna se conecta a internet.
 
 ## Pruebas de interfaz (`npm run test:e2e`)
 
@@ -73,6 +73,7 @@ Abren la app en un navegador (Edge por defecto) e inician sesión con las cuenta
 |---|---|
 | `E2E_BROWSER` | Navegador: `msedge` (por defecto), `chrome`... |
 | `E2E_BASE_URL` | URL de la app (por defecto `http://localhost:3000`) |
+| `E2E_COMMUNITY=1` | Incluye el mapa de la comunidad. Necesita el emulador de functions corriendo; crea documentos temporales `users/qa_map_*` (sin cuenta) para llegar a 20 activos y los borra al terminar. Tarda unos 3 minutos por la caché de 60 s de la función |
 | `E2E_GUIDES_EXTERNAL=1` | Incluye la guía de link externo y el intento de SSRF desde la interfaz. Necesita el emulador de functions corriendo (`firebase emulators:start --only functions`) |
 | `E2E_PUBLISH=1` | Incluye la prueba de publicar una partida (crea una partida real en cada corrida, por eso viene apagada) |
 

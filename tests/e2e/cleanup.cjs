@@ -59,6 +59,12 @@ const byField = async (collection, field, op = "in") => {
   add(await byField("notifications", "senderId"));
   add(await byField("reports", "reporterId"));
   add(await byField("guides", "authorId"));
+  // Activos temporales del mapa de la comunidad (community.e2e), por si una
+  // corrida se cortó antes de borrarlos
+  add((await db.collection("users")
+    .where(admin.firestore.FieldPath.documentId(), ">=", "qa_map_")
+    .where(admin.firestore.FieldPath.documentId(), "<", "qa_map_")
+    .get()).docs);
   uids.forEach((uid) => {
     refs.set(`users/${uid}`, db.doc(`users/${uid}`));
     refs.set(`publicProfiles/${uid}`, db.doc(`publicProfiles/${uid}`));

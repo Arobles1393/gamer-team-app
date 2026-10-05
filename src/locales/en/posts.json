@@ -56,7 +56,9 @@
     "loadMore": "Load more",
     "loadingMore": "Loading…",
     "errorTitle": "Couldn't load the parties",
-    "errorText": "Check your connection and try again."
+    "errorText": "Check your connection and try again.",
+    "regionTitle": "Matches from {{country}}",
+    "clearRegion": "Remove the {{country}} filter"
   },
   "card": {
     "playersNeeded_one": "{{count}} player needed",
