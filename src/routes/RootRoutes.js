@@ -1,7 +1,7 @@
 import { Routes, Route, Outlet } from "react-router-dom";
 import App from "../App";
 import { AuthProvider } from "../context";
-import { LoginPage, SteamReturn } from "../components/Auth";
+import { LoginPage, PasswordReset, SteamReturn } from "../components/Auth";
 
 // Rutas de primer nivel: el retorno de Steam no necesita sesión; /login y la
 // app comparten el AuthProvider (sin rail en /login)
@@ -23,6 +23,11 @@ const RootRoutes = () => {
 				<Route
 					path="/login"
 					element={<LoginPage />}
+				/>
+				{/* Pública, mismo diseño que /login */}
+				<Route
+					path="/recuperar"
+					element={<PasswordReset />}
 				/>
 				<Route
 					path="*"

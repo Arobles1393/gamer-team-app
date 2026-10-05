@@ -51,6 +51,8 @@ export * from "./auth/useIsAdmin";
 export * from "./admin/useAdminPendingCounts";
 export * from "./auth/useAccountLanguage";
 export * from "./auth/useWelcomeNotice";
+export * from "./auth/useCooldown";
+export * from "./auth/usePasswordReset";
 
 // Juegos
 export * from "./games/useGameSearch";

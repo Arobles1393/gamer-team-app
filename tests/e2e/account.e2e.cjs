@@ -137,6 +137,57 @@ const removeTmp = async () => {
     check("Firebase Auth conserva el correo actual hasta confirmar", (await admin.auth().getUser(authUser.uid)).email === TMP.email);
     check("y users sigue sin correo", !("email" in (await db.doc(`users/${authUser.uid}`).get()).data()));
     await close("cambio de correo", page);
+
+    // ---------- 5. Recuperar contraseña ----------
+    console.log("\n=== recuperar contraseña");
+    page = await newPage();
+    await page.goto(`${BASE}/login`);
+    await page.locator("#email").fill(TMP.email);
+    await page.getByRole("button", { name: "¿Olvidaste tu contraseña?" }).click();
+    await page.waitForURL(/\/recuperar$/, { timeout: 10000 });
+    check("el enlace del login lleva a /recuperar sin sesión", true);
+    check("trae el correo que ya había escrito", (await page.locator("#email").inputValue()) === TMP.email);
+    check("explica que Google y Steam no tienen contraseña", /Google/.test(await page.locator(".auth__help").innerText()));
+
+    const sendAndRead = async (email) => {
+      await page.locator("#email").fill(email);
+      await page.locator("button[type=submit]").click();
+      await page.locator(".auth__notice").waitFor({ timeout: 15000 });
+      return (await page.locator(".auth__notice").innerText()).trim();
+    };
+    const existing = await sendAndRead(TMP.email);
+    const button = page.locator("button[type=submit]");
+    const label = (await button.innerText()).trim();
+    check("cuenta regresiva visible y botón bloqueado", /Enviar de nuevo en \d+ s/i.test(label) && await button.isDisabled(), label);
+    await page.waitForTimeout(2200);
+    const later = (await button.innerText()).trim();
+    check("la cuenta regresiva avanza", later !== label, `${label} -> ${later}`);
+    await page.screenshot({ path: `${SHOTS}/recuperar-enviado.png` });
+
+    // Otra página para no esperar los 60 s: correo que no existe
+    await page.reload();
+    const missing = await sendAndRead(`qa.noexiste.${STAMP}@example.com`);
+    check("mismo mensaje con un correo que no existe (no revela cuentas)", missing === existing && /Si existe una cuenta/.test(existing), existing);
+
+    await page.reload();
+    await page.locator("#email").fill("no-es-un-correo");
+    await page.locator("button[type=submit]").click();
+    const invalid = await toastText(page);
+    check("formato inválido: sí se avisa", /formato válido/.test(invalid), invalid.replace(/\s+/g, " "));
+    await close("recuperar contraseña", page);
+
+    // El enlace (el que llega por correo) permite fijar otra contraseña y entrar
+    const resetLink = await admin.auth().generatePasswordResetLink(TMP.email, { url: `${BASE}/login` });
+    page = await newPage();
+    await page.goto(resetLink);
+    const newPassword = `Qa-${STAMP}-nueva9`;
+    await page.locator('input[type="password"]').first().waitFor({ timeout: 20000 });
+    await page.locator('input[type="password"]').first().fill(newPassword);
+    await page.locator('button, input[type="submit"]').filter({ hasText: /save|guardar/i }).first().click();
+    await page.getByText(/changed|cambiado|actualizada/i).first().waitFor({ timeout: 20000 });
+    await login(page, { email: TMP.email, password: newPassword });
+    check("con el enlace se fija una contraseña nueva y se entra con ella", !page.url().includes("/login"));
+    await close("enlace de restablecimiento", page);
   } finally {
     await browser.close();
     await removeTmp();

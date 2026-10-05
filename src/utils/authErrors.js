@@ -10,6 +10,9 @@ const KNOWN_ERRORS = [
   "auth/weak-password",
   "auth/account-exists-with-different-credential",
   "auth/popup-blocked",
+  // Recuperar contraseña y verificación de correo
+  "auth/missing-email",
+  "auth/requires-recent-login",
   // loginWithSteam (Cloud Function): Steam no validó la respuesta
   "functions/invalid-argument"
 ];

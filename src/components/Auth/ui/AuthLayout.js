@@ -17,6 +17,7 @@ export default function AuthLayout({
   compact = false,
   onSubmit,
   onBack,
+  backLabel,
   children
 }) {
   const { t } = useTranslation("auth");
@@ -51,7 +52,7 @@ export default function AuthLayout({
         {onBack && (
           <button type="button" className="auth__back" onClick={onBack}>
             <i className="pi pi-arrow-left" aria-hidden="true" />
-            {t("keepExploring")}
+            {backLabel ?? t("keepExploring")}
           </button>
         )}
 

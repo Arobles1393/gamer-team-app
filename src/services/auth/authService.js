@@ -1,6 +1,7 @@
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signInWithCustomToken, verifyBeforeUpdateEmail, onAuthStateChanged } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signInWithCustomToken, verifyBeforeUpdateEmail, sendPasswordResetEmail, onAuthStateChanged } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
 import { auth, googleProvider, functions } from "../../firebase/config";
+import i18n from "../../i18n";
 import { profileService } from "../profile";
 import { requestSteamOpenIdParams } from "./steamPopup";
 
@@ -105,9 +106,24 @@ const hasPasswordSignIn = (user) =>
 const requestEmailChange = (user, newEmail) =>
   verifyBeforeUpdateEmail(user, newEmail);
 
+// Los correos que manda Firebase Auth (restablecer, verificar) salen en el
+// idioma de la interfaz
+const setEmailLanguage = () => {
+  auth.languageCode = i18n.resolvedLanguage || i18n.language || "es";
+};
+
+// Enlace para restablecer la contraseña; al terminar vuelve a /login.
+// Con la protección contra enumeración de correos, Firebase responde igual
+// exista o no la cuenta (y la interfaz también: ver usePasswordReset).
+const sendPasswordReset = (email) => {
+  setEmailLanguage();
+  return sendPasswordResetEmail(auth, email.trim(), { url: `${window.location.origin}/login` });
+};
+
 export const authService = {
   hasPasswordSignIn,
   requestEmailChange,
+  sendPasswordReset,
   subscribeToAuthState,
   login,
   register,
