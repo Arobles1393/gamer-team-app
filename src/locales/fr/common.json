@@ -109,5 +109,10 @@
       }
     }
   },
-  "deletedUser": "Utilisateur supprimé"
+  "deletedUser": "Utilisateur supprimé",
+  "steamJoin": {
+    "join": "Rejoindre sur Steam",
+    "playing": "Joue à {{game}}",
+    "help": "Steam va s'ouvrir sur votre ordinateur. Si rien ne se passe, vérifiez que Steam est lancé et que le jeu est installé. Le salon peut être complet ou privé."
+  }
 }

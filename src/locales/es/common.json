@@ -109,5 +109,10 @@
       }
     }
   },
-  "deletedUser": "Usuario eliminado"
+  "deletedUser": "Usuario eliminado",
+  "steamJoin": {
+    "join": "Unirme en Steam",
+    "playing": "Jugando {{game}}",
+    "help": "Se abrirá Steam en tu computadora. Si no pasa nada, comprueba que Steam esté abierto y que tengas el juego instalado. La sala puede estar llena o ser privada."
+  }
 }

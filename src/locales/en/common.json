@@ -109,5 +109,10 @@
       }
     }
   },
-  "deletedUser": "Deleted user"
+  "deletedUser": "Deleted user",
+  "steamJoin": {
+    "join": "Join on Steam",
+    "playing": "Playing {{game}}",
+    "help": "Steam will open on your computer. If nothing happens, make sure Steam is running and the game is installed. The lobby may be full or private."
+  }
 }

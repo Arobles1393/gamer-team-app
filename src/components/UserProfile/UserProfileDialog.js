@@ -10,6 +10,7 @@ import { useBlockStatus, useReportDialog, useUserProfile } from "../../hooks";
 import { blockService } from "../../services/blocks";
 import { friendService } from "../../services/friends";
 import { confirmDestructive, getDisplayName } from "../../utils";
+import { JoinSteam } from "../Steam";
 import { useCurrentUser } from "../../context";
 import "./UserProfile.css";
 
@@ -135,6 +136,14 @@ const UserProfileDialog = ({
               onBlock={handleBlock}
               onUnblock={handleUnblock}
               onReport={() => openReport("user", selectedUserId, t("dialog.reportLabel", { username }))}
+            />
+          }
+          aboveContent={
+            // Solo con amistad; la autorización real es la del servidor
+            <JoinSteam
+              targetUid={selectedUserId}
+              enabled={visible && friendStatus === "friends" && !blocked}
+              className="user-profile__steam-join"
             />
           }
         />

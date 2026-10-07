@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { UserAvatar } from "../UserAvatar";
 import { Button } from "primereact/button";
 import { ProfileSection } from "../ProfileSection";
+import { JoinSteam } from "../Steam";
 import { countries } from "../../data/countries";
 import { formatDates, getCountryLabel } from "../../utils";
 import { getLanguageLabel, getSkillLevelLabel } from "../../constants";
@@ -144,6 +145,14 @@ export default function PostInfoCard({
           </>
         )}
       </div>
+
+      {/* Sala de Steam del autor, solo para quien marcó "Quiero jugar" */}
+      <JoinSteam
+        targetUid={post.userId}
+        postId={post.id}
+        enabled={!isOwner && isInterested}
+        className="post-info__steam-join"
+      />
     </ProfileSection>
   );
 }

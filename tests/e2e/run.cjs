@@ -63,6 +63,7 @@ const node = (file, args = []) =>
     ["legal.e2e.cjs"],
     ["onboarding.e2e.cjs"],
     ["steam-join.e2e.cjs"],
+    ["steam-join-ui.e2e.cjs"],
     ...(process.env.E2E_COMMUNITY === "1" ? [["community.e2e.cjs"]] : []),
     ...(process.env.E2E_DELETE_ACCOUNT === "1" ? [["delete-account.e2e.cjs"]] : []),
     ["reset.cjs"]

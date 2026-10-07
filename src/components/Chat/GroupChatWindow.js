@@ -12,6 +12,7 @@ import {
   useUserProfiles
 } from "../../hooks";
 import { excludeBlockedAuthors } from "../../utils";
+import { JoinSteam } from "../Steam";
 import { useCurrentUser } from "../../context";
 
 const MAX_AVATARS = 4;
@@ -103,6 +104,14 @@ export default function GroupChatWindow({ postId, onBack, onError }) {
           </span>
         </div>
       </header>
+
+      {/* Sala del autor: solo para quien participa por su "Quiero jugar" */}
+      <JoinSteam
+        targetUid={post?.userId}
+        postId={postId}
+        enabled={Boolean(post?.userId) && post.userId !== user.uid && hasAccess}
+        className="chat-window__steam-join"
+      />
 
       {hasAccess || loading ? (
         <>

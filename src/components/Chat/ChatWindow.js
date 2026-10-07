@@ -4,7 +4,8 @@ import MessageList from "./MessageList";
 import MessageComposer from "./MessageComposer";
 import { useMemo } from "react";
 import { TwitchLive } from "../Twitch";
-import { useBlockStatus, useChatWindow, useRequireVerified, useTwitchPresenceBatch, useUserProfile } from "../../hooks";
+import { useBlockStatus, useChatWindow, useFriendStatus, useRequireVerified, useTwitchPresenceBatch, useUserProfile } from "../../hooks";
+import { JoinSteam } from "../Steam";
 import { getDisplayName, getPresenceLabel, isOnline } from "../../utils";
 import { useCurrentUser } from "../../context";
 
@@ -23,6 +24,7 @@ export default function ChatWindow({ chatId, onBack, onError }) {
   // Con un bloqueo (en cualquier dirección) no se puede escribir;
   // firestore.rules también lo impide
   const { blocked } = useBlockStatus(user, otherUserId);
+  const { friendStatus } = useFriendStatus(user, otherUserId);
 
   const online = isOnline(otherUser?.lastSeen);
 
@@ -73,6 +75,13 @@ export default function ChatWindow({ chatId, onBack, onError }) {
           <TwitchLive live={twitchLive} className="chat-window__twitch" />
         </div>
       </header>
+
+      {/* Solo con amistad (y sin bloqueo); la autorización real es la del servidor */}
+      <JoinSteam
+        targetUid={otherUserId}
+        enabled={friendStatus === "friends" && !blocked}
+        className="chat-window__steam-join"
+      />
 
       <MessageList
         messages={messages}

@@ -378,3 +378,89 @@
     transform: none;
   }
 }
+
+/* =====================================================
+   UNIRME EN STEAM (azul de Steam sobre el fondo de Steam)
+   ===================================================== */
+.steam-join {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 340px;
+}
+
+.steam-join__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  border: 1px solid rgba(102, 192, 244, 0.55);
+  border-radius: var(--gm-radius-control);
+  background: #171A21;
+  color: #66C0F4;
+  text-decoration: none;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.steam-join__btn:hover {
+  border-color: #66C0F4;
+  background: #1B2838;
+}
+
+.steam-join__btn:focus-visible {
+  outline: 2px solid #66C0F4;
+  outline-offset: 2px;
+}
+
+.steam-join__icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.steam-join__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.steam-join__label {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.steam-join__game {
+  overflow: hidden;
+  font-size: 12px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #C7D5E0;
+}
+
+.steam-join__help {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--gm-subtle);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .steam-join__btn {
+    transition: none;
+  }
+}
+
+
+/* "Unirme en Steam" dentro de chats, partida y perfil */
+.chat-window__steam-join {
+  padding: 10px 16px 0;
+}
+
+.post-info__steam-join {
+  margin-top: 16px;
+}
+
+.user-profile__steam-join {
+  margin: 0 28px 20px;
+}

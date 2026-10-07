@@ -41,7 +41,9 @@ El emulador usa los puertos 8181 (Firestore) y 4410 (hub), distintos de los de `
 
 ## Pruebas de functions (`npm run test:functions`)
 
-Comprueban la reautenticación reciente que exige `deleteAccount` (menos de 5 minutos), el conteo por país del mapa de la comunidad (`aggregateActiveUsers`: enmascarado, filtro por juego, masa crítica) y la protección contra SSRF de `fetchLinkPreview` (la vista previa de las guías de link externo): IPs internas en IPv4 e IPv6, nombres internos como `metadata.google.internal` o `localhost`, IPs escritas en hexadecimal o decimal, puertos y credenciales en la URL, y la lectura de las etiquetas Open Graph. Ninguna se conecta a internet.
+Comprueban "Unirme en Steam" (`isEligible`, `buildJoinUrl`, `sanitizeGameName`, y que ninguna otra función use `lobbysteamid`, `gameserverip` ni `steam://connect`), la reautenticación reciente que exige `deleteAccount` (menos de 5 minutos), el conteo por país del mapa de la comunidad (`aggregateActiveUsers`: enmascarado, filtro por juego, masa crítica) y la protección contra SSRF de `fetchLinkPreview` (la vista previa de las guías de link externo): IPs internas en IPv4 e IPv6, nombres internos como `metadata.google.internal` o `localhost`, IPs escritas en hexadecimal o decimal, puertos y credenciales en la URL, y la lectura de las etiquetas Open Graph. Ninguna se conecta a internet.
+
+`npm run test:functions:emulator` prueba la autorización completa de `getJoinInfo` (amistad, interés, bloqueos, permiso, sala) contra el emulador de Firestore, con Steam simulado; también corre en el GitHub Action. La llamada real a Steam (una sala de verdad) se prueba a mano.
 
 ## Pruebas de interfaz (`npm run test:e2e`)
 
