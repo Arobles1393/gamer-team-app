@@ -326,8 +326,17 @@ const getSteamPresence = async ({ steamIds } = {}) => {
   return { presence };
 };
 
+// PRIVACIDAD: ninguna función de este archivo lee ni devuelve datos de
+// salas (lobbysteamid) ni direcciones de servidor (gameserverip). Solo
+// steamJoin/getJoinInfo consulta la sala, y solo para quien pasó todas sus
+// comprobaciones (lo vigila tests/functions/steam-join.test.cjs).
 module.exports = {
   getSteamStats,
   getSteamPresence,
+  // Para steamJoin: mismo cliente y misma resolución de vanity URL
+  steamApi,
+  resolveVanity,
+  STEAM_ID64_REGEX,
+  VANITY_REGEX,
   ValidationError
 };

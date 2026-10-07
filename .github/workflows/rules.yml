@@ -1,6 +1,7 @@
 # Pruebas que no tocan producción ni usan secretos:
 # - firestore.rules en el emulador (npm run test:rules, proyecto demo-)
-# - protección SSRF de fetchLinkPreview (npm run test:functions, sin internet)
+# - protección SSRF de fetchLinkPreview y demás funciones puras (npm run test:functions, sin internet)
+# - getJoinInfo contra el emulador de Firestore (npm run test:functions:emulator)
 name: Reglas de Firestore
 
 on:
@@ -45,3 +46,5 @@ jobs:
       - run: npm run test:rules
 
       - run: npm run test:functions
+
+      - run: npm run test:functions:emulator
