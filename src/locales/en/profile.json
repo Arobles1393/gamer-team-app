@@ -168,5 +168,17 @@
     "error": "Couldn't delete the account. Please try again.",
     "deletedTitle": "Account deleted",
     "deletedDetail": "Your account was deleted. Thanks for playing with us!"
+  },
+  "privacy": {
+    "title": "Privacy",
+    "steamJoin": "Let my friends and people interested in my matches join my Steam game",
+    "needsSteam": "Link your Steam profile in your social links to turn this on.",
+    "help": {
+      "shared": "It shares that you're in a Steam lobby that can be joined, and the link to join it.",
+      "who": "Only your GamerMatch friends and people who tapped \"I want to play\" on one of your matches can use it.",
+      "noIp": "No IP address is ever shared.",
+      "turnOff": "You can turn it off anytime; the change can take up to a minute to show."
+    },
+    "saveError": "Couldn't save the change. Please try again."
   }
 }

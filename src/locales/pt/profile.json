@@ -168,5 +168,17 @@
     "error": "Não foi possível excluir a conta. Tente novamente.",
     "deletedTitle": "Conta excluída",
     "deletedDetail": "Sua conta foi excluída. Obrigado por jogar com a gente!"
+  },
+  "privacy": {
+    "title": "Privacidade",
+    "steamJoin": "Permitir que meus amigos e quem se interessar pelas minhas partidas entrem na minha partida da Steam",
+    "needsSteam": "Vincule seu perfil da Steam nas suas redes para ativar.",
+    "help": {
+      "shared": "É compartilhado que você está em uma sala da Steam em que dá para entrar, e o link para entrar.",
+      "who": "Só seus amigos do GamerMatch e quem marcou \"Quero jogar\" em uma das suas partidas podem usar.",
+      "noIp": "Nenhum endereço IP é compartilhado.",
+      "turnOff": "Você pode desativar quando quiser; a mudança pode levar até um minuto para aparecer."
+    },
+    "saveError": "Não foi possível salvar a alteração. Tente novamente."
   }
 }

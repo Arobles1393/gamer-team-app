@@ -168,5 +168,17 @@
     "error": "No se pudo eliminar la cuenta. Intenta de nuevo.",
     "deletedTitle": "Cuenta eliminada",
     "deletedDetail": "Tu cuenta fue eliminada. ¡Gracias por haber jugado con nosotros!"
+  },
+  "privacy": {
+    "title": "Privacidad",
+    "steamJoin": "Permitir que mis amigos y quienes se interesen en mis partidas se unan a mi partida de Steam",
+    "needsSteam": "Vincula tu perfil de Steam en tus redes para activarlo.",
+    "help": {
+      "shared": "Se comparte que estás en una sala de Steam a la que se puede unir y el enlace para entrar.",
+      "who": "Solo pueden usarlo tus amigos de GamerMatch y quienes marcaron «Quiero jugar» en una de tus partidas.",
+      "noIp": "Nunca se comparte ninguna dirección IP.",
+      "turnOff": "Puedes apagarlo cuando quieras; el cambio puede tardar hasta un minuto en verse."
+    },
+    "saveError": "No se pudo guardar el cambio. Intenta de nuevo."
   }
 }

@@ -42,4 +42,16 @@ module.exports = async ({ env, test }) => {
     assertFails(setDoc(doc(unverified, "users", ME, "private", "otro"), { onboarding })));
 
   await test("No se pueden borrar", () => assertFails(deleteDoc(prefs(unverified))));
+
+  // ---------- privacy.allowSteamJoin ("Unirme en Steam") ----------
+  await test("Sin verificar el correo: activo y desactivo Unirme en Steam", async () => {
+    await assertSucceeds(setDoc(prefs(unverified), { privacy: { allowSteamJoin: true } }, { merge: true }));
+    await assertSucceeds(setDoc(prefs(unverified), { privacy: { allowSteamJoin: false } }, { merge: true }));
+  });
+  await test("allowSteamJoin solo booleano", () =>
+    assertFails(setDoc(prefs(unverified), { privacy: { allowSteamJoin: "sí" } }, { merge: true })));
+  await test("privacy no acepta otros campos", () =>
+    assertFails(setDoc(prefs(unverified), { privacy: { allowSteamJoin: true, shareIp: true } }, { merge: true })));
+  await test("Otro usuario no puede activarlo por mí", () =>
+    assertFails(setDoc(prefs(other, ME), { privacy: { allowSteamJoin: true } }, { merge: true })));
 };

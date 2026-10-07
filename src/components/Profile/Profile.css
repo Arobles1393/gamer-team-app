@@ -304,3 +304,98 @@
 .profile-page .profile-page__legal {
   margin-top: 20px;
 }
+
+/* =====================================================
+   PRIVACIDAD ("Unirme en Steam")
+   ===================================================== */
+.profile-privacy__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.profile-privacy__label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--gm-text);
+  cursor: pointer;
+}
+
+.profile-privacy__notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(102, 192, 244, 0.35);
+  border-radius: 10px;
+  background: rgba(102, 192, 244, 0.08);
+  font-size: 13px;
+  color: #66C0F4;
+}
+
+.profile-privacy__notice .pi {
+  margin-top: 2px;
+}
+
+.profile-privacy__help {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 14px 0 0;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--gm-muted);
+}
+
+/* Interruptor: riel visible apagado, azul de Steam encendido */
+.profile-privacy .p-inputswitch {
+  flex-shrink: 0;
+  width: 48px;
+  height: 26px;
+}
+
+.profile-privacy .p-inputswitch .p-inputswitch-slider {
+  border: 1px solid var(--gm-border);
+  border-radius: var(--gm-radius-pill);
+  background: var(--gm-surface-strong);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.profile-privacy .p-inputswitch .p-inputswitch-slider::before {
+  width: 18px;
+  height: 18px;
+  margin-top: -9px;
+  left: 3px;
+  border-radius: 50%;
+  background: var(--gm-muted);
+}
+
+.profile-privacy .p-inputswitch.p-highlight .p-inputswitch-slider {
+  border-color: #66C0F4;
+  background: rgba(102, 192, 244, 0.35);
+}
+
+.profile-privacy .p-inputswitch.p-highlight .p-inputswitch-slider::before {
+  background: #66C0F4;
+  transform: translateX(22px);
+}
+
+.profile-privacy .p-inputswitch.p-focus .p-inputswitch-slider {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 2px;
+}
+
+.profile-privacy .p-inputswitch.p-disabled {
+  opacity: 0.45;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-privacy .p-inputswitch .p-inputswitch-slider,
+  .profile-privacy .p-inputswitch .p-inputswitch-slider::before {
+    transition: none;
+  }
+}

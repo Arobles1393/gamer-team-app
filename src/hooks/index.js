@@ -81,3 +81,4 @@ export * from "./community/useCommunityStats";
 export * from "./account/useDeleteAccount";
 export * from "./legal/useLegalDocument";
 export * from "./onboarding/useOnboarding";
+export * from "./privacy/usePrivacySettings";

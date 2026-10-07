@@ -168,5 +168,17 @@
     "error": "Impossible de supprimer le compte. Réessayez.",
     "deletedTitle": "Compte supprimé",
     "deletedDetail": "Votre compte a été supprimé. Merci d'avoir joué avec nous !"
+  },
+  "privacy": {
+    "title": "Confidentialité",
+    "steamJoin": "Permettre à mes amis et aux personnes intéressées par mes parties de rejoindre ma partie Steam",
+    "needsSteam": "Liez votre profil Steam dans vos réseaux pour l'activer.",
+    "help": {
+      "shared": "Cela indique que vous êtes dans un salon Steam ouvert et partage le lien pour le rejoindre.",
+      "who": "Seuls vos amis GamerMatch et les personnes ayant touché « Je veux jouer » sur l'une de vos parties peuvent l'utiliser.",
+      "noIp": "Aucune adresse IP n'est jamais partagée.",
+      "turnOff": "Vous pouvez le désactiver à tout moment ; le changement peut prendre jusqu'à une minute."
+    },
+    "saveError": "Impossible d'enregistrer le changement. Réessayez."
   }
 }

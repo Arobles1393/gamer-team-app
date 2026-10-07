@@ -69,9 +69,13 @@ service cloud.firestore {
     // deleteAccount la borra con recursiveDelete sobre users/{uid}.
     match /users/{userId}/private/{docId} {
       allow read: if isOwner(userId);
+      // privacy.allowSteamJoin: "Unirme en Steam" (ausente = false)
       allow create, update: if isOwner(userId)
                             && docId == "preferences"
-                            && request.resource.data.keys().hasOnly(["onboarding", "legalConsent"]);
+                            && request.resource.data.keys().hasOnly(["onboarding", "legalConsent", "privacy"])
+                            && (!("privacy" in request.resource.data)
+                                || (request.resource.data.privacy.keys().hasOnly(["allowSteamJoin"])
+                                    && request.resource.data.privacy.allowSteamJoin is bool));
       allow delete: if false;
     }
 
