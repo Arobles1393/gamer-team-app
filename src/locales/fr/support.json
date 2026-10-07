@@ -1,0 +1,10 @@
+{
+  "button": "Soutenir le projet",
+  "menu": "Soutenir le projet",
+  "newTab": "(s'ouvre dans un nouvel onglet)",
+  "card": {
+    "title": "Soutenir le projet",
+    "text": "GamerMatch est un projet indépendant. Si vous l'appréciez, vous pouvez soutenir son développement de façon volontaire. Cela ne débloque rien : toutes les fonctionnalités sont les mêmes pour tout le monde.",
+    "payment": "Le paiement s'effectue sur Ko-fi ; GamerMatch ne reçoit ni ne conserve vos données de paiement."
+  }
+}

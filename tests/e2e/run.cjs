@@ -65,6 +65,9 @@ const node = (file, args = []) =>
     ["steam-join.e2e.cjs"],
     ["steam-join-ui.e2e.cjs"],
     ["profile-crop.e2e.cjs"],
+    // Sin E2E_SUPPORT=1 comprueba que el botón no exista; con él, que el
+    // servidor tenga REACT_APP_SUPPORT_URL válida
+    ["support.e2e.cjs"],
     ...(process.env.E2E_COMMUNITY === "1" ? [["community.e2e.cjs"]] : []),
     ...(process.env.E2E_DELETE_ACCOUNT === "1" ? [["delete-account.e2e.cjs"]] : []),
     ["reset.cjs"]

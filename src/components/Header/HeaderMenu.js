@@ -2,6 +2,9 @@
 // (Inicio, Buscar jugadores, Amigos, Chats, Guías, Noticias y Notificaciones van en el rail).
 // `t`: función de traducción del componente que arma el menú
 // `adminPending`: { reports, guides } por revisar; null si la cuenta no es admin
+// "Apoyar el proyecto" solo aparece si REACT_APP_SUPPORT_URL es válida
+import { getSupportUrl } from "../../utils/supportUrl";
+
 const withCount = (t, label, count) => (count > 0 ? t("nav.withCount", { label, count }) : label);
 
 export const createHeaderMenu = (
@@ -71,6 +74,14 @@ export const createHeaderMenu = (
         label: t("nav.guide"),
         icon: "pi pi-question-circle",
         command: onOpenGuide
+      }]
+    : []),
+  ...(getSupportUrl()
+    ? [{
+        label: t("support:menu"),
+        icon: "pi pi-heart",
+        // Pestaña nueva sin acceso a esta ventana ni Referer
+        command: () => window.open(getSupportUrl(), "_blank", "noopener,noreferrer")
       }]
     : []),
   {

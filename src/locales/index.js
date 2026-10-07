@@ -22,5 +22,6 @@ export const NAMESPACES = [
   "matching",
   "community",
   "legal",
-  "onboarding"
+  "onboarding",
+  "support"
 ];

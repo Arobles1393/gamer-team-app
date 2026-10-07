@@ -16,6 +16,7 @@ import DangerZone from "./DangerZone";
 import { IMAGE_ACCEPT } from "../../utils/cropImage";
 import GuideSection from "./GuideSection";
 import PrivacySection from "./PrivacySection";
+import SupportSection from "./SupportSection";
 import { LegalLinks } from "../Legal";
 import { MyGuides } from "../Guides";
 import { MatchPreferences, MATCH_PREFERENCES_ID } from "../Matching";
@@ -247,6 +248,8 @@ export default function Profile() {
           <BlockedUsers user={user} onError={showError} />
         </div>
       </div>
+
+      <SupportSection />
 
       <DangerZone user={user} username={userData.username} onError={showError} />
 

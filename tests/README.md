@@ -47,7 +47,7 @@ Comprueban "Unirme en Steam" (`isEligible`, `buildJoinUrl`, `sanitizeGameName`, 
 
 ## Pruebas unitarias del cliente (`npm run test:unit`)
 
-Jest (el de Create React App) sobre funciones puras de `src`, por ejemplo la validación de imágenes de `src/utils/cropImage.js`. El recorte en sí usa canvas, que no existe en jsdom: lo prueba `tests/e2e/profile-crop.e2e.cjs`. También corre en el GitHub Action.
+Jest (el de Create React App) sobre funciones puras de `src`, por ejemplo la validación de imágenes de `src/utils/cropImage.js` y la lista cerrada de `src/utils/supportUrl.js` (solo `https://ko-fi.com/...`). El recorte en sí usa canvas, que no existe en jsdom: lo prueba `tests/e2e/profile-crop.e2e.cjs`. También corre en el GitHub Action.
 
 ## Pruebas de interfaz (`npm run test:e2e`)
 
