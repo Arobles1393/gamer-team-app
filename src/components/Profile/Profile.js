@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "primereact/button";
 import { Skeleton } from "primereact/skeleton";
@@ -13,6 +13,7 @@ import ProfileSaveBar from "./ProfileSaveBar";
 import BlockedUsers from "./BlockedUsers";
 import LanguageSection from "./LanguageSection";
 import DangerZone from "./DangerZone";
+import { IMAGE_ACCEPT } from "../../utils/cropImage";
 import GuideSection from "./GuideSection";
 import PrivacySection from "./PrivacySection";
 import { LegalLinks } from "../Legal";
@@ -24,6 +25,8 @@ import { countries } from "../../data/countries";
 import { getCountryOptions } from "../../utils";
 import { useCurrentUser, useCurrentUserData } from "../../context";
 import "./Profile.css";
+
+const ImageCropDialog = lazy(() => import("./ImageCropDialog"));
 
 function ProfileSkeleton() {
   const { t } = useTranslation("profile");
@@ -110,11 +113,18 @@ export default function Profile() {
     [i18n.resolvedLanguage]
   );
 
-  const { preview, bannerPreview, uploading, handleImageChange } = useProfileImages(
+  const { preview, bannerPreview, uploading, handleImageChange, cropRequest, confirmCrop, cancelCrop } = useProfileImages(
     user,
     showError,
     showSuccess
   );
+
+  // El recorte (react-easy-crop) se descarga la primera vez que se elige una
+  // imagen y queda montado para la animación de cierre
+  const [cropUsed, setCropUsed] = useState(false);
+  useEffect(() => {
+    if (cropRequest) setCropUsed(true);
+  }, [cropRequest]);
 
   const handleAddGame = (game) => {
     addGame(game);
@@ -136,14 +146,14 @@ export default function Profile() {
     <div className={`profile-page${isEditing ? " profile-page--editing" : ""}`}>
       <input
         type="file"
-        accept="image/*"
+        accept={IMAGE_ACCEPT}
         ref={avatarInputRef}
         hidden
         onChange={(e) => handleImageChange(e, "avatar")}
       />
       <input
         type="file"
-        accept="image/*"
+        accept={IMAGE_ACCEPT}
         ref={bannerInputRef}
         hidden
         onChange={(e) => handleImageChange(e, "banner")}
@@ -249,6 +259,19 @@ export default function Profile() {
           onCancel={handleCancelEdit}
           onSave={handleSave}
         />
+      )}
+
+      {/* Recorte antes de subir avatar o portada */}
+      {cropUsed && (
+        <Suspense fallback={null}>
+          <ImageCropDialog
+            visible={Boolean(cropRequest)}
+            file={cropRequest?.file}
+            type={cropRequest?.type}
+            onCancel={cancelCrop}
+            onConfirm={confirmCrop}
+          />
+        </Suspense>
       )}
 
       <Toast ref={toast} />

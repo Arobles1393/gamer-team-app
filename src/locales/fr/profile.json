@@ -136,10 +136,25 @@
   "images": {
     "avatarUpdated": "Photo de profil mise à jour",
     "bannerUpdated": "Couverture mise à jour",
-    "onlyImages": "Seules les images sont autorisées",
+    "onlyImages": "Seules les images PNG, JPG, WebP ou GIF sont autorisées",
     "maxSize": "L'image ne doit pas dépasser {{mb}} Mo",
     "avatarError": "Impossible d'envoyer la photo de profil.",
-    "bannerError": "Impossible d'envoyer la couverture."
+    "bannerError": "Impossible d'envoyer la couverture.",
+    "tooManyPixels": "L'image est trop grande (plus de {{mp}} mégapixels). Utilisez une image plus petite.",
+    "unreadable": "Impossible de lire l'image. Essayez un autre fichier."
+  },
+  "crop": {
+    "titleAvatar": "Ajustez votre photo de profil",
+    "titleBanner": "Ajustez votre bannière",
+    "help": "Faites glisser pour déplacer et utilisez le curseur pour zoomer. Vous pouvez aussi déplacer l'image avec les flèches du clavier.",
+    "gifNotice": "Les GIF seront convertis en image fixe",
+    "areaLabel": "Zone de recadrage. Utilisez les flèches pour déplacer l'image.",
+    "zoom": "Zoomer ou dézoomer",
+    "zoomIn": "Zoomer",
+    "zoomOut": "Dézoomer",
+    "apply": "Appliquer",
+    "applying": "Traitement...",
+    "error": "Impossible de recadrer l'image. Veuillez réessayer."
   },
   "danger": {
     "title": "Zone de danger",

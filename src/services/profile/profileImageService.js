@@ -13,9 +13,15 @@ const uploadProfileImage = async (userId, file, type) => {
     `${type}s/${userId}`
   );
 
-  await uploadBytes(storageRef, file);
+  // contentType del recorte (WebP o JPEG)
+  await uploadBytes(storageRef, file, { contentType: file.type });
 
-  const url = await getDownloadURL(storageRef);
+  // Misma ruta al reemplazar: Storage conserva el token y la URL no cambia,
+  // así que el navegador mostraría la imagen vieja de su caché. La versión
+  // (v=<timestamp>) hace que cada imagen nueva tenga su propia URL.
+  const downloadUrl = new URL(await getDownloadURL(storageRef));
+  downloadUrl.searchParams.set("v", String(Date.now()));
+  const url = downloadUrl.toString();
 
   const data = { [type]: url };
 

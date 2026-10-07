@@ -2,6 +2,7 @@
 # - firestore.rules en el emulador (npm run test:rules, proyecto demo-)
 # - protección SSRF de fetchLinkPreview y demás funciones puras (npm run test:functions, sin internet)
 # - getJoinInfo contra el emulador de Firestore (npm run test:functions:emulator)
+# - funciones puras del cliente con Jest (npm run test:unit)
 name: Reglas de Firestore
 
 on:
@@ -48,3 +49,5 @@ jobs:
       - run: npm run test:functions
 
       - run: npm run test:functions:emulator
+
+      - run: npm run test:unit

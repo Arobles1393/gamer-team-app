@@ -136,10 +136,25 @@
   "images": {
     "avatarUpdated": "Foto de perfil actualizada",
     "bannerUpdated": "Portada actualizada",
-    "onlyImages": "Solo se permiten imágenes",
+    "onlyImages": "Solo se permiten imágenes PNG, JPG, WebP o GIF",
     "maxSize": "La imagen debe pesar máximo {{mb}} MB",
     "avatarError": "No se pudo subir la foto de perfil.",
-    "bannerError": "No se pudo subir la portada."
+    "bannerError": "No se pudo subir la portada.",
+    "tooManyPixels": "La imagen es demasiado grande (más de {{mp}} megapíxeles). Usa una más pequeña.",
+    "unreadable": "No se pudo leer la imagen. Prueba con otro archivo."
+  },
+  "crop": {
+    "titleAvatar": "Ajusta tu foto de perfil",
+    "titleBanner": "Ajusta tu portada",
+    "help": "Arrastra para mover y usa el control para acercar. También puedes mover la imagen con las flechas del teclado.",
+    "gifNotice": "Los GIF se convertirán en imagen fija",
+    "areaLabel": "Área de recorte. Usa las flechas para mover la imagen.",
+    "zoom": "Acercar o alejar",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "apply": "Aplicar",
+    "applying": "Procesando...",
+    "error": "No se pudo recortar la imagen. Inténtalo de nuevo."
   },
   "danger": {
     "title": "Zona de peligro",

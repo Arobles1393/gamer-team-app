@@ -136,10 +136,25 @@
   "images": {
     "avatarUpdated": "Profile picture updated",
     "bannerUpdated": "Cover updated",
-    "onlyImages": "Only images are allowed",
+    "onlyImages": "Only PNG, JPG, WebP or GIF images are allowed",
     "maxSize": "The image must be {{mb}} MB or less",
     "avatarError": "Couldn't upload the profile picture.",
-    "bannerError": "Couldn't upload the cover."
+    "bannerError": "Couldn't upload the cover.",
+    "tooManyPixels": "The image is too large (more than {{mp}} megapixels). Use a smaller one.",
+    "unreadable": "The image couldn't be read. Try another file."
+  },
+  "crop": {
+    "titleAvatar": "Adjust your profile picture",
+    "titleBanner": "Adjust your cover",
+    "help": "Drag to move and use the slider to zoom. You can also move the image with the arrow keys.",
+    "gifNotice": "GIFs will be converted to a still image",
+    "areaLabel": "Crop area. Use the arrow keys to move the image.",
+    "zoom": "Zoom in or out",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "apply": "Apply",
+    "applying": "Processing...",
+    "error": "The image couldn't be cropped. Please try again."
   },
   "danger": {
     "title": "Danger zone",

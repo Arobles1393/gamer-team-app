@@ -45,6 +45,10 @@ Comprueban "Unirme en Steam" (`isEligible`, `buildJoinUrl`, `sanitizeGameName`, 
 
 `npm run test:functions:emulator` prueba la autorización completa de `getJoinInfo` (amistad, interés, bloqueos, permiso, sala) contra el emulador de Firestore, con Steam simulado; también corre en el GitHub Action. La llamada real a Steam (una sala de verdad) se prueba a mano.
 
+## Pruebas unitarias del cliente (`npm run test:unit`)
+
+Jest (el de Create React App) sobre funciones puras de `src`, por ejemplo la validación de imágenes de `src/utils/cropImage.js`. El recorte en sí usa canvas, que no existe en jsdom: lo prueba `tests/e2e/profile-crop.e2e.cjs`. También corre en el GitHub Action.
+
 ## Pruebas de interfaz (`npm run test:e2e`)
 
 Abren la app en un navegador (Edge por defecto) e inician sesión con las cuentas de prueba para recorrer los flujos principales: registro, amistad, chat 1:1 y de grupo, idioma de la cuenta, bloqueos, reportes y panel de admin, guías (escritura, moderación y HTML malicioso), jugadores compatibles (preferencias, % y que no salgan amigos ni bloqueados), partidas programadas, filtros, estados vacíos, privacidad y la vista en celular.
