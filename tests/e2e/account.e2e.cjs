@@ -220,17 +220,27 @@ const removeTmp = async () => {
       { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password, returnSecureToken: true }) }
     ).then((res) => res.json())).idToken;
     // Escribir un comentario directo a Firestore (REST), sin pasar por la app
-    const directComment = (idToken) => fetch(
-      "https://firestore.googleapis.com/v1/projects/gamerteam-4ed20/databases/(default)/documents/post_comments",
-      {
+    // Comentario escrito directo con la API REST (saltándose la app). Con
+    // createdAt = hora del servidor (REQUEST_TIME), como serverTimestamp():
+    // las reglas rechazan la hora del cliente
+    const DIRECT_DOCS = "projects/gamerteam-4ed20/databases/(default)/documents";
+    const directComment = async (idToken) => {
+      const name = `${DIRECT_DOCS}/post_comments/qa_direct_${Date.now()}`;
+      const res = await fetch(`https://firestore.googleapis.com/v1/${DIRECT_DOCS}:commit`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken}` },
-        body: JSON.stringify({ fields: {
-          postId: { stringValue: "qa_post_ana" }, userId: { stringValue: verUser.uid },
-          text: { stringValue: "comentario directo (QA)" }, createdAt: { timestampValue: new Date().toISOString() }
-        } })
-      }
-    );
+        body: JSON.stringify({ writes: [{
+          update: { name, fields: {
+            postId: { stringValue: "qa_post_ana" }, userId: { stringValue: verUser.uid },
+            text: { stringValue: "comentario directo (QA)" }
+          } },
+          updateTransforms: [{ fieldPath: "createdAt", setToServerValue: "REQUEST_TIME" }],
+          currentDocument: { exists: false }
+        }] })
+      });
+      res.docPath = name.split("/documents/")[1];
+      return res;
+    };
     // Registro desde la app: crea la cuenta y manda el correo de verificación
     page = await newPage();
     await page.goto(`${BASE}/login`);
@@ -304,15 +314,17 @@ const removeTmp = async () => {
     await admin.auth().updateUser(verUser.uid, { emailVerified: true });
     const hidden = await banner.waitFor({ state: "detached", timeout: 25000 }).then(() => true, () => false);
     check("al verificar, el aviso desaparece solo (sin recargar)", hidden);
-    const verifiedToast = await toastText(page);
-    check("con aviso de correo verificado", /Correo verificado/.test(verifiedToast), verifiedToast.replace(/\s+/g, " "));
+    // Ese aviso en concreto (puede seguir visible el de "Demasiados intentos")
+    const verifiedToast = page.locator(".p-toast-message", { hasText: "Correo verificado" });
+    check("con aviso de correo verificado", await verifiedToast.waitFor({ timeout: 10000 }).then(() => true, () => false),
+      (await page.locator(".p-toast-message").allInnerTexts()).join(" | ").replace(/\s+/g, " "));
     await page.goto(`${BASE}/`);
     await page.getByRole("button", { name: /Publicar/ }).first().click();
     const formOpened = await page.locator(".p-dialog", { hasText: "Publicar partida" }).waitFor({ timeout: 10000 }).then(() => true, () => false);
     check("ya verificado, Publicar abre el formulario", formOpened && await verifyDialog.count() === 0);
     const allowed = await directComment(await idTokenOf(VER.email, VER.password));
     check("y firestore.rules ya acepta sus escrituras", allowed.status === 200, `HTTP ${allowed.status}`);
-    if (allowed.ok) await db.doc(new URL((await allowed.json()).name, "https://x/").pathname.split("/documents/")[1]).delete().catch(() => {});
+    if (allowed.ok) await db.doc(allowed.docPath).delete().catch(() => {});
     await close("verificación", page);
 
     // Cuentas verificadas (qa_ana) no ven el aviso
