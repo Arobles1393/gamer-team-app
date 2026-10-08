@@ -74,8 +74,10 @@ module.exports = async ({ env, test }) => {
   });
   await pair("abrir un chat 1:1 nuevo", (kind) => setDoc(doc(as(ME, kind), "chats", `${ME}_zzz${kind}`),
     { participants: [ME, `zzz${kind}`], lastMessage: "", lastMessageAt: null, createdAt: serverTimestamp() }));
+  // Aviso del chat que se acaba de abrir (las notificaciones van ligadas a
+  // una relación real: notifications.rules.cjs)
   await pair("mandar una notificación", (kind) => setDoc(doc(collection(as(ME, kind), "notifications")),
-    { userId: OTHER, senderId: ME, type: "message", read: false, createdAt: serverTimestamp() }));
+    { userId: `zzz${kind}`, senderId: ME, type: "message", read: false, createdAt: serverTimestamp(), relatedId: `${ME}_zzz${kind}` }));
   await pair("enviar una solicitud de amistad", (kind) => setDoc(doc(as(ME, kind), "friend_requests", `${ME}_ddd${kind}`),
     { senderId: ME, receiverId: `ddd${kind}`, status: "pending", createdAt: serverTimestamp() }));
   await pair("escribir una guía", (kind) => setDoc(doc(as(ME, kind), "guides", `g${kind}`), {

@@ -20,7 +20,8 @@ const SUITES = [
   "guides",
   "matching",
   "email-verification",
-  "private-preferences"
+  "private-preferences",
+  "notifications"
 ];
 
 const results = [];
