@@ -4,7 +4,7 @@ const {
   assertFails
 } = require("@firebase/rules-unit-testing");
 const {
-  doc, getDoc, setDoc, updateDoc, deleteDoc, writeBatch, serverTimestamp
+  doc, getDoc, setDoc, updateDoc, deleteDoc, writeBatch, serverTimestamp, Timestamp
 } = require("firebase/firestore");
 
 // Uids como los reales: Firebase (alfanuméricos) y Steam ("steam:...")
@@ -104,7 +104,13 @@ module.exports = async ({ env, test, expect }) => {
     await assertFails(updateDoc(reqRef(db(B), A, B), { status: "pending" }));
   });
 
-  await test("A reenvía tras el rechazo y B acepta otra vez", async () => {
+  // Auditoría M-12: tras un rechazo hay que esperar 24 h desde el envío
+  await test("A no puede reenviar en seguida tras el rechazo", () =>
+    assertFails(setDoc(reqRef(db(A), A, B), pending(A, B))));
+
+  await test("A reenvía 24 h después del rechazo y B acepta otra vez", async () => {
+    await env.withSecurityRulesDisabled((ctx) =>
+      updateDoc(doc(ctx.firestore(), "friend_requests", `${A}_${B}`), { createdAt: Timestamp.fromMillis(Date.now() - 25 * 3600 * 1000) }));
     await assertSucceeds(setDoc(reqRef(db(A), A, B), pending(A, B)));
     await assertSucceeds(accept(B, A));
   });

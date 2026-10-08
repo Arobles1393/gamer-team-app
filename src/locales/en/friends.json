@@ -62,5 +62,12 @@
     "messageLabel": "Send a message to {{username}}",
     "viewProfile": "View profile",
     "viewProfileLabel": "View {{username}}'s profile"
+  },
+  "request": {
+    "retryTitle": "Request declined",
+    "retryDetail_one": "This player declined your request. You can send it again in {{count}} hour.",
+    "retryDetail_other": "This player declined your request. You can send it again in {{count}} hours.",
+    "errorTitle": "Couldn't send the request",
+    "errorDetail": "Please try again in a moment."
   }
 }

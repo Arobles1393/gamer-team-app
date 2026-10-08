@@ -12,7 +12,8 @@ let pending = [];
 // debe llevárselo la página que se está yendo
 let persistedChecked = false;
 
-// notice: { severity, summaryKey, detailKey } (claves de i18n)
+// notice: { severity, summaryKey, detailKey, detailParams? } (claves de i18n
+// y, opcional, sus parámetros: { hours: 5 })
 export const postAppNotice = (notice, { persist = false } = {}) => {
   if (persist) {
     try {

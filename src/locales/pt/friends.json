@@ -62,5 +62,12 @@
     "messageLabel": "Enviar mensagem para {{username}}",
     "viewProfile": "Ver perfil",
     "viewProfileLabel": "Ver perfil de {{username}}"
+  },
+  "request": {
+    "retryTitle": "Solicitação recusada",
+    "retryDetail_one": "Essa pessoa recusou sua solicitação. Você poderá enviá-la de novo em {{count}} hora.",
+    "retryDetail_other": "Essa pessoa recusou sua solicitação. Você poderá enviá-la de novo em {{count}} horas.",
+    "errorTitle": "Não foi possível enviar a solicitação",
+    "errorDetail": "Tente novamente em instantes."
   }
 }

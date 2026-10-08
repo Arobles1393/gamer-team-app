@@ -522,6 +522,11 @@ service cloud.firestore {
           && request.resource.data.status == 'pending'
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'createdAt'])
           && request.resource.data.createdAt == request.time
+          // Tras un rechazo, 24 h desde el envío anterior (no se puede
+          // reenviar en bucle; friendService FRIEND_REQUEST_RETRY_HOURS)
+          && (resource.data.status != 'rejected'
+              || resource.data.get('createdAt', null) == null
+              || request.time > resource.data.createdAt + duration.value(24, 'h'))
           && noBlockBetween(request.auth.uid, resource.data.receiverId))
       );
       allow delete: if false;

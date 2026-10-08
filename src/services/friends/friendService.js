@@ -34,6 +34,20 @@ const getPendingRequest = async (senderId, receiverId) => {
   return snapshot.exists() && snapshot.data().status === "pending" ? snapshot : null;
 };
 
+// Tras un rechazo, cuánto hay que esperar para reenviar (lo mismo que
+// firestore.rules en friend_requests)
+export const FRIEND_REQUEST_RETRY_HOURS = 24;
+const RETRY_MS = FRIEND_REQUEST_RETRY_HOURS * 60 * 60 * 1000;
+
+// Error con las horas que faltan, para que la interfaz lo explique
+export class FriendRequestRetryError extends Error {
+  constructor(hoursLeft) {
+    super("friends/retry-later");
+    this.code = "friends/retry-later";
+    this.hoursLeft = hoursLeft;
+  }
+}
+
 // Devuelve el nuevo estado de amistad: "pending" o "friends"
 const sendFriendRequest = async (sender, receiverId) => {
 
@@ -63,8 +77,15 @@ const sendFriendRequest = async (sender, receiverId) => {
     return "friends";
   }
 
-  const existing = await getPendingRequest(sender.uid, receiverId);
-  if (existing) return "pending";
+  const existing = await getDoc(requestRef(sender.uid, receiverId));
+  const previous = existing.exists() ? existing.data() : null;
+  if (previous?.status === "pending") return "pending";
+
+  // Rechazada hace menos de 24 h: las reglas no dejan reenviarla todavía
+  const sentAt = previous?.createdAt?.toMillis?.();
+  if (previous?.status === "rejected" && sentAt && Date.now() - sentAt < RETRY_MS) {
+    throw new FriendRequestRetryError(Math.ceil((sentAt + RETRY_MS - Date.now()) / (60 * 60 * 1000)));
+  }
 
   // Crea la solicitud o reabre una anterior (rechazada, o aceptada de una
   // amistad que ya terminó) con el mismo id

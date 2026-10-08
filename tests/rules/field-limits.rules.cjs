@@ -309,8 +309,23 @@ module.exports = async ({ env, test }) => {
 
   await test("reenvío tras un rechazo con la fecha del cliente: rechazado", async () => {
     await assertSucceeds(updateDoc(doc(db(S), "friend_requests", `${B}_${S}`), { status: "rejected" }));
+    // Pasadas las 24 h de espera (auditoría M-12)
+    await env.withSecurityRulesDisabled((ctx) =>
+      updateDoc(doc(ctx.firestore(), "friend_requests", `${B}_${S}`), { createdAt: Timestamp.fromMillis(Date.now() - 25 * 3600 * 1000) }));
     await assertFails(request(B, S, { createdAt: future() }));
     await assertSucceeds(request(B, S));
+  });
+
+  await test("tras terminar una amistad (aceptada) se puede reenviar en seguida", async () => {
+    await env.withSecurityRulesDisabled((ctx) =>
+      updateDoc(doc(ctx.firestore(), "friend_requests", `${B}_${S}`), { status: "accepted", createdAt: Timestamp.now() }));
+    await assertSucceeds(request(B, S));
+  });
+
+  await test("tras un rechazo reciente (hace 23 h): rechazado", async () => {
+    await env.withSecurityRulesDisabled((ctx) =>
+      updateDoc(doc(ctx.firestore(), "friend_requests", `${B}_${S}`), { status: "rejected", createdAt: Timestamp.fromMillis(Date.now() - 23 * 3600 * 1000) }));
+    await assertFails(request(B, S));
   });
 
   // ---------- bloqueos ----------

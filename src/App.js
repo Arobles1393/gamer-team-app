@@ -67,11 +67,11 @@ function App() {
   // Solo cuando ya se dibujó el Toast: antes de authReady la app devuelve null
   useEffect(() => {
     if (!authReady) return undefined;
-    return subscribeToAppNotices(({ severity, summaryKey, detailKey }) => {
+    return subscribeToAppNotices(({ severity, summaryKey, detailKey, detailParams }) => {
       // Un instante después: en desarrollo, StrictMode vuelve a montar el
       // Toast justo tras el primer montaje y se llevaría el aviso
       setTimeout(() => {
-        toast.current?.show({ severity, summary: t(summaryKey), detail: t(detailKey), life: 6000 });
+        toast.current?.show({ severity, summary: t(summaryKey), detail: t(detailKey, detailParams), life: 6000 });
       }, 0);
     });
   }, [t, authReady]);
