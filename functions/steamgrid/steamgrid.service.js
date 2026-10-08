@@ -1,4 +1,5 @@
 const axios = require("axios");
+const {createTtlCache} = require("../shared/limits");
 
 class ValidationError extends Error {}
 
@@ -35,7 +36,7 @@ const searchGame = async (gameName, apiKey) => {
   return searchRes.data.data[0] || null;
 };
 
-const getGameLogo = async ({ steamAppId, gameName }) => {
+const fetchGameLogo = async ({ steamAppId, gameName }) => {
 
   if (!gameName) {
     throw new ValidationError(
@@ -75,7 +76,7 @@ const getGameLogo = async ({ steamAppId, gameName }) => {
   };
 };
 
-const getGamePortada = async ({ steamAppId, gameName }) => {
+const fetchGamePortada = async ({ steamAppId, gameName }) => {
 
   if (!gameName) {
     throw new ValidationError(
@@ -110,6 +111,22 @@ const getGamePortada = async ({ steamAppId, gameName }) => {
     portada: portadas[0]?.url || null
   };
 };
+
+// Logos y portadas casi no cambian: 24 h por juego (auditoría M-09)
+const mediaCache = createTtlCache({ttlMs: 24 * 60 * 60 * 1000, max: 500});
+
+const cached = (kind, fetcher) => async ({ steamAppId, gameName } = {}) => {
+  const key = typeof gameName === "string" ? `${kind}|${steamAppId ?? ""}|${gameName.trim().toLowerCase()}` : null;
+  const hit = key && mediaCache.get(key);
+  if (hit) return hit;
+
+  const result = await fetcher({ steamAppId, gameName });
+  if (key) mediaCache.set(key, result);
+  return result;
+};
+
+const getGameLogo = cached("logo", fetchGameLogo);
+const getGamePortada = cached("portada", fetchGamePortada);
 
 module.exports = {
   getGameLogo,

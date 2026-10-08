@@ -1,6 +1,11 @@
 const functions = require("firebase-functions");
 const { getSteamStats, getSteamPresence, ValidationError  } = require("./steam.service");
 const {describeError} = require("../shared/safeError");
+const {perUserLimit} = require("../shared/callableLimits");
+
+// Límites por usuario (auditoría M-09): cada llamada consulta la API de Steam
+const limitSteamStats = perUserLimit(20);
+const limitSteamPresence = perUserLimit(20);
 
 exports.getSteamStats = functions.https.onCall(
   async (request) => {
@@ -11,6 +16,8 @@ exports.getSteamStats = functions.https.onCall(
         "Debes iniciar sesión para consultar estadísticas de Steam"
       );
     }
+
+    limitSteamStats(request.auth.uid);
 
     try {
       return await getSteamStats(request.data);
@@ -43,6 +50,8 @@ exports.getSteamPresence = functions.https.onCall(
         "Debes iniciar sesión para consultar la presencia de Steam"
       );
     }
+
+    limitSteamPresence(request.auth.uid);
 
     try {
       return await getSteamPresence(request.data);

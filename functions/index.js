@@ -8,6 +8,12 @@ const localSigner =
 admin.initializeApp(
   localSigner ? { serviceAccountId: localSigner } : undefined
 );
+
+// Tope de instancias para todas las funciones (auditoría M-09): un abuso no
+// escala sin límite. Antes de cargar las funciones, que lo leen al definirse.
+// syncGamingNews fija 1 por su cuenta.
+const { setGlobalOptions } = require("firebase-functions/v2");
+setGlobalOptions({ maxInstances: 10 });
 const { getSteamStats, getSteamPresence } = require("./steam/steam.functions");
 const { getGameLogo, getGamePortada } = require("./steamgrid/steamgrid.functions");
 const { syncGamingNews } = require("./gamingNews/gamingNews.functions");

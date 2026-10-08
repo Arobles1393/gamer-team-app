@@ -1,6 +1,10 @@
 const functions = require("firebase-functions");
 const { logGameSearch, ValidationError } = require("./games.service");
 const {describeError} = require("../shared/safeError");
+const {perUserLimit} = require("../shared/callableLimits");
+
+// Límite por usuario: sin él se podían inflar las tendencias (auditoría M-09)
+const limitSearchLog = perUserLimit(30);
 
 // Tendencia por búsquedas del feed. onCall normal (no trigger): funciona en Spark
 exports.logGameSearch = functions.https.onCall(
@@ -12,6 +16,8 @@ exports.logGameSearch = functions.https.onCall(
         "Debes iniciar sesión para registrar búsquedas"
       );
     }
+
+    limitSearchLog(request.auth.uid);
 
     try {
       return await logGameSearch(request.data);

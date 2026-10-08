@@ -1,6 +1,10 @@
 const functions = require("firebase-functions");
 const { fetchLinkPreview, ValidationError } = require("./guides.service");
 const {describeError} = require("../shared/safeError");
+const {perUserLimit} = require("../shared/callableLimits");
+
+// Límite por usuario: cada llamada pide una página externa (auditoría M-09)
+const limitLinkPreview = perUserLimit(10);
 
 // Vista previa (título, descripción, imagen) de una guía externa. Nunca
 // pide direcciones internas (ver guides.service.js) y, si no se puede
@@ -14,6 +18,8 @@ exports.fetchLinkPreview = functions.https.onCall(
         "Debes iniciar sesión para generar la vista previa"
       );
     }
+
+    limitLinkPreview(request.auth.uid);
 
     try {
       return await fetchLinkPreview(request.data);

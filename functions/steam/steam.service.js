@@ -1,4 +1,5 @@
 const axios = require("axios");
+const {createTtlCache} = require("../shared/limits");
 
 const steamApi = axios.create({
   baseURL: "https://api.steampowered.com",
@@ -7,7 +8,7 @@ const steamApi = axios.create({
 
 class ValidationError extends Error {}
 
-const getSteamStats = async ({ steamId, appid }) => {
+const fetchSteamStats = async ({ steamId, appid }) => {
 
   if (!steamId) {
     throw new ValidationError("Steam ID requerido");
@@ -186,6 +187,20 @@ const getSteamStats = async ({ steamId, appid }) => {
     totalHours: Math.round(totalHours),
     games: games.slice(0, 12)
   };
+};
+
+// Estadísticas y logros cambian poco: 5 min por Steam ID y juego, para no
+// repetir 1-4 llamadas a Steam en cada visita al perfil (auditoría M-09)
+const statsCache = createTtlCache({ttlMs: 5 * 60 * 1000, max: 500});
+
+const getSteamStats = async ({ steamId, appid } = {}) => {
+  const key = typeof steamId === "string" ? `${steamId.trim()}|${appid ?? ""}` : null;
+  const cached = key && statsCache.get(key);
+  if (cached) return cached;
+
+  const result = await fetchSteamStats({ steamId, appid });
+  if (key) statsCache.set(key, result);
+  return result;
 };
 
 // ==========================

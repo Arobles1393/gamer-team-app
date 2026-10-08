@@ -1,3 +1,4 @@
+const {RateLimitError, createRateLimiter: createSharedRateLimiter} = require("../shared/limits");
 const admin = require("firebase-admin");
 const { steamApi, resolveVanity, STEAM_ID64_REGEX, VANITY_REGEX } = require("../steam/steam.service");
 
@@ -16,7 +17,6 @@ const { steamApi, resolveVanity, STEAM_ID64_REGEX, VANITY_REGEX } = require("../
 //   una caché en memoria de la respuesta de Steam, de 20 s.
 
 class ValidationError extends Error {}
-class RateLimitError extends Error {}
 
 const NOT_AVAILABLE = Object.freeze({ available: false });
 const notAvailable = () => ({ ...NOT_AVAILABLE });
@@ -59,21 +59,12 @@ const steamIdentifierFromLinks = (links) => {
 
 // ---------- Límite de uso (en memoria, por instancia: aproximado) ----------
 
+// El limitador es el compartido (functions/shared/limits.js), con los
+// valores por defecto de esta función
 const RATE_LIMIT = 30;
 const RATE_WINDOW_MS = 60 * 1000;
-const createRateLimiter = (limit = RATE_LIMIT, windowMs = RATE_WINDOW_MS, now = () => Date.now()) => {
-  const calls = new Map();
-  return (key) => {
-    const t = now();
-    const recent = (calls.get(key) || []).filter((at) => t - at < windowMs);
-    if (recent.length >= limit) {
-      calls.set(key, recent);
-      throw new RateLimitError("rate-limited");
-    }
-    recent.push(t);
-    calls.set(key, recent);
-  };
-};
+const createRateLimiter = (limit = RATE_LIMIT, windowMs = RATE_WINDOW_MS, now = () => Date.now()) =>
+  createSharedRateLimiter(limit, windowMs, now);
 
 // ---------- Steam (caché de 20 s por steamId, solo de la respuesta) ----------
 
