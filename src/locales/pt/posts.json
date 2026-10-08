@@ -149,7 +149,8 @@
     "title": "Jogadores interessados",
     "loading": "Carregando interessados",
     "emptyOwner": "Ninguém entrou ainda. Quando alguém tocar em «Quero jogar», aparecerá aqui.",
-    "empty": "Ninguém entrou ainda. Seja o primeiro!"
+    "empty": "Ninguém entrou ainda. Seja o primeiro!",
+    "loginPrompt": "Entre para ver quem quer jogar."
   },
   "comments": {
     "placeholder": "Escreva um comentário… que horas vocês jogam?",
@@ -167,7 +168,7 @@
     "reportLabel": "Comentário de {{username}}",
     "openImage": "Abrir imagem em outra aba",
     "imageAlt": "Imagem compartilhada por {{username}}",
-    "loginPrompt": "Entre para comentar e combinar a partida."
+    "loginPrompt": "Entre para ver os comentários, comentar e combinar a partida."
   },
   "nudge": {
     "text": "Adicione sua região para que outros jogadores saibam de onde você joga.",

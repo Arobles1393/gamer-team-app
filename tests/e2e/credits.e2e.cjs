@@ -93,9 +93,19 @@ const footerCheck = async (page, name, path, ready) => {
     // ---------- Pie sin sesión ----------
     console.log("\n=== pie sin sesión");
     let page = await newPage();
+    // Lecturas que firestore.rules rechaza sin sesión (auditoría M-11): la
+    // app no debe ni intentarlas
+    const denied = [];
+    page.on("console", (msg) => { if (/permission|permisos|insufficient/i.test(msg.text())) denied.push(msg.text().slice(0, 120)); });
     await footerCheck(page, "feed (sin sesión)", "/", ".post-card, .feed, main");
     await footerCheck(page, "/explorar (sin sesión)", "/explorar", "main");
     await footerCheck(page, "detalle de partida (sin sesión)", "/post/qa_post_ana", ".post-info");
+    // Comentarios e interesados piden sesión: en su lugar, la invitación a entrar
+    const invites = await page.locator(".comment-login").allInnerTexts();
+    check("detalle sin sesión: invita a entrar para ver comentarios y quién quiere jugar",
+      invites.some((text) => /ver los comentarios/.test(text)) && invites.some((text) => /quién quiere jugar/.test(text)), invites.join(" | ").slice(0, 160));
+    check("detalle sin sesión: no muestra comentarios ni jugadores interesados",
+      await page.locator(".post-comments__list, .post-interested").count() === 0);
     await footerCheck(page, "guías (sin sesión)", "/guias", "main");
     await footerCheck(page, "noticias (sin sesión)", "/news", "main");
     await footerCheck(page, "login", "/login", ".auth__form");
@@ -104,6 +114,7 @@ const footerCheck = async (page, name, path, ready) => {
     check("registro: pie con RAWG", await page.locator(".app-footer a", { hasText: "RAWG" }).count() === 1
       && await page.locator("input[autocomplete=nickname]").count() === 1);
     check("sin errores de JS (sin sesión)", page.errors.length === 0, page.errors.join(" | ").slice(0, 200));
+    check("sin lecturas rechazadas por permisos (sin sesión)", denied.length === 0, denied.join(" | ").slice(0, 200));
     await page.context().close();
 
     // ---------- /creditos sin sesión ----------

@@ -225,7 +225,11 @@ service cloud.firestore {
                || request.resource.data.lastSeen == request.time;
       }
 
-      allow read: if true;
+      // Sin sesión se lee un perfil por su id (nombre y avatar del autor en
+      // las tarjetas del feed y de las guías), pero listar o buscar perfiles
+      // pide sesión: nadie recopila la lista de usuarios (auditoría M-11)
+      allow get: if true;
+      allow list: if isSignedIn();
       // createdAt con la hora del servidor (o sin él, si el perfil público
       // se crea por un merge al editar un perfil antiguo)
       allow create: if isOwner(userId)
@@ -412,7 +416,8 @@ service cloud.firestore {
     // Borra quien comentó o el autor del post (así, al borrar su post, no
     // quedan comentarios huérfanos)
     match /post_comments/{commentId} {
-      allow read: if true;
+      // Los comentarios piden sesión (auditoría M-11)
+      allow read: if isSignedIn();
       allow create: if canWriteSocial()
                     && request.resource.data.keys().hasOnly(['postId', 'text', 'userId', 'mediaUrl', 'mediaType', 'mediaPath', 'createdAt'])
                     && request.resource.data.userId == request.auth.uid
@@ -451,8 +456,9 @@ service cloud.firestore {
         return getAfter(postPath(postId)).data.get('interestedCount', 0);
       }
 
-      allow read: if true;
-      // Lo que escribe interestService (se lee sin sesión: sin campos extra)
+      // Quién se interesó en cada partida pide sesión (auditoría M-11)
+      allow read: if isSignedIn();
+      // Lo que escribe interestService (sin campos extra)
       allow create: if canWriteSocial()
                     && request.resource.data.keys().hasOnly(['postId', 'userId', 'createdAt'])
                     && request.resource.data.createdAt == request.time

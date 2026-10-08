@@ -149,7 +149,8 @@
     "title": "Interested players",
     "loading": "Loading interested players",
     "emptyOwner": "Nobody has joined yet. When someone taps “I want to play”, they'll show up here.",
-    "empty": "Nobody has joined yet. Be the first!"
+    "empty": "Nobody has joined yet. Be the first!",
+    "loginPrompt": "Log in to see who wants to play."
   },
   "comments": {
     "placeholder": "Write a comment… what time are you playing?",
@@ -167,7 +168,7 @@
     "reportLabel": "Comment by {{username}}",
     "openImage": "Open image in a new tab",
     "imageAlt": "Image shared by {{username}}",
-    "loginPrompt": "Log in to comment and coordinate the party."
+    "loginPrompt": "Log in to see the comments, comment and coordinate the party."
   },
   "nudge": {
     "text": "Add your region so other players know where you play from.",

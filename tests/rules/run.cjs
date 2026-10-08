@@ -24,7 +24,8 @@ const SUITES = [
   "notifications",
   "field-limits",
   "block-groups",
-  "usernames"
+  "usernames",
+  "guest-reads"
 ];
 
 const results = [];

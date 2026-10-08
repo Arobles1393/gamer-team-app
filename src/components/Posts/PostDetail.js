@@ -266,7 +266,7 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
             title={t("detail.comments")}
             icon="pi-comments"
             className="post-comments"
-            action={comments.length > 0 && (
+            action={user && comments.length > 0 && (
               <span className="post-detail__count">{comments.length}</span>
             )}
           >
@@ -280,7 +280,8 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
               <CommentLoginPrompt onLogin={requireAuth} />
             )}
 
-            {comments.length > 0 ? (
+            {/* Sin sesión los comentarios no se leen: solo la invitación */}
+            {!user ? null : comments.length > 0 ? (
               <ul className="post-comments__list">
                 {comments.map((item) => (
                   <CommentItem
@@ -307,8 +308,8 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
             author={postAuthor}
             isOwner={isOwner}
             isInterested={isInterested}
-            interestedCount={interestedCount}
-            commentsCount={comments.length}
+            interestedCount={user ? interestedCount : post.interestedCount ?? 0}
+            commentsCount={user ? comments.length : null}
             togglingInterest={togglingInterest}
             openingChat={openingChat}
             onToggleInterest={handleToggleInterest}
@@ -323,6 +324,9 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
             userIds={visibleInterestedIds}
             isOwner={isOwner}
             onOpenProfile={openProfile}
+            // Sin sesión: cuántos hay (del post) y la invitación a entrar
+            guestCount={user ? null : post.interestedCount ?? 0}
+            onLogin={user ? null : requireAuth}
           />
         </div>
       </div>

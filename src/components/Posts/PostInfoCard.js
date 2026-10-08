@@ -97,9 +97,12 @@ export default function PostInfoCard({
         <InfoRow icon="pi-users" label={t("info.interested")}>
           {t("info.players", { count: interestedCount })}
         </InfoRow>
-        <InfoRow icon="pi-comments" label={t("info.comments")}>
-          {commentsCount}
-        </InfoRow>
+        {/* Sin sesión los comentarios no se leen: no hay cuenta que mostrar */}
+        {commentsCount !== null && (
+          <InfoRow icon="pi-comments" label={t("info.comments")}>
+            {commentsCount}
+          </InfoRow>
+        )}
       </dl>
 
       <div className="post-info__actions">

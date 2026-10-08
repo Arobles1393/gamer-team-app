@@ -5,8 +5,12 @@ export const usePostInterestStatus = (postId, userId) => {
   const [interestedUserIds, setInterestedUserIds] = useState([]);
   const [interestedDoc, setInterestedDoc] = useState(null);
 
+  // Quién se interesó no se lee sin sesión (firestore.rules, auditoría M-11)
   useEffect(() => {
-    if (!postId) return;
+    if (!postId || !userId) {
+      setInterestedUserIds([]);
+      return;
+    }
 
     const unsubscribe = interestService.subscribeToPostInterested(
       postId,
@@ -18,7 +22,7 @@ export const usePostInterestStatus = (postId, userId) => {
     );
 
     return unsubscribe;
-  }, [postId]);
+  }, [postId, userId]);
 
   useEffect(() => {
     if (!postId || !userId) return;

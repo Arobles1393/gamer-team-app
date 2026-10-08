@@ -149,7 +149,8 @@
     "title": "Joueurs intéressés",
     "loading": "Chargement des intéressés",
     "emptyOwner": "Personne n'a encore rejoint. Quand quelqu'un appuiera sur « Je veux jouer », il apparaîtra ici.",
-    "empty": "Personne n'a encore rejoint. Soyez le premier !"
+    "empty": "Personne n'a encore rejoint. Soyez le premier !",
+    "loginPrompt": "Connectez-vous pour voir qui veut jouer."
   },
   "comments": {
     "placeholder": "Écrivez un commentaire… à quelle heure jouez-vous ?",
@@ -167,7 +168,7 @@
     "reportLabel": "Commentaire de {{username}}",
     "openImage": "Ouvrir l'image dans un nouvel onglet",
     "imageAlt": "Image partagée par {{username}}",
-    "loginPrompt": "Connectez-vous pour commenter et organiser la partie."
+    "loginPrompt": "Connectez-vous pour voir les commentaires, commenter et organiser la partie."
   },
   "nudge": {
     "text": "Ajoutez votre région pour que les autres joueurs sachent d'où vous jouez.",
