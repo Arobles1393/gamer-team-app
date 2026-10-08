@@ -406,7 +406,14 @@ service cloud.firestore {
                     && textUpTo('text', 500)
                     && optUrl(request.resource.data.get('mediaUrl', null))
                     && request.resource.data.get('mediaType', '') in ['', 'image', 'video', null]
-                    && optText(request.resource.data.get('mediaPath', null), 300)
+                    // Solo un archivo de la carpeta del autor (commentsService:
+                    // comments/{uid}/{fecha}_{nombre}). cleanupCommentMedia y
+                    // deleteAccount borran esta ruta con permisos de admin: si
+                    // apuntara a otra (un avatar, un adjunto de chat), la borrarían
+                    && (request.resource.data.get('mediaPath', '') in ['', null]
+                        || (request.resource.data.mediaPath is string
+                            && request.resource.data.mediaPath.size() <= 300
+                            && request.resource.data.mediaPath.matches('^comments/' + request.auth.uid + '/[^/]+$')))
                     && request.resource.data.createdAt == request.time
                     && noBlockBetween(request.auth.uid, postAuthor(request.resource.data.postId));
       allow delete: if isSignedIn()

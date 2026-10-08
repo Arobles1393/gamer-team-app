@@ -201,6 +201,24 @@ module.exports = async ({ env, test }) => {
       ...comment, mediaUrl: "https://firebasestorage.googleapis.com/x", mediaType: "image", mediaPath: `comments/${B}/1_a.png`
     })));
 
+  // mediaPath: lo borran cleanupCommentMedia y deleteAccount (auditoría C-02)
+  for (const [name, mediaPath] of [
+    ["el avatar de otro", `avatars/${A}`],
+    ["un adjunto de un chat ajeno", `chats/${CHAT}/${A}/1_factura.pdf`],
+    ["la carpeta de comentarios de otro", `comments/${A}/1_foto.png`],
+    ["una subcarpeta propia", `comments/${B}/x/1_foto.png`],
+    ["toda su carpeta (sin archivo)", `comments/${B}/`],
+    ["un prefijo engañoso", `comments/${B}x/1_foto.png`]
+  ]) {
+    await test(`comentario con mediaPath hacia ${name}: rechazado`, () =>
+      assertFails(addDoc(collection(db(B), "post_comments"), { ...comment, mediaUrl: "https://x", mediaType: "image", mediaPath })));
+  }
+
+  await test("comentario de una cuenta de Steam con su propio archivo", () =>
+    assertSucceeds(addDoc(collection(db(S), "post_comments"), {
+      ...comment, userId: S, mediaUrl: "https://x", mediaType: "video", mediaPath: `comments/${S}/1700000000_clip.mp4`
+    })));
+
   await test("comentario con campos extra: rechazado", () =>
     assertFails(addDoc(collection(db(B), "post_comments"), { ...comment, extra: "x" })));
 
