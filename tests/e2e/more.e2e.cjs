@@ -93,8 +93,10 @@ const body = (page) => page.locator("body").innerText();
     await page.getByRole("tab", { name: /Chats de partida/ }).click();
     await page.locator(".chat-item", { hasText: "Valorant" }).first().click();
     await page.locator(".chat-messages").getByText("Hola grupo, soy carla (QA)").waitFor({ timeout: 10000 });
-    const groupText = await page.locator(".chat-messages").innerText();
-    check("grupo: ana ve el mensaje y que lo escribió qa_carla", /qa_carla/.test(groupText));
+    // El nombre llega con el perfil, que puede cargar un momento después del mensaje
+    const senderShown = await page.locator(".chat-group__sender", { hasText: "qa_carla" }).first()
+      .waitFor({ timeout: 10000 }).then(() => true, () => false);
+    check("grupo: ana ve el mensaje y que lo escribió qa_carla", senderShown);
     await page.screenshot({ path: `${SHOTS}/grupo-ana.png` });
     await done("grupo", page);
 
