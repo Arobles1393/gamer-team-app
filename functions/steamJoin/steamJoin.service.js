@@ -1,6 +1,6 @@
 const {RateLimitError, createRateLimiter: createSharedRateLimiter} = require("../shared/limits");
 const admin = require("firebase-admin");
-const { steamApi, resolveVanity, STEAM_ID64_REGEX, VANITY_REGEX } = require("../steam/steam.service");
+const {steamApi, resolveVanity, STEAM_ID64_REGEX, VANITY_REGEX} = require("../steam/steam.service");
 
 // "Unirme en Steam": devuelve el enlace steam://joinlobby a la sala de Steam
 // de otra persona, SOLO si ella lo permitió (privacy.allowSteamJoin), no hay
@@ -18,18 +18,18 @@ const { steamApi, resolveVanity, STEAM_ID64_REGEX, VANITY_REGEX } = require("../
 
 class ValidationError extends Error {}
 
-const NOT_AVAILABLE = Object.freeze({ available: false });
-const notAvailable = () => ({ ...NOT_AVAILABLE });
+const NOT_AVAILABLE = Object.freeze({available: false});
+const notAvailable = () => ({...NOT_AVAILABLE});
 
 // ---------- Funciones puras ----------
 
-const isEligible = ({ isFriend, hasInterest, isBlocked, consent }) =>
+const isEligible = ({isFriend, hasInterest, isBlocked, consent}) =>
   consent === true && !isBlocked && (isFriend === true || hasInterest === true);
 
 const DIGITS = /^\d+$/;
 
 // Solo números validados: nunca se interpola texto sin validar
-const buildJoinUrl = ({ appId, lobbyId, hostSteamId }) => {
+const buildJoinUrl = ({appId, lobbyId, hostSteamId}) => {
   const app = typeof appId === "number" ? String(appId) : appId;
   if (typeof app !== "string" || !DIGITS.test(app)) return null;
   if (typeof lobbyId !== "string" || !DIGITS.test(lobbyId) || /^0+$/.test(lobbyId)) return null;
@@ -50,7 +50,7 @@ const sanitizeGameName = (name) => {
 // cliente: último tramo de .../profiles/<id> o .../id/<vanity>)
 const steamIdentifierFromLinks = (links) => {
   const link = (Array.isArray(links) ? links : []).find(
-    (item) => typeof item === "string" && item.includes("steamcommunity.com")
+      (item) => typeof item === "string" && item.includes("steamcommunity.com"),
   );
   if (!link) return null;
   const last = link.replace(/\/+$/, "").split("/").pop();
@@ -80,13 +80,17 @@ const fetchPlayerSummary = async (steamId) => {
   if (!key) throw new Error("API Key no configurada");
 
   const res = await steamApi.get("/ISteamUser/GetPlayerSummaries/v0002/", {
-    params: { key, steamids: steamId }
+    params: {key, steamids: steamId},
   });
   const player = res.data?.response?.players?.[0];
-  const value = player
-    ? { gameid: player.gameid ?? null, gameextrainfo: player.gameextrainfo ?? null, lobbysteamid: player.lobbysteamid ?? null }
-    : null;
-  summaryCache.set(steamId, { at: Date.now(), value });
+  const value = player ?
+    {
+      gameid: player.gameid ?? null,
+      gameextrainfo: player.gameextrainfo ?? null,
+      lobbysteamid: player.lobbysteamid ?? null,
+    } :
+    null;
+  summaryCache.set(steamId, {at: Date.now(), value});
   return value;
 };
 
@@ -105,8 +109,8 @@ const createGetJoinInfo = ({
   db = () => admin.firestore(),
   getSummary = fetchPlayerSummary,
   resolveSteam = resolveSteamId64,
-  rateLimit = createRateLimiter()
-} = {}) => async ({ callerUid, targetUid, postId }) => {
+  rateLimit = createRateLimiter(),
+} = {}) => async ({callerUid, targetUid, postId}) => {
   rateLimit(callerUid);
   if (callerUid === targetUid) return notAvailable();
   const firestore = db();
@@ -118,19 +122,19 @@ const createGetJoinInfo = ({
 
   // 3. Bloqueos en cualquier dirección
   const blocks = await firestore.collection("blocks")
-    .where("participants", "array-contains", callerUid)
-    .select("participants")
-    .get();
+      .where("participants", "array-contains", callerUid)
+      .select("participants")
+      .get();
   const isBlocked = blocks.docs.some((d) => (d.get("participants") || []).includes(targetUid));
 
   // 4. Amistad. Límite de 1000 amistades por consulta: suficiente para esta
   //    escala; si alguien tuviera más, la comprobación por interés sigue
   //    funcionando y, en el peor caso, el botón no aparece (falla cerrado)
   const friends = await firestore.collection("friends")
-    .where("users", "array-contains", callerUid)
-    .select("users")
-    .limit(1000)
-    .get();
+      .where("users", "array-contains", callerUid)
+      .select("users")
+      .limit(1000)
+      .get();
   const isFriend = friends.docs.some((d) => (d.get("users") || []).includes(targetUid));
 
   // 5. Interés: solo si no es amigo y viene la partida
@@ -139,16 +143,16 @@ const createGetJoinInfo = ({
     const post = await firestore.doc(`posts/${postId}`).get();
     if (post.exists && post.get("userId") === targetUid) {
       const interest = await firestore.collection("post_interested")
-        .where("postId", "==", postId)
-        .where("userId", "==", callerUid)
-        .limit(1)
-        .get();
+          .where("postId", "==", postId)
+          .where("userId", "==", callerUid)
+          .limit(1)
+          .get();
       hasInterest = !interest.empty;
     }
   }
 
   // 6.
-  if (!isEligible({ isFriend, hasInterest, isBlocked, consent })) return notAvailable();
+  if (!isEligible({isFriend, hasInterest, isBlocked, consent})) return notAvailable();
 
   // 7. SteamID del enlace del perfil. Limitación conocida: es un enlace que
   //    pegó el propio usuario; no está verificado que la cuenta sea suya
@@ -159,11 +163,11 @@ const createGetJoinInfo = ({
   // 8.-9. Sala en este momento (si el perfil y el juego la exponen)
   const summary = await getSummary(hostSteamId);
   if (!summary) return notAvailable();
-  const joinUrl = buildJoinUrl({ appId: summary.gameid, lobbyId: summary.lobbysteamid, hostSteamId });
+  const joinUrl = buildJoinUrl({appId: summary.gameid, lobbyId: summary.lobbysteamid, hostSteamId});
   if (!joinUrl) return notAvailable();
 
   // 10. Solo esto: nada de lobbysteamid suelto, steamid ni gameserverip
-  return { available: true, gameName: sanitizeGameName(summary.gameextrainfo), joinUrl };
+  return {available: true, gameName: sanitizeGameName(summary.gameextrainfo), joinUrl};
 };
 
 const getJoinInfo = createGetJoinInfo();
@@ -178,5 +182,5 @@ module.exports = {
   steamIdentifierFromLinks,
   ValidationError,
   RateLimitError,
-  NOT_AVAILABLE
+  NOT_AVAILABLE,
 };

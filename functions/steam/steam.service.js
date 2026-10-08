@@ -3,13 +3,12 @@ const {createTtlCache} = require("../shared/limits");
 
 const steamApi = axios.create({
   baseURL: "https://api.steampowered.com",
-  timeout: 8000
+  timeout: 8000,
 });
 
 class ValidationError extends Error {}
 
-const fetchSteamStats = async ({ steamId, appid }) => {
-
+const fetchSteamStats = async ({steamId, appid}) => {
   if (!steamId) {
     throw new ValidationError("Steam ID requerido");
   }
@@ -30,20 +29,19 @@ const fetchSteamStats = async ({ steamId, appid }) => {
 
   // Resolver Vanity URL
   if (!/^\d+$/.test(steamId)) {
-
     const resolveRes = await steamApi.get(
-      "/ISteamUser/ResolveVanityURL/v0001/",
-      {
-        params: {
-          key,
-          vanityurl: steamId
-        }
-      }
+        "/ISteamUser/ResolveVanityURL/v0001/",
+        {
+          params: {
+            key,
+            vanityurl: steamId,
+          },
+        },
     );
 
     if (resolveRes.data.response.success !== 1) {
       throw new ValidationError(
-        "No se pudo resolver el usuario de Steam"
+          "No se pudo resolver el usuario de Steam",
       );
     }
 
@@ -56,41 +54,40 @@ const fetchSteamStats = async ({ steamId, appid }) => {
   // ==========================
 
   if (appid) {
-
     const [achievementsRes, schemaRes, globalResult] = await Promise.all([
       steamApi.get(
-        "/ISteamUserStats/GetPlayerAchievements/v0001/",
-        {
-          params: {
-            key,
-            steamid: steamIdFinal,
-            appid
-          }
-        }
+          "/ISteamUserStats/GetPlayerAchievements/v0001/",
+          {
+            params: {
+              key,
+              steamid: steamIdFinal,
+              appid,
+            },
+          },
       ),
       steamApi.get(
-        "/ISteamUserStats/GetSchemaForGame/v2/",
-        {
-          params: {
-            key,
-            appid
-          }
-        }
+          "/ISteamUserStats/GetSchemaForGame/v2/",
+          {
+            params: {
+              key,
+              appid,
+            },
+          },
       ),
       steamApi.get(
-        "/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2/",
-        {
-          params: {
-            gameid: appid
-          }
-        }
+          "/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2/",
+          {
+            params: {
+              gameid: appid,
+            },
+          },
       ).catch((error) => {
         console.error(
-          "⚠️ No se pudo obtener rareza global de logros:",
-          error.message
+            "⚠️ No se pudo obtener rareza global de logros:",
+            error.message,
         );
         return null;
-      })
+      }),
     ]);
 
     const achievements =
@@ -98,25 +95,24 @@ const fetchSteamStats = async ({ steamId, appid }) => {
 
     const schemaAchievements =
       schemaRes.data.game
-        ?.availableGameStats
-        ?.achievements || [];
+          ?.availableGameStats
+          ?.achievements || [];
 
     const globalAchievements =
       globalResult?.data?.achievementpercentages?.achievements || [];
 
     const mergedAchievements =
       achievements.map((achievement) => {
-
         const schema =
           schemaAchievements.find(
-            (item) =>
-              item.name === achievement.apiname
+              (item) =>
+                item.name === achievement.apiname,
           );
 
         const global =
           globalAchievements.find(
-            (item) =>
-              item.name === achievement.apiname
+              (item) =>
+                item.name === achievement.apiname,
           );
 
         return {
@@ -137,14 +133,14 @@ const fetchSteamStats = async ({ steamId, appid }) => {
             achievement.achieved,
 
           percent:
-            global?.percent
-              ? parseFloat(global.percent)
-              : 0
+            global?.percent ?
+              parseFloat(global.percent) :
+              0,
         };
       });
 
     return {
-      achievements: mergedAchievements
+      achievements: mergedAchievements,
     };
   }
 
@@ -153,39 +149,39 @@ const fetchSteamStats = async ({ steamId, appid }) => {
   // ==========================
 
   const gamesRes = await steamApi.get(
-    "/IPlayerService/GetOwnedGames/v0001/",
-    {
-      params: {
-        key,
-        steamid: steamIdFinal,
-        include_appinfo: true,
-        include_played_free_games: true
-      }
-    }
+      "/IPlayerService/GetOwnedGames/v0001/",
+      {
+        params: {
+          key,
+          steamid: steamIdFinal,
+          include_appinfo: true,
+          include_played_free_games: true,
+        },
+      },
   );
 
   const games =
     gamesRes.data.response.games || [];
 
   games.sort(
-    (a, b) =>
-      b.playtime_forever -
-      a.playtime_forever
+      (a, b) =>
+        b.playtime_forever -
+      a.playtime_forever,
   );
 
   const totalGames = games.length;
 
   const totalHours =
     games.reduce(
-      (acc, game) =>
-        acc + (game.playtime_forever || 0),
-      0
+        (acc, game) =>
+          acc + (game.playtime_forever || 0),
+        0,
     ) / 60;
 
   return {
     totalGames,
     totalHours: Math.round(totalHours),
-    games: games.slice(0, 12)
+    games: games.slice(0, 12),
   };
 };
 
@@ -193,12 +189,12 @@ const fetchSteamStats = async ({ steamId, appid }) => {
 // repetir 1-4 llamadas a Steam en cada visita al perfil (auditoría M-09)
 const statsCache = createTtlCache({ttlMs: 5 * 60 * 1000, max: 500});
 
-const getSteamStats = async ({ steamId, appid } = {}) => {
+const getSteamStats = async ({steamId, appid} = {}) => {
   const key = typeof steamId === "string" ? `${steamId.trim()}|${appid ?? ""}` : null;
   const cached = key && statsCache.get(key);
   if (cached) return cached;
 
-  const result = await fetchSteamStats({ steamId, appid });
+  const result = await fetchSteamStats({steamId, appid});
   if (key) statsCache.set(key, result);
   return result;
 };
@@ -222,19 +218,19 @@ const resolveVanity = async (vanity, key) => {
   }
 
   const res = await steamApi.get(
-    "/ISteamUser/ResolveVanityURL/v0001/",
-    {
-      params: {
-        key,
-        vanityurl: vanity
-      }
-    }
+      "/ISteamUser/ResolveVanityURL/v0001/",
+      {
+        params: {
+          key,
+          vanityurl: vanity,
+        },
+      },
   );
 
   const steamId =
-    res.data.response.success === 1
-      ? res.data.response.steamid
-      : null;
+    res.data.response.success === 1 ?
+      res.data.response.steamid :
+      null;
 
   vanityCache.set(vanity, steamId);
 
@@ -246,15 +242,14 @@ const resolveVanity = async (vanity, key) => {
 // Solo se incluye gameextrainfo si Steam dice que está jugando algo:
 // personastate 0 puede ser "desconectado" o "perfil privado", y no se
 // distinguen, así que nunca se reporta como desconectado.
-const getSteamPresence = async ({ steamIds } = {}) => {
-
+const getSteamPresence = async ({steamIds} = {}) => {
   if (!Array.isArray(steamIds) || steamIds.length === 0) {
     throw new ValidationError("steamIds requerido");
   }
 
   if (steamIds.length > MAX_PRESENCE_IDS) {
     throw new ValidationError(
-      `Máximo ${MAX_PRESENCE_IDS} jugadores por consulta`
+        `Máximo ${MAX_PRESENCE_IDS} jugadores por consulta`,
     );
   }
 
@@ -262,9 +257,9 @@ const getSteamPresence = async ({ steamIds } = {}) => {
 
   if (
     !identifiers.every(
-      (id) =>
-        typeof id === "string" &&
-        (STEAM_ID64_REGEX.test(id) || VANITY_REGEX.test(id))
+        (id) =>
+          typeof id === "string" &&
+        (STEAM_ID64_REGEX.test(id) || VANITY_REGEX.test(id)),
     )
   ) {
     throw new ValidationError("steamIds inválidos");
@@ -278,50 +273,50 @@ const getSteamPresence = async ({ steamIds } = {}) => {
 
   // Identificador -> SteamID64 (los vanity que no existen quedan en null)
   const resolved = await Promise.all(
-    identifiers.map(async (id) => [
-      id,
-      STEAM_ID64_REGEX.test(id)
-        ? id
-        : await resolveVanity(id, key).catch((error) => {
+      identifiers.map(async (id) => [
+        id,
+      STEAM_ID64_REGEX.test(id) ?
+        id :
+        await resolveVanity(id, key).catch((error) => {
           console.error(
-            "⚠️ No se pudo resolver vanity de Steam:",
-            error.message
+              "⚠️ No se pudo resolver vanity de Steam:",
+              error.message,
           );
           return null;
-        })
-    ])
+        }),
+      ]),
   );
 
   const steamId64s = [
     ...new Set(
-      resolved
-        .map(([, steamId]) => steamId)
-        .filter(Boolean)
-    )
+        resolved
+            .map(([, steamId]) => steamId)
+            .filter(Boolean),
+    ),
   ];
 
   const presence = {};
 
   if (steamId64s.length === 0) {
-    return { presence };
+    return {presence};
   }
 
   // Una sola llamada para toda la lista
   const summaryRes = await steamApi.get(
-    "/ISteamUser/GetPlayerSummaries/v0002/",
-    {
-      params: {
-        key,
-        steamids: steamId64s.join(",")
-      }
-    }
+      "/ISteamUser/GetPlayerSummaries/v0002/",
+      {
+        params: {
+          key,
+          steamids: steamId64s.join(","),
+        },
+      },
   );
 
   const players =
     summaryRes.data.response?.players || [];
 
   const bySteamId = new Map(
-    players.map((player) => [player.steamid, player])
+      players.map((player) => [player.steamid, player]),
   );
 
   for (const [id, steamId] of resolved) {
@@ -334,11 +329,11 @@ const getSteamPresence = async ({ steamIds } = {}) => {
 
     presence[id] = {
       personastate: player.personastate,
-      gameextrainfo: playing ? player.gameextrainfo : null
+      gameextrainfo: playing ? player.gameextrainfo : null,
     };
   }
 
-  return { presence };
+  return {presence};
 };
 
 // PRIVACIDAD: ninguna función de este archivo lee ni devuelve datos de
@@ -353,5 +348,5 @@ module.exports = {
   resolveVanity,
   STEAM_ID64_REGEX,
   VANITY_REGEX,
-  ValidationError
+  ValidationError,
 };

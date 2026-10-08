@@ -9,7 +9,7 @@ const TIMEOUT_MS = 5000;
 const MAX_BYTES = 1024 * 1024;
 const MAX_REDIRECTS = 3;
 const MAX_URL_LENGTH = 2048;
-const EMPTY_PREVIEW = { title: null, description: null, image: null };
+const EMPTY_PREVIEW = {title: null, description: null, image: null};
 
 class ValidationError extends Error {}
 // La URL (o una redirección) apunta a una dirección interna: no se pide
@@ -33,7 +33,7 @@ const BLOCKED_IPV4 = [
   ["198.51.100.0", 24], // documentación
   ["203.0.113.0", 24], // documentación
   ["224.0.0.0", 4], // multicast
-  ["240.0.0.0", 4] // reservada y broadcast
+  ["240.0.0.0", 4], // reservada y broadcast
 ];
 
 const ipv4ToInt = (ip) =>
@@ -56,8 +56,8 @@ const expandIPv6 = (ip) => {
   if (embedded) {
     const v4 = ipv4ToInt(embedded[1]);
     address = address.replace(
-      embedded[1],
-      `${(v4 >>> 16).toString(16)}:${(v4 & 0xffff).toString(16)}`
+        embedded[1],
+        `${(v4 >>> 16).toString(16)}:${(v4 & 0xffff).toString(16)}`,
     );
   }
 
@@ -67,7 +67,7 @@ const expandIPv6 = (ip) => {
   const missing = address.includes("::") ? 8 - headParts.length - tailParts.length : 0;
 
   return [...headParts, ...Array(missing).fill("0"), ...tailParts]
-    .map((part) => parseInt(part || "0", 16));
+      .map((part) => parseInt(part || "0", 16));
 };
 
 const isBlockedIPv6 = (ip) => {
@@ -104,12 +104,12 @@ const isBlockedAddress = (ip) => {
 const isBlockedHostname = (hostname) => {
   const host = hostname.toLowerCase().replace(/\.$/, "");
 
-  return host === "localhost"
-    || host.endsWith(".localhost")
-    || host.endsWith(".local")
-    || host.endsWith(".internal")
+  return host === "localhost" ||
+    host.endsWith(".localhost") ||
+    host.endsWith(".local") ||
+    host.endsWith(".internal") ||
     // Sin punto: nombres de la red local (p. ej. "metadata")
-    || (!host.includes(".") && !net.isIP(host));
+    (!host.includes(".") && !net.isIP(host));
 };
 
 // ---------- Validación de la URL ----------
@@ -152,13 +152,13 @@ const assertFetchable = (url) => {
 // "validar la IP" y "conectarse" (DNS rebinding). Si alguna IP del nombre es
 // interna, no se conecta.
 const safeLookup = (hostname, options, callback) => {
-  dns.lookup(hostname, { all: true, verbatim: true }, (error, addresses) => {
+  dns.lookup(hostname, {all: true, verbatim: true}, (error, addresses) => {
     if (error) return callback(error);
 
-    const blocked = addresses.find(({ address }) => isBlockedAddress(address));
+    const blocked = addresses.find(({address}) => isBlockedAddress(address));
     if (blocked || addresses.length === 0) {
       return callback(new BlockedAddressError(
-        `${hostname} resuelve a una dirección interna (${blocked && blocked.address})`
+          `${hostname} resuelve a una dirección interna (${blocked && blocked.address})`,
       ));
     }
 
@@ -187,14 +187,14 @@ const fetchOnce = (url) => new Promise((resolve, reject) => {
     lookup: safeLookup,
     headers: {
       "User-Agent": "GamerMatchLinkPreview/1.0",
-      "Accept": "text/html,application/xhtml+xml"
-    }
+      "Accept": "text/html,application/xhtml+xml",
+    },
   }, (response) => {
-    const { statusCode, headers } = response;
+    const {statusCode, headers} = response;
 
     if (statusCode >= 300 && statusCode < 400 && headers.location) {
       response.resume();
-      return finish(resolve, { redirect: new URL(headers.location, url) });
+      return finish(resolve, {redirect: new URL(headers.location, url)});
     }
 
     if (statusCode < 200 || statusCode >= 300) {
@@ -217,10 +217,10 @@ const fetchOnce = (url) => new Promise((resolve, reject) => {
       if (size >= MAX_BYTES || /<\/head>/i.test(chunk.toString("latin1"))) {
         const html = Buffer.concat(chunks).subarray(0, MAX_BYTES).toString("utf8");
         request.destroy();
-        finish(resolve, { html, finalUrl: url });
+        finish(resolve, {html, finalUrl: url});
       }
     });
-    response.on("end", () => finish(resolve, { html: Buffer.concat(chunks).toString("utf8"), finalUrl: url }));
+    response.on("end", () => finish(resolve, {html: Buffer.concat(chunks).toString("utf8"), finalUrl: url}));
     response.on("error", (error) => finish(reject, error));
   });
 
@@ -256,8 +256,8 @@ const parsePreview = (html, baseUrl) => {
   const $ = cheerio.load(html);
   const meta = (...names) => {
     for (const name of names) {
-      const value = $(`meta[property="${name}"]`).attr("content")
-        || $(`meta[name="${name}"]`).attr("content");
+      const value = $(`meta[property="${name}"]`).attr("content") ||
+        $(`meta[name="${name}"]`).attr("content");
       if (value && value.trim()) return value;
     }
     return null;
@@ -266,7 +266,7 @@ const parsePreview = (html, baseUrl) => {
   return {
     title: clean(meta("og:title", "twitter:title") || $("title").first().text(), 200),
     description: clean(meta("og:description", "twitter:description", "description"), 500),
-    image: absoluteImage(meta("og:image", "og:image:url", "twitter:image"), baseUrl)
+    image: absoluteImage(meta("og:image", "og:image:url", "twitter:image"), baseUrl),
   };
 };
 
@@ -276,7 +276,7 @@ const parsePreview = (html, baseUrl) => {
 // lanza ValidationError; cualquier otra falla (dirección interna, error de
 // red, sin HTML...) devuelve la vista previa vacía: compartir el link no debe
 // depender de que la vista previa salga.
-const fetchLinkPreview = async ({ url: rawUrl } = {}) => {
+const fetchLinkPreview = async ({url: rawUrl} = {}) => {
   let url = parseUrl(rawUrl);
 
   try {
@@ -298,7 +298,7 @@ const fetchLinkPreview = async ({ url: rawUrl } = {}) => {
     console.warn(`Vista previa ${kind} para ${url.hostname}: ${error.message}`);
   }
 
-  return { ...EMPTY_PREVIEW };
+  return {...EMPTY_PREVIEW};
 };
 
 module.exports = {
@@ -310,5 +310,5 @@ module.exports = {
   isBlockedHostname,
   parseUrl,
   assertFetchable,
-  parsePreview
+  parsePreview,
 };

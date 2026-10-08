@@ -194,7 +194,7 @@ const REGION_CODES = {
   "Yibuti": "DJ",
   "Zambia": "ZM",
   "Zimbabue": "ZW",
-  "Estado de Palestina": "PS"
+  "Estado de Palestina": "PS",
 };
 
-module.exports = { REGION_CODES };
+module.exports = {REGION_CODES};

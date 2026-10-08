@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const axios = require("axios");
 const admin = require("firebase-admin");
-const { FieldValue, Timestamp } = require("firebase-admin/firestore");
+const {FieldValue, Timestamp} = require("firebase-admin/firestore");
 
 const STEAM_OPENID_URL = "https://steamcommunity.com/openid/login";
 const CLAIMED_ID_REGEX =
@@ -23,12 +23,12 @@ const REQUIRED_SIGNED_FIELDS = [
   "identity",
   "return_to",
   "response_nonce",
-  "assoc_handle"
+  "assoc_handle",
 ];
 
 const steamApi = axios.create({
   baseURL: "https://api.steampowered.com",
-  timeout: 8000
+  timeout: 8000,
 });
 
 class ValidationError extends Error {}
@@ -41,13 +41,13 @@ const getAllowedOrigins = () => {
   const defaults = [
     "http://localhost:3000",
     projectId && `https://${projectId}.web.app`,
-    projectId && `https://${projectId}.firebaseapp.com`
+    projectId && `https://${projectId}.firebaseapp.com`,
   ];
 
   const extra = (process.env.STEAM_AUTH_ALLOWED_ORIGINS || "")
-    .split(",")
-    .map((origin) => origin.trim())
-    .filter(Boolean);
+      .split(",")
+      .map((origin) => origin.trim())
+      .filter(Boolean);
 
   return [...defaults, ...extra].filter(Boolean);
 };
@@ -107,7 +107,7 @@ const validateAssertion = (params) => {
 
   // response_nonce empieza con la fecha de emisión: 2026-09-30T12:00:00Z...
   const issuedAt = Date.parse(
-    (params["openid.response_nonce"] || "").slice(0, 20)
+      (params["openid.response_nonce"] || "").slice(0, 20),
   );
 
   if (
@@ -125,12 +125,12 @@ const verifyOpenIdResponse = async (params) => {
 
   const body = new URLSearchParams({
     ...params,
-    "openid.mode": "check_authentication"
+    "openid.mode": "check_authentication",
   });
 
-  const { data } = await axios.post(STEAM_OPENID_URL, body.toString(), {
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    timeout: 8000
+  const {data} = await axios.post(STEAM_OPENID_URL, body.toString(), {
+    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    timeout: 8000,
   });
 
   if (!/^is_valid\s*:\s*true$/m.test(data)) {
@@ -149,25 +149,25 @@ const verifyOpenIdResponse = async (params) => {
 // create() falla si el documento ya existe: cada respuesta sirve una vez
 const consumeNonce = async (params) => {
   const canonical = Object.keys(params)
-    .sort()
-    .map((key) => `${key}=${params[key]}`)
-    .join("&");
+      .sort()
+      .map((key) => `${key}=${params[key]}`)
+      .join("&");
 
   const hash = crypto
-    .createHash("sha256")
-    .update(canonical)
-    .digest("hex");
+      .createHash("sha256")
+      .update(canonical)
+      .digest("hex");
 
   try {
     await admin.firestore()
-      .collection("steamNonces")
-      .doc(hash)
-      .create({
-        createdAt: FieldValue.serverTimestamp(),
-        expiresAt: Timestamp.fromMillis(
-          Date.now() + NONCE_TTL_MS
-        )
-      });
+        .collection("steamNonces")
+        .doc(hash)
+        .create({
+          createdAt: FieldValue.serverTimestamp(),
+          expiresAt: Timestamp.fromMillis(
+              Date.now() + NONCE_TTL_MS,
+          ),
+        });
   } catch (error) {
     // 6 = ALREADY_EXISTS
     if (error.code === 6) {
@@ -186,20 +186,20 @@ const getPublicProfile = async (steamId64) => {
   }
 
   const res = await steamApi.get(
-    "/ISteamUser/GetPlayerSummaries/v0002/",
-    {
-      params: {
-        key,
-        steamids: steamId64
-      }
-    }
+      "/ISteamUser/GetPlayerSummaries/v0002/",
+      {
+        params: {
+          key,
+          steamids: steamId64,
+        },
+      },
   );
 
   const player = res.data.response?.players?.[0];
 
   return {
     username: player?.personaname || null,
-    avatar: player?.avatarfull || null
+    avatar: player?.avatarfull || null,
   };
 };
 
@@ -213,17 +213,17 @@ const loginWithSteam = async (params) => {
     getPublicProfile(steamId64).catch((error) => {
       // Sin perfil público igual se puede iniciar sesión
       console.error(
-        "⚠️ No se pudo obtener el perfil de Steam:",
-        error.message
+          "⚠️ No se pudo obtener el perfil de Steam:",
+          error.message,
       );
-      return { username: null, avatar: null };
-    })
+      return {username: null, avatar: null};
+    }),
   ]);
 
   return {
     customToken,
     steamId64,
-    ...profile
+    ...profile,
   };
 };
 
@@ -231,5 +231,5 @@ module.exports = {
   loginWithSteam,
   verifyOpenIdResponse,
   getPublicProfile,
-  ValidationError
+  ValidationError,
 };

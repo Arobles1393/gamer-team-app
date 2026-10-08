@@ -18,19 +18,19 @@ const write = process.argv.includes("--write");
 // Notificaciones cuyo relatedId es un postId
 const POST_NOTIFICATION_TYPES = ["comment", "interested", "group_message"];
 
-admin.initializeApp({ projectId: PROJECT_ID });
+admin.initializeApp({projectId: PROJECT_ID});
 const db = admin.firestore();
 
 const main = async () => {
   const [posts, comments, interests, notifications] = await Promise.all(
-    ["posts", "post_comments", "post_interested", "notifications"].map((name) => db.collection(name).get())
+      ["posts", "post_comments", "post_interested", "notifications"].map((name) => db.collection(name).get()),
   );
 
   const postIds = new Set(posts.docs.map((doc) => doc.id));
   const orphanComments = comments.docs.filter((doc) => !postIds.has(doc.data().postId));
   const orphanInterests = interests.docs.filter((doc) => !postIds.has(doc.data().postId));
   const orphanNotifications = notifications.docs.filter((doc) =>
-    POST_NOTIFICATION_TYPES.includes(doc.data().type) && !postIds.has(doc.data().relatedId)
+    POST_NOTIFICATION_TYPES.includes(doc.data().type) && !postIds.has(doc.data().relatedId),
   );
   const mediaPaths = orphanComments.map((doc) => doc.data().mediaPath).filter(Boolean);
 

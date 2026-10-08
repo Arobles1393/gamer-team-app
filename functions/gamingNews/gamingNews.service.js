@@ -8,12 +8,12 @@ const parser = new Parser();
 const feeds = [
   {
     source: "IGN",
-    url: "https://feeds.ign.com/ign/all"
+    url: "https://feeds.ign.com/ign/all",
   },
   {
     source: "GameSpot",
-    url: "https://www.gamespot.com/feeds/mashup/"
-  }
+    url: "https://www.gamespot.com/feeds/mashup/",
+  },
 ];
 
 // Trae los feeds y actualiza gaming_news en un solo batch (newsPlan.js): el
@@ -34,9 +34,9 @@ const syncGamingNewsService = async () => {
         }
 
         const id = Buffer
-          .from(item.link)
-          .toString("base64")
-          .replace(/\//g, "_");
+            .from(item.link)
+            .toString("base64")
+            .replace(/\//g, "_");
 
         fresh.push({
           id,
@@ -44,16 +44,16 @@ const syncGamingNewsService = async () => {
             title: item.title || "",
             // Solo un resumen: algunos feeds traen el artículo completo
             description: summarize(
-              item.contentSnippet ||
+                item.contentSnippet ||
               item["content:encodedSnippet"] ||
-              ""
+              "",
             ),
             link: item.link,
             image: getNewsImage(item),
             source: feed.source,
             publishedAt: item.pubDate ? new Date(item.pubDate) : new Date(),
-            createdAt: new Date()
-          }
+            createdAt: new Date(),
+          },
         });
       }
 
@@ -70,7 +70,7 @@ const syncGamingNewsService = async () => {
   }
 
   const existing = (await db.collection("gaming_news").get()).docs
-    .map((doc) => ({id: doc.id, source: doc.data().source}));
+      .map((doc) => ({id: doc.id, source: doc.data().source}));
 
   const {toSet, toDelete} = planNewsSync(existing, fresh, okSources);
 
@@ -83,7 +83,6 @@ const syncGamingNewsService = async () => {
 };
 
 const getNewsImage = (item) => {
-
   if (item.enclosure?.url) {
     return item.enclosure.url;
   }
@@ -97,10 +96,9 @@ const getNewsImage = (item) => {
   }
 
   if (item["content:encoded"]) {
-
     const match =
       item["content:encoded"].match(
-        /<img[^>]+src="([^"]+)"/i
+          /<img[^>]+src="([^"]+)"/i,
       );
 
     if (match) {
@@ -112,5 +110,5 @@ const getNewsImage = (item) => {
 };
 
 module.exports = {
-  syncGamingNewsService
+  syncGamingNewsService,
 };

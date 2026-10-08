@@ -1,5 +1,5 @@
 const functions = require("firebase-functions");
-const { fetchLinkPreview, ValidationError } = require("./guides.service");
+const {fetchLinkPreview, ValidationError} = require("./guides.service");
 const {describeError} = require("../shared/safeError");
 const {perUserLimit} = require("../shared/callableLimits");
 
@@ -10,33 +10,32 @@ const limitLinkPreview = perUserLimit(10);
 // pide direcciones internas (ver guides.service.js) y, si no se puede
 // generar, responde la vista previa vacía en vez de fallar.
 exports.fetchLinkPreview = functions.https.onCall(
-  async (request) => {
-
-    if (!request.auth) {
-      throw new functions.https.HttpsError(
-        "unauthenticated",
-        "Debes iniciar sesión para generar la vista previa"
-      );
-    }
-
-    limitLinkPreview(request.auth.uid);
-
-    try {
-      return await fetchLinkPreview(request.data);
-    } catch (error) {
-      if (error instanceof ValidationError) {
+    async (request) => {
+      if (!request.auth) {
         throw new functions.https.HttpsError(
-          "invalid-argument",
-          error.message
+            "unauthenticated",
+            "Debes iniciar sesión para generar la vista previa",
         );
       }
 
-      console.error("❌ Error vista previa de link:", describeError(error));
+      limitLinkPreview(request.auth.uid);
 
-      throw new functions.https.HttpsError(
-        "internal",
-        "Error generando la vista previa"
-      );
-    }
-  }
+      try {
+        return await fetchLinkPreview(request.data);
+      } catch (error) {
+        if (error instanceof ValidationError) {
+          throw new functions.https.HttpsError(
+              "invalid-argument",
+              error.message,
+          );
+        }
+
+        console.error("❌ Error vista previa de link:", describeError(error));
+
+        throw new functions.https.HttpsError(
+            "internal",
+            "Error generando la vista previa",
+        );
+      }
+    },
 );

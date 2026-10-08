@@ -14,14 +14,14 @@ const admin = require("firebase-admin");
 const PROJECT_ID = "gamerteam-4ed20";
 const write = process.argv.includes("--write");
 
-admin.initializeApp({ projectId: PROJECT_ID });
+admin.initializeApp({projectId: PROJECT_ID});
 const db = admin.firestore();
 
 const main = async () => {
   const [interests, posts, stats] = await Promise.all([
     db.collection("post_interested").get(),
     db.collection("posts").get(),
-    db.collection("game_stats").get()
+    db.collection("game_stats").get(),
   ]);
 
   const operations = [];
@@ -30,7 +30,7 @@ const main = async () => {
   const existingIds = new Set(interests.docs.map((doc) => doc.id));
 
   interests.forEach((doc) => {
-    const { postId, userId } = doc.data();
+    const {postId, userId} = doc.data();
     const id = `${postId}_${userId}`;
 
     if (doc.id === id) return;
@@ -48,17 +48,17 @@ const main = async () => {
   // ---------- game_stats.postCount ----------
   const postsByGame = {};
   posts.forEach((doc) => {
-    const { game } = doc.data();
+    const {game} = doc.data();
     if (game) postsByGame[game] = (postsByGame[game] || 0) + 1;
   });
 
   stats.forEach((doc) => {
-    const { game, postCount = 0 } = doc.data();
+    const {game, postCount = 0} = doc.data();
     const real = postsByGame[game] || 0;
 
     if (postCount === real) return;
 
-    operations.push((batch) => batch.update(doc.ref, { postCount: real }));
+    operations.push((batch) => batch.update(doc.ref, {postCount: real}));
     console.log(`- game_stats "${game}": postCount ${postCount} -> ${real}`);
   });
 

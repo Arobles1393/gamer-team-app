@@ -15,20 +15,20 @@
 //   solo). PROJECT_ID cambia el proyecto (por defecto gamerteam-4ed20).
 
 const admin = require("firebase-admin");
-const { FieldValue } = require("firebase-admin/firestore");
+const {FieldValue} = require("firebase-admin/firestore");
 
 const PROJECT_ID = process.env.PROJECT_ID || "gamerteam-4ed20";
 const SENSITIVE_FIELDS = ["phone", "email"];
 const BATCH_SIZE = 400;
 const apply = process.argv.includes("--apply");
 
-admin.initializeApp({ projectId: PROJECT_ID });
+admin.initializeApp({projectId: PROJECT_ID});
 const db = admin.firestore();
 
 const main = async () => {
-  const target = process.env.FIRESTORE_EMULATOR_HOST
-    ? `emulador ${process.env.FIRESTORE_EMULATOR_HOST}`
-    : `producción (${PROJECT_ID})`;
+  const target = process.env.FIRESTORE_EMULATOR_HOST ?
+    `emulador ${process.env.FIRESTORE_EMULATOR_HOST}` :
+    `producción (${PROJECT_ID})`;
   console.log(`Destino: ${target}. Modo: ${apply ? "--apply (escribe)" : "dry run (solo cuenta)"}`);
 
   const users = await db.collection("users").get();

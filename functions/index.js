@@ -6,25 +6,25 @@ const localSigner =
   process.env.FUNCTIONS_EMULATOR === "true" &&
   process.env.LOCAL_SIGNER_SERVICE_ACCOUNT;
 admin.initializeApp(
-  localSigner ? { serviceAccountId: localSigner } : undefined
+  localSigner ? {serviceAccountId: localSigner} : undefined,
 );
 
 // Tope de instancias para todas las funciones (auditoría M-09): un abuso no
 // escala sin límite. Antes de cargar las funciones, que lo leen al definirse.
 // syncGamingNews fija 1 por su cuenta.
-const { setGlobalOptions } = require("firebase-functions/v2");
-setGlobalOptions({ maxInstances: 10 });
-const { getSteamStats, getSteamPresence } = require("./steam/steam.functions");
-const { getGameLogo, getGamePortada } = require("./steamgrid/steamgrid.functions");
-const { syncGamingNews } = require("./gamingNews/gamingNews.functions");
-const { cleanupCommentMedia } = require("./postComments/postComments.functions");
-const { loginWithSteam } = require("./steamAuth/steamAuth.functions");
-const { logGameSearch } = require("./games/games.functions");
-const { getTwitchPresence } = require("./twitch/twitch.functions");
-const { fetchLinkPreview } = require("./guides/guides.functions");
-const { getCommunityStats } = require("./community/community.functions");
-const { deleteAccount } = require("./account/account.functions");
-const { getJoinInfo } = require("./steamJoin/steamJoin.functions");
+const {setGlobalOptions} = require("firebase-functions/v2");
+setGlobalOptions({maxInstances: 10});
+const {getSteamStats, getSteamPresence} = require("./steam/steam.functions");
+const {getGameLogo, getGamePortada} = require("./steamgrid/steamgrid.functions");
+const {syncGamingNews} = require("./gamingNews/gamingNews.functions");
+const {cleanupCommentMedia} = require("./postComments/postComments.functions");
+const {loginWithSteam} = require("./steamAuth/steamAuth.functions");
+const {logGameSearch} = require("./games/games.functions");
+const {getTwitchPresence} = require("./twitch/twitch.functions");
+const {fetchLinkPreview} = require("./guides/guides.functions");
+const {getCommunityStats} = require("./community/community.functions");
+const {deleteAccount} = require("./account/account.functions");
+const {getJoinInfo} = require("./steamJoin/steamJoin.functions");
 
 exports.getSteamStats = getSteamStats;
 exports.getSteamPresence = getSteamPresence;

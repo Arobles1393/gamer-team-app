@@ -13,8 +13,8 @@ const perUserLimit = (limit, windowMs = 60 * 1000) => {
     } catch (error) {
       if (error instanceof RateLimitError) {
         throw new functions.https.HttpsError(
-          "resource-exhausted",
-          "Demasiadas solicitudes, intenta en un momento"
+            "resource-exhausted",
+            "Demasiadas solicitudes, intenta en un momento",
         );
       }
       throw error;

@@ -53,7 +53,7 @@ const createTtlCache = ({ttlMs, max = 500}, now = () => Date.now()) => {
     },
     get size() {
       return entries.size;
-    }
+    },
   };
 };
 

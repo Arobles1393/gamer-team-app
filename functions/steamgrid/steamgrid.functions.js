@@ -1,5 +1,5 @@
 const functions = require("firebase-functions");
-const { getGameLogo, getGamePortada, ValidationError } = require("./steamgrid.service");
+const {getGameLogo, getGamePortada, ValidationError} = require("./steamgrid.service");
 const {describeError} = require("../shared/safeError");
 const {perUserLimit} = require("../shared/callableLimits");
 
@@ -17,11 +17,10 @@ const mapSteamGridError = (error, fallbackMessage) => {
 };
 
 exports.getGameLogo = functions.https.onCall(async (request) => {
-
   if (!request.auth) {
     throw new functions.https.HttpsError(
-      "unauthenticated",
-      "Debes iniciar sesión para consultar el logo del juego"
+        "unauthenticated",
+        "Debes iniciar sesión para consultar el logo del juego",
     );
   }
 
@@ -35,11 +34,10 @@ exports.getGameLogo = functions.https.onCall(async (request) => {
 });
 
 exports.getGamePortada = functions.https.onCall(async (request) => {
-
   if (!request.auth) {
     throw new functions.https.HttpsError(
-      "unauthenticated",
-      "Debes iniciar sesión para consultar la portada del juego"
+        "unauthenticated",
+        "Debes iniciar sesión para consultar la portada del juego",
     );
   }
 

@@ -1,7 +1,7 @@
 const admin = require("firebase-admin");
 // Del submódulo: admin.firestore.Timestamp no existe en el emulador
-const { Timestamp } = require("firebase-admin/firestore");
-const { REGION_CODES } = require("./regions");
+const {Timestamp} = require("firebase-admin/firestore");
+const {REGION_CODES} = require("./regions");
 
 // Mapa de la comunidad: cuántos jugadores activos hay por país.
 // Solo sale información AGREGADA: ni uids, ni nombres, ni filas de usuario.
@@ -22,28 +22,28 @@ const SNAPSHOT_TTL_MS = 60 * 1000;
 
 class ValidationError extends Error {}
 
-let cache = { at: 0, rows: null, pending: null };
+let cache = {at: 0, rows: null, pending: null};
 
 // users.games guarda objetos { id, name, image }: aquí solo importa el id
 const toGameIds = (games) =>
   (Array.isArray(games) ? games : [])
-    .map((game) => Number(game?.id))
-    .filter((id) => Number.isInteger(id) && id > 0);
+      .map((game) => Number(game?.id))
+      .filter((id) => Number.isInteger(id) && id > 0);
 
 // Filas mínimas { region, gameIds } de los usuarios activos. Nunca salen
 // de la función.
 const queryActiveRows = async () => {
   const since = Timestamp.fromMillis(Date.now() - ACTIVE_WINDOW_MINUTES * 60 * 1000);
   const snapshot = await admin.firestore()
-    .collection("users")
-    .where("lastSeen", ">=", since)
-    .select("region", "games")
-    .limit(MAX_ACTIVE_ROWS)
-    .get();
+      .collection("users")
+      .where("lastSeen", ">=", since)
+      .select("region", "games")
+      .limit(MAX_ACTIVE_ROWS)
+      .get();
 
   return snapshot.docs.map((doc) => {
     const data = doc.data();
-    return { region: data.region ?? null, gameIds: toGameIds(data.games) };
+    return {region: data.region ?? null, gameIds: toGameIds(data.games)};
   });
 };
 
@@ -52,14 +52,14 @@ const getActiveSnapshot = async () => {
   // Si ya hay una consulta en curso, se espera esa (no se lanzan varias)
   if (!cache.pending) {
     cache.pending = queryActiveRows()
-      .then((rows) => {
-        cache = { at: Date.now(), rows, pending: null };
-        return rows;
-      })
-      .catch((error) => {
-        cache.pending = null;
-        throw error;
-      });
+        .then((rows) => {
+          cache = {at: Date.now(), rows, pending: null};
+          return rows;
+        })
+        .catch((error) => {
+          cache.pending = null;
+          throw error;
+        });
   }
   return cache.pending;
 };
@@ -69,9 +69,9 @@ const getActiveSnapshot = async () => {
 // no cuenta. Países con 1..minCount-1 activos: { count: null, masked: true }.
 // Sin masa crítica (total < minActive): countries vacío, ready false.
 const aggregateActiveUsers = (
-  rows,
-  gameId = null,
-  { minCount = MIN_COUNT_PER_COUNTRY, minActive = MIN_ACTIVE_TO_SHOW_MAP, regionCodes = REGION_CODES } = {}
+    rows,
+    gameId = null,
+    {minCount = MIN_COUNT_PER_COUNTRY, minActive = MIN_ACTIVE_TO_SHOW_MAP, regionCodes = REGION_CODES} = {},
 ) => {
   const counts = {};
   let total = 0;
@@ -85,11 +85,11 @@ const aggregateActiveUsers = (
   }
 
   const ready = total >= minActive;
-  if (!ready) return { total, approximate: false, countries: {}, ready };
+  if (!ready) return {total, approximate: false, countries: {}, ready};
 
   const countries = {};
   for (const [code, count] of Object.entries(counts)) {
-    countries[code] = count >= minCount ? { count } : { count: null, masked: true };
+    countries[code] = count >= minCount ? {count} : {count: null, masked: true};
   }
 
   // Con el total exacto se podría despejar un país enmascarado (total menos
@@ -97,10 +97,10 @@ const aggregateActiveUsers = (
   // y se muestra como "más de N".
   const hasMasked = Object.values(countries).some((country) => country.masked);
   if (hasMasked) {
-    return { total: Math.floor(total / TOTAL_ROUNDING) * TOTAL_ROUNDING, approximate: true, countries, ready };
+    return {total: Math.floor(total / TOTAL_ROUNDING) * TOTAL_ROUNDING, approximate: true, countries, ready};
   }
 
-  return { total, approximate: false, countries, ready };
+  return {total, approximate: false, countries, ready};
 };
 
 const parseGameId = (data) => {
@@ -118,9 +118,9 @@ const getCommunityStats = async (data) => {
   const stats = aggregateActiveUsers(rows, gameId);
   // Sin masa crítica tampoco se dice cuántos hay. minCount: para el texto
   // "menos de N" de los países enmascarados
-  return stats.ready
-    ? { ...stats, minCount: MIN_COUNT_PER_COUNTRY }
-    : { total: null, approximate: false, countries: {}, ready: false, minCount: MIN_COUNT_PER_COUNTRY };
+  return stats.ready ?
+    {...stats, minCount: MIN_COUNT_PER_COUNTRY} :
+    {total: null, approximate: false, countries: {}, ready: false, minCount: MIN_COUNT_PER_COUNTRY};
 };
 
 module.exports = {
@@ -132,5 +132,5 @@ module.exports = {
   aggregateActiveUsers,
   getActiveSnapshot,
   getCommunityStats,
-  toGameIds
+  toGameIds,
 };

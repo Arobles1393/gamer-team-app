@@ -22,15 +22,15 @@ const planNewsSync = (existing, fresh, okSources) => {
   }
   const toSet = [...perSource.values()].flatMap((list) =>
     list
-      .sort((a, b) => b.data.publishedAt - a.data.publishedAt)
-      .slice(0, MAX_NEWS_PER_SOURCE)
+        .sort((a, b) => b.data.publishedAt - a.data.publishedAt)
+        .slice(0, MAX_NEWS_PER_SOURCE),
   );
 
   // Solo se borra lo de fuentes que respondieron y ya no viene
   const keep = new Set(toSet.map((item) => item.id));
   const toDelete = existing
-    .filter((doc) => ok.has(doc.source) && !keep.has(doc.id))
-    .map((doc) => doc.id);
+      .filter((doc) => ok.has(doc.source) && !keep.has(doc.id))
+      .map((doc) => doc.id);
 
   return {toSet, toDelete};
 };

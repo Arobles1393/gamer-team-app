@@ -17,11 +17,11 @@ admin.initializeApp({projectId: "gamerteam-4ed20"});
 const {syncGamingNewsService} = require("../gamingNews/gamingNews.service");
 
 syncGamingNewsService()
-  .then((result) => {
-    console.log("Noticias actualizadas:", JSON.stringify(result));
-    process.exit(0);
-  })
-  .catch((error) => {
-    console.error("No se pudieron actualizar las noticias:", error.message);
-    process.exit(1);
-  });
+    .then((result) => {
+      console.log("Noticias actualizadas:", JSON.stringify(result));
+      process.exit(0);
+    })
+    .catch((error) => {
+      console.error("No se pudieron actualizar las noticias:", error.message);
+      process.exit(1);
+    });

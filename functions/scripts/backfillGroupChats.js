@@ -10,26 +10,26 @@
 // o una cuenta de servicio del proyecto.
 
 const admin = require("firebase-admin");
-const { FieldValue } = require("firebase-admin/firestore");
+const {FieldValue} = require("firebase-admin/firestore");
 
 const PROJECT_ID = "gamerteam-4ed20";
 const write = process.argv.includes("--write");
 
-admin.initializeApp({ projectId: PROJECT_ID });
+admin.initializeApp({projectId: PROJECT_ID});
 const db = admin.firestore();
 
 const main = async () => {
   const [posts, interested, groups] = await Promise.all([
     db.collection("posts").get(),
     db.collection("post_interested").get(),
-    db.collection("group_chats").get()
+    db.collection("group_chats").get(),
   ]);
 
   const existing = new Set(groups.docs.map((doc) => doc.id));
 
   const interestedByPost = {};
   interested.forEach((doc) => {
-    const { postId, userId } = doc.data();
+    const {postId, userId} = doc.data();
     (interestedByPost[postId] ??= new Set()).add(userId);
   });
 
@@ -42,7 +42,7 @@ const main = async () => {
     const post = doc.data();
     const participants = [
       post.userId,
-      ...[...(interestedByPost[doc.id] || [])].filter((uid) => uid !== post.userId)
+      ...[...(interestedByPost[doc.id] || [])].filter((uid) => uid !== post.userId),
     ];
 
     console.log(`- ${doc.id.slice(0, 6)}… ${post.game}: ${participants.length} participante(s)`);
@@ -54,7 +54,7 @@ const main = async () => {
       lastMessage: "",
       lastMessageAt: null,
       lastSenderId: null,
-      createdAt: post.createdAt || FieldValue.serverTimestamp()
+      createdAt: post.createdAt || FieldValue.serverTimestamp(),
     });
     count++;
   });

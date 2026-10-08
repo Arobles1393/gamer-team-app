@@ -22,14 +22,14 @@ if (!target) {
   process.exit(1);
 }
 
-admin.initializeApp({ projectId: PROJECT_ID });
+admin.initializeApp({projectId: PROJECT_ID});
 
 const main = async () => {
-  const user = target.includes("@")
-    ? await admin.auth().getUserByEmail(target)
-    : await admin.auth().getUser(target);
+  const user = target.includes("@") ?
+    await admin.auth().getUserByEmail(target) :
+    await admin.auth().getUser(target);
 
-  const claims = { ...(user.customClaims || {}) };
+  const claims = {...(user.customClaims || {})};
 
   if (remove) {
     delete claims.admin;

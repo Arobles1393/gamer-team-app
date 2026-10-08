@@ -1,5 +1,5 @@
 const admin = require("firebase-admin");
-const { FieldValue } = require("firebase-admin/firestore");
+const {FieldValue} = require("firebase-admin/firestore");
 const {isOwnCommentMediaPath} = require("../postComments/commentMedia");
 
 // Eliminar cuenta: borra todo lo del usuario y lo que otros tienen ligado a
@@ -71,14 +71,14 @@ const createStorage = async () => {
 const deleteFile = async (bucket, path) => {
   if (!bucket || !path) return 0;
   // Si cleanupCommentMedia ya lo borró, "not found" no es error
-  await bucket.file(path).delete({ ignoreNotFound: true });
+  await bucket.file(path).delete({ignoreNotFound: true});
   return 1;
 };
 
 const deletePrefix = async (bucket, prefix) => {
   if (!bucket) return 0;
-  const [files] = await bucket.getFiles({ prefix });
-  await Promise.all(files.map((file) => file.delete({ ignoreNotFound: true })));
+  const [files] = await bucket.getFiles({prefix});
+  await Promise.all(files.map((file) => file.delete({ignoreNotFound: true})));
   return files.length;
 };
 
@@ -96,7 +96,7 @@ const steps = (uid, bucket) => {
       for (const post of posts) {
         const [comments, interests] = await Promise.all([
           docsOf(db().collection("post_comments").where("postId", "==", post.id)),
-          docsOf(db().collection("post_interested").where("postId", "==", post.id))
+          docsOf(db().collection("post_interested").where("postId", "==", post.id)),
         ]);
         comments.forEach((c) => addCommentMedia(mediaPaths, c.data()));
         await deleteRefs([...comments, ...interests].map((d) => d.ref));
@@ -109,7 +109,7 @@ const steps = (uid, bucket) => {
       }
       for (const [game, count] of Object.entries(perGame)) {
         const stats = db().doc(`game_stats/${encodeURIComponent(game)}`);
-        if ((await stats.get()).exists) await stats.update({ postCount: FieldValue.increment(-count) });
+        if ((await stats.get()).exists) await stats.update({postCount: FieldValue.increment(-count)});
       }
       return posts.length;
     }],
@@ -125,13 +125,13 @@ const steps = (uid, bucket) => {
     ["intereses", async () => {
       const interests = await docsOf(db().collection("post_interested").where("userId", "==", uid));
       for (const interest of interests) {
-        const { postId } = interest.data();
+        const {postId} = interest.data();
         const postRef = db().doc(`posts/${postId}`);
         const groupRef = db().doc(`group_chats/${postId}`);
         await db().runTransaction(async (tx) => {
           const [post, group] = await Promise.all([tx.get(postRef), tx.get(groupRef)]);
-          if (post.exists) tx.update(postRef, { interestedCount: FieldValue.increment(-1) });
-          if (group.exists) tx.update(groupRef, { participants: FieldValue.arrayRemove(uid) });
+          if (post.exists) tx.update(postRef, {interestedCount: FieldValue.increment(-1)});
+          if (group.exists) tx.update(groupRef, {participants: FieldValue.arrayRemove(uid)});
           tx.delete(interest.ref);
         });
       }
@@ -165,7 +165,7 @@ const steps = (uid, bucket) => {
         docsOf(db().collection("friends").where("users", "array-contains", uid)),
         docsOf(db().collection("friend_requests").where("senderId", "==", uid)),
         docsOf(db().collection("friend_requests").where("receiverId", "==", uid)),
-        docsOf(db().collection("blocks").where("participants", "array-contains", uid))
+        docsOf(db().collection("blocks").where("participants", "array-contains", uid)),
       ]);
       return deleteRefs(groups.flat().map((d) => d.ref));
     }],
@@ -174,7 +174,7 @@ const steps = (uid, bucket) => {
     ["notificaciones", async () => {
       const groups = await Promise.all([
         docsOf(db().collection("notifications").where("userId", "==", uid)),
-        docsOf(db().collection("notifications").where("senderId", "==", uid))
+        docsOf(db().collection("notifications").where("senderId", "==", uid)),
       ]);
       return deleteRefs(groups.flat().map((d) => d.ref));
     }],
@@ -185,7 +185,7 @@ const steps = (uid, bucket) => {
       return deleteRefs([
         ...guides.map((g) => g.ref),
         db().doc(`matchProfiles/${uid}`),
-        db().doc(`publicProfiles/${uid}`)
+        db().doc(`publicProfiles/${uid}`),
       ]);
     }],
 
@@ -210,7 +210,7 @@ const steps = (uid, bucket) => {
         if (error.code !== "auth/user-not-found") throw error;
       });
       return 1;
-    }]
+    }],
   ];
 };
 
@@ -228,7 +228,7 @@ const deleteAccount = async (uid) => {
     }
   }
   console.info("deleteAccount: completado", counts);
-  return { success: true };
+  return {success: true};
 };
 
-module.exports = { deleteAccount, assertRecentLogin, RecentLoginError, RECENT_LOGIN_SECONDS };
+module.exports = {deleteAccount, assertRecentLogin, RecentLoginError, RECENT_LOGIN_SECONDS};

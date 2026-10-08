@@ -13,24 +13,24 @@
 // de `firebase login` o a una cuenta de servicio del proyecto.
 
 const admin = require("firebase-admin");
-const { FieldValue } = require("firebase-admin/firestore");
+const {FieldValue} = require("firebase-admin/firestore");
 
 const PROJECT_ID = "gamerteam-4ed20";
 const write = process.argv.includes("--write");
 
-admin.initializeApp({ projectId: PROJECT_ID });
+admin.initializeApp({projectId: PROJECT_ID});
 const db = admin.firestore();
 
 const main = async () => {
   const [posts, interested, profiles] = await Promise.all([
     db.collection("posts").get(),
     db.collection("post_interested").get(),
-    db.collection("publicProfiles").get()
+    db.collection("publicProfiles").get(),
   ]);
 
   const interestedByPost = {};
   interested.forEach((doc) => {
-    const { postId } = doc.data();
+    const {postId} = doc.data();
     interestedByPost[postId] = (interestedByPost[postId] || 0) + 1;
   });
 
@@ -51,27 +51,27 @@ const main = async () => {
     postsByGame[post.game] = (postsByGame[post.game] || 0) + 1;
 
     console.log(
-      `- post ${doc.id.slice(0, 6)}… ${post.game}: ` +
-      `interestedCount=${interestedCount}, authorRegion=${authorRegion}`
+        `- post ${doc.id.slice(0, 6)}… ${post.game}: ` +
+      `interestedCount=${interestedCount}, authorRegion=${authorRegion}`,
     );
 
-    batch.update(doc.ref, { interestedCount, authorRegion });
+    batch.update(doc.ref, {interestedCount, authorRegion});
   });
 
   for (const [game, postCount] of Object.entries(postsByGame)) {
     console.log(`- game_stats ${game}: postCount=${postCount}`);
 
     batch.set(
-      db.collection("game_stats").doc(encodeURIComponent(game)),
-      { game, postCount, updatedAt: FieldValue.serverTimestamp() },
-      { merge: true }
+        db.collection("game_stats").doc(encodeURIComponent(game)),
+        {game, postCount, updatedAt: FieldValue.serverTimestamp()},
+        {merge: true},
     );
   }
 
   if (!write) {
     console.log(
-      `\n${posts.size} posts y ${Object.keys(postsByGame).length} juegos ` +
-      "por actualizar. Agrega --write para escribirlos."
+        `\n${posts.size} posts y ${Object.keys(postsByGame).length} juegos ` +
+      "por actualizar. Agrega --write para escribirlos.",
     );
     return;
   }
