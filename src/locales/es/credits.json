@@ -27,5 +27,19 @@
   },
   "menu": "Créditos",
   "poweredBy": "Con tecnología de",
-  "steamData": "Datos de Steam"
+  "steamData": "Datos de Steam",
+  "page": {
+    "title": "Créditos",
+    "intro": "GamerMatch se apoya en servicios y librerías de terceros. Aquí están todos, con qué se usa cada uno.",
+    "services": "Datos y servicios",
+    "owners": "Los datos, imágenes y marcas de cada servicio pertenecen a sus respectivos propietarios.",
+    "newTab": "(se abre en una pestaña nueva)",
+    "openSource": "Código abierto",
+    "openSourceIntro": "Librerías de código abierto que usa la app directamente. La lista se genera automáticamente.",
+    "library": "Librería",
+    "version": "Versión",
+    "license": "Licencia",
+    "fullLicenses": "Textos completos de las licencias (incluye las dependencias indirectas)",
+    "trademarks": "Marcas"
+  }
 }

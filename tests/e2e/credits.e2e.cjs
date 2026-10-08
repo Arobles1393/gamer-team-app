@@ -106,6 +106,43 @@ const footerCheck = async (page, name, path, ready) => {
     check("sin errores de JS (sin sesión)", page.errors.length === 0, page.errors.join(" | ").slice(0, 200));
     await page.context().close();
 
+    // ---------- /creditos sin sesión ----------
+    console.log("\n=== /creditos");
+    page = await newPage();
+    await page.goto(`${BASE}/creditos`);
+    await page.locator(".credits__services").waitFor({ timeout: 15000 });
+    check("abre sin sesión (sin ir al login)", new URL(page.url()).pathname === "/creditos");
+    check("document.title", (await page.title()) === "Créditos · GamerMatch", await page.title());
+    const creditsSource = fs.readFileSync(path.join(__dirname, "../../src/credits/credits.js"), "utf8");
+    const expectedNames = [...creditsSource.matchAll(/name: "([^"]+)"/g)].map((m) => m[1]);
+    const shownNames = (await page.locator(".credits__service-name").allInnerTexts()).map((s) => s.replace(/\(se abre.*\)/, "").trim());
+    check("lista exactamente los servicios de credits.js", JSON.stringify(shownNames) === JSON.stringify(expectedNames), shownNames.join(", "));
+    const serviceLinks = page.locator(".credits__service-name");
+    const rels = await serviceLinks.evaluateAll((els) => els.map((a) => `${a.target}|${a.rel}`));
+    check("enlaces de servicios: pestaña nueva con noopener noreferrer", rels.every((r) => r === "_blank|noopener noreferrer"));
+    check("sin logos de terceros", await page.locator(".credits img, .credits svg").count() === 0);
+    check("nota de propietarios", /pertenecen a sus respectivos propietarios/.test(await page.locator(".credits__note").innerText()));
+    const libs = JSON.parse(fs.readFileSync(path.join(__dirname, "../../src/credits/openSourceLibraries.json"), "utf8"));
+    check("tabla de librerías generada", await page.locator(".credits__table tbody tr").count() === libs.length && libs.length > 10, `${libs.length}`);
+    check("enlace a /third-party-licenses.txt", (await page.locator(".credits__licenses-link").getAttribute("href")) === "/third-party-licenses.txt");
+    const trademarkES = await page.locator(".credits__trademarks").innerText();
+    check("aviso de marcas exacto", trademarkES === "GamerMatch es un proyecto independiente y no está afiliado, respaldado ni patrocinado por Valve, Steam, Twitch, Google, IGN, GameSpot, RAWG, SteamGridDB, Ko-fi ni ningún otro servicio mencionado. Todas las marcas, nombres y logotipos pertenecen a sus respectivos propietarios.");
+    check("en español sin aviso de idioma", await page.locator(".credits .legal__notice").count() === 0);
+    await page.screenshot({ path: `${SHOTS}/credits-page.png`, fullPage: true });
+    check("sin errores de JS (/creditos)", page.errors.length === 0, page.errors.join(" | ").slice(0, 200));
+    await page.context().close();
+
+    page = await newPage({ locale: "en-US" });
+    await page.goto(`${BASE}/creditos`);
+    await page.locator(".credits__services").waitFor({ timeout: 15000 });
+    check("en inglés: textos de la interfaz traducidos", (await page.locator(".feed-header__title").innerText()).toLowerCase() === "credits"
+      && /Data and services/i.test(await page.locator("#credits-services").innerText()));
+    check("en inglés: el aviso de marcas sigue en español", (await page.locator(".credits__trademarks").innerText()) === trademarkES
+      && (await page.locator(".credits__trademarks").getAttribute("lang")) === "es");
+    check("en inglés: aviso de que solo está en español", /only available in Spanish/.test(await page.locator(".credits .legal__notice").innerText()));
+    check("en inglés: licencias sin traducir", JSON.stringify(await page.locator(".credits__table tbody td:nth-child(3)").allInnerTexts()) === JSON.stringify(libs.map((l) => l.license)));
+    await page.context().close();
+
     // ---------- Pie con sesión ----------
     console.log("\n=== pie con sesión");
     page = await newPage();

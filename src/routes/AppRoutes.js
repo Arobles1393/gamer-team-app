@@ -11,6 +11,7 @@ import { AdminReports, AdminGuides } from "../components/Admin";
 import { GuidesPage, GuideCreate, GuideDetail } from "../components/Guides";
 import { CommunityPage } from "../components/Community";
 import { LegalPage } from "../components/Legal";
+import { CreditsPage } from "../components/Credits";
 import RequireAuth from "./RequireAuth";
 import RequireAdmin from "./RequireAdmin";
 
@@ -38,6 +39,11 @@ const AppRoutes = ({
 			<Route
 				path="/terminos"
 				element={<LegalPage type="terms" />}
+			/>
+			{/* Créditos: pública, como las legales */}
+			<Route
+				path="/creditos"
+				element={<CreditsPage />}
 			/>
 			<Route
 				path="/profile"

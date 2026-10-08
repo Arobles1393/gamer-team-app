@@ -27,5 +27,19 @@
   },
   "menu": "Credits",
   "poweredBy": "Powered by",
-  "steamData": "Data from Steam"
+  "steamData": "Data from Steam",
+  "page": {
+    "title": "Credits",
+    "intro": "GamerMatch relies on third-party services and libraries. Here they all are, and what each one is used for.",
+    "services": "Data and services",
+    "owners": "The data, images and trademarks of each service belong to their respective owners.",
+    "newTab": "(opens in a new tab)",
+    "openSource": "Open source",
+    "openSourceIntro": "Open source libraries the app uses directly. This list is generated automatically.",
+    "library": "Library",
+    "version": "Version",
+    "license": "License",
+    "fullLicenses": "Full license texts (including indirect dependencies)",
+    "trademarks": "Trademarks"
+  }
 }

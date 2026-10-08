@@ -1,4 +1,5 @@
 import { CREDITS, CREDIT_CATEGORIES } from "./credits";
+import { TRADEMARKS_NOTICE_ES } from "./trademarks";
 import es from "../locales/es/credits.json";
 import en from "../locales/en/credits.json";
 import pt from "../locales/pt/credits.json";
@@ -29,6 +30,15 @@ describe("credits.js", () => {
     for (const category of CREDIT_CATEGORIES) {
       expect(typeof get(LOCALES[lang], `category.${category}`)).toBe("string");
     }
+  });
+
+  test("el aviso de marcas solo nombra servicios que se usan", () => {
+    const names = CREDITS.map((c) => c.name);
+    // Valve es la dueña de Steam
+    const used = (brand) => brand === "Valve" || names.some((name) => name.includes(brand));
+    const listed = TRADEMARKS_NOTICE_ES.match(/patrocinado por (.+?) ni ningún otro/)[1].split(", ");
+    expect(listed.length).toBeGreaterThan(0);
+    for (const brand of listed) expect([brand, used(brand)]).toEqual([brand, true]);
   });
 
   test("solo RAWG exige atribución", () => {

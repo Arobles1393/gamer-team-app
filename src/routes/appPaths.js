@@ -16,12 +16,13 @@ export const APP_PATHS = [
   "/comunidad",
   "/guias",
   "/privacidad",
-  "/terminos"
+  "/terminos",
+  "/creditos"
 ];
 
 export const hasPath = (path) => APP_PATHS.includes(path);
 
 // Donde la guía de bienvenida nunca se abre sola
-export const NO_ONBOARDING_PATHS = ["/login", "/recuperar", "/auth/steam/return", "/privacidad", "/terminos"];
+export const NO_ONBOARDING_PATHS = ["/login", "/recuperar", "/auth/steam/return", "/privacidad", "/terminos", "/creditos"];
 export const isOnboardingBlockedPath = (pathname) =>
   NO_ONBOARDING_PATHS.includes(pathname) || pathname.startsWith("/admin");
