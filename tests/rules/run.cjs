@@ -22,7 +22,8 @@ const SUITES = [
   "email-verification",
   "private-preferences",
   "notifications",
-  "field-limits"
+  "field-limits",
+  "block-groups"
 ];
 
 const results = [];

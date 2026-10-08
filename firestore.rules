@@ -356,7 +356,15 @@ service cloud.firestore {
                          && validPostFields()
                          && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['scheduledAt']) || validSchedule()))
                         || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['interestedCount'])
-                            && interestToggled()));
+                            && interestToggled())
+                        // El autor saca a alguien que bloqueó (auditoría M-07): -1
+                        // atado a que esa persona sale del chat del grupo en el
+                        // mismo batch (la regla del grupo exige el bloqueo)
+                        || (resource.data.userId == request.auth.uid
+                            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['interestedCount'])
+                            && request.resource.data.interestedCount == resource.data.get('interestedCount', 0) - 1
+                            && getAfter(/databases/$(database)/documents/group_chats/$(postId)).data.participants.size()
+                                 == get(/databases/$(database)/documents/group_chats/$(postId)).data.participants.size() - 1));
       allow delete: if isSignedIn()
                     && resource.data.userId == request.auth.uid;
     }
@@ -451,7 +459,12 @@ service cloud.firestore {
                          && (!existsAfter(postPath(resource.data.postId))
                              || countAfter(resource.data.postId) == countBefore(resource.data.postId) - 1))
                         || (postAuthor(resource.data.postId) == request.auth.uid
-                            && !existsAfter(postPath(resource.data.postId))));
+                            && !existsAfter(postPath(resource.data.postId)))
+                        // El autor saca de su partida a alguien que bloqueó
+                        // (blockService.blockUser, auditoría M-07), con su -1
+                        || (postAuthor(resource.data.postId) == request.auth.uid
+                            && exists(/databases/$(database)/documents/blocks/$(request.auth.uid + '_' + resource.data.userId))
+                            && countAfter(resource.data.postId) == countBefore(resource.data.postId) - 1));
       allow update: if false;
     }
 
@@ -713,6 +726,17 @@ service cloud.firestore {
           && request.auth.uid in resource.data.participants
           && request.resource.data.lastSenderId == request.auth.uid
           && validLastMessage())
+        // El autor saca a alguien que bloqueó (auditoría M-07): solo esa
+        // persona, sin su "Me interesa" en el mismo batch
+        || (changed().hasOnly(['participants'])
+          && postDoc().data.userId == request.auth.uid
+          && request.resource.data.participants.toSet().hasAll([request.auth.uid])
+          && resource.data.participants.toSet().hasAll(request.resource.data.participants.toSet())
+          && resource.data.participants.removeAll(request.resource.data.participants).size() == 1
+          && exists(/databases/$(database)/documents/blocks/$(request.auth.uid + '_'
+               + resource.data.participants.removeAll(request.resource.data.participants)[0]))
+          && !existsAfter(/databases/$(database)/documents/post_interested/$(postId + '_'
+               + resource.data.participants.removeAll(request.resource.data.participants)[0])))
         // Desactivar al borrar el post
         || (changed().hasOnly(['active'])
           && request.resource.data.active == false
