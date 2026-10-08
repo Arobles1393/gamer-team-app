@@ -15,9 +15,11 @@ const userProfileExists = async (userId) => {
 const updateUserProfile = async (userId, profileData) => {
   const userRef = doc(db, "users", userId);
 
+  // usernameLower tiene que ser exactamente username en minúsculas (firestore.rules)
+  const username = profileData.username.trim();
   const data = {
-    username: profileData.username,
-    usernameLower: profileData.username.trim().toLowerCase(),
+    username,
+    usernameLower: username.toLowerCase(),
     links: profileData.links,
     description: profileData.description,
     games: profileData.games,

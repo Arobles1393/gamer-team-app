@@ -3,7 +3,7 @@
 // escriben los servicios del cliente.
 const { assertSucceeds, assertFails } = require("@firebase/rules-unit-testing");
 const {
-  doc, collection, setDoc, addDoc, updateDoc, writeBatch, serverTimestamp, Timestamp
+  doc, collection, setDoc, addDoc, updateDoc, writeBatch, serverTimestamp, Timestamp, increment
 } = require("firebase/firestore");
 
 const A = "aaaUser1";
@@ -153,7 +153,7 @@ module.exports = async ({ env, test }) => {
     const s = db(uid);
     const batch = writeBatch(s);
     batch.set(doc(s, "posts", id), { ...data, userId: uid, interestedCount: 0, createdAt: serverTimestamp() });
-    batch.set(doc(s, "group_chats", id), { postId: id, participants: [uid], active: true, lastMessage: "", lastMessageAt: null });
+    batch.set(doc(s, "group_chats", id), { postId: id, participants: [uid], active: true, lastMessage: "", lastMessageAt: null, lastSenderId: null, createdAt: serverTimestamp() });
     return batch.commit();
   };
 
@@ -259,6 +259,77 @@ module.exports = async ({ env, test }) => {
 
   await test("último mensaje del grupo firmado por otro: rechazado", () =>
     assertFails(updateDoc(doc(db(A), "group_chats", "p1"), { lastMessage: "x", lastSenderId: B, lastMessageAt: serverTimestamp() })));
+
+  // ---------- Quiero jugar (se lee sin sesión) ----------
+  const interest = (uid, postId, extra = {}) => {
+    const s2 = db(uid);
+    const batch = writeBatch(s2);
+    batch.set(doc(s2, "post_interested", `${postId}_${uid}`), { postId, userId: uid, createdAt: serverTimestamp(), ...extra });
+    batch.update(doc(s2, "posts", postId), { interestedCount: increment(1) });
+    return batch.commit();
+  };
+
+  await test("Quiero jugar (forma de interestService)", () => assertSucceeds(interest(B, "p1")));
+
+  await test("Quiero jugar con campos extra: rechazado", () =>
+    assertFails(interest(S, "p1", { basura: longText(1000) })));
+
+  await test("Quiero jugar con fecha del cliente: rechazado", () =>
+    assertFails(interest(S, "p1", { createdAt: Timestamp.now() })));
+
+  // ---------- solicitudes de amistad ----------
+  const request = (from, to, extra = {}) =>
+    setDoc(doc(db(from), "friend_requests", `${from}_${to}`), { senderId: from, receiverId: to, status: "pending", createdAt: serverTimestamp(), ...extra });
+
+  await test("solicitud de amistad (forma de friendService)", () => assertSucceeds(request(B, S)));
+
+  await test("solicitud con campos extra: rechazado", () =>
+    assertFails(request(S, A, { mensaje: longText(1000) })));
+
+  await test("solicitud con fecha del cliente: rechazado", () =>
+    assertFails(request(S, A, { createdAt: future() })));
+
+  await test("reenvío tras un rechazo con la fecha del cliente: rechazado", async () => {
+    await assertSucceeds(updateDoc(doc(db(S), "friend_requests", `${B}_${S}`), { status: "rejected" }));
+    await assertFails(request(B, S, { createdAt: future() }));
+    await assertSucceeds(request(B, S));
+  });
+
+  // ---------- bloqueos ----------
+  const block = (by, target, extra = {}) =>
+    setDoc(doc(db(by), "blocks", `${by}_${target}`), { participants: [by, target], blockerId: by, blockedId: target, createdAt: serverTimestamp(), ...extra });
+
+  await test("bloquear (forma de blockService)", () => assertSucceeds(block(S, "zzz1")));
+
+  await test("bloqueo con campos extra: rechazado", () =>
+    assertFails(block(S, "zzz2", { motivo: longText(1000) })));
+
+  await test("bloqueo con fecha del cliente: rechazado", () =>
+    assertFails(block(S, "zzz3", { createdAt: Timestamp.now() })));
+
+  // ---------- chat de la partida al publicar ----------
+  await test("grupo con campos extra al publicar: rechazado", () => {
+    const s2 = db(A);
+    const batch = writeBatch(s2);
+    batch.set(doc(s2, "posts", "p9"), { ...postData, authorRegion: "México", userId: A, interestedCount: 0, createdAt: serverTimestamp() });
+    batch.set(doc(s2, "group_chats", "p9"), { postId: "p9", participants: [A], active: true, lastMessage: "", lastMessageAt: null, lastSenderId: null, createdAt: serverTimestamp(), extra: longText(1000) });
+    return assertFails(batch.commit());
+  });
+
+  await test("grupo con un último mensaje inventado al publicar: rechazado", () => {
+    const s2 = db(A);
+    const batch = writeBatch(s2);
+    batch.set(doc(s2, "posts", "p10"), { ...postData, authorRegion: "México", userId: A, interestedCount: 0, createdAt: serverTimestamp() });
+    batch.set(doc(s2, "group_chats", "p10"), { postId: "p10", participants: [A], active: true, lastMessage: "hola", lastMessageAt: null, lastSenderId: B, createdAt: serverTimestamp() });
+    return assertFails(batch.commit());
+  });
+
+  // ---------- usernameLower (búsqueda) ----------
+  await test("usernameLower que no corresponde al nombre: rechazado", () =>
+    assertFails(updateProfile(A, { username: "ana", usernameLower: "admin" })));
+
+  await test("cambiar el nombre con su usernameLower correcto", () =>
+    assertSucceeds(updateProfile(A, { username: "AnaGamer", usernameLower: "anagamer" })));
 
   // ---------- reportes ----------
   const report = { reporterId: B, targetType: "user", targetId: A, reason: "spam", note: "", status: "pending", createdAt: serverTimestamp(), reviewedAt: null };

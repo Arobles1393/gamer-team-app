@@ -110,7 +110,11 @@ service cloud.firestore {
       let data = request.resource.data;
       return (!changedField('username') || !('username' in data)
                 || (data.username is string && data.username.size() > 0 && data.username.size() <= 40))
-             && (!changedField('usernameLower') || optText(data.get('usernameLower', null), 40))
+             // usernameLower (búsqueda de jugadores) siempre es el username en
+             // minúsculas: nadie aparece en búsquedas con un nombre que no es el suyo
+             && ((!changedField('username') && !changedField('usernameLower'))
+                 || !('usernameLower' in data)
+                 || (data.get('username', null) is string && data.usernameLower == data.username.lower()))
              && (!changedField('avatar') || optUrl(data.get('avatar', null)))
              && (!changedField('banner') || optUrl(data.get('banner', null)))
              && (!changedField('region') || optText(data.get('region', null), 60))
@@ -427,7 +431,10 @@ service cloud.firestore {
       }
 
       allow read: if true;
+      // Lo que escribe interestService (se lee sin sesión: sin campos extra)
       allow create: if canWriteSocial()
+                    && request.resource.data.keys().hasOnly(['postId', 'userId', 'createdAt'])
+                    && request.resource.data.createdAt == request.time
                     && request.resource.data.userId == request.auth.uid
                     && docId == request.resource.data.postId + '_' + request.auth.uid
                     && noBlockBetween(request.auth.uid, postAuthor(request.resource.data.postId))
@@ -485,7 +492,10 @@ service cloud.firestore {
                   && (resource == null
                       || request.auth.uid == resource.data.senderId
                       || request.auth.uid == resource.data.receiverId);
+      // Lo que escribe friendService.sendFriendRequest
       allow create: if canWriteSocial()
+                    && request.resource.data.keys().hasOnly(['senderId', 'receiverId', 'status', 'createdAt'])
+                    && request.resource.data.createdAt == request.time
                     && request.resource.data.senderId == request.auth.uid
                     && request.resource.data.receiverId != request.auth.uid
                     && requestId == request.auth.uid + '_' + request.resource.data.receiverId
@@ -504,6 +514,7 @@ service cloud.firestore {
           && resource.data.status != 'pending'
           && request.resource.data.status == 'pending'
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'createdAt'])
+          && request.resource.data.createdAt == request.time
           && noBlockBetween(request.auth.uid, resource.data.receiverId))
       );
       allow delete: if false;
@@ -658,11 +669,17 @@ service cloud.firestore {
                       || (resource.data.active == true && request.auth.uid in resource.data.participants));
 
       // getAfter: se crea en el mismo batch que el post
+      // Lo que escribe groupChatService.addGroupChatToBatch
       allow create: if canWriteSocial()
+                    && request.resource.data.keys().hasOnly(['postId', 'participants', 'active', 'lastMessage',
+                                                             'lastMessageAt', 'lastSenderId', 'createdAt'])
                     && getAfter(/databases/$(database)/documents/posts/$(postId)).data.userId == request.auth.uid
                     && request.resource.data.postId == postId
                     && request.resource.data.participants == [request.auth.uid]
-                    && request.resource.data.active == true;
+                    && request.resource.data.active == true
+                    && textUpTo('lastMessage', 1000)
+                    && request.resource.data.get('lastMessageAt', null) == null
+                    && request.resource.data.get('lastSenderId', null) == null;
 
       allow update: if isSignedIn() && (
         // Entrar (marcar "Me interesa"): escritura social
@@ -714,7 +731,10 @@ service cloud.firestore {
       // resource == null: para consultar si existe un bloqueo con alguien
       allow read: if isSignedIn()
                   && (resource == null || request.auth.uid in resource.data.participants);
+      // Lo que escribe blockService.blockUser
       allow create: if isSignedIn()
+                    && request.resource.data.keys().hasOnly(['participants', 'blockerId', 'blockedId', 'createdAt'])
+                    && request.resource.data.createdAt == request.time
                     && request.resource.data.blockerId == request.auth.uid
                     && blockId == request.auth.uid + '_' + request.resource.data.blockedId
                     && request.resource.data.blockedId != request.auth.uid
