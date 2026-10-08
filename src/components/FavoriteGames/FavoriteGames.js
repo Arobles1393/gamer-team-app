@@ -3,6 +3,7 @@ import { AutoComplete } from "primereact/autocomplete";
 import { RawgAttribution } from "../Credits";
 import { Button } from "primereact/button";
 import { ProfileSection } from "../ProfileSection";
+import { MAX_FAVORITE_GAMES } from "../../constants";
 import "./FavoriteGames.css";
 
 const suggestionTemplate = (item) => (
@@ -34,6 +35,7 @@ export default function FavoriteGames({
 }) {
   const { t } = useTranslation("profile");
   const hasGames = games?.length > 0;
+  const isFull = (games?.length ?? 0) >= MAX_FAVORITE_GAMES;
 
   return (
     <ProfileSection
@@ -42,7 +44,11 @@ export default function FavoriteGames({
       className="fav-games"
       action={hasGames && <span className="fav-games__count">{games.length}</span>}
     >
-      {isEditing && (
+      {isEditing && isFull && (
+        <p className="gm-field__hint fav-games__full">{t("games.max", { max: MAX_FAVORITE_GAMES })}</p>
+      )}
+
+      {isEditing && !isFull && (
         <div className="gm-field fav-games__search">
           <AutoComplete
             value={gameQuery}

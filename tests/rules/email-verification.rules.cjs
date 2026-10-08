@@ -119,8 +119,8 @@ module.exports = async ({ env, test }) => {
   await test("Sin verificar: crea y edita su perfil (users y publicProfiles)", async () => {
     const f = as(fresh, "unverified");
     const batch = writeBatch(f);
-    batch.set(doc(f, "users", fresh), { username: "Nuevo", usernameLower: "nuevo", region: null, createdAt: new Date() });
-    batch.set(doc(f, "publicProfiles", fresh), { username: "Nuevo", usernameLower: "nuevo", avatar: null, region: null, createdAt: new Date() });
+    batch.set(doc(f, "users", fresh), { username: "Nuevo", usernameLower: "nuevo", region: null, createdAt: serverTimestamp() });
+    batch.set(doc(f, "publicProfiles", fresh), { username: "Nuevo", usernameLower: "nuevo", avatar: null, region: null, createdAt: serverTimestamp() });
     await assertSucceeds(batch.commit());
     await assertSucceeds(updateDoc(doc(f, "users", fresh), { description: "hola" }));
   });

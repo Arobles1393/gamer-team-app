@@ -24,6 +24,104 @@ service cloud.firestore {
              || (data[field] is string && data[field].size() <= max);
     }
 
+    // ---------- Validación de campos (auditoría A-03) ----------
+    // Las reglas no pueden recorrer listas: las listas tienen un tope de
+    // largo y se revisa cada posición explícitamente.
+
+    // null o texto de hasta `max` caracteres
+    function optText(value, max) {
+      return value == null || (value is string && value.size() <= max);
+    }
+
+    // URL guardada (imagen, clip, adjunto): null, vacía o hasta 2048
+    function optUrl(value) {
+      return optText(value, 2048);
+    }
+
+    // Lista de hasta 10 textos (redes del perfil, plataformas de un post).
+    // join() falla si algún elemento no es texto, y acota el total con una
+    // sola expresión (las reglas tienen un límite de 1000 por operación)
+    function textList(list, maxTotal) {
+      return list is list && list.size() <= 10 && list.join(' ').size() <= maxTotal;
+    }
+
+    // Juego favorito del perfil: { id, name, image } (useProfileForm.addGame).
+    // values().join() convierte números y null a texto y falla con mapas o
+    // listas anidadas: acota el tamaño del juego con una sola expresión
+    function gameOk(item) {
+      return item.keys().hasOnly(['id', 'name', 'image'])
+             && item.values().join(' ').size() <= 2300;
+    }
+
+    function gameAt(list, i) {
+      return list.size() <= i || gameOk(list[i]);
+    }
+
+    // Hasta 12 juegos favoritos (MAX_FAVORITE_GAMES en constants/profileLimits.js)
+    function gameList(list) {
+      let l = list;
+      return l is list && l.size() <= 12
+             && gameAt(l, 0) && gameAt(l, 1) && gameAt(l, 2) && gameAt(l, 3)
+             && gameAt(l, 4) && gameAt(l, 5) && gameAt(l, 6) && gameAt(l, 7)
+             && gameAt(l, 8) && gameAt(l, 9) && gameAt(l, 10) && gameAt(l, 11);
+    }
+
+    // Mensaje de chat 1:1 o de partida (chatService / groupChatService +
+    // messageMedia): texto, adjunto opcional y hora del servidor
+    function validMessage() {
+      let data = request.resource.data;
+      return data.keys().hasOnly(['text', 'senderId', 'createdAt', 'mediaUrl', 'mediaType', 'fileName', 'fileSize'])
+             && textUpTo('text', 1000)
+             && optUrl(data.get('mediaUrl', null))
+             && data.get('mediaType', null) in [null, 'image', 'video', 'file']
+             && optText(data.get('fileName', null), 255)
+             && (data.get('fileSize', null) == null
+                 || (data.fileSize is int && data.fileSize >= 0 && data.fileSize <= 25 * 1024 * 1024))
+             && data.createdAt == request.time;
+    }
+
+    // Último mensaje de la lista de chats (texto o "📷 Imagen"), con la hora
+    // del servidor
+    function validLastMessage() {
+      return textUpTo('lastMessage', 1000)
+             && request.resource.data.get('lastMessageAt', null) == request.time;
+    }
+
+    // En un update solo se validan los campos que cambian: así un documento
+    // viejo con campos que ya no se usan sigue pudiéndose editar
+    function changedKeys() {
+      return request.resource.data.diff(resource == null ? {} : resource.data).affectedKeys();
+    }
+
+    // ¿Hay que validar este campo? En un create, siempre; en un update, solo
+    // si cambió. Compara el campo con su valor anterior en vez de calcular el
+    // diff del documento entero en cada pregunta (cada evaluación cuenta para
+    // el límite de 1000 expresiones de las reglas)
+    function changedField(field) {
+      return resource == null
+             || request.resource.data.get(field, null) != resource.data.get(field, null);
+    }
+
+    // Campos del perfil (users y publicProfiles), validados si cambian
+    // deep: revisar cada juego y red (publicProfiles, que leen todos). En users,
+    // que solo lee su dueño, basta con el largo de las listas: revisar las dos
+    // copias en el mismo batch pasaría el límite de 1000 expresiones
+    function validProfileFields(deep) {
+      let data = request.resource.data;
+      return (!changedField('username') || !('username' in data)
+                || (data.username is string && data.username.size() > 0 && data.username.size() <= 40))
+             && (!changedField('usernameLower') || optText(data.get('usernameLower', null), 40))
+             && (!changedField('avatar') || optUrl(data.get('avatar', null)))
+             && (!changedField('banner') || optUrl(data.get('banner', null)))
+             && (!changedField('region') || optText(data.get('region', null), 60))
+             && (!changedField('description') || optText(data.get('description', null), 500))
+             && (!changedField('games') || !('games' in data) || data.games == null
+                   || ((deep && gameList(data.games)) || (!deep && data.games is list && data.games.size() <= 12)))
+             && (!changedField('links') || !('links' in data) || data.links == null
+                   || ((deep && textList(data.links, 3000)) || (!deep && data.links is list && data.links.size() <= 10)))
+             && (!changedField('lastSeen') || !('lastSeen' in data) || data.lastSeen == request.time);
+    }
+
     // Crear contenido social (publicar, comentar, "Quiero jugar", amistad,
     // chats, notificaciones, guías) pide el correo verificado. Excepción:
     // las cuentas de Steam entran con un custom token
@@ -55,9 +153,27 @@ service cloud.firestore {
         return !request.resource.data.keys().hasAny(['phone', 'email']);
       }
 
+      // Lo que escriben profileService, profileImageService y userService
+      function userFields() {
+        return ['username', 'usernameLower', 'avatar', 'banner', 'region', 'description',
+                'games', 'links', 'language', 'lastSeen', 'createdAt'];
+      }
+
       allow read: if isOwner(userId);
-      allow create: if isOwner(userId) && textUpTo('description', 500) && noSensitiveFields();
-      allow update: if isOwner(userId) && textUpTo('description', 500) && noSensitiveFields();
+      // createdAt ("Miembro desde") con la hora del servidor
+      allow create: if isOwner(userId)
+                    && request.resource.data.keys().hasOnly(userFields())
+                    && request.resource.data.username is string
+                    && request.resource.data.createdAt == request.time
+                    && optText(request.resource.data.get('language', null), 10)
+                    && validProfileFields(false)
+                    && noSensitiveFields();
+      allow update: if isOwner(userId)
+                    && changedKeys().hasOnly(userFields())
+                    && !changedField('createdAt')
+                    && optText(request.resource.data.get('language', null), 10)
+                    && validProfileFields(false)
+                    && noSensitiveFields();
       allow delete: if false;
     }
 
@@ -89,24 +205,28 @@ service cloud.firestore {
                  'description', 'games', 'links', 'lastSeen', 'createdAt'
                ])
                && request.resource.data.username is string
-               && textUpTo('description', 500);
+               && validProfileFields(true);
       }
 
       // lastSeen (presencia) solo con la hora del servidor
       function validLastSeen() {
-        return !request.resource.data.diff(resource == null ? {} : resource.data).affectedKeys().hasAny(['lastSeen'])
+        return !changedField('lastSeen')
+               || !('lastSeen' in request.resource.data)
                || request.resource.data.lastSeen == request.time;
       }
 
       allow read: if true;
+      // createdAt con la hora del servidor (o sin él, si el perfil público
+      // se crea por un merge al editar un perfil antiguo)
       allow create: if isOwner(userId)
                     && validPublicProfile()
-                    && validLastSeen();
+                    && validLastSeen()
+                    && (!('createdAt' in request.resource.data) || request.resource.data.createdAt == request.time);
       // createdAt ("Miembro desde") no se cambia después de crear el perfil
       allow update: if isOwner(userId)
                     && validPublicProfile()
                     && validLastSeen()
-                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['createdAt']);
+                    && !changedField('createdAt');
       allow delete: if false;
     }
 
@@ -181,14 +301,46 @@ service cloud.firestore {
                || (after == before - 1 && exists(interest) && !existsAfter(interest));
       }
 
+      // Lo que edita el autor (useCreatePost.postData)
+      function editableFields() {
+        return ['platform', 'playersNeeded', 'comments', 'image', 'logo', 'clip', 'portada',
+                'platforms', 'multiplatform', 'scheduledAt', 'requiresMic', 'skillLevel', 'language'];
+      }
+
+      // Tipos y tamaños, validados solo si cambian
+      function validPostFields() {
+        let data = request.resource.data;
+        return (!changedField('game') || (data.game is string && data.game.size() > 0 && data.game.size() <= 200))
+               && (!changedField('platform') || optText(data.get('platform', null), 40))
+               && (!changedField('playersNeeded') || data.get('playersNeeded', null) == null
+                     || (data.playersNeeded is int && data.playersNeeded >= 1 && data.playersNeeded <= 20))
+               && (!changedField('comments') || optText(data.get('comments', null), 300))
+               && (!changedField('image') || optUrl(data.get('image', null)))
+               && (!changedField('logo') || optUrl(data.get('logo', null)))
+               && (!changedField('clip') || optUrl(data.get('clip', null)))
+               && (!changedField('portada') || optUrl(data.get('portada', null)))
+               && (!changedField('platforms') || data.get('platforms', null) == null || textList(data.platforms, 600))
+               && (!changedField('multiplatform') || data.get('multiplatform', null) == null || data.multiplatform is bool)
+               && (!changedField('requiresMic') || data.get('requiresMic', null) == null || data.requiresMic is bool)
+               && (!changedField('skillLevel') || optText(data.get('skillLevel', null), 20))
+               && (!changedField('language') || optText(data.get('language', null), 10));
+      }
+
       allow read: if true;
       // createdAt lo pone el servidor (no se puede fechar un post a futuro
-      // para quedar primero en "Recientes"); scheduledAt: null o futura
+      // para quedar primero en "Recientes"); scheduledAt: null o futura.
+      // authorRegion ("Cerca de ti") tiene que ser la región del perfil
       allow create: if canWriteSocial()
+                    && request.resource.data.keys().hasOnly(editableFields().concat(
+                         ['game', 'userId', 'authorRegion', 'interestedCount', 'createdAt']))
                     && request.resource.data.userId == request.auth.uid
                     && request.resource.data.get('interestedCount', 0) == 0
                     && request.resource.data.createdAt == request.time
-                    && textUpTo('comments', 300)
+                    && validPostFields()
+                    && request.resource.data.get('authorRegion', null)
+                         == (exists(/databases/$(database)/documents/users/$(request.auth.uid))
+                             ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('region', null)
+                             : null)
                     && validSchedule();
       // El dueño edita su post sin tocar el contador, el autor, la fecha de
       // publicación ni el juego (game_stats cuenta por juego); si cambia la
@@ -196,8 +348,8 @@ service cloud.firestore {
       // mueve interestedCount con su "Me interesa".
       allow update: if isSignedIn()
                     && ((resource.data.userId == request.auth.uid
-                         && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['interestedCount', 'userId', 'createdAt', 'game'])
-                         && textUpTo('comments', 300)
+                         && changedKeys().hasOnly(editableFields())
+                         && validPostFields()
                          && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['scheduledAt']) || validSchedule()))
                         || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['interestedCount'])
                             && interestToggled()));
@@ -244,8 +396,14 @@ service cloud.firestore {
     match /post_comments/{commentId} {
       allow read: if true;
       allow create: if canWriteSocial()
+                    && request.resource.data.keys().hasOnly(['postId', 'text', 'userId', 'mediaUrl', 'mediaType', 'mediaPath', 'createdAt'])
                     && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.postId is string && request.resource.data.postId.size() <= 128
                     && textUpTo('text', 500)
+                    && optUrl(request.resource.data.get('mediaUrl', null))
+                    && request.resource.data.get('mediaType', '') in ['', 'image', 'video', null]
+                    && optText(request.resource.data.get('mediaPath', null), 300)
+                    && request.resource.data.createdAt == request.time
                     && noBlockBetween(request.auth.uid, postAuthor(request.resource.data.postId));
       allow delete: if isSignedIn()
                     && (resource.data.userId == request.auth.uid
@@ -434,8 +592,10 @@ service cloud.firestore {
                   && (resource == null || request.auth.uid in resource.data.participants);
 
       allow create: if canWriteSocial()
+                    && request.resource.data.keys().hasOnly(['participants', 'lastMessage', 'lastMessageAt', 'lastSenderId', 'createdAt'])
                     && request.auth.uid in request.resource.data.participants
                     && request.resource.data.participants.size() == 2
+                    && textUpTo('lastMessage', 1000)
                     && noBlockBetween(request.resource.data.participants[0], request.resource.data.participants[1]);
 
       // Solo el último mensaje (lo actualiza sendMessage). Los participantes
@@ -445,7 +605,8 @@ service cloud.firestore {
                     && request.auth.uid in resource.data.participants
                     && request.resource.data.diff(resource.data).affectedKeys()
                          .hasOnly(['lastMessage', 'lastMessageAt', 'lastSenderId'])
-                    && request.resource.data.lastSenderId == request.auth.uid;
+                    && request.resource.data.lastSenderId == request.auth.uid
+                    && validLastMessage();
 
       allow delete: if false;
 
@@ -454,7 +615,7 @@ service cloud.firestore {
                     && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
         allow create: if canWriteSocial()
                       && request.resource.data.senderId == request.auth.uid
-                      && textUpTo('text', 1000)
+                      && validMessage()
                       && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants
                       && noBlockBetween(
                            get(/databases/$(database)/documents/chats/$(chatId)).data.participants[0],
@@ -520,7 +681,9 @@ service cloud.firestore {
         || (canWriteSocial()
           && changed().hasOnly(['lastMessage', 'lastMessageAt', 'lastSenderId'])
           && resource.data.active == true
-          && request.auth.uid in resource.data.participants)
+          && request.auth.uid in resource.data.participants
+          && request.resource.data.lastSenderId == request.auth.uid
+          && validLastMessage())
         // Desactivar al borrar el post
         || (changed().hasOnly(['active'])
           && request.resource.data.active == false
@@ -539,7 +702,7 @@ service cloud.firestore {
                     && request.auth.uid in group().participants;
         allow create: if canWriteSocial()
                       && request.resource.data.senderId == request.auth.uid
-                      && textUpTo('text', 1000)
+                      && validMessage()
                       && group().active == true
                       && request.auth.uid in group().participants;
         allow update, delete: if false;
@@ -566,11 +729,15 @@ service cloud.firestore {
     match /reports/{reportId} {
       allow read: if isAdmin();
       allow create: if isSignedIn()
+                    && request.resource.data.keys().hasOnly(['reporterId', 'targetType', 'targetId', 'reason', 'note', 'status', 'createdAt', 'reviewedAt'])
                     && request.resource.data.reporterId == request.auth.uid
                     && request.resource.data.status == 'pending'
                     && request.resource.data.targetType in ['user', 'post', 'comment']
+                    && request.resource.data.targetId is string && request.resource.data.targetId.size() <= 128
                     && request.resource.data.reason in ['spam', 'inappropriate', 'harassment', 'impersonation', 'other']
-                    && textUpTo('note', 500);
+                    && textUpTo('note', 500)
+                    && request.resource.data.createdAt == request.time
+                    && request.resource.data.get('reviewedAt', null) == null;
       // Solo marcar como revisado
       allow update: if isAdmin()
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedAt']);

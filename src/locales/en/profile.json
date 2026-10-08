@@ -86,7 +86,8 @@
     "add": "Add link",
     "steamHint": "Paste your Steam profile link to show your stats.",
     "empty": "This player hasn't added any socials.",
-    "genericProfile": "Profile"
+    "genericProfile": "Profile",
+    "max": "You can add up to {{max}} links."
   },
   "games": {
     "title": "Favorite games",
@@ -94,7 +95,8 @@
     "searchLabel": "Search for a game to add to favorites",
     "remove": "Remove {{name}} from favorites",
     "empty": "This player has no favorite games yet.",
-    "add": "Add games"
+    "add": "Add games",
+    "max": "You've reached the maximum of {{max}} favorite games. Remove one to add another."
   },
   "steam": {
     "loading": "Loading Steam stats",

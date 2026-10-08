@@ -3,6 +3,7 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { ProfileSection } from "../ProfileSection";
 import { getLabel, getPlatform, platformIcons } from "../../utils";
+import { MAX_SOCIAL_LINKS, SOCIAL_LINK_MAX } from "../../constants";
 import "./SocialLinks.css";
 
 // "https://www.twitch.tv/usuario" -> "twitch.tv/usuario"
@@ -69,6 +70,7 @@ export default function SocialLinks({
                       value={link}
                       onChange={(e) => handleChange(index, e.target.value)}
                       placeholder="https://…"
+                      maxLength={SOCIAL_LINK_MAX}
                       aria-label={t("links.linkLabel", { number: index + 1 })}
                       aria-invalid={invalid}
                       className={`gm-input${invalid ? " gm-input--invalid" : ""}`}
@@ -89,12 +91,16 @@ export default function SocialLinks({
           </ul>
         )}
 
-        <Button
-          label={t("links.add")}
-          icon="pi pi-plus"
-          className="gm-btn gm-btn--ghost social-links__add"
-          onClick={handleAdd}
-        />
+        {links.length < MAX_SOCIAL_LINKS ? (
+          <Button
+            label={t("links.add")}
+            icon="pi pi-plus"
+            className="gm-btn gm-btn--ghost social-links__add"
+            onClick={handleAdd}
+          />
+        ) : (
+          <p className="gm-field__hint">{t("links.max", { max: MAX_SOCIAL_LINKS })}</p>
+        )}
 
         <p className="gm-field__hint social-links__hint">{t("links.steamHint")}</p>
       </ProfileSection>

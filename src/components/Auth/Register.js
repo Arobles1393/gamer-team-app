@@ -8,6 +8,7 @@ import { clearWelcomeNotice, queueWelcomeNotice } from "../../utils/welcomeNotic
 import { useProviderLogin } from "../../hooks";
 import { REQUIRE_LEGAL_CONSENT } from "../../legal";
 import { LegalConsentCheckbox } from "../Legal";
+import { USERNAME_MAX } from "../../constants";
 import {
   AuthLayout,
   AuthInput,
@@ -115,6 +116,7 @@ export default function Register({ onToggleMode, onBack }) {
           label={t("fields.nickname")}
           placeholder={t("fields.nicknamePlaceholder")}
           autoComplete="nickname"
+          maxLength={USERNAME_MAX}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />

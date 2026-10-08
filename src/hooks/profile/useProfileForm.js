@@ -3,7 +3,7 @@ import i18n from "../../i18n";
 import { authService } from "../../services/auth";
 import { profileService } from "../../services/profile";
 import { getAuthErrorMessage } from "../../utils";
-import { EMPTY_MATCH_PREFERENCES } from "../../constants";
+import { EMPTY_MATCH_PREFERENCES, MAX_FAVORITE_GAMES } from "../../constants";
 import { useMatchProfile } from "../matching/useMatchProfile";
 
 // Errores del cambio de correo con mensaje propio
@@ -148,7 +148,7 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
     };
 
     setGames(prev => {
-      if (prev.some(g => g.id === game.id)) {
+      if (prev.some(g => g.id === game.id) || prev.length >= MAX_FAVORITE_GAMES) {
         return prev;
       }
 

@@ -86,7 +86,8 @@
     "add": "Agregar link",
     "steamHint": "Pega el link de tu perfil de Steam para mostrar tus estadísticas.",
     "empty": "Este jugador no ha agregado redes.",
-    "genericProfile": "Perfil"
+    "genericProfile": "Perfil",
+    "max": "Puedes agregar hasta {{max}} redes."
   },
   "games": {
     "title": "Juegos favoritos",
@@ -94,7 +95,8 @@
     "searchLabel": "Buscar juego para agregar a favoritos",
     "remove": "Quitar {{name}} de favoritos",
     "empty": "Este jugador aún no tiene juegos favoritos.",
-    "add": "Agregar juegos"
+    "add": "Agregar juegos",
+    "max": "Llegaste al máximo de {{max}} juegos favoritos. Quita uno para agregar otro."
   },
   "steam": {
     "loading": "Cargando estadísticas de Steam",

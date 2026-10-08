@@ -1,5 +1,6 @@
 import { db } from "../../firebase/config";
-import { doc, getDoc, updateDoc, writeBatch } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, updateDoc, writeBatch } from "firebase/firestore";
+import { USERNAME_MAX } from "../../constants";
 import { publicProfileRef, pickPublicFields } from "./publicProfileService";
 import { buildMatchProfile, matchProfileRef } from "../matching/matchService";
 
@@ -58,13 +59,15 @@ const createUserProfile = async (
 ) => {
   const batch = writeBatch(db);
 
+  // Nombre recortado al límite de firestore.rules (Google puede traer uno
+  // largo); createdAt con la hora del servidor (las reglas lo exigen)
+  const username = profileData.username.trim().slice(0, USERNAME_MAX);
+
   const userData = {
     ...profileData,
-    usernameLower:
-      profileData.username
-        .trim()
-        .toLowerCase(),
-    createdAt: new Date()
+    username,
+    usernameLower: username.toLowerCase(),
+    createdAt: serverTimestamp()
   };
 
   batch.set(

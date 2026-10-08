@@ -14,7 +14,7 @@ module.exports = async ({ env, test, expect }) => {
   // Igual que profileService.createUserProfile
   await test("Crear perfil: users + publicProfiles con los campos públicos", () => {
     const f = db(A);
-    const userData = { username: "Alfa", avatar: null, region: "México", usernameLower: "alfa", createdAt: new Date() };
+    const userData = { username: "Alfa", avatar: null, region: "México", usernameLower: "alfa", createdAt: serverTimestamp() };
     const batch = writeBatch(f);
     batch.set(doc(f, "users", A), userData);
     batch.set(pub(f, A), pick({ avatar: null, region: null, ...userData }));

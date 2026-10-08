@@ -45,8 +45,8 @@ module.exports = async ({ env, test, expect }) => {
     const f = env.authenticatedContext(NEW).firestore();
     await assertSucceeds(getDoc(doc(f, "users", NEW)));
     const batch = writeBatch(f);
-    batch.set(doc(f, "users", NEW), { username: "Nuevo", usernameLower: "nuevo", avatar: null, region: null, createdAt: new Date() });
-    batch.set(doc(f, "publicProfiles", NEW), { username: "Nuevo", usernameLower: "nuevo", avatar: null, region: null, createdAt: new Date() });
+    batch.set(doc(f, "users", NEW), { username: "Nuevo", usernameLower: "nuevo", avatar: null, region: null, createdAt: serverTimestamp() });
+    batch.set(doc(f, "publicProfiles", NEW), { username: "Nuevo", usernameLower: "nuevo", avatar: null, region: null, createdAt: serverTimestamp() });
     await assertSucceeds(batch.commit());
   });
 

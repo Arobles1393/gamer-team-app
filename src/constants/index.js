@@ -4,3 +4,4 @@ export * from "./skillLevels";
 export * from "./timeBlocks";
 export * from "./playerValues";
 export * from "./matchPreferences";
+export * from "./profileLimits";

@@ -3,6 +3,7 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { ProfileSection } from "../../ProfileSection";
 import { getCountryLabel } from "../../../utils";
+import { USERNAME_MAX } from "../../../constants";
 import "./PersonalInfo.css";
 
 function InfoRow({ icon, label, children }) {
@@ -58,6 +59,7 @@ export default function PersonalInfo({
               value={username}
               onChange={(e) => onUsernameChange(e.target.value)}
               autoComplete="nickname"
+              maxLength={USERNAME_MAX}
               className="gm-input"
             />
           </Field>

@@ -21,7 +21,8 @@ const SUITES = [
   "matching",
   "email-verification",
   "private-preferences",
-  "notifications"
+  "notifications",
+  "field-limits"
 ];
 
 const results = [];
