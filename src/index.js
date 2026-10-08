@@ -11,13 +11,17 @@ import { PrimeReactProvider } from "primereact/api";
 import { BrowserRouter } from "react-router-dom";
 // Importado directo (no desde ./routes) para evitar el ciclo App → routes → App
 import RootRoutes from "./routes/RootRoutes";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <PrimeReactProvider value={{ ripple: true }}>
-        <RootRoutes />
+        {/* Último recurso: si algo falla fuera de las páginas */}
+        <ErrorBoundary>
+          <RootRoutes />
+        </ErrorBoundary>
       </PrimeReactProvider>
     </BrowserRouter>
   </React.StrictMode>

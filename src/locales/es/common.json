@@ -114,5 +114,12 @@
     "join": "Unirme en Steam",
     "playing": "Jugando {{game}}",
     "help": "Se abrirá Steam en tu computadora. Si no pasa nada, comprueba que Steam esté abierto y que tengas el juego instalado. La sala puede estar llena o ser privada."
+  },
+  "errorBoundary": {
+    "eyebrow": "Error",
+    "title": "Algo salió mal",
+    "text": "Ocurrió un error inesperado en esta pantalla. Recarga la página o vuelve al inicio.",
+    "reload": "Recargar",
+    "home": "Ir al inicio"
   }
 }

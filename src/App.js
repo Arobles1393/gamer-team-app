@@ -13,6 +13,7 @@ import { useAuthReady, useCurrentUser } from "./context";
 import { AppRoutes } from "./routes";
 import { CreatePostDialog } from "./components/Posts";
 import { AppFooter } from "./components/Layout";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useLocation, useNavigate } from "react-router-dom"
 import { Toast } from "primereact/toast";
 import { useTranslation } from "react-i18next";
@@ -167,10 +168,13 @@ function App() {
       )}
       <main className="app-content">
         {user && <EmailVerificationBanner />}
-        <AppRoutes
-          setEditingPost={setEditingPost}
-          setShowCreatePost={setShowCreatePost}
-        />
+        {/* Si una página falla, el menú sigue funcionando; al cambiar de ruta se reintenta */}
+        <ErrorBoundary resetKey={pathname}>
+          <AppRoutes
+            setEditingPost={setEditingPost}
+            setShowCreatePost={setShowCreatePost}
+          />
+        </ErrorBoundary>
         {/* El chat ocupa toda la altura: ahí el pie estorbaría (los
             créditos siguen en el menú del avatar) */}
         {!isFullHeightView && <AppFooter />}

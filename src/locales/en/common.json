@@ -114,5 +114,12 @@
     "join": "Join on Steam",
     "playing": "Playing {{game}}",
     "help": "Steam will open on your computer. If nothing happens, make sure Steam is running and the game is installed. The lobby may be full or private."
+  },
+  "errorBoundary": {
+    "eyebrow": "Error",
+    "title": "Something went wrong",
+    "text": "An unexpected error occurred on this screen. Reload the page or go back home.",
+    "reload": "Reload",
+    "home": "Go home"
   }
 }

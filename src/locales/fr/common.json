@@ -114,5 +114,12 @@
     "join": "Rejoindre sur Steam",
     "playing": "Joue à {{game}}",
     "help": "Steam va s'ouvrir sur votre ordinateur. Si rien ne se passe, vérifiez que Steam est lancé et que le jeu est installé. Le salon peut être complet ou privé."
+  },
+  "errorBoundary": {
+    "eyebrow": "Erreur",
+    "title": "Une erreur est survenue",
+    "text": "Une erreur inattendue s'est produite sur cet écran. Rechargez la page ou revenez à l'accueil.",
+    "reload": "Recharger",
+    "home": "Retour à l'accueil"
   }
 }
