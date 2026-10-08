@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { AutoComplete } from "primereact/autocomplete";
+import { RawgAttribution } from "../Credits";
 import { Button } from "primereact/button";
 import { ProfileSection } from "../ProfileSection";
 import "./FavoriteGames.css";
@@ -56,6 +57,7 @@ export default function FavoriteGames({
             className="gm-autocomplete"
             inputClassName="gm-input"
             panelClassName="gm-panel"
+            panelFooterTemplate={<RawgAttribution className="data-source--panel" />}
           />
         </div>
       )}

@@ -1,5 +1,6 @@
 const admin = require("firebase-admin");
 const Parser = require("rss-parser");
+const {summarize} = require("./newsSummary");
 const db = admin.firestore();
 const parser = new Parser();
 
@@ -39,10 +40,12 @@ const syncGamingNewsService = async () => {
         id,
         data: {
           title: item.title || "",
-          description:
+          // Solo un resumen: algunos feeds traen el artículo completo
+          description: summarize(
             item.contentSnippet ||
             item["content:encodedSnippet"] ||
-            "",
+            ""
+          ),
           link: item.link,
           image,
           source: feed.source,

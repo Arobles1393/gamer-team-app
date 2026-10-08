@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { AutoComplete } from "primereact/autocomplete";
+import { RawgAttribution } from "../Credits";
 import { useGameSearch } from "../../hooks";
 import { getPlatformKey, platformLabels } from "../../utils";
 import "./GameSelect.css";
@@ -102,6 +103,7 @@ export default function GameSelect({
       className="gm-autocomplete"
       inputClassName={`gm-input${invalid ? " gm-input--invalid" : ""}`}
       panelClassName="gm-panel"
+      panelFooterTemplate={<RawgAttribution className="data-source--panel" />}
       autoFocus={autoFocus}
     />
   );

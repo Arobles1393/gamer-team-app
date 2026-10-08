@@ -464,3 +464,9 @@
 .user-profile__steam-join {
   margin: 0 28px 20px;
 }
+
+/* "Datos de Steam" bajo la lista de juegos */
+.steam-section .steam-section__source {
+  margin-top: 12px;
+  text-align: right;
+}

@@ -25,5 +25,7 @@
     "credits": "Credits",
     "copyright": "© {{year}} GamerMatch"
   },
-  "menu": "Credits"
+  "menu": "Credits",
+  "poweredBy": "Powered by",
+  "steamData": "Data from Steam"
 }

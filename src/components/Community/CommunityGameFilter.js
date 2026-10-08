@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AutoComplete } from "primereact/autocomplete";
+import { RawgAttribution } from "../Credits";
 import { useGameSearch } from "../../hooks";
 import "../FavoriteGames/FavoriteGames.css";
 
@@ -61,6 +62,7 @@ export default function CommunityGameFilter({ game, onChange }) {
         className="gm-autocomplete community-filter__search"
         inputClassName="gm-input"
         panelClassName="gm-panel"
+        panelFooterTemplate={<RawgAttribution className="data-source--panel" />}
       />
     </div>
   );

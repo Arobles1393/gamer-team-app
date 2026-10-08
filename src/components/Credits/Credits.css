@@ -1,0 +1,29 @@
+/* =====================================================
+   ETIQUETAS DE ORIGEN DE DATOS ("Con tecnología de RAWG",
+   "Datos de Steam"): texto pequeño y atenuado, sin logos.
+   ===================================================== */
+.data-source {
+  margin: 0;
+  font-family: var(--gm-font-body);
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--gm-subtle);
+}
+
+.data-source a {
+  color: var(--gm-subtle);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.data-source a:hover,
+.data-source a:focus-visible {
+  color: var(--gm-label);
+}
+
+/* Dentro del panel de sugerencias del AutoComplete */
+.gm-panel .data-source--panel {
+  padding: 8px 14px 10px;
+  border-top: 1px solid var(--gm-border-soft);
+  text-align: right;
+}
