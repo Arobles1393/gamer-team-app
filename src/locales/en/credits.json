@@ -1,0 +1,23 @@
+{
+  "purpose": {
+    "rawg": "Video game database (names, covers, information)",
+    "steamWebApi": "Stats, current game and Steam lobbies of players who link their account",
+    "twitch": "Showing whether a player is streaming live",
+    "news": "Gaming news (headlines linking to the original article)",
+    "naturalEarth": "World map in the Community section",
+    "steamgriddb": "Game logos and covers",
+    "youtube": "Videos embedded in guides",
+    "steamLogin": "Sign in with Steam",
+    "google": "Sign in with Google",
+    "firebase": "Accounts, database, files and server functions",
+    "googleFonts": "Interface fonts",
+    "kofi": "Voluntary support for the project (payment happens on Ko-fi)"
+  },
+  "category": {
+    "data": "Data",
+    "media": "Images and video",
+    "auth": "Sign-in",
+    "infra": "Infrastructure",
+    "support": "Support"
+  }
+}

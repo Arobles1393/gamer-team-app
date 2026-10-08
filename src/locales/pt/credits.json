@@ -1,0 +1,23 @@
+{
+  "purpose": {
+    "rawg": "Base de dados de videogames (nomes, capas, informações)",
+    "steamWebApi": "Estatísticas, jogo atual e salas do Steam de quem vincula a conta",
+    "twitch": "Saber se um jogador está transmitindo ao vivo",
+    "news": "Notícias de games (manchetes com link para o artigo original)",
+    "naturalEarth": "Mapa-múndi da seção Comunidade",
+    "steamgriddb": "Logos e capas de jogos",
+    "youtube": "Vídeos incorporados nos guias",
+    "steamLogin": "Login com Steam",
+    "google": "Login com Google",
+    "firebase": "Contas, banco de dados, arquivos e funções do servidor",
+    "googleFonts": "Fontes da interface",
+    "kofi": "Apoio voluntário ao projeto (o pagamento é feito no Ko-fi)"
+  },
+  "category": {
+    "data": "Dados",
+    "media": "Imagens e vídeo",
+    "auth": "Login",
+    "infra": "Infraestrutura",
+    "support": "Apoio"
+  }
+}
