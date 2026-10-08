@@ -65,8 +65,7 @@ const node = (file, args = []) =>
     ["steam-join.e2e.cjs"],
     ["steam-join-ui.e2e.cjs"],
     ["profile-crop.e2e.cjs"],
-    // Sin E2E_SUPPORT=1 comprueba que el botón no exista; con él, que el
-    // servidor tenga REACT_APP_SUPPORT_URL válida
+    // Espera el botón de apoyo según REACT_APP_SUPPORT_URL del .env
     ["support.e2e.cjs"],
     ["credits.e2e.cjs"],
     ...(process.env.E2E_COMMUNITY === "1" ? [["community.e2e.cjs"]] : []),

@@ -17,7 +17,9 @@ const QA = JSON.parse(fs.readFileSync(`${__dirname}/.qa-users.json`, "utf8"));
   accepted.forEach((d) => batch.delete(d.ref));
   const chatId = [ana, bruno].sort().join("_");
   const msgs = await db.collection(`chats/${chatId}/messages`).get();
-  msgs.forEach((d) => { if (!d.id.startsWith("qa")) batch.delete(d.ref); });
+  // Los sembrados son qa01..qa60 (setup.cjs). No basta con "empieza con qa":
+  // un ID automático de Firestore también puede empezar así por azar
+  msgs.forEach((d) => { if (!/^qa\d{2}$/.test(d.id)) batch.delete(d.ref); });
   const extraNotifs = await db.collection("notifications").where("userId", "==", bruno).where("relatedId", "==", chatId).get();
   extraNotifs.forEach((d) => batch.delete(d.ref));
   batch.update(db.doc(`chats/${chatId}`), { lastMessage: "Mensaje QA 60", lastSenderId: bruno });

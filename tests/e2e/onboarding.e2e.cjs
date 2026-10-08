@@ -181,6 +181,10 @@ const cleanup = async () => {
     await page.locator(".verify-banner").waitFor({ timeout: 10000 });
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.locator(".app-rail__avatar-btn").click();
+    // Si se hace clic durante la animación de apertura del menú, Playwright
+    // desplaza la página para "alcanzar" la entrada (con el pie global la
+    // página ya es más alta que la pantalla)
+    await page.waitForTimeout(600);
     await page.locator(".gm-menu").getByText("Guía de la app", { exact: true }).click();
     await guideOpens(5000);
     // Se mide cuando termina la animación de apertura

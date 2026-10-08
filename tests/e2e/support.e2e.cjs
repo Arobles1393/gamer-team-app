@@ -1,12 +1,23 @@
-// "Apoyar el proyecto" (Ko-fi). Con E2E_SUPPORT=1 espera que el servidor
-// se haya iniciado con REACT_APP_SUPPORT_URL=https://ko-fi.com/... válida;
-// sin él, que el botón no exista en ningún lado. Ko-fi se simula (no se
-// abre el sitio real).
+// "Apoyar el proyecto" (Ko-fi). Si el servidor tiene
+// REACT_APP_SUPPORT_URL=https://ko-fi.com/... válida, comprueba el botón;
+// si no, que no exista en ningún lado. Por defecto lo deduce del .env;
+// E2E_SUPPORT=1 / E2E_SUPPORT=0 lo fuerza. Ko-fi se simula (no se abre el
+// sitio real).
 const fs = require("fs");
 const { chromium } = require("playwright-core");
 
 const BASE = process.env.E2E_BASE_URL || "http://localhost:3000";
-const EXPECT = process.env.E2E_SUPPORT === "1";
+// Sin E2E_SUPPORT, se deduce del .env (el que lee npm start al arrancar)
+const envSupportUrl = () => {
+  try {
+    const line = fs.readFileSync(`${__dirname}/../../.env`, "utf8").split(/\r?\n/).find((l) => l.startsWith("REACT_APP_SUPPORT_URL="));
+    const url = new URL(line.slice("REACT_APP_SUPPORT_URL=".length).trim().replace(/^["']|["']$/g, ""));
+    return url.protocol === "https:" && url.hostname === "ko-fi.com";
+  } catch {
+    return false;
+  }
+};
+const EXPECT = process.env.E2E_SUPPORT ? process.env.E2E_SUPPORT === "1" : envSupportUrl();
 const QA = JSON.parse(fs.readFileSync(`${__dirname}/.qa-users.json`, "utf8"));
 const SHOTS = `${__dirname}/screenshots`;
 fs.mkdirSync(SHOTS, { recursive: true });
