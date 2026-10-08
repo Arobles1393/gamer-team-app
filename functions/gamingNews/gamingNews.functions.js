@@ -1,37 +1,22 @@
-const { onRequest } = require("firebase-functions/v2/https");
-const { syncGamingNewsService } = require("./gamingNews.service");
+const {onSchedule} = require("firebase-functions/v2/scheduler");
+const {syncGamingNewsService} = require("./gamingNews.service");
 
-const syncGamingNews = onRequest(
-  async (req, res) => {
-
-    if (req.method !== "GET") {
-      return res.status(405).json({
-        success: false,
-        error: "Método no permitido"
-      });
-    }
-
-    try {
-
-      const result = await syncGamingNewsService();
-
-      return res.json({
-        success: true,
-        ...result
-      });
-
-    } catch (error) {
-
-      console.error(
-        "Error sincronizando noticias:",
-        error
-      );
-
-      return res.status(500).json({
-        success: false,
-        error: error.message
-      });
-    }
+// Noticias de videojuegos una vez al día. Función programada (Cloud
+// Scheduler, requiere plan Blaze), sin URL pública: antes era un endpoint
+// HTTP que cualquiera podía invocar en bucle (auditoría C-01).
+// Para actualizarlas a mano: npm run news:sync (functions/scripts).
+const syncGamingNews = onSchedule(
+  {
+    schedule: "every 24 hours",
+    timeZone: "America/Mexico_City",
+    timeoutSeconds: 120,
+    memory: "256MiB",
+    maxInstances: 1,
+    retryCount: 1
+  },
+  async () => {
+    const result = await syncGamingNewsService();
+    console.info("syncGamingNews:", JSON.stringify(result));
   }
 );
 
