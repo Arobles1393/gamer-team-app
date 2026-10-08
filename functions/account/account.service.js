@@ -1,5 +1,6 @@
 const admin = require("firebase-admin");
 const { FieldValue } = require("firebase-admin/firestore");
+const {isOwnCommentMediaPath} = require("../postComments/commentMedia");
 
 // Eliminar cuenta: borra todo lo del usuario y lo que otros tienen ligado a
 // él (Admin SDK: el cliente no puede borrar datos ajenos, subcolecciones ni
@@ -29,6 +30,12 @@ const assertRecentLogin = (token, nowSeconds = Math.floor(Date.now() / 1000)) =>
 };
 
 const docsOf = async (query) => (await query.get()).docs;
+
+// Archivo de un comentario a borrar: solo si está en la carpeta de quien
+// comentó (auditoría C-02; firestore.rules hace la misma comprobación)
+const addCommentMedia = (paths, comment) => {
+  if (isOwnCommentMediaPath(comment.mediaPath, comment.userId)) paths.add(comment.mediaPath);
+};
 
 const deleteRefs = async (refs) => {
   const unique = [...new Map(refs.map((ref) => [ref.path, ref])).values()];
@@ -91,7 +98,7 @@ const steps = (uid, bucket) => {
           docsOf(db().collection("post_comments").where("postId", "==", post.id)),
           docsOf(db().collection("post_interested").where("postId", "==", post.id))
         ]);
-        comments.forEach((c) => mediaPaths.add(c.data().mediaPath));
+        comments.forEach((c) => addCommentMedia(mediaPaths, c.data()));
         await deleteRefs([...comments, ...interests].map((d) => d.ref));
         await db().recursiveDelete(db().doc(`group_chats/${post.id}`));
         prefixes.add(`group_chats/${post.id}/`);
@@ -110,7 +117,7 @@ const steps = (uid, bucket) => {
     // b. Sus comentarios en partidas ajenas (y su medio)
     ["comentarios", async () => {
       const comments = await docsOf(db().collection("post_comments").where("userId", "==", uid));
-      comments.forEach((c) => mediaPaths.add(c.data().mediaPath));
+      comments.forEach((c) => addCommentMedia(mediaPaths, c.data()));
       return deleteRefs(comments.map((c) => c.ref));
     }],
 
