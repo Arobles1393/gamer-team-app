@@ -71,6 +71,8 @@ const removeTmp = async () => {
     for (const comment of (await db.collection("post_comments").where("userId", "==", user.uid).get()).docs) await comment.ref.delete();
     await db.recursiveDelete(db.doc(`users/${user.uid}`));
     await Promise.all(["publicProfiles", "matchProfiles"].map((c) => db.doc(`${c}/${user.uid}`).delete()));
+    // Su nombre reservado (nombres únicos)
+    for (const name of (await db.collection("usernames").where("uid", "==", user.uid).get()).docs) await name.ref.delete();
     await admin.auth().deleteUser(user.uid);
   }
 };
@@ -86,6 +88,21 @@ const removeTmp = async () => {
     await page.getByRole("button", { name: "Crear cuenta" }).click();
     await page.locator("#email").waitFor();
     check("el formulario ya no pide teléfono", await page.locator("#phone").count() === 0);
+
+    // Nombre de otra cuenta (qa_ana, en otras mayúsculas): avisa y no crea la cuenta
+    const takenEmail = `qa.taken.${STAMP}@example.com`;
+    await page.locator("#email").fill(takenEmail);
+    await page.locator("#password").fill(TMP.password);
+    await page.locator("#username").fill("QA_Ana");
+    await page.locator(".auth__select").click();
+    if (await page.locator(".p-dropdown-filter").count()) await page.locator(".p-dropdown-filter").fill("Méxi");
+    await page.locator(".p-dropdown-item", { hasText: "México" }).first().click();
+    await page.locator("button[type=submit]").click();
+    check("nombre en uso: avisa", await page.locator(".p-toast-message", { hasText: "ya está en uso" })
+      .waitFor({ timeout: 10000 }).then(() => true, () => false));
+    check("nombre en uso: no crea la cuenta",
+      !(await admin.auth().getUserByEmail(takenEmail).then(() => true, () => false)));
+
     await page.locator("#email").fill(TMP.email);
     await page.locator("#password").fill(TMP.password);
     await page.locator("#username").fill(TMP.username);
@@ -103,6 +120,8 @@ const removeTmp = async () => {
     check("users/{uid} sin correo ni teléfono", priv.exists && !("email" in priv.data()) && !("phone" in priv.data()),
       JSON.stringify(Object.keys(priv.data() || {}).sort()));
     check("publicProfiles creado con región", pub.exists && pub.data().region === "México");
+    const reservation = await db.doc(`usernames/${TMP.username.toLowerCase()}`).get();
+    check("el nombre queda reservado para la cuenta", reservation.exists && reservation.data().uid === authUser.uid);
 
     // ---------- 2. Mi perfil: correo desde Auth, sin teléfono ----------
     console.log("\n=== Mi perfil");

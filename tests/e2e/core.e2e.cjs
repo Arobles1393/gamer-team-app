@@ -83,6 +83,7 @@ const body = (page) => page.locator("body").innerText();
     const user = await admin.auth().getUserByEmail("qa.eva@example.com");
     const [priv, pub] = await Promise.all([db.doc(`users/${user.uid}`).get(), db.doc(`publicProfiles/${user.uid}`).get()]);
     check("registro: users sin correo ni teléfono (el correo vive en Auth)", priv.exists && !("email" in priv.data()) && !("phone" in priv.data()) && user.email === "qa.eva@example.com");
+    check("registro: nombre reservado", (await db.doc("usernames/qa_eva").get()).data()?.uid === user.uid);
     check("registro: publicProfiles sin correo ni teléfono, con región", pub.exists && !("email" in pub.data()) && !("phone" in pub.data()) && pub.data().region === "México", JSON.stringify(Object.keys(pub.data() || {})));
     // Como el resto de cuentas qa_: verificada (las reglas lo piden para publicar)
     await admin.auth().updateUser(user.uid, { emailVerified: true });
@@ -192,6 +193,18 @@ const body = (page) => page.locator("body").innerText();
 
   // 6) Bloqueo desde la UI: qa_diego bloquea a qa_eva
   await scenario("bloqueo", async (page) => {
+    // Antes del bloqueo comparten dos chats de partida (auditoría M-07):
+    // qa_eva en una partida temporal de qa_diego y qa_diego en la de qa_eva
+    const FV = admin.firestore.FieldValue;
+    const diegoPost = db.collection("posts").doc();
+    await diegoPost.set({ userId: QA.diego.uid, game: "Valorant", comments: "qa bloqueo", scheduledAt: null, interestedCount: 1, createdAt: FV.serverTimestamp() });
+    await db.doc(`group_chats/${diegoPost.id}`).set({ postId: diegoPost.id, participants: [QA.diego.uid, QA.eva.uid], active: true });
+    await db.doc(`post_interested/${diegoPost.id}_${QA.eva.uid}`).set({ postId: diegoPost.id, userId: QA.eva.uid, createdAt: FV.serverTimestamp() });
+    await db.doc(`post_interested/${QA.evaPostId}_${QA.diego.uid}`).set({ postId: QA.evaPostId, userId: QA.diego.uid, createdAt: FV.serverTimestamp() });
+    await db.doc(`posts/${QA.evaPostId}`).update({ interestedCount: FV.increment(1) });
+    await db.doc(`group_chats/${QA.evaPostId}`).update({ participants: FV.arrayUnion(QA.diego.uid) });
+    const evaCountBefore = (await db.doc(`posts/${QA.evaPostId}`).get()).data().interestedCount;
+
     await login(page, QA.diego);
     await page.goto(`${BASE}/findPlayers`);
     await page.getByPlaceholder("Nombre de usuario…").fill("qa_");
@@ -207,6 +220,21 @@ const body = (page) => page.locator("body").innerText();
     await page.waitForTimeout(3000);
     const block = await db.doc(`blocks/${QA.diego.uid}_${QA.eva.uid}`).get();
     check("bloqueo: se creó blocks/{diego}_{eva}", block.exists);
+
+    const [dGroup, dPost, dInterest, eGroup, ePost, eInterest] = await Promise.all([
+      db.doc(`group_chats/${diegoPost.id}`).get(), diegoPost.get(),
+      db.doc(`post_interested/${diegoPost.id}_${QA.eva.uid}`).get(),
+      db.doc(`group_chats/${QA.evaPostId}`).get(), db.doc(`posts/${QA.evaPostId}`).get(),
+      db.doc(`post_interested/${QA.evaPostId}_${QA.diego.uid}`).get()
+    ]);
+    check("bloqueo: qa_eva sale del chat de la partida de qa_diego",
+      !dGroup.data().participants.includes(QA.eva.uid) && !dInterest.exists && dPost.data().interestedCount === 0,
+      JSON.stringify({ p: dGroup.data().participants.length, i: dInterest.exists, c: dPost.data().interestedCount }));
+    check("bloqueo: qa_diego sale del chat de la partida de qa_eva",
+      !eGroup.data().participants.includes(QA.diego.uid) && !eInterest.exists && ePost.data().interestedCount === evaCountBefore - 1,
+      JSON.stringify({ i: eInterest.exists, c: ePost.data().interestedCount, antes: evaCountBefore }));
+    await db.doc(`group_chats/${diegoPost.id}`).delete();
+    await diegoPost.delete();
 
     await page.goto(`${BASE}/post/${QA.evaPostId}`);
     await page.waitForTimeout(3500);
