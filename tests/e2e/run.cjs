@@ -60,6 +60,7 @@ const node = (file, args = []) =>
     ["guides.e2e.cjs"],
     ["matching.e2e.cjs"],
     ["account.e2e.cjs"],
+    ["missing-profile.e2e.cjs"],
     ["legal.e2e.cjs"],
     ["onboarding.e2e.cjs"],
     ["steam-join.e2e.cjs"],
