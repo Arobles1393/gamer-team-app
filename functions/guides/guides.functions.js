@@ -1,5 +1,6 @@
 const functions = require("firebase-functions");
 const { fetchLinkPreview, ValidationError } = require("./guides.service");
+const {describeError} = require("../shared/safeError");
 
 // Vista previa (título, descripción, imagen) de una guía externa. Nunca
 // pide direcciones internas (ver guides.service.js) y, si no se puede
@@ -24,7 +25,7 @@ exports.fetchLinkPreview = functions.https.onCall(
         );
       }
 
-      console.error("❌ Error vista previa de link:", error);
+      console.error("❌ Error vista previa de link:", describeError(error));
 
       throw new functions.https.HttpsError(
         "internal",

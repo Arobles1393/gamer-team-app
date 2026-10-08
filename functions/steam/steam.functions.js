@@ -1,5 +1,6 @@
 const functions = require("firebase-functions");
 const { getSteamStats, getSteamPresence, ValidationError  } = require("./steam.service");
+const {describeError} = require("../shared/safeError");
 
 exports.getSteamStats = functions.https.onCall(
   async (request) => {
@@ -14,7 +15,7 @@ exports.getSteamStats = functions.https.onCall(
     try {
       return await getSteamStats(request.data);
     } catch (error) {
-      console.error("❌ Error Steam:", error);
+      console.error("❌ Error Steam:", describeError(error));
 
       if (error instanceof ValidationError) {
         throw new functions.https.HttpsError(
@@ -46,7 +47,7 @@ exports.getSteamPresence = functions.https.onCall(
     try {
       return await getSteamPresence(request.data);
     } catch (error) {
-      console.error("❌ Error presencia Steam:", error);
+      console.error("❌ Error presencia Steam:", describeError(error));
 
       if (error instanceof ValidationError) {
         throw new functions.https.HttpsError(

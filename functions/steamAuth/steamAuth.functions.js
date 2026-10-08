@@ -1,5 +1,6 @@
 const functions = require("firebase-functions");
 const { loginWithSteam, ValidationError } = require("./steamAuth.service");
+const {describeError} = require("../shared/safeError");
 
 // Sin check de request.auth: esta función es la que autentica al usuario
 exports.loginWithSteam = functions.https.onCall(
@@ -14,7 +15,7 @@ exports.loginWithSteam = functions.https.onCall(
         );
       }
 
-      console.error("❌ Error Steam Auth:", error);
+      console.error("❌ Error Steam Auth:", describeError(error));
 
       throw new functions.https.HttpsError(
         "internal",

@@ -294,7 +294,8 @@ const fetchLinkPreview = async ({ url: rawUrl } = {}) => {
     }
   } catch (error) {
     const kind = error instanceof BlockedAddressError ? "bloqueada" : "falló";
-    console.warn(`Vista previa ${kind} para ${rawUrl}: ${error.message}`);
+    // Solo el dominio: la URL completa la escribió un usuario
+    console.warn(`Vista previa ${kind} para ${url.hostname}: ${error.message}`);
   }
 
   return { ...EMPTY_PREVIEW };

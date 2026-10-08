@@ -1,5 +1,6 @@
 const functions = require("firebase-functions");
 const { getCommunityStats, ValidationError } = require("./community.service");
+const {describeError} = require("../shared/safeError");
 
 // Mapa de la comunidad: jugadores activos por país (solo conteos
 // agregados, nunca usuarios). Ver community.service.js.
@@ -23,7 +24,7 @@ exports.getCommunityStats = functions.https.onCall(
         );
       }
 
-      console.error("❌ Error estadísticas de la comunidad:", error);
+      console.error("❌ Error estadísticas de la comunidad:", describeError(error));
 
       throw new functions.https.HttpsError(
         "internal",

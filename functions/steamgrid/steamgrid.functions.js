@@ -1,12 +1,13 @@
 const functions = require("firebase-functions");
 const { getGameLogo, getGamePortada, ValidationError } = require("./steamgrid.service");
+const {describeError} = require("../shared/safeError");
 
 const mapSteamGridError = (error, fallbackMessage) => {
   if (error instanceof ValidationError) {
     return new functions.https.HttpsError("invalid-argument", error.message);
   }
 
-  console.error("❌ SteamGrid Error:", error);
+  console.error("❌ SteamGrid Error:", describeError(error));
 
   return new functions.https.HttpsError("internal", fallbackMessage);
 };
