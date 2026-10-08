@@ -68,6 +68,7 @@ const node = (file, args = []) =>
     // Sin E2E_SUPPORT=1 comprueba que el botón no exista; con él, que el
     // servidor tenga REACT_APP_SUPPORT_URL válida
     ["support.e2e.cjs"],
+    ["credits.e2e.cjs"],
     ...(process.env.E2E_COMMUNITY === "1" ? [["community.e2e.cjs"]] : []),
     ...(process.env.E2E_DELETE_ACCOUNT === "1" ? [["delete-account.e2e.cjs"]] : []),
     ["reset.cjs"]

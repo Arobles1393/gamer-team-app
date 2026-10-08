@@ -12,7 +12,8 @@ import { useNotifications, useUnreadNotifications, useUserPresence, useRequireAu
 import { useAuthReady, useCurrentUser } from "./context";
 import { AppRoutes } from "./routes";
 import { CreatePostDialog } from "./components/Posts";
-import { useNavigate } from "react-router-dom"
+import { AppFooter } from "./components/Layout";
+import { useLocation, useNavigate } from "react-router-dom"
 import { Toast } from "primereact/toast";
 import { useTranslation } from "react-i18next";
 import { resetAppLanguage } from "./i18n";
@@ -34,6 +35,8 @@ function App() {
 
   // Navigation
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const isFullHeightView = pathname === "/chat" || pathname.startsWith("/chat/");
   const { t } = useTranslation();
 
   // Hooks
@@ -168,6 +171,9 @@ function App() {
           setEditingPost={setEditingPost}
           setShowCreatePost={setShowCreatePost}
         />
+        {/* El chat ocupa toda la altura: ahí el pie estorbaría (los
+            créditos siguen en el menú del avatar) */}
+        {!isFullHeightView && <AppFooter />}
       </main>
       <Toast ref={toast} />
     </>

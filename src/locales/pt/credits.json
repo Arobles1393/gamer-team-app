@@ -19,5 +19,11 @@
     "auth": "Login",
     "infra": "Infraestrutura",
     "support": "Apoio"
-  }
+  },
+  "footer": {
+    "gameData": "Dados de jogos:",
+    "credits": "Créditos",
+    "copyright": "© {{year}} GamerMatch"
+  },
+  "menu": "Créditos"
 }

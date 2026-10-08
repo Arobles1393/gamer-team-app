@@ -17,7 +17,6 @@ import { IMAGE_ACCEPT } from "../../utils/cropImage";
 import GuideSection from "./GuideSection";
 import PrivacySection from "./PrivacySection";
 import SupportSection from "./SupportSection";
-import { LegalLinks } from "../Legal";
 import { MyGuides } from "../Guides";
 import { MatchPreferences, MATCH_PREFERENCES_ID } from "../Matching";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -252,8 +251,6 @@ export default function Profile() {
       <SupportSection />
 
       <DangerZone user={user} username={userData.username} onError={showError} />
-
-      <LegalLinks className="profile-page__legal" />
 
       {isEditing && (
         <ProfileSaveBar

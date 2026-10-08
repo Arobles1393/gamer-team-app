@@ -98,6 +98,13 @@ export const createHeaderMenu = (
       navigate("/terminos");
     }
   },
+  {
+    label: t("credits:menu"),
+    icon: "pi pi-info-circle",
+    command: () => {
+      navigate("/creditos");
+    }
+  },
   { separator: true },
   {
     label: t("actions.logout"),

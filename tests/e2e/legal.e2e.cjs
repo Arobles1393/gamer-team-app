@@ -60,7 +60,8 @@ const removeTmp = async () => {
         check(`${route}: "Última actualización: Pendiente"`, /Última actualización: Pendiente/.test(await page.locator(".legal__updated").innerText()));
         check(`${route}: ${sections} secciones e índice con las mismas`, await page.locator(".legal__section").count() === sections
           && await page.locator(".legal__toc a").count() === sections);
-        check(`${route}: todo el contenido dice [PENDIENTE: ...]`, (await page.locator(".legal__paragraph").allInnerTexts()).every((p) => p.startsWith("[PENDIENTE")));
+        // [APUNTE: ...] son notas internas para quien redacte (no texto legal)
+      check(`${route}: todo el contenido dice [PENDIENTE: ...] (o un [APUNTE: ...])`, (await page.locator(".legal__paragraph").allInnerTexts()).every((p) => p.startsWith("[PENDIENTE") || p.startsWith("[APUNTE")));
         check(`${route}: sin aviso de "solo en español"`, await page.locator(".legal__notice:not(.legal__notice--draft)").count() === 0);
         check(`${route}: título de la pestaña`, (await page.title()).startsWith(title));
         // Índice: el último enlace lleva a la última sección
@@ -96,13 +97,13 @@ const removeTmp = async () => {
       console.log("\n=== enlaces");
       page = await newPage();
       await page.goto(`${BASE}/login`);
-      const authLinks = page.locator(".auth__legal a");
+      const authLinks = page.locator(".auth__legal .legal-links a");
       await authLinks.first().waitFor({ timeout: 15000 });
       const linkTexts = (await authLinks.allInnerTexts()).join("|");
       check("login: enlaces a Privacidad y Términos", linkTexts.toLowerCase() === "privacidad|términos", linkTexts);
       await page.getByRole("button", { name: "Crear cuenta" }).click();
       await page.locator("#username").waitFor();
-      check("registro: también los enlaces", await page.locator(".auth__legal a").count() === 2);
+      check("registro: también los enlaces", await page.locator(".auth__legal .legal-links a").count() === 2);
       check("registro: sin la casilla de consentimiento (flag en false)", await page.locator("#legal-consent").count() === 0);
       await page.locator("#email").fill(QA.ana.email);
       await page.getByRole("button", { name: "Iniciar sesión" }).click().catch(() => {});
@@ -112,8 +113,8 @@ const removeTmp = async () => {
       await page.locator("button[type=submit]").click();
       await page.waitForURL((url) => !url.pathname.startsWith("/login"), { timeout: 15000 });
       await page.goto(`${BASE}/profile`);
-      await page.locator(".profile-page__legal").waitFor({ timeout: 15000 });
-      check("Mi perfil: enlaces al final", await page.locator(".profile-page__legal a").count() === 2);
+      await page.locator(".app-footer .legal-links").waitFor({ timeout: 15000 });
+      check("Mi perfil: enlaces al final (pie global)", await page.locator(".app-footer .legal-links a").count() === 2);
       await page.locator(".app-rail__avatar-btn").click();
       await page.locator(".gm-menu").getByText("Términos", { exact: true }).click();
       await page.waitForURL(/\/terminos$/, { timeout: 10000 });

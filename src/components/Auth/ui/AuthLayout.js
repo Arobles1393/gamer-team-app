@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { LegalLinks } from "../../Legal";
+import { AppFooter } from "../../Layout";
 import "../Auth.css";
 
 function Brand({ className }) {
@@ -64,7 +64,7 @@ export default function AuthLayout({
           {children}
         </form>
 
-        <LegalLinks className="auth__legal" />
+        <AppFooter className="auth__legal" />
 
       </section>
     </div>
