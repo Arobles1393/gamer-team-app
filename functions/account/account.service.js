@@ -181,9 +181,14 @@ const steps = (uid, bucket) => {
 
     // h. Guías, preferencias de compatibilidad y perfil público
     ["guías y perfil", async () => {
-      const guides = await docsOf(db().collection("guides").where("authorId", "==", uid));
+      const [guides, usernames] = await Promise.all([
+        docsOf(db().collection("guides").where("authorId", "==", uid)),
+        // Su nombre de usuario queda libre (auditoría M-08)
+        docsOf(db().collection("usernames").where("uid", "==", uid)),
+      ]);
       return deleteRefs([
         ...guides.map((g) => g.ref),
+        ...usernames.map((u) => u.ref),
         db().doc(`matchProfiles/${uid}`),
         db().doc(`publicProfiles/${uid}`),
       ]);

@@ -7,6 +7,8 @@ const KNOWN_ERRORS = [
   "auth/too-many-requests",
   "auth/user-disabled",
   "auth/email-already-in-use",
+  // Registro y Mi perfil: nombre de usuario de otra cuenta
+  "auth/username-taken",
   "auth/weak-password",
   "auth/account-exists-with-different-credential",
   "auth/popup-blocked",

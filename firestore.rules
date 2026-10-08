@@ -115,6 +115,12 @@ service cloud.firestore {
              && ((!changedField('username') && !changedField('usernameLower'))
                  || !('usernameLower' in data)
                  || (data.get('username', null) is string && data.usernameLower == data.username.lower()))
+             // Nombre único (auditoría M-08): un nombre nuevo tiene que estar
+             // reservado a nombre de quien escribe en usernames/{usernameLower},
+             // en la misma operación. Los perfiles viejos sin reserva siguen
+             // funcionando mientras no cambien de nombre.
+             && (!changedField('usernameLower') || !('usernameLower' in data)
+                 || getAfter(/databases/$(database)/documents/usernames/$(data.usernameLower)).data.uid == request.auth.uid)
              && (!changedField('avatar') || optUrl(data.get('avatar', null)))
              && (!changedField('banner') || optUrl(data.get('banner', null)))
              && (!changedField('region') || optText(data.get('region', null), 60))
@@ -870,6 +876,27 @@ service cloud.firestore {
                     && optionalText(request.resource.data.reviewNote, 500);
 
       allow delete: if false;
+    }
+
+    // ===== usernames/{usernameLower} (reserva de nombres, auditoría M-08) =====
+    // Cada nombre (en minúsculas) pertenece a una cuenta. Se crea solo si no
+    // existe, en la misma operación en que el perfil toma ese nombre, y se
+    // libera al cambiarlo. Se puede consultar un nombre (el registro avisa
+    // antes de crear la cuenta) pero no listarlos todos.
+    match /usernames/{name} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if isSignedIn()
+                    && request.resource.data.keys().hasOnly(['uid', 'createdAt'])
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.createdAt == request.time
+                    && name.size() > 0 && name.size() <= 40
+                    && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.usernameLower == name;
+      // Liberar el nombre anterior al cambiarlo (el perfil ya no lo usa)
+      allow delete: if isSignedIn()
+                    && resource.data.uid == request.auth.uid
+                    && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.usernameLower != name;
+      allow update: if false;
     }
 
     // ===== steamNonces (solo Admin SDK — anti-replay del login con Steam) =====

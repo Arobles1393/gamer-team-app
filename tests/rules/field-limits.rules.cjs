@@ -23,6 +23,8 @@ module.exports = async ({ env, test }) => {
     const user = { ...data, usernameLower: data.username.toLowerCase(), createdAt: serverTimestamp() };
     batch.set(doc(s, "users", uid), user);
     batch.set(doc(s, "publicProfiles", uid), { avatar: null, region: null, ...user });
+    // Nombre único (usernames.rules.cjs)
+    batch.set(doc(s, "usernames", user.usernameLower), { uid, createdAt: serverTimestamp() });
     return batch.commit();
   };
 
@@ -361,8 +363,15 @@ module.exports = async ({ env, test }) => {
   await test("usernameLower que no corresponde al nombre: rechazado", () =>
     assertFails(updateProfile(A, { username: "ana", usernameLower: "admin" })));
 
-  await test("cambiar el nombre con su usernameLower correcto", () =>
-    assertSucceeds(updateProfile(A, { username: "AnaGamer", usernameLower: "anagamer" })));
+  await test("cambiar el nombre con su usernameLower correcto (y su reserva)", () => {
+    const s = db(A);
+    const batch = writeBatch(s);
+    batch.set(doc(s, "usernames", "anagamer"), { uid: A, createdAt: serverTimestamp() });
+    batch.delete(doc(s, "usernames", "ana"));
+    batch.update(doc(s, "users", A), { username: "AnaGamer", usernameLower: "anagamer" });
+    batch.set(doc(s, "publicProfiles", A), { username: "AnaGamer", usernameLower: "anagamer" }, { merge: true });
+    return assertSucceeds(batch.commit());
+  });
 
   // ---------- reportes ----------
   const report = { reporterId: B, targetType: "user", targetId: A, reason: "spam", note: "", status: "pending", createdAt: serverTimestamp(), reviewedAt: null };

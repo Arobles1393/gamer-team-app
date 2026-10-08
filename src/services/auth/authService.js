@@ -23,6 +23,12 @@ const login = async (
 // login con Google o Steam. El correo queda solo en Firebase Auth.
 // acceptedLegal: marcó "He leído y acepto..." (solo con REQUIRE_LEGAL_CONSENT)
 const register = async ({ email, password, username, region, acceptedLegal = false }) => {
+  // Nombre único (auditoría M-08): se avisa antes de crear la cuenta, así no
+  // queda una cuenta sin perfil. La reserva real va en createUserProfile.
+  if (!(await profileService.isUsernameAvailable(username))) {
+    throw Object.assign(new Error("auth/username-taken"), { code: "auth/username-taken" });
+  }
+
   const userCredential = await createUserWithEmailAndPassword(
     auth,
     email,
@@ -88,11 +94,12 @@ const loginWithGoogle = async () => {
   const exists = await profileService.userProfileExists(uid);
 
   if (!exists) {
+    // Si el nombre de Google ya está en uso, se le agrega un número
     await profileService.createUserProfile(uid, {
       username: displayName || email.split("@")[0],
       avatar: photoURL,
       region: null
-    });
+    }, { autoSuffix: true });
   }
 
   return userCredential;
@@ -126,7 +133,7 @@ const loginWithSteam = async () => {
       region: null,
       // Activa la sección de Steam del perfil sin que tenga que pegar el link
       links: [`https://steamcommunity.com/profiles/${data.steamId64}`]
-    });
+    }, { autoSuffix: true });
   }
 
   return userCredential;

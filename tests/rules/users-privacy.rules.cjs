@@ -47,6 +47,8 @@ module.exports = async ({ env, test, expect }) => {
     const batch = writeBatch(f);
     batch.set(doc(f, "users", NEW), { username: "Nuevo", usernameLower: "nuevo", avatar: null, region: null, createdAt: serverTimestamp() });
     batch.set(doc(f, "publicProfiles", NEW), { username: "Nuevo", usernameLower: "nuevo", avatar: null, region: null, createdAt: serverTimestamp() });
+    // Nombre único (usernames.rules.cjs)
+    batch.set(doc(f, "usernames", "nuevo"), { uid: NEW, createdAt: serverTimestamp() });
     await assertSucceeds(batch.commit());
   });
 

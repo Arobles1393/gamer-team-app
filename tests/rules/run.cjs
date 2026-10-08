@@ -23,7 +23,8 @@ const SUITES = [
   "private-preferences",
   "notifications",
   "field-limits",
-  "block-groups"
+  "block-groups",
+  "usernames"
 ];
 
 const results = [];

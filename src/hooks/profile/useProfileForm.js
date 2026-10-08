@@ -11,7 +11,7 @@ const EMAIL_ERRORS = ["auth/email-already-in-use", "auth/invalid-email", "auth/t
 
 const getSaveErrorMessage = (error) => {
   if (error.code === "auth/requires-recent-login") return i18n.t("profile:form.reloginEmail");
-  if (EMAIL_ERRORS.includes(error.code)) return getAuthErrorMessage(error);
+  if (EMAIL_ERRORS.includes(error.code) || error.code === "auth/username-taken") return getAuthErrorMessage(error);
   return i18n.t("profile:form.saveError");
 };
 

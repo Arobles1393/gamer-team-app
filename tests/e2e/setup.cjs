@@ -93,6 +93,8 @@ const createPost = async (batch, id, uid, region, game, extra = {}) => {
     };
     await db.collection("users").doc(uid).set(userData);
     await db.collection("publicProfiles").doc(uid).set(pick(userData));
+    // Nombre reservado, como al registrarse en la app (nombres únicos)
+    await db.doc(`usernames/${userData.usernameLower}`).set({ uid, createdAt: Timestamp.now() });
     // Guía de bienvenida ya vista: si no, se abre sola y tapa las pruebas
     await db.doc(`users/${uid}/private/preferences`).set({ onboarding: { completed: true, showAgain: false, completedVersion: 1 } });
     out[u.key] = { uid, email: u.email, password: pwd, username: u.username };
