@@ -34,7 +34,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "prebuild": "npm run credits:generate",
     "build": "react-scripts build",
+    "credits:generate": "node scripts/generateThirdPartyNotices.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "test:rules": "npx -y firebase-tools@13.35.1 emulators:exec --config tests/rules/firebase.json --only firestore --project demo-gamermatch \"node tests/rules/run.cjs\"",
