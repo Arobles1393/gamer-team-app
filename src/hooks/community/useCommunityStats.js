@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useVisibleInterval } from "../polling/useVisibleInterval";
 import { communityService } from "../../services/community";
 
 // La función cachea 60 s: refrescar más seguido no trae nada nuevo
 const REFRESH_MS = 60 * 1000;
 
 // Actividad de la comunidad por país, para el mapa. Pide al montar, cada
-// minuto y de inmediato al cambiar de juego. Si llega la respuesta de un
+// minuto con la pestaña visible (pausa al ocultarla, auditoría B-27) y de
+// inmediato al cambiar de juego. Si llega la respuesta de un
 // juego anterior (cambios rápidos), se descarta.
 export const useCommunityStats = (gameId = null) => {
   const [data, setData] = useState(null);
@@ -33,16 +35,19 @@ export const useCommunityStats = (gameId = null) => {
     }
   }, [gameId]);
 
-  useEffect(() => {
-    load();
-    const interval = setInterval(() => load({ silent: true }), REFRESH_MS);
-
-    return () => {
-      clearInterval(interval);
-      // La respuesta pendiente ya no corresponde a este juego
-      requestRef.current += 1;
-    };
+  // La primera carga de cada juego muestra el estado de carga; los
+  // refrescos (cada minuto o al volver a la pestaña) son silenciosos
+  const loadedRef = useRef(null);
+  const poll = useCallback(() => {
+    const silent = loadedRef.current === load;
+    loadedRef.current = load;
+    load({ silent });
   }, [load]);
+
+  useVisibleInterval(poll, REFRESH_MS);
+
+  // La respuesta pendiente ya no corresponde a este juego
+  useEffect(() => () => { requestRef.current += 1; }, [load]);
 
   const refetch = useCallback(() => load(), [load]);
 

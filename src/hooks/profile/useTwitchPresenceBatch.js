@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useVisibleInterval } from "../polling/useVisibleInterval";
 import { twitchService } from "../../services/twitch";
 import { getTwitchUsernameFromLinks } from "../../utils";
 
-// Cada cuánto se refresca mientras la lista está abierta
+// Cada cuánto se refresca mientras la lista está abierta y la pestaña visible
 const REFRESH_MS = 90 * 1000;
 // Límite de /helix/streams por llamada
 const MAX_USERS = 100;
@@ -13,6 +14,8 @@ const MAX_USERS = 100;
 // están en vivo.
 export const useTwitchPresenceBatch = (players) => {
   const [presence, setPresence] = useState({});
+  // Solo cuenta la respuesta de la última consulta (lista o pestaña cambiadas)
+  const requestRef = useRef(0);
 
   // userId -> usuario de Twitch, solo de quienes lo tienen vinculado
   const usernamesByUser = useMemo(
@@ -29,35 +32,25 @@ export const useTwitchPresenceBatch = (players) => {
   // Clave estable: solo se vuelve a consultar si cambian los usuarios
   const usernamesKey = [...new Set(Object.values(usernamesByUser))].sort().join(",");
 
-  useEffect(() => {
-    if (!usernamesKey) {
-      setPresence({});
-      return;
+  const fetchPresence = useCallback(async () => {
+    const requestId = ++requestRef.current;
+    try {
+      const data = await twitchService.getTwitchPresence(usernamesKey.split(","));
+      if (requestId === requestRef.current) setPresence(data || {});
+    } catch (error) {
+      // Sin dato de Twitch simplemente no se muestra el badge
+      console.error("Error al obtener presencia de Twitch:", error);
     }
-
-    let cancelled = false;
-
-    const fetchPresence = async () => {
-      try {
-        const data = await twitchService.getTwitchPresence(usernamesKey.split(","));
-
-        if (!cancelled) {
-          setPresence(data || {});
-        }
-      } catch (error) {
-        // Sin dato de Twitch simplemente no se muestra el badge
-        console.error("Error al obtener presencia de Twitch:", error);
-      }
-    };
-
-    fetchPresence();
-    const interval = setInterval(fetchPresence, REFRESH_MS);
-
-    return () => {
-      cancelled = true;
-      clearInterval(interval);
-    };
   }, [usernamesKey]);
+
+  useEffect(() => {
+    if (!usernamesKey) setPresence({});
+    // La respuesta pendiente ya no corresponde a esta lista
+    return () => { requestRef.current += 1; };
+  }, [usernamesKey]);
+
+  // Pausa con la pestaña oculta (auditoría B-27)
+  useVisibleInterval(fetchPresence, REFRESH_MS, Boolean(usernamesKey));
 
   return useMemo(
     () =>
