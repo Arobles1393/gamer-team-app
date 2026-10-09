@@ -19,7 +19,7 @@ exports.logGameSearch = functions.https.onCall(
       limitSearchLog(request.auth.uid);
 
       try {
-        return await logGameSearch(request.data);
+        return await logGameSearch(request.data, request.auth.uid);
       } catch (error) {
         console.error("❌ Error registrando búsqueda:", describeError(error));
 

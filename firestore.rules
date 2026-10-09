@@ -643,6 +643,11 @@ service cloud.firestore {
                     && request.resource.data.keys().hasOnly(['participants', 'lastMessage', 'lastMessageAt', 'lastSenderId', 'createdAt'])
                     && request.auth.uid in request.resource.data.participants
                     && request.resource.data.participants.size() == 2
+                    // Un solo chat por pareja: el id es el par de uids ordenado
+                    // (chatService.getOrCreateChat; auditoría B-22)
+                    && chatId == (request.resource.data.participants[0] < request.resource.data.participants[1]
+                         ? request.resource.data.participants[0] + '_' + request.resource.data.participants[1]
+                         : request.resource.data.participants[1] + '_' + request.resource.data.participants[0])
                     && textUpTo('lastMessage', 1000)
                     && noBlockBetween(request.resource.data.participants[0], request.resource.data.participants[1]);
 

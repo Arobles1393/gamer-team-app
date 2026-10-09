@@ -231,6 +231,15 @@ module.exports = async ({ env, test }) => {
     assertFails(addDoc(collection(db(B), "post_comments"), { ...comment, createdAt: future() })));
 
   // ---------- chats y mensajes ----------
+  // Un solo chat por pareja: el id es el par ordenado (auditoría B-22)
+  const C = "cccUser3";
+  await test("chat con un id cualquiera: rechazado", () =>
+    assertFails(setDoc(doc(db(A), "chats", "otroChat"), { participants: [A, C], lastMessage: "", lastMessageAt: null, createdAt: serverTimestamp() })));
+  await test("chat con el par al revés como id: rechazado", () =>
+    assertFails(setDoc(doc(db(A), "chats", `${C}_${A}`), { participants: [A, C], lastMessage: "", lastMessageAt: null, createdAt: serverTimestamp() })));
+  await test("chat con el par ordenado como id, aunque participants venga en otro orden", () =>
+    assertSucceeds(setDoc(doc(db(C), "chats", [A, C].sort().join("_")), { participants: [C, A], lastMessage: "", lastMessageAt: null, createdAt: serverTimestamp() })));
+
   await test("abrir un chat (forma de createOrGetChat)", () =>
     assertSucceeds(setDoc(doc(db(A), "chats", CHAT), { participants: [A, B], lastMessage: "", lastMessageAt: null, createdAt: serverTimestamp() })));
 
