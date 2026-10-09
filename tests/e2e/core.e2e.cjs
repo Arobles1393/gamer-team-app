@@ -205,36 +205,42 @@ const body = (page) => page.locator("body").innerText();
     await db.doc(`group_chats/${QA.evaPostId}`).update({ participants: FV.arrayUnion(QA.diego.uid) });
     const evaCountBefore = (await db.doc(`posts/${QA.evaPostId}`).get()).data().interestedCount;
 
-    await login(page, QA.diego);
-    await page.goto(`${BASE}/findPlayers`);
-    await page.getByPlaceholder("Nombre de usuario…").fill("qa_");
-    await page.waitForTimeout(3000);
-    const results = await body(page);
-    check("bloqueo: la búsqueda (publicProfiles) encuentra a las cuentas qa_", /qa_ana/.test(results) && /qa_eva/.test(results));
-    check("bloqueo: los resultados no muestran correos", !/@example\.com/.test(results));
-    await page.locator(".player-card", { hasText: "qa_eva" }).getByRole("button", { name: /Ver perfil/ }).click();
-    await page.waitForTimeout(2500);
-    await page.getByRole("button", { name: "Más opciones" }).click();
-    await page.getByText("Bloquear a qa_eva").click();
-    await page.locator(".p-confirm-dialog").getByRole("button", { name: "Bloquear" }).click();
-    await page.waitForTimeout(3000);
-    const block = await db.doc(`blocks/${QA.diego.uid}_${QA.eva.uid}`).get();
-    check("bloqueo: se creó blocks/{diego}_{eva}", block.exists);
+    // La partida temporal se borra aunque algo falle a medias: si no, queda
+    // en el feed y empuja a las partidas fijas de las cuentas QA
+    try {
+      await login(page, QA.diego);
+      await page.goto(`${BASE}/findPlayers`);
+      await page.getByPlaceholder("Nombre de usuario…").fill("qa_");
+      await page.waitForTimeout(3000);
+      const results = await body(page);
+      check("bloqueo: la búsqueda (publicProfiles) encuentra a las cuentas qa_", /qa_ana/.test(results) && /qa_eva/.test(results));
+      check("bloqueo: los resultados no muestran correos", !/@example\.com/.test(results));
+      await page.locator(".player-card", { hasText: "qa_eva" }).getByRole("button", { name: /Ver perfil/ }).click();
+      await page.waitForTimeout(2500);
+      await page.getByRole("button", { name: "Más opciones" }).click();
+      await page.getByText("Bloquear a qa_eva").click();
+      await page.locator(".p-confirm-dialog").getByRole("button", { name: "Bloquear" }).click();
+      await page.waitForTimeout(3000);
+      const block = await db.doc(`blocks/${QA.diego.uid}_${QA.eva.uid}`).get();
+      check("bloqueo: se creó blocks/{diego}_{eva}", block.exists);
 
-    const [dGroup, dPost, dInterest, eGroup, ePost, eInterest] = await Promise.all([
-      db.doc(`group_chats/${diegoPost.id}`).get(), diegoPost.get(),
-      db.doc(`post_interested/${diegoPost.id}_${QA.eva.uid}`).get(),
-      db.doc(`group_chats/${QA.evaPostId}`).get(), db.doc(`posts/${QA.evaPostId}`).get(),
-      db.doc(`post_interested/${QA.evaPostId}_${QA.diego.uid}`).get()
-    ]);
-    check("bloqueo: qa_eva sale del chat de la partida de qa_diego",
-      !dGroup.data().participants.includes(QA.eva.uid) && !dInterest.exists && dPost.data().interestedCount === 0,
-      JSON.stringify({ p: dGroup.data().participants.length, i: dInterest.exists, c: dPost.data().interestedCount }));
-    check("bloqueo: qa_diego sale del chat de la partida de qa_eva",
-      !eGroup.data().participants.includes(QA.diego.uid) && !eInterest.exists && ePost.data().interestedCount === evaCountBefore - 1,
-      JSON.stringify({ i: eInterest.exists, c: ePost.data().interestedCount, antes: evaCountBefore }));
-    await db.doc(`group_chats/${diegoPost.id}`).delete();
-    await diegoPost.delete();
+      const [dGroup, dPost, dInterest, eGroup, ePost, eInterest] = await Promise.all([
+        db.doc(`group_chats/${diegoPost.id}`).get(), diegoPost.get(),
+        db.doc(`post_interested/${diegoPost.id}_${QA.eva.uid}`).get(),
+        db.doc(`group_chats/${QA.evaPostId}`).get(), db.doc(`posts/${QA.evaPostId}`).get(),
+        db.doc(`post_interested/${QA.evaPostId}_${QA.diego.uid}`).get()
+      ]);
+      check("bloqueo: qa_eva sale del chat de la partida de qa_diego",
+        !dGroup.data().participants.includes(QA.eva.uid) && !dInterest.exists && dPost.data().interestedCount === 0,
+        JSON.stringify({ p: dGroup.data().participants.length, i: dInterest.exists, c: dPost.data().interestedCount }));
+      check("bloqueo: qa_diego sale del chat de la partida de qa_eva",
+        !eGroup.data().participants.includes(QA.diego.uid) && !eInterest.exists && ePost.data().interestedCount === evaCountBefore - 1,
+        JSON.stringify({ i: eInterest.exists, c: ePost.data().interestedCount, antes: evaCountBefore }));
+    } finally {
+      await db.doc(`post_interested/${diegoPost.id}_${QA.eva.uid}`).delete().catch(() => {});
+      await db.recursiveDelete(db.doc(`group_chats/${diegoPost.id}`)).catch(() => {});
+      await diegoPost.delete().catch(() => {});
+    }
 
     await page.goto(`${BASE}/post/${QA.evaPostId}`);
     await page.waitForTimeout(3500);
