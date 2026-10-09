@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import NewsHeader from "./NewsHeader";
 import NewsFilters from "./NewsFilters";
 import NewsCard from "./NewsCard";
@@ -9,6 +10,7 @@ import "../Posts/Feed.css";
 import "./GamingNews.css";
 
 export default function GamingNews() {
+  const { t } = useTranslation();
   const { news, loading, error, retry } = useGamingNews();
   const [search, setSearch] = useState("");
   const [source, setSource] = useState(null);
@@ -45,7 +47,7 @@ export default function GamingNews() {
 
     if (loading) {
       return (
-        <div className="news-grid" aria-busy="true" aria-label="Cargando noticias">
+        <div className="news-grid" aria-busy="true" aria-label={t("news.loading")}>
           <NewsCardSkeleton featured />
           {Array.from({ length: 6 }, (_, i) => <NewsCardSkeleton key={i} />)}
         </div>

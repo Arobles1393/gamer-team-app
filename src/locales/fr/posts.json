@@ -123,7 +123,8 @@
       "done": "Commentaire supprimé"
     },
     "blockedTitle": "Cette partie n'est pas disponible",
-    "blockedText": "Vous ne pouvez pas voir les publications des utilisateurs avec qui il y a un blocage."
+    "blockedText": "Vous ne pouvez pas voir les publications des utilisateurs avec qui il y a un blocage.",
+    "eyebrow": "Partie"
   },
   "info": {
     "host": "Hôte",

@@ -107,7 +107,9 @@
         "text": "Vérifiez votre connexion et réessayez.",
         "action": "Réessayer"
       }
-    }
+    },
+    "loading": "Chargement des actus",
+    "readOn": "Lire sur {{source}}"
   },
   "deletedUser": "Utilisateur supprimé",
   "steamJoin": {

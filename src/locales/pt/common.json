@@ -107,7 +107,9 @@
         "text": "Verifique sua conexão e tente novamente.",
         "action": "Tentar novamente"
       }
-    }
+    },
+    "loading": "Carregando notícias",
+    "readOn": "Ler em {{source}}"
   },
   "deletedUser": "Usuário excluído",
   "steamJoin": {

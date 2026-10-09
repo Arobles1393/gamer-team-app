@@ -123,7 +123,8 @@
       "done": "Comment deleted"
     },
     "blockedTitle": "This party isn't available",
-    "blockedText": "You can't see posts from users you have a block with."
+    "blockedText": "You can't see posts from users you have a block with.",
+    "eyebrow": "Party"
   },
   "info": {
     "host": "Host",

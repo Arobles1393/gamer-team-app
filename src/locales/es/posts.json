@@ -123,7 +123,8 @@
       "done": "Comentario eliminado"
     },
     "blockedTitle": "Esta partida no está disponible",
-    "blockedText": "No puedes ver publicaciones de usuarios con los que hay un bloqueo."
+    "blockedText": "No puedes ver publicaciones de usuarios con los que hay un bloqueo.",
+    "eyebrow": "Partida"
   },
   "info": {
     "host": "Anfitrión",

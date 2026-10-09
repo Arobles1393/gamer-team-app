@@ -107,7 +107,9 @@
         "text": "Revisa tu conexión e inténtalo de nuevo.",
         "action": "Reintentar"
       }
-    }
+    },
+    "loading": "Cargando noticias",
+    "readOn": "Leer en {{source}}"
   },
   "deletedUser": "Usuario eliminado",
   "steamJoin": {

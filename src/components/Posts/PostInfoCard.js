@@ -45,7 +45,7 @@ export default function PostInfoCard({
   const playersNeeded = Number(post.playersNeeded) || 0;
 
   return (
-    <ProfileSection title="Detalles" icon="pi-info-circle" className="post-info">
+    <ProfileSection title={t("create.details")} icon="pi-info-circle" className="post-info">
       <button
         type="button"
         className="post-info__host"

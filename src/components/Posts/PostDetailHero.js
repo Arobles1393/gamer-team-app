@@ -62,7 +62,7 @@ export default function PostDetailHero({ post, onBack }) {
         )}
 
         <div className="post-hero__info">
-          <span className="post-hero__eyebrow">Partida</span>
+          <span className="post-hero__eyebrow">{t("detail.eyebrow")}</span>
 
           {post.logo ? (
             <>
@@ -75,7 +75,7 @@ export default function PostDetailHero({ post, onBack }) {
 
           <div className="post-hero__badges">
             {post.multiplatform && (
-              <span className="post-hero__badge post-hero__badge--accent">Multiplataforma</span>
+              <span className="post-hero__badge post-hero__badge--accent">{t("create.multiplatform")}</span>
             )}
             {badges.map((label) => (
               <span key={label} className="post-hero__badge">{label}</span>

@@ -107,7 +107,9 @@
         "text": "Check your connection and try again.",
         "action": "Retry"
       }
-    }
+    },
+    "loading": "Loading news",
+    "readOn": "Read on {{source}}"
   },
   "deletedUser": "Deleted user",
   "steamJoin": {
