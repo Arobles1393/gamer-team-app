@@ -36,12 +36,6 @@
     "url": "https://tiptap.dev"
   },
   {
-    "name": "axios",
-    "version": "1.16.1",
-    "license": "MIT",
-    "url": "https://axios-http.com"
-  },
-  {
     "name": "d3-geo",
     "version": "3.1.1",
     "license": "ISC",
@@ -64,12 +58,6 @@
     "version": "12.11.0",
     "license": "Apache-2.0",
     "url": "https://firebase.google.com/"
-  },
-  {
-    "name": "framer-motion",
-    "version": "13.4.4",
-    "license": "MIT",
-    "url": "https://github.com/motiondivision/motion/"
   },
   {
     "name": "i18next",
@@ -136,11 +124,5 @@
     "version": "2.1.4",
     "license": "Apache-2.0",
     "url": "https://github.com/GoogleChrome/web-vitals"
-  },
-  {
-    "name": "world-atlas",
-    "version": "2.0.2",
-    "license": "ISC",
-    "url": "https://github.com/topojson/world-atlas"
   }
 ]

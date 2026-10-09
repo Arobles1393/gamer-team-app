@@ -39,7 +39,8 @@ const getAllowedOrigins = () => {
   const projectId = process.env.GCLOUD_PROJECT;
 
   const defaults = [
-    "http://localhost:3000",
+    // El servidor de desarrollo solo cuando corre en el emulador (auditoría B-24)
+    process.env.FUNCTIONS_EMULATOR === "true" && "http://localhost:3000",
     projectId && `https://${projectId}.web.app`,
     projectId && `https://${projectId}.firebaseapp.com`,
   ];
@@ -231,5 +232,6 @@ module.exports = {
   loginWithSteam,
   verifyOpenIdResponse,
   getPublicProfile,
+  getAllowedOrigins,
   ValidationError,
 };

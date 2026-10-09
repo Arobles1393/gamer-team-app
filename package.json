@@ -13,12 +13,10 @@
     "@tiptap/pm": "3.31.4",
     "@tiptap/react": "3.31.4",
     "@tiptap/starter-kit": "3.31.4",
-    "axios": "^1.16.1",
     "d3-geo": "3.1.1",
     "dompurify": "3.4.16",
     "emoji-picker-react": "4.19.1",
     "firebase": "^12.11.0",
-    "framer-motion": "^13.4.4",
     "i18next": "^26.4.2",
     "i18next-browser-languagedetector": "^8.2.1",
     "primeicons": "^7.0.0",
@@ -30,8 +28,7 @@
     "react-router-dom": "^7.13.2",
     "react-scripts": "5.0.1",
     "topojson-client": "3.1.0",
-    "web-vitals": "^2.1.4",
-    "world-atlas": "2.0.2"
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -47,7 +44,7 @@
     "qa:setup": "node tests/e2e/setup.cjs",
     "qa:reset": "node tests/e2e/reset.cjs",
     "qa:cleanup": "node tests/e2e/cleanup.cjs",
-    "test:functions": "node tests/functions/link-preview.test.cjs && node tests/functions/community.test.cjs && node tests/functions/account.test.cjs && node tests/functions/steam-join.test.cjs && node tests/functions/news-summary.test.cjs && node tests/functions/comment-media.test.cjs && node tests/functions/news-plan.test.cjs && node tests/functions/safe-error.test.cjs && node tests/functions/limits.test.cjs && node tests/functions/rawg.test.cjs",
+    "test:functions": "node tests/functions/link-preview.test.cjs && node tests/functions/community.test.cjs && node tests/functions/account.test.cjs && node tests/functions/steam-join.test.cjs && node tests/functions/news-summary.test.cjs && node tests/functions/comment-media.test.cjs && node tests/functions/news-plan.test.cjs && node tests/functions/safe-error.test.cjs && node tests/functions/limits.test.cjs && node tests/functions/rawg.test.cjs && node tests/functions/steam-auth-origins.test.cjs",
     "test:functions:emulator": "npx -y firebase-tools@13.35.1 emulators:exec --only firestore --project demo-gamermatch --config tests/rules/firebase.json \"node tests/functions/steam-join.emulator.cjs\"",
     "news:sync": "node functions/scripts/syncGamingNews.js"
   },
