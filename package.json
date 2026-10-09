@@ -37,6 +37,7 @@
     "start": "react-scripts start",
     "prebuild": "npm run credits:generate",
     "build": "react-scripts build",
+    "lint": "eslint --max-warnings=0 src",
     "credits:generate": "node scripts/generateThirdPartyNotices.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

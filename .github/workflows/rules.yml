@@ -3,7 +3,9 @@
 # - protección SSRF de fetchLinkPreview y demás funciones puras (npm run test:functions, sin internet)
 # - getJoinInfo contra el emulador de Firestore (npm run test:functions:emulator)
 # - funciones puras del cliente con Jest (npm run test:unit)
-# - lint de functions (el mismo del predeploy de firebase.json)
+# - lint de functions (el mismo del predeploy de firebase.json) y de la app
+# - build de producción de la app (sin .env: solo comprueba que compila) y
+#   que los créditos/licencias generados estén al día
 name: Reglas de Firestore
 
 on:
@@ -15,7 +17,7 @@ jobs:
   rules:
     name: Pruebas de reglas
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v4
@@ -56,3 +58,16 @@ jobs:
       - run: npm run test:functions:emulator
 
       - run: npm run test:unit
+
+      # Lint de la app sin avisos (el build de CRA con CI=true también los
+      # trata como errores)
+      - run: npm run lint
+
+      # prebuild regenera Créditos y licencias: si cambian, faltó correr
+      # `npm run credits:generate` al agregar o actualizar una dependencia
+      - run: npm run build
+        env:
+          CI: true
+
+      - name: Créditos y licencias al día
+        run: git diff --exit-code src/credits/openSourceLibraries.json public/third-party-licenses.txt
