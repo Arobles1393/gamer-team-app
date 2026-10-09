@@ -10,6 +10,7 @@
     "steamLogin": "Inicio de sesión con Steam",
     "google": "Inicio de sesión con Google",
     "firebase": "Cuentas, base de datos, archivos y funciones del servidor",
+    "sentry": "Reporte de errores de la app, sin datos personales",
     "googleFonts": "Tipografías de la interfaz",
     "kofi": "Apoyo voluntario al proyecto (el pago se realiza en Ko-fi)"
   },

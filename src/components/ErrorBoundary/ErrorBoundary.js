@@ -1,6 +1,7 @@
 import { Component } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "primereact/button";
+import { reportError } from "../../monitoring/errorReporting";
 import "../NotFound/NotFound.css";
 
 // Pantalla cuando una página falla al dibujarse. Sin router (el error puede
@@ -52,6 +53,8 @@ export default class ErrorBoundary extends Component {
 
   componentDidCatch(error, info) {
     console.error("Error al dibujar la pantalla:", error, info?.componentStack);
+    // A Sentry, si está activo (auditoría M-18)
+    reportError(error, { componentStack: info?.componentStack });
   }
 
   componentDidUpdate(prevProps) {

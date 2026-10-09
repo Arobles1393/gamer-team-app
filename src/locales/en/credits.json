@@ -10,6 +10,7 @@
     "steamLogin": "Sign in with Steam",
     "google": "Sign in with Google",
     "firebase": "Accounts, database, files and server functions",
+    "sentry": "App error reports, without personal data",
     "googleFonts": "Interface fonts",
     "kofi": "Voluntary support for the project (payment happens on Ko-fi)"
   },

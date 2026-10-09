@@ -1,5 +1,11 @@
 [
   {
+    "name": "@sentry/react",
+    "version": "11.6.0",
+    "license": "MIT",
+    "url": "https://github.com/getsentry/sentry-javascript/tree/master/packages/react"
+  },
+  {
     "name": "@tiptap/core",
     "version": "3.31.4",
     "license": "MIT",

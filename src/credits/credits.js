@@ -95,6 +95,15 @@ export const CREDITS = [
     requiresAttribution: false
   },
   {
+    // Solo actúa si REACT_APP_SENTRY_DSN está configurado (auditoría M-18)
+    id: "sentry",
+    name: "Sentry",
+    url: "https://sentry.io",
+    purposeKey: "purpose.sentry",
+    category: "infra",
+    requiresAttribution: false
+  },
+  {
     id: "googleFonts",
     name: "Google Fonts",
     url: "https://fonts.google.com",
