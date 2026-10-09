@@ -19,6 +19,7 @@ import { httpsCallable } from "firebase/functions";
 import { gameStatsRef } from "../games/gameStats";
 import { groupChatRef, groupChatService } from "../chat/groupChatService";
 import { notificationService } from "../notifications";
+import { withAllowedPostMedia } from "../../utils/mediaUrls";
 
 // Límite del operador "in" de Firestore
 const MAX_IN_VALUES = 30;
@@ -149,7 +150,8 @@ const createPost = async (postData) => {
 
   const batch = writeBatch(db);
   batch.set(postRef, {
-    ...postData,
+    // Imágenes solo de RAWG/SteamGridDB (firestore.rules, auditoría B-23)
+    ...withAllowedPostMedia(postData),
     interestedCount: 0,
     createdAt: serverTimestamp()
   });
@@ -161,10 +163,11 @@ const createPost = async (postData) => {
 };
 
 
+// Imágenes solo de RAWG/SteamGridDB (firestore.rules, auditoría B-23)
 const updatePost = (postId, postData) => {
   return updateDoc(
     doc(db, "posts", postId),
-    postData
+    withAllowedPostMedia(postData)
   );
 };
 

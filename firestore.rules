@@ -33,9 +33,24 @@ service cloud.firestore {
       return value == null || (value is string && value.size() <= max);
     }
 
-    // URL guardada (imagen, clip, adjunto): null, vacía o hasta 2048
-    function optUrl(value) {
-      return optText(value, 2048);
+    // Imágenes y adjuntos solo de dominios conocidos (auditoría B-23): sin
+    // píxeles de rastreo ni adjuntos que apunten a otro sitio. Misma lista en
+    // src/utils/mediaUrls.js. Sin espacios, comillas ni paréntesis (la portada
+    // del perfil va dentro de url(...) en CSS).
+    function urlFrom(value, host) {
+      return value == null || value == ''
+             || (value is string && value.size() <= 2048
+                 && value.matches('^https://' + host + '/[A-Za-z0-9._~:/?#\\[\\]@!$&*+,;=%-]*$'));
+    }
+
+    // Archivos subidos a Storage de este proyecto
+    function storageHost() {
+      return 'firebasestorage\\.googleapis\\.com/v0/b/gamerteam-4ed20\\.(firebasestorage\\.app|appspot\\.com)/o';
+    }
+
+    // Avatar: Storage, foto de Google o avatar de Steam
+    function avatarHost() {
+      return '(' + storageHost() + '|lh[0-9]\\.googleusercontent\\.com|([a-z0-9-]+\\.)*steamstatic\\.com)';
     }
 
     // Lista de hasta 10 textos (redes del perfil, plataformas de un post).
@@ -72,7 +87,7 @@ service cloud.firestore {
       let data = request.resource.data;
       return data.keys().hasOnly(['text', 'senderId', 'createdAt', 'mediaUrl', 'mediaType', 'fileName', 'fileSize'])
              && textUpTo('text', 1000)
-             && optUrl(data.get('mediaUrl', null))
+             && urlFrom(data.get('mediaUrl', null), storageHost())
              && data.get('mediaType', null) in [null, 'image', 'video', 'file']
              && optText(data.get('fileName', null), 255)
              && (data.get('fileSize', null) == null
@@ -121,8 +136,8 @@ service cloud.firestore {
              // funcionando mientras no cambien de nombre.
              && (!changedField('usernameLower') || !('usernameLower' in data)
                  || getAfter(/databases/$(database)/documents/usernames/$(data.usernameLower)).data.uid == request.auth.uid)
-             && (!changedField('avatar') || optUrl(data.get('avatar', null)))
-             && (!changedField('banner') || optUrl(data.get('banner', null)))
+             && (!changedField('avatar') || urlFrom(data.get('avatar', null), avatarHost()))
+             && (!changedField('banner') || urlFrom(data.get('banner', null), storageHost()))
              && (!changedField('region') || optText(data.get('region', null), 60))
              && (!changedField('description') || optText(data.get('description', null), 500))
              && (!changedField('games') || !('games' in data) || data.games == null
@@ -329,10 +344,10 @@ service cloud.firestore {
                && (!changedField('playersNeeded') || data.get('playersNeeded', null) == null
                      || (data.playersNeeded is int && data.playersNeeded >= 1 && data.playersNeeded <= 20))
                && (!changedField('comments') || optText(data.get('comments', null), 300))
-               && (!changedField('image') || optUrl(data.get('image', null)))
-               && (!changedField('logo') || optUrl(data.get('logo', null)))
-               && (!changedField('clip') || optUrl(data.get('clip', null)))
-               && (!changedField('portada') || optUrl(data.get('portada', null)))
+               && (!changedField('image') || urlFrom(data.get('image', null), 'media\\.rawg\\.io'))
+               && (!changedField('logo') || urlFrom(data.get('logo', null), 'cdn[0-9]*\\.steamgriddb\\.com'))
+               && (!changedField('clip') || urlFrom(data.get('clip', null), 'media\\.rawg\\.io'))
+               && (!changedField('portada') || urlFrom(data.get('portada', null), 'cdn[0-9]*\\.steamgriddb\\.com'))
                && (!changedField('platforms') || data.get('platforms', null) == null || textList(data.platforms, 600))
                && (!changedField('multiplatform') || data.get('multiplatform', null) == null || data.multiplatform is bool)
                && (!changedField('requiresMic') || data.get('requiresMic', null) == null || data.requiresMic is bool)
@@ -423,7 +438,7 @@ service cloud.firestore {
                     && request.resource.data.userId == request.auth.uid
                     && request.resource.data.postId is string && request.resource.data.postId.size() <= 128
                     && textUpTo('text', 500)
-                    && optUrl(request.resource.data.get('mediaUrl', null))
+                    && urlFrom(request.resource.data.get('mediaUrl', null), storageHost())
                     && request.resource.data.get('mediaType', '') in ['', 'image', 'video', null]
                     // Solo un archivo de la carpeta del autor (commentsService:
                     // comments/{uid}/{fecha}_{nombre}). cleanupCommentMedia y

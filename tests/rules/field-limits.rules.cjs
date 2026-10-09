@@ -127,10 +127,26 @@ module.exports = async ({ env, test }) => {
     assertSucceeds(updateDoc(doc(db(A), "users", A), { language: "pt" })));
 
   await test("avatar nuevo (profileImageService)", () =>
-    assertSucceeds(updateProfile(A, { avatar: "https://firebasestorage.googleapis.com/v0/b/x/o/avatars%2Fa?alt=media&v=1" })));
+    assertSucceeds(updateProfile(A, { avatar: "https://firebasestorage.googleapis.com/v0/b/gamerteam-4ed20.firebasestorage.app/o/avatars%2Fa?alt=media&v=1" })));
 
   await test("avatar de 3000 caracteres: rechazado", () =>
     assertFails(updateProfile(A, { avatar: `https://x.com/${longText(3000)}` })));
+
+  // ---------- dominios de imágenes (auditoría B-23) ----------
+  await test("avatar de un dominio cualquiera (píxel de rastreo): rechazado", () =>
+    assertFails(updateProfile(A, { avatar: "https://tracker.example.com/p.gif" })));
+  await test("avatar de Storage de otro proyecto: rechazado", () =>
+    assertFails(updateProfile(A, { avatar: "https://firebasestorage.googleapis.com/v0/b/otro.appspot.com/o/a.jpg" })));
+  await test("avatar de Google y de Steam: permitidos", async () => {
+    await assertSucceeds(updateProfile(A, { avatar: "https://lh3.googleusercontent.com/a/ACg8oc-x=s96-c" }));
+    await assertSucceeds(updateProfile(A, { avatar: "https://avatars.akamai.steamstatic.com/abc_full.jpg" }));
+  });
+  await test("portada del perfil de Google (solo Storage): rechazada", () =>
+    assertFails(updateProfile(A, { banner: "https://lh3.googleusercontent.com/a/x" })));
+  await test("portada con paréntesis para inyectar otra url() en CSS: rechazada", () =>
+    assertFails(updateProfile(A, { banner: `https://firebasestorage.googleapis.com/v0/b/gamerteam-4ed20.firebasestorage.app/o/a.jpg), url(https://evil.com/x` })));
+  await test("quitar el avatar (null): permitido", () =>
+    assertSucceeds(updateProfile(A, { avatar: null })));
 
   await test("no se puede cambiar createdAt de users", () =>
     assertFails(updateDoc(doc(db(A), "users", A), { createdAt: Timestamp.now() })));
@@ -164,6 +180,15 @@ module.exports = async ({ env, test }) => {
 
   await test("publicar con una región que no es la del perfil: rechazado", () =>
     assertFails(createPost(A, "p2", { ...postData, authorRegion: "Japón" })));
+
+  // Imágenes de la partida solo de RAWG y SteamGridDB (auditoría B-23)
+  await test("publicar con logo y portada de SteamGridDB: permitido", () =>
+    assertSucceeds(createPost(A, "pMedia", {
+      ...postData, authorRegion: "México",
+      logo: "https://cdn2.steamgriddb.com/logo/a.png", portada: "https://cdn2.steamgriddb.com/grid/b.png"
+    })));
+  await test("publicar con una imagen de otro dominio: rechazado", () =>
+    assertFails(createPost(A, "pTracker", { ...postData, authorRegion: "México", image: "https://tracker.example.com/p.gif" })));
 
   await test("publicar con campos extra: rechazado", () =>
     assertFails(createPost(A, "p3", { ...postData, authorRegion: "México", username: "otro" })));
@@ -200,7 +225,7 @@ module.exports = async ({ env, test }) => {
 
   await test("comentario con imagen", () =>
     assertSucceeds(addDoc(collection(db(B), "post_comments"), {
-      ...comment, mediaUrl: "https://firebasestorage.googleapis.com/x", mediaType: "image", mediaPath: `comments/${B}/1_a.png`
+      ...comment, mediaUrl: "https://firebasestorage.googleapis.com/v0/b/gamerteam-4ed20.firebasestorage.app/o/x", mediaType: "image", mediaPath: `comments/${B}/1_a.png`
     })));
 
   // mediaPath: lo borran cleanupCommentMedia y deleteAccount (auditoría C-02)
@@ -218,7 +243,7 @@ module.exports = async ({ env, test }) => {
 
   await test("comentario de una cuenta de Steam con su propio archivo", () =>
     assertSucceeds(addDoc(collection(db(S), "post_comments"), {
-      ...comment, userId: S, mediaUrl: "https://x", mediaType: "video", mediaPath: `comments/${S}/1700000000_clip.mp4`
+      ...comment, userId: S, mediaUrl: "https://firebasestorage.googleapis.com/v0/b/gamerteam-4ed20.firebasestorage.app/o/x", mediaType: "video", mediaPath: `comments/${S}/1700000000_clip.mp4`
     })));
 
   await test("comentario con campos extra: rechazado", () =>
@@ -260,7 +285,13 @@ module.exports = async ({ env, test }) => {
   await test("mensaje con adjunto (forma de messageMedia)", () =>
     assertSucceeds(send(B, {
       text: "", senderId: B, createdAt: serverTimestamp(),
-      mediaUrl: "https://firebasestorage.googleapis.com/x", mediaType: "file", fileName: "partida.pdf", fileSize: 12345
+      mediaUrl: "https://firebasestorage.googleapis.com/v0/b/gamerteam-4ed20.firebasestorage.app/o/x", mediaType: "file", fileName: "partida.pdf", fileSize: 12345
+    })));
+
+  await test("adjunto que apunta a otro sitio (\"factura.pdf\" que es un .exe): rechazado", () =>
+    assertFails(send(B, {
+      text: "", senderId: B, createdAt: serverTimestamp(),
+      mediaUrl: "https://descargas.example.com/factura.exe", mediaType: "file", fileName: "factura.pdf", fileSize: 12345
     })));
 
   await test("mensaje con fecha del cliente (2099): rechazado", () =>

@@ -3,6 +3,7 @@ import { doc, getDoc, runTransaction, serverTimestamp, updateDoc, writeBatch } f
 import { USERNAME_MAX } from "../../constants";
 import { publicProfileRef, pickPublicFields } from "./publicProfileService";
 import { buildMatchProfile, matchProfileRef } from "../matching/matchService";
+import { allowedMediaUrl } from "../../utils/mediaUrls";
 
 const userProfileExists = async (userId) => {
   const snapshot = await getDoc(doc(db, "users", userId));
@@ -106,6 +107,9 @@ const updateUserLanguage = (userId, language) =>
 const buildNewProfile = ({ email, phone, ...profileData }, username) => {
   const userData = {
     ...profileData,
+    // Foto de Google o Steam: si viene de otro dominio, sin avatar (las
+    // reglas la rechazarían y el registro fallaría; auditoría B-23)
+    ...("avatar" in profileData && { avatar: allowedMediaUrl("avatar", profileData.avatar) }),
     username,
     usernameLower: username.toLowerCase(),
     createdAt: serverTimestamp()

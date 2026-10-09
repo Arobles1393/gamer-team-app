@@ -37,7 +37,7 @@ module.exports = async ({ env, test, expect }) => {
   await test("Avatar y portada: ambos públicos", async () => {
     for (const type of ["avatar", "banner"]) {
       const f = db(A);
-      const data = { [type]: `https://img/${type}` };
+      const data = { [type]: `https://firebasestorage.googleapis.com/v0/b/gamerteam-4ed20.firebasestorage.app/o/${type}s%2F${A}%2Fa.jpg?alt=media` };
       const batch = writeBatch(f);
       batch.update(doc(f, "users", A), data);
       batch.set(pub(f, A), pick(data), { merge: true });
