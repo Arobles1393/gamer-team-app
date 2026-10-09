@@ -22,20 +22,26 @@ service firebase.storage {
       );
     }
 
+    // Lista cerrada de imágenes: sin SVG (puede llevar scripts) ni formatos
+    // raros (auditoría B-21). La misma que ALLOWED_IMAGE_TYPES del cliente
+    function isSafeImageType() {
+      return request.resource.contentType in ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
+    }
+
     function isValidImage() {
-      return request.resource.contentType.matches('image/.*')
+      return isSafeImageType()
              && request.resource.size < 5 * 1024 * 1024;
     }
 
     function isValidMedia() {
-      return (request.resource.contentType.matches('image/.*')
+      return (isSafeImageType()
               || request.resource.contentType.matches('video/.*'))
              && request.resource.size < 20 * 1024 * 1024;
     }
 
     // Chat: imágenes, videos y documentos (PDF, ZIP, Word)
     function isValidChatMedia() {
-      return (request.resource.contentType.matches('image/.*')
+      return (isSafeImageType()
               || request.resource.contentType.matches('video/.*')
               || request.resource.contentType == 'application/pdf'
               || request.resource.contentType.matches('application/(zip|x-zip-compressed)')

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { UserAvatar } from "../UserAvatar";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
-import { MAX_MEDIA_MB, fitsMediaLimit } from "../../utils";
+import { MAX_MEDIA_MB, fitsMediaLimit, isAllowedCommentFile, COMMENT_FILE_ACCEPT } from "../../utils";
 
 const MAX_LENGTH = 500;
 
@@ -37,7 +37,7 @@ export default function CommentInput({ currentUser, onPublish, onError }) {
 
     if (!selected) return;
 
-    if (!selected.type.startsWith("image/") && !selected.type.startsWith("video/")) {
+    if (!isAllowedCommentFile(selected)) {
       onError?.(t("comments.onlyMedia"));
       return;
     }
@@ -124,7 +124,7 @@ export default function CommentInput({ currentUser, onPublish, onError }) {
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*,video/*"
+          accept={COMMENT_FILE_ACCEPT}
           hidden
           onChange={handleFileChange}
         />
