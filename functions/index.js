@@ -26,6 +26,7 @@ const {fetchLinkPreview} = require("./guides/guides.functions");
 const {getCommunityStats} = require("./community/community.functions");
 const {deleteAccount} = require("./account/account.functions");
 const {getJoinInfo} = require("./steamJoin/steamJoin.functions");
+const {cleanupStaleData} = require("./cleanup/cleanup.functions");
 
 exports.getSteamStats = getSteamStats;
 exports.getSteamPresence = getSteamPresence;
@@ -45,3 +46,5 @@ exports.getCommunityStats = getCommunityStats;
 exports.deleteAccount = deleteAccount;
 // Requiere plan Blaze para desplegarse; mientras tanto corre en el emulador
 exports.getJoinInfo = getJoinInfo;
+// Limpieza diaria de datos viejos u huérfanos (Blaze; a mano: npm run data:cleanup)
+exports.cleanupStaleData = cleanupStaleData;

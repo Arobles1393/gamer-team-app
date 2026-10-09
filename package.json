@@ -44,9 +44,10 @@
     "qa:setup": "node tests/e2e/setup.cjs",
     "qa:reset": "node tests/e2e/reset.cjs",
     "qa:cleanup": "node tests/e2e/cleanup.cjs",
-    "test:functions": "node tests/functions/link-preview.test.cjs && node tests/functions/community.test.cjs && node tests/functions/account.test.cjs && node tests/functions/steam-join.test.cjs && node tests/functions/news-summary.test.cjs && node tests/functions/comment-media.test.cjs && node tests/functions/news-plan.test.cjs && node tests/functions/safe-error.test.cjs && node tests/functions/limits.test.cjs && node tests/functions/rawg.test.cjs && node tests/functions/steam-auth-origins.test.cjs && node tests/functions/game-search.test.cjs",
+    "test:functions": "node tests/functions/link-preview.test.cjs && node tests/functions/community.test.cjs && node tests/functions/account.test.cjs && node tests/functions/steam-join.test.cjs && node tests/functions/news-summary.test.cjs && node tests/functions/comment-media.test.cjs && node tests/functions/news-plan.test.cjs && node tests/functions/safe-error.test.cjs && node tests/functions/limits.test.cjs && node tests/functions/rawg.test.cjs && node tests/functions/steam-auth-origins.test.cjs && node tests/functions/game-search.test.cjs && node tests/functions/cleanup-plan.test.cjs",
     "test:functions:emulator": "npx -y firebase-tools@13.35.1 emulators:exec --only firestore --project demo-gamermatch --config tests/rules/firebase.json \"node tests/functions/steam-join.emulator.cjs\"",
-    "news:sync": "node functions/scripts/syncGamingNews.js"
+    "news:sync": "node functions/scripts/syncGamingNews.js",
+    "data:cleanup": "node functions/scripts/cleanupStaleData.js"
   },
   "eslintConfig": {
     "extends": [
