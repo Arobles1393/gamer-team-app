@@ -77,6 +77,7 @@ const body = (page) => page.locator("body").innerText();
     const filter = page.locator(".p-dropdown-filter");
     if (await filter.count()) await filter.fill("Méxi");
     await page.locator(".p-dropdown-item", { hasText: "México" }).first().click();
+    await page.locator("label[for=age-confirm]").click();
     await page.locator("button[type=submit]").click();
     await page.waitForURL((url) => !url.pathname.startsWith("/login"), { timeout: 15000 });
     check("registro: entra a la app al crear la cuenta", true);

@@ -3,6 +3,7 @@ import App from "../App";
 import { AuthProvider, VerifyPromptProvider } from "../context";
 import { VerifyEmailDialog } from "../components/EmailVerification";
 import { OnboardingProvider } from "../components/Onboarding";
+import { AgeGateProvider } from "../components/AgeGate";
 import { LoginPage, PasswordReset, SteamReturn } from "../components/Auth";
 
 // Rutas de primer nivel: el retorno de Steam no necesita sesión; /login y la
@@ -36,10 +37,13 @@ const RootRoutes = () => {
 					path="*"
 					element={
 						<VerifyPromptProvider dialog={<VerifyEmailDialog />}>
-							{/* Guía de bienvenida (no se abre sola en /privacidad, /terminos ni /admin) */}
-							<OnboardingProvider>
-								<App />
-							</OnboardingProvider>
+							{/* "Tengo 18 años o más" (Google, Steam y cuentas anteriores) */}
+							<AgeGateProvider>
+								{/* Guía de bienvenida (no se abre sola en /privacidad, /terminos ni /admin) */}
+								<OnboardingProvider>
+									<App />
+								</OnboardingProvider>
+							</AgeGateProvider>
 						</VerifyPromptProvider>
 					}
 				/>

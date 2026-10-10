@@ -73,7 +73,7 @@ Nombre de la app: **no existe `BRAND` ni otra constante de nombre** en `src/`. E
 
 ## (e) Pendientes de implementación que afectan al texto
 
-1. **Confirmación de edad (18+)** en los tres flujos: registro con correo, primer inicio con Google y primer inicio con Steam. Hasta que exista, los términos dicen solo "Debes tener 18 años o más para usar el servicio."
+1. ~~**Confirmación de edad (18+)** en los tres flujos.~~ Hecho: casilla obligatoria "Tengo 18 años o más" en el registro con correo (`Register.js`, `AgeConfirmCheckbox.js`) y diálogo `AgeGate` para Google, Steam y cuentas anteriores (`components/AgeGate`, `useAgeGate.js`). Se guarda en `users/{uid}/private/preferences.ageConfirmation = { minAge: 18, confirmedAt }` (`firestore.rules`, `validAgeConfirmation`). Los términos dicen ahora "Al registrarte confirmas que tienes 18 años o más" (provisional-3). Pendiente: las reglas no exigen la confirmación para escribir; es una barrera en la interfaz.
 2. **Paso de aceptación de Términos y Privacidad** para Google y Steam (TODO en `authService.js:84-85`) antes de activar `REQUIRE_LEGAL_CONSENT`.
 3. **Herramientas de moderación:** quitar contenido ajeno, suspender o cerrar cuentas, y un motivo de reporte "parece menor de edad". Sin ellas, "la eliminaremos" y "podemos quitar contenido y cerrar cuentas" dependen de trabajo manual en la consola.
 4. ~~Limpiar `lastMessage`/`lastSenderId` de chats de partida ajenos en `deleteAccount` (b1).~~ Hecho.

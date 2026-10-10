@@ -57,7 +57,7 @@ const cleanup = async () => {
     };
     await db.doc(`users/${ACC.uid}`).set(profile);
     await db.doc(`publicProfiles/${ACC.uid}`).set(profile);
-    await db.doc(`users/${ACC.uid}/private/preferences`).set({ onboarding: { completed: true, showAgain: false, completedVersion: 1 } });
+    await db.doc(`users/${ACC.uid}/private/preferences`).set({ onboarding: { completed: true, showAgain: false, completedVersion: 1 }, ageConfirmation: { minAge: 18, confirmedAt: new Date() } });
 
     browser = await chromium.launch({ channel: process.env.E2E_BROWSER || "msedge", headless: true });
 

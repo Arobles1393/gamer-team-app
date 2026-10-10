@@ -209,11 +209,24 @@ service cloud.firestore {
     // que poder guardar su respuesta de la guía de bienvenida.
     // deleteAccount la borra con recursiveDelete sobre users/{uid}.
     match /users/{userId}/private/{docId} {
+      // "Tengo 18 años o más" (preferencesService.saveAgeConfirmation): edad
+      // mínima vigente y hora del servidor. Sin tocar, se conserva tal cual
+      function validAgeConfirmation() {
+        let data = request.resource.data;
+        return !("ageConfirmation" in data)
+               || (resource != null && data.ageConfirmation == resource.data.get("ageConfirmation", null))
+               || (data.ageConfirmation is map
+                   && data.ageConfirmation.keys().hasOnly(["minAge", "confirmedAt"])
+                   && data.ageConfirmation.minAge == 18
+                   && data.ageConfirmation.confirmedAt == request.time);
+      }
+
       allow read: if isOwner(userId);
       // privacy.allowSteamJoin: "Unirme en Steam" (ausente = false)
       allow create, update: if isOwner(userId)
                             && docId == "preferences"
-                            && request.resource.data.keys().hasOnly(["onboarding", "legalConsent", "privacy"])
+                            && request.resource.data.keys().hasOnly(["onboarding", "legalConsent", "privacy", "ageConfirmation"])
+                            && validAgeConfirmation()
                             && (!("privacy" in request.resource.data)
                                 || (request.resource.data.privacy.keys().hasOnly(["allowSteamJoin"])
                                     && request.resource.data.privacy.allowSteamJoin is bool));

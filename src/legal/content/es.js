@@ -10,7 +10,7 @@ export const privacy = {
       id: "datos",
       title: "Qué datos recopilamos",
       body: [
-        "Los que tú nos das: correo electrónico (lo gestiona Firebase Authentication; nosotros nunca vemos tu contraseña), apodo, país o región, foto de perfil y portada, biografía, juegos favoritos, enlaces a tus redes (por ejemplo Steam, Discord o Twitch), preferencias de juego y lo que publicas o escribes: partidas, comentarios, mensajes de chat y archivos adjuntos. También los que se generan al usar la app: amistades y solicitudes, bloqueos y reportes, notificaciones, tus intereses en partidas, tu estado de conexión (“última vez activo”) y tus preferencias (idioma, guía de bienvenida, privacidad). Si entras con Google, recibimos de Google tu correo, tu nombre y tu foto: el nombre (o, si no lo hay, lo que va antes de la @ de tu correo) se usa como apodo inicial y la foto como foto de perfil; el correo queda solo en Firebase Authentication. Si entras con Steam, recibimos tu identificador de Steam (SteamID), tu nombre público y tu avatar de Steam: se usan como apodo y foto de perfil iniciales y tu perfil de Steam se agrega a tus enlaces. Google (Firebase) procesa además datos técnicos, como la dirección IP y el dispositivo, para operar el servicio. No pedimos número de teléfono ni datos de pago."
+        "Los que tú nos das: correo electrónico (lo gestiona Firebase Authentication; nosotros nunca vemos tu contraseña), apodo, país o región, foto de perfil y portada, biografía, juegos favoritos, enlaces a tus redes (por ejemplo Steam, Discord o Twitch), preferencias de juego y lo que publicas o escribes: partidas, comentarios, mensajes de chat y archivos adjuntos. También los que se generan al usar la app: amistades y solicitudes, bloqueos y reportes, notificaciones, tus intereses en partidas, tu estado de conexión (“última vez activo”), tus preferencias (idioma, guía de bienvenida, privacidad) y tu confirmación de que tienes 18 años o más, con su fecha (no pedimos tu fecha de nacimiento). Si entras con Google, recibimos de Google tu correo, tu nombre y tu foto: el nombre (o, si no lo hay, lo que va antes de la @ de tu correo) se usa como apodo inicial y la foto como foto de perfil; el correo queda solo en Firebase Authentication. Si entras con Steam, recibimos tu identificador de Steam (SteamID), tu nombre público y tu avatar de Steam: se usan como apodo y foto de perfil iniciales y tu perfil de Steam se agrega a tus enlaces. Google (Firebase) procesa además datos técnicos, como la dirección IP y el dispositivo, para operar el servicio. No pedimos número de teléfono ni datos de pago."
       ]
     },
     {
@@ -79,7 +79,7 @@ export const terms = {
       id: "quien",
       title: "Quién puede usar el servicio",
       body: [
-        "Debes tener 18 años o más para usar el servicio. Es para uso personal y con información veraz."
+        "Debes tener 18 años o más para usar el servicio. Al registrarte confirmas que tienes 18 años o más. Es para uso personal y con información veraz."
       ]
     },
     {

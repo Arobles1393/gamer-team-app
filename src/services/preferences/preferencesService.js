@@ -1,11 +1,12 @@
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../../firebase/config";
-import { LEGAL_VERSIONS } from "../../legal/legalConfig";
+import { LEGAL_VERSIONS, MIN_AGE } from "../../legal/legalConfig";
 
 // users/{uid}/private/preferences: preferencias privadas de la cuenta
 // (solo las lee y escribe su dueño, ver firestore.rules). Campos:
 // - onboarding: { completed, showAgain, completedVersion } (guía de bienvenida)
 // - legalConsent: { termsVersion, privacyVersion, acceptedAt }
+// - ageConfirmation: { minAge, confirmedAt } ("Tengo 18 años o más")
 const preferencesRef = (uid) => doc(db, "users", uid, "private", "preferences");
 
 // Una sola lectura (sin listener). null si todavía no existe el documento
@@ -28,8 +29,18 @@ const saveLegalConsent = (uid) =>
     }
   });
 
+// Confirmó tener la edad mínima (registro o AgeGate)
+const saveAgeConfirmation = (uid) =>
+  updatePreferences(uid, {
+    ageConfirmation: {
+      minAge: MIN_AGE,
+      confirmedAt: serverTimestamp()
+    }
+  });
+
 export const preferencesService = {
   getPreferences,
   updatePreferences,
-  saveLegalConsent
+  saveLegalConsent,
+  saveAgeConfirmation
 };

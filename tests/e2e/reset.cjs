@@ -40,9 +40,10 @@ const QA = JSON.parse(fs.readFileSync(`${__dirname}/.qa-users.json`, "utf8"));
     .forEach((d) => batch.delete(d.ref));
   // Reportes que hizo carla en pruebas anteriores
   (await db.collection("reports").where("reporterId", "==", carla).get()).forEach((d) => batch.delete(d.ref));
-  // Guía de bienvenida ya vista en todas las cuentas qa_ (si no, se abre sola)
+  // Guía de bienvenida ya vista y edad confirmada en todas las cuentas qa_
+  // (si no, se abren solas la guía o "Confirma tu edad")
   for (const account of Object.values(QA).filter((u) => u && u.uid)) {
-    batch.set(db.doc(`users/${account.uid}/private/preferences`), { onboarding: { completed: true, showAgain: false, completedVersion: 1 } }, { merge: true });
+    batch.set(db.doc(`users/${account.uid}/private/preferences`), { onboarding: { completed: true, showAgain: false, completedVersion: 1 }, ageConfirmation: { minAge: 18, confirmedAt: new Date() } }, { merge: true });
   }
   await batch.commit();
   console.log("escenario reiniciado");

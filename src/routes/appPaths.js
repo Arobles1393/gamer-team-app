@@ -26,3 +26,8 @@ export const hasPath = (path) => APP_PATHS.includes(path);
 export const NO_ONBOARDING_PATHS = ["/login", "/recuperar", "/auth/steam/return", "/privacidad", "/terminos", "/creditos"];
 export const isOnboardingBlockedPath = (pathname) =>
   NO_ONBOARDING_PATHS.includes(pathname) || pathname.startsWith("/admin");
+
+// Donde no se pide la confirmación de edad: se tienen que poder leer los
+// Términos y la Privacidad antes de responder
+export const NO_AGE_GATE_PATHS = ["/privacidad", "/terminos", "/creditos"];
+export const isAgeGateFreePath = (pathname) => NO_AGE_GATE_PATHS.includes(pathname);

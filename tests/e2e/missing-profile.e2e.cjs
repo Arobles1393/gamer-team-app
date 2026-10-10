@@ -35,7 +35,7 @@ const cleanup = async () => {
     // Cuenta de Auth sin users ni publicProfiles (como si el registro fallara a medias)
     const user = await admin.auth().createUser({ email: ACC.email, password: ACC.password, emailVerified: true });
     ACC.uid = user.uid;
-    await db.doc(`users/${ACC.uid}/private/preferences`).set({ onboarding: { completed: true, showAgain: false, completedVersion: 1 } });
+    await db.doc(`users/${ACC.uid}/private/preferences`).set({ onboarding: { completed: true, showAgain: false, completedVersion: 1 }, ageConfirmation: { minAge: 18, confirmedAt: new Date() } });
     await db.doc(`users/${ACC.uid}`).delete();
 
     browser = await chromium.launch({ channel: process.env.E2E_BROWSER || "msedge", headless: true });

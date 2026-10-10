@@ -9,6 +9,8 @@ const KNOWN_ERRORS = [
   "auth/email-already-in-use",
   // Registro y Mi perfil: nombre de usuario de otra cuenta
   "auth/username-taken",
+  // Registro: sin marcar "Tengo 18 años o más"
+  "auth/age-not-confirmed",
   "auth/weak-password",
   "auth/account-exists-with-different-credential",
   "auth/popup-blocked",

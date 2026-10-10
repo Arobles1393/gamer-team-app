@@ -97,6 +97,7 @@ const removeTmp = async () => {
     await page.locator(".auth__select").click();
     if (await page.locator(".p-dropdown-filter").count()) await page.locator(".p-dropdown-filter").fill("Méxi");
     await page.locator(".p-dropdown-item", { hasText: "México" }).first().click();
+    await page.locator("label[for=age-confirm]").click();
     await page.locator("button[type=submit]").click();
     check("nombre en uso: avisa", await page.locator(".p-toast-message", { hasText: "ya está en uso" })
       .waitFor({ timeout: 10000 }).then(() => true, () => false));
@@ -271,6 +272,7 @@ const removeTmp = async () => {
     const regionFilter = page.locator(".p-dropdown-filter");
     if (await regionFilter.count()) await regionFilter.fill("Méxi");
     await page.locator(".p-dropdown-item", { hasText: "México" }).first().click();
+    await page.locator("label[for=age-confirm]").click();
     await page.locator("button[type=submit]").click();
     await page.waitForURL((url) => !url.pathname.startsWith("/login"), { timeout: 15000 });
     const verUser = await admin.auth().getUserByEmail(VER.email);

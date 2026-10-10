@@ -221,7 +221,7 @@ const footerCheck = async (page, name, path, ready) => {
     };
     await db.doc(`users/${STEAM_ACC.uid}`).set(profile);
     await db.doc(`publicProfiles/${STEAM_ACC.uid}`).set(profile);
-    await db.doc(`users/${STEAM_ACC.uid}/private/preferences`).set({ onboarding: { completed: true, showAgain: false, completedVersion: 1 } });
+    await db.doc(`users/${STEAM_ACC.uid}/private/preferences`).set({ onboarding: { completed: true, showAgain: false, completedVersion: 1 }, ageConfirmation: { minAge: 18, confirmedAt: new Date() } });
     page = await newPage();
     await page.route("**/getSteamStats", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ result: STEAM_STATS }) }));
     await page.route("**/getGamePortada", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ result: null }) }));

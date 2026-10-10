@@ -20,6 +20,7 @@ const register = async (page, email, username) => {
   const filter = page.locator(".p-dropdown-filter");
   if (await filter.count()) await filter.fill("Perú");
   await page.locator(".p-dropdown-item", { hasText: "Perú" }).first().click();
+  await page.locator("label[for=age-confirm]").click();
   await page.locator("button[type=submit]").click();
 };
 

@@ -53,7 +53,7 @@ const createAccount = async (acc) => {
   await db.doc(`users/${acc.uid}`).set(profile);
   await db.doc(`publicProfiles/${acc.uid}`).set(profile);
   // Guía de bienvenida ya vista (si no, se abre sola y tapa la prueba)
-  await db.doc(`users/${acc.uid}/private/preferences`).set({ onboarding: { completed: true, showAgain: false, completedVersion: 1 } });
+  await db.doc(`users/${acc.uid}/private/preferences`).set({ onboarding: { completed: true, showAgain: false, completedVersion: 1 }, ageConfirmation: { minAge: 18, confirmedAt: new Date() } });
 };
 
 // Todo lo que puede quedar ligado a un uid

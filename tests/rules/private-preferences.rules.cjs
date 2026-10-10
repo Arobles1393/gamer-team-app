@@ -1,6 +1,6 @@
-// users/{uid}/private/preferences: guía de bienvenida y consentimiento legal.
-// Solo el dueño, solo el documento "preferences", solo esos dos campos, y
-// sin pedir el correo verificado.
+// users/{uid}/private/preferences: guía de bienvenida, consentimiento legal,
+// "Unirme en Steam" y confirmación de edad. Solo el dueño, solo el documento
+// "preferences", solo esos campos, y sin pedir el correo verificado.
 const { assertSucceeds, assertFails } = require("@firebase/rules-unit-testing");
 const { doc, getDoc, setDoc, deleteDoc, serverTimestamp } = require("firebase/firestore");
 
@@ -54,4 +54,33 @@ module.exports = async ({ env, test }) => {
     assertFails(setDoc(prefs(unverified), { privacy: { allowSteamJoin: true, shareIp: true } }, { merge: true })));
   await test("Otro usuario no puede activarlo por mí", () =>
     assertFails(setDoc(prefs(other, ME), { privacy: { allowSteamJoin: true } }, { merge: true })));
+
+  // ---------- ageConfirmation ("Tengo 18 años o más") ----------
+  const NEW = "cccNew";
+  const fresh = env.authenticatedContext(NEW, { email: "n@x.com", email_verified: false, firebase: { sign_in_provider: "password" } }).firestore();
+  await test("Sin verificar y sin documento previo (registro): confirmo la edad", () =>
+    assertSucceeds(setDoc(prefs(fresh, NEW), { ageConfirmation: { minAge: 18, confirmedAt: serverTimestamp() } }, { merge: true })));
+  await test("Después guardo otras preferencias y la confirmación se conserva", async () => {
+    await assertSucceeds(setDoc(prefs(fresh, NEW), { onboarding }, { merge: true }));
+    const data = (await getDoc(prefs(fresh, NEW))).data();
+    if (data?.ageConfirmation?.minAge !== 18) throw new Error("se perdió ageConfirmation");
+  });
+  await test("Confirmo la edad sobre preferencias que ya existen", () =>
+    assertSucceeds(setDoc(prefs(unverified), { ageConfirmation: { minAge: 18, confirmedAt: serverTimestamp() } }, { merge: true })));
+  await test("Edad mínima distinta de 18: no", () =>
+    assertFails(setDoc(prefs(unverified), { ageConfirmation: { minAge: 13, confirmedAt: serverTimestamp() } }, { merge: true })));
+  await test("Fecha inventada (no la del servidor): no", () =>
+    assertFails(setDoc(prefs(unverified), { ageConfirmation: { minAge: 18, confirmedAt: new Date("2020-01-01") } }, { merge: true })));
+  // Con un usuario sin confirmación previa: con merge, la fecha guardada se
+  // conservaría y el resultado sería igual al anterior (permitido)
+  const LATE = "dddLate";
+  const late = env.authenticatedContext(LATE).firestore();
+  await test("Sin fecha: no", () =>
+    assertFails(setDoc(prefs(late, LATE), { ageConfirmation: { minAge: 18 } }, { merge: true })));
+  await test("Campos extra (fecha de nacimiento): no", () =>
+    assertFails(setDoc(prefs(unverified), { ageConfirmation: { minAge: 18, confirmedAt: serverTimestamp(), birthDate: "2000-01-01" } }, { merge: true })));
+  await test("No es un mapa: no", () =>
+    assertFails(setDoc(prefs(unverified), { ageConfirmation: true }, { merge: true })));
+  await test("Otro usuario no puede confirmarla por mí", () =>
+    assertFails(setDoc(prefs(other, ME), { ageConfirmation: { minAge: 18, confirmedAt: serverTimestamp() } }, { merge: true })));
 };

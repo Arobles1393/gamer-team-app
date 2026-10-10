@@ -72,6 +72,7 @@ const cleanup = async () => {
     const profile = { username: ACC.username, usernameLower: ACC.username, avatar: null, region: "México", description: "", games: [], links: [], createdAt: new Date() };
     await db.doc(`users/${ACC.uid}`).set(profile);
     await db.doc(`publicProfiles/${ACC.uid}`).set(profile);
+    await db.doc(`users/${ACC.uid}/private/preferences`).set({ ageConfirmation: { minAge: 18, confirmedAt: new Date() } });
 
     browser = await chromium.launch({ channel: process.env.E2E_BROWSER || "msedge", headless: true });
     context = await browser.newContext({ locale: "es-MX", viewport: { width: 1366, height: 900 } });

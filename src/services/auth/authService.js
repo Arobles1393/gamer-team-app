@@ -22,7 +22,13 @@ const login = async (
 // Crea la cuenta y su perfil (users + publicProfiles), igual que el primer
 // login con Google o Steam. El correo queda solo en Firebase Auth.
 // acceptedLegal: marcó "He leído y acepto..." (solo con REQUIRE_LEGAL_CONSENT)
-const register = async ({ email, password, username, region, acceptedLegal = false }) => {
+// confirmedAge: marcó "Tengo 18 años o más" (obligatorio)
+const register = async ({ email, password, username, region, acceptedLegal = false, confirmedAge = false }) => {
+  if (!confirmedAge) {
+    throw Object.assign(new Error("auth/age-not-confirmed"), { code: "auth/age-not-confirmed" });
+  }
+
+
   // Nombre único (auditoría M-08): se avisa antes de crear la cuenta, así no
   // queda una cuenta sin perfil. La reserva real va en createUserProfile.
   if (!(await profileService.isUsernameAvailable(username))) {
@@ -34,6 +40,13 @@ const register = async ({ email, password, username, region, acceptedLegal = fal
     email,
     password
   );
+
+  // Antes del perfil: AgeGate lee las preferencias cuando el perfil existe,
+  // así no pregunta otra vez lo que se acaba de marcar. Si falla, el
+  // registro sigue y AgeGate lo pregunta al entrar
+  await preferencesService.saveAgeConfirmation(userCredential.user.uid).catch((error) => {
+    console.error("Error guardando la confirmación de edad:", error.code || error.message);
+  });
 
   await profileService.createUserProfile(userCredential.user.uid, {
     username,
@@ -81,6 +94,7 @@ const refreshUser = async (user, { forceToken = true } = {}) => {
 // Crea el perfil solo en el primer login con Google; si ya existe
 // no se toca, para no pisar lo que el usuario haya personalizado.
 // Google no da región: queda en null y se completa desde el perfil.
+// La edad mínima se confirma después, en AgeGate (primer inicio).
 // TODO: el login con Google y Steam también necesitará un paso de
 // aceptación de Términos y Privacidad cuando REQUIRE_LEGAL_CONSENT se active.
 const loginWithGoogle = async () => {

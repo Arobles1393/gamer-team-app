@@ -151,7 +151,8 @@ const removeTmp = async () => {
       check("sin marcar la casilla el registro está bloqueado", await submit.isDisabled());
       check("la casilla enlaza a Términos y Privacidad", await page.locator(".legal-consent a").count() === 2);
       await page.screenshot({ path: `${SHOTS}/registro-consentimiento.png` });
-      await page.locator(".legal-consent .p-checkbox").click();
+      await page.locator("#legal-consent").locator("xpath=..").click();
+      await page.locator("label[for=age-confirm]").click();
       check("al marcarla se habilita", await submit.isEnabled());
       await submit.click();
       await page.waitForURL((url) => !url.pathname.startsWith("/login"), { timeout: 15000 });

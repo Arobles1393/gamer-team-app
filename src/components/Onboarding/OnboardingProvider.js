@@ -6,6 +6,7 @@ import { useOnboarding } from "../../hooks";
 import { useCurrentUser, useCurrentUserData, useVerifyPrompt } from "../../context";
 import OnboardingDialog from "./OnboardingDialog";
 import OnboardingQuestion from "./OnboardingQuestion";
+import { useAgeGatePending } from "../AgeGate";
 
 // Solo la acción de abrirla a mano (menú del avatar y Mi perfil): estable,
 // para que ningún componente se vuelva a dibujar por el estado de la guía
@@ -21,10 +22,12 @@ export default function OnboardingProvider({ children }) {
   const { t } = useTranslation("onboarding");
   const user = useCurrentUser();
   const userData = useCurrentUserData();
-  // No abrirse sola encima de "Verifica tu correo para continuar"
+  // No abrirse sola encima de "Verifica tu correo para continuar" ni antes
+  // de confirmar la edad
   const { promptVisible } = useVerifyPrompt();
+  const agePending = useAgeGatePending();
   const toast = useRef(null);
-  const onboarding = useOnboarding(user, userData, { blocked: promptVisible });
+  const onboarding = useOnboarding(user, userData, { blocked: promptVisible || agePending });
   const { phase, manual, steps, saving, openManually, finishSteps, saveAnswer, close } = onboarding;
 
   const open = useCallback(() => openManually(), [openManually]);

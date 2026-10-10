@@ -82,4 +82,5 @@ export * from "./account/useDeleteAccount";
 export * from "./legal/useLegalDocument";
 export * from "./onboarding/useOnboarding";
 export * from "./privacy/usePrivacySettings";
+export * from "./privacy/useAgeGate";
 export * from "./steam/useSteamJoinInfo";

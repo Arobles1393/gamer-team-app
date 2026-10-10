@@ -7,7 +7,7 @@ import { authService } from "../../services/auth";
 import { clearWelcomeNotice, queueWelcomeNotice } from "../../utils/welcomeNotice";
 import { useProviderLogin } from "../../hooks";
 import { REQUIRE_LEGAL_CONSENT } from "../../legal";
-import { LegalConsentCheckbox } from "../Legal";
+import { AgeConfirmCheckbox, LegalConsentCheckbox } from "../Legal";
 import { USERNAME_MAX } from "../../constants";
 import {
   AuthLayout,
@@ -26,7 +26,9 @@ export default function Register({ onToggleMode, onBack }) {
   const [region, setRegion] = useState(null);
   // Solo cuenta con REQUIRE_LEGAL_CONSENT (si no, no se muestra la casilla)
   const [acceptedLegal, setAcceptedLegal] = useState(false);
-  const missingConsent = REQUIRE_LEGAL_CONSENT && !acceptedLegal;
+  // "Tengo 18 años o más": siempre obligatoria
+  const [confirmedAge, setConfirmedAge] = useState(false);
+  const missingConsent = (REQUIRE_LEGAL_CONSENT && !acceptedLegal) || !confirmedAge;
   const [loading, setLoading] = useState(false);
 
   const toast = useRef(null);
@@ -68,7 +70,8 @@ export default function Register({ onToggleMode, onBack }) {
         password,
         username,
         region,
-        acceptedLegal
+        acceptedLegal,
+        confirmedAge
       });
     } catch (error) {
       clearWelcomeNotice();
@@ -132,6 +135,8 @@ export default function Register({ onToggleMode, onBack }) {
           placeholder={t("fields.regionPlaceholder")}
           filter
         />
+
+        <AgeConfirmCheckbox checked={confirmedAge} onChange={setConfirmedAge} />
 
         {REQUIRE_LEGAL_CONSENT && (
           <LegalConsentCheckbox checked={acceptedLegal} onChange={setAcceptedLegal} />

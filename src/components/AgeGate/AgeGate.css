@@ -1,0 +1,61 @@
+/* =====================================================
+   CONFIRMACIÓN DE EDAD (AgeGate)
+   ===================================================== */
+.age-gate.p-dialog {
+  width: min(460px, calc(100vw - 32px));
+}
+
+.age-gate__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  color: var(--gm-text);
+}
+
+.age-gate__body p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.age-gate__icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 4px;
+  border-radius: 50%;
+  background: var(--gm-primary-soft);
+  color: var(--gm-label);
+}
+
+.age-gate__icon .pi {
+  font-size: 22px;
+}
+
+.age-gate__legal {
+  font-size: 13px;
+  color: var(--gm-muted);
+}
+
+.age-gate__legal a {
+  color: var(--gm-label);
+}
+
+.age-gate__error {
+  font-size: 13px;
+  color: var(--gm-accent-text);
+}
+
+.age-gate__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.age-gate__actions .p-button {
+  white-space: nowrap;
+}
