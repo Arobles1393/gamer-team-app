@@ -24,14 +24,14 @@ export const privacy = {
       id: "visibilidad",
       title: "Quién puede ver qué",
       body: [
-        "Tu apodo, foto, portada, biografía, país, juegos y enlaces son visibles para otros usuarios [PENDIENTE: confirmar si algo se ve sin iniciar sesión]. Los chats solo los ven sus participantes, y los chats de partida, los miembros de esa partida. Tu correo no es visible para otros usuarios. Quienes administran la plataforma pueden revisar los reportes [PENDIENTE: confirmar si pueden leer mensajes reportados]. Si activas “Permitir que se unan a mi partida de Steam”, tus amigos y quienes se interesaron en tus partidas verán que estás en una sala y podrán usar un enlace para entrar; puedes apagarlo cuando quieras [PENDIENTE: dejar solo si esa función ya está activa]."
+        "Tu apodo, foto, portada, biografía, país, juegos y enlaces son visibles para otros usuarios. Sin iniciar sesión se pueden ver las partidas, las guías publicadas y las noticias, con el apodo y la foto de quien las publicó, y a partir de ellas tu perfil público; los comentarios, quién se interesó en cada partida y la búsqueda de jugadores requieren iniciar sesión. Los chats solo los ven sus participantes, y los chats de partida, los miembros de esa partida. Tu correo no es visible para otros usuarios. Quienes administran la plataforma pueden revisar los reportes [PENDIENTE: confirmar si pueden leer mensajes reportados]. Si activas “Permitir que mis amigos y quienes se interesen en mis partidas se unan a mi partida de Steam” (viene desactivado), tus amigos y quienes se interesaron en tus partidas verán que estás en una sala y podrán usar un enlace para entrar, salvo que haya un bloqueo entre ustedes; puedes apagarlo cuando quieras."
       ]
     },
     {
       id: "terceros",
       title: "Con quién se comparten",
       body: [
-        "Usamos Google Firebase (autenticación, base de datos, archivos y funciones), cuyos servidores pueden estar fuera de tu país. Consultamos Steam (con tu enlace de Steam, para mostrar estadísticas y estado de juego públicos), Twitch (tu usuario, para saber si estás en directo), y RAWG y SteamGridDB (nombres de juegos, para datos e imágenes). Los enlaces de apoyo (Ko-fi) y los videos de YouTube salen de la app: al abrirlos se aplican sus propias políticas. No compartimos tus datos con anunciantes."
+        "Usamos Google Firebase (autenticación, base de datos, archivos y funciones), cuyos servidores pueden estar fuera de tu país. Consultamos Steam (con tu enlace de Steam, para mostrar estadísticas y estado de juego públicos), Twitch (tu usuario, para saber si estás en directo), y RAWG y SteamGridDB (nombres de juegos, para datos e imágenes). Si la app falla, puede enviar a Sentry un reporte técnico del error (el error, la página y el navegador, sin tu nombre, tu correo ni lo que escribes) para que podamos corregirlo. Los enlaces de apoyo (Ko-fi) y los videos de YouTube salen de la app: al abrirlos se aplican sus propias políticas. No compartimos tus datos con anunciantes."
       ]
     },
     {
@@ -45,21 +45,21 @@ export const privacy = {
       id: "derechos",
       title: "Tus derechos y cómo eliminar tu cuenta",
       body: [
-        "Puedes ver y editar tus datos desde tu perfil y eliminar tu cuenta en Perfil → “Eliminar mi cuenta” [PENDIENTE: confirmar que ya existe]. Para cualquier otra solicitud (acceso, copia, corrección, oposición), escríbenos a [PENDIENTE: correo de contacto]."
+        "Puedes ver y editar tus datos desde tu perfil y eliminar tu cuenta en Perfil → “Eliminar mi cuenta”. Para cualquier otra solicitud (acceso, copia, corrección, oposición), escríbenos a [PENDIENTE: correo de contacto]."
       ]
     },
     {
       id: "menores",
       title: "Menores de edad",
       body: [
-        "CONNECTION//GAMER está dirigido a personas de [PENDIENTE: edad mínima] años o más. Si crees que una persona menor tiene una cuenta, escríbenos y la eliminaremos."
+        "GamerMatch está dirigido a personas de [PENDIENTE: edad mínima] años o más. Si crees que una persona menor tiene una cuenta, escríbenos y la eliminaremos."
       ]
     },
     {
       id: "almacenamiento",
       title: "Almacenamiento en tu navegador",
       body: [
-        "Usamos almacenamiento local solo para mantener tu sesión y recordar tu idioma. No usamos cookies de publicidad. [PENDIENTE: confirmar contra el inventario, incluidas fuentes y recursos externos]."
+        "Usamos el almacenamiento de tu navegador para mantener tu sesión iniciada (Firebase), recordar tu idioma y mostrar avisos temporales que se borran al cerrar la pestaña. No usamos cookies de publicidad ni de seguimiento. Al usar la app, tu navegador también se conecta directamente con otros servicios, que reciben tu dirección IP: Google Fonts (las fuentes tipográficas), RAWG, SteamGridDB, Steam y Google (imágenes de juegos y fotos de perfil) y RAWG cuando buscas un juego."
       ]
     },
     {
