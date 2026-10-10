@@ -16,6 +16,14 @@ const QA = JSON.parse(fs.readFileSync(`${__dirname}/.qa-users.json`, "utf8"));
 const SHOTS = `${__dirname}/screenshots`;
 fs.mkdirSync(SHOTS, { recursive: true });
 const CONSENT = process.env.E2E_LEGAL_CONSENT === "1";
+// Versiones vigentes, leídas de src/legal/legalConfig.js (módulo ES): así la
+// prueba no queda atrás cuando cambia LEGAL_VERSIONS
+const LEGAL_VERSIONS = (() => {
+  const config = fs.readFileSync(path.join(__dirname, "../../src/legal/legalConfig.js"), "utf8");
+  const [, terms, privacy] = config.match(/LEGAL_VERSIONS\s*=\s*\{\s*terms:\s*"([^"]+)",\s*privacy:\s*"([^"]+)"\s*\}/) || [];
+  if (!terms || !privacy) throw new Error("No se encontró LEGAL_VERSIONS en src/legal/legalConfig.js");
+  return { terms, privacy };
+})();
 const STAMP = Date.now().toString(36);
 const TMP = { email: `qa.legal.${STAMP}@example.com`, username: `qa_legal_${STAMP}`, password: `Qa-${STAMP}l9` };
 
@@ -153,8 +161,8 @@ const removeTmp = async () => {
         consent = (await db.doc(`users/${user.uid}/private/preferences`).get()).data()?.legalConsent ?? null;
         if (!consent) await new Promise((resolve) => setTimeout(resolve, 1000));
       }
-      check("guarda legalConsent con las versiones y la fecha",
-        consent?.termsVersion === "provisional-1" && consent?.privacyVersion === "provisional-1" && Boolean(consent?.acceptedAt), JSON.stringify(consent));
+      check(`guarda legalConsent con las versiones vigentes (${LEGAL_VERSIONS.terms}/${LEGAL_VERSIONS.privacy}) y la fecha`,
+        consent?.termsVersion === LEGAL_VERSIONS.terms && consent?.privacyVersion === LEGAL_VERSIONS.privacy && Boolean(consent?.acceptedAt), JSON.stringify(consent));
       await close("consentimiento", page);
     }
   } finally {

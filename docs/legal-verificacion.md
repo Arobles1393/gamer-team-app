@@ -49,8 +49,8 @@ Nombre de la app: **no existe `BRAND` ni otra constante de nombre** en `src/`. E
 5. **Acceso técnico del dueño del proyecto.** La app no deja leer chats a los admins, pero quien tiene acceso al proyecto en la consola de Firebase puede leer todo, chats incluidos. Esto no se dice en el texto. Decide si mencionarlo (ver d).
 6. **App Check con reCAPTCHA Enterprise** (`firebase/config.js:33-42`) está apagado (sin `REACT_APP_RECAPTCHA_SITE_KEY`). Al activarlo, Google reCAPTCHA cargará en el navegador y recibirá IP y señales del dispositivo. Entonces habrá que añadirlo a terceros y almacenamiento.
 7. **Sentry.** `sendDefaultPii: false` y `scrubEvent` quitan usuario, cabeceras y query (`errorReporting.js:17-38`), pero la petición llega a Sentry desde la IP del usuario. Revisa en Sentry la opción "Prevent Storing of IP Addresses".
-8. **Comentario desactualizado** en `publicProfileService.js:4-6`: dice que `users/{uid}` guarda correo y teléfono, pero ya no los guarda (`profileService.js:101-104`). Solo afecta a la documentación interna.
-9. **`tests/e2e/legal.e2e.cjs:157`** (modo `E2E_LEGAL_CONSENT=1`) espera la versión `provisional-1`. Con `provisional-2` fallará cuando se active la casilla. No se tocó, porque está fuera de los archivos permitidos.
+8. **[CORREGIDO]** **Comentario desactualizado** en `publicProfileService.js:4-6`: dice que `users/{uid}` guarda correo y teléfono, pero ya no los guarda (`profileService.js:101-104`). Solo afecta a la documentación interna.
+9. **[CORREGIDO: la prueba lee las versiones de `legalConfig.js`]** **`tests/e2e/legal.e2e.cjs:157`** (modo `E2E_LEGAL_CONSENT=1`) espera la versión `provisional-1`. Con `provisional-2` fallará cuando se active la casilla. No se tocó, porque está fuera de los archivos permitidos.
 
 ## (c) Comprobaciones manuales (consola)
 
