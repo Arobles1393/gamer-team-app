@@ -42,7 +42,7 @@ Nombre de la app: **no existe `BRAND` ni otra constante de nombre** en `src/`. E
 
 ## (b) Hallazgos de seguridad o privacidad de paso
 
-1. **Dato huérfano al eliminar la cuenta.** En chats de partida **ajenos**, `group_chats/{postId}.lastMessage` y `lastSenderId` conservan el texto del último mensaje del usuario borrado. `account.service.js` no limpia esos campos. Se resuelve solo si `cleanupStaleData` borra luego el chat (cerrado y 30 días inactivo). Queda como marcador en el texto.
+1. **[CORREGIDO en el código: `clearLastMessagePreviews`, paso "vista previa de chats de partida" de `deleteAccount`, con prueba `tests/functions/account-previews.emulator.cjs`; marcador quitado del texto]** **Dato huérfano al eliminar la cuenta.** En chats de partida **ajenos**, `group_chats/{postId}.lastMessage` y `lastSenderId` conservan el texto del último mensaje del usuario borrado. `account.service.js` no limpia esos campos. Se resuelve solo si `cleanupStaleData` borra luego el chat (cerrado y 30 días inactivo). Queda como marcador en el texto.
 2. **El uid de Steam contiene el SteamID64** (`steam:<id>`, `steamAuth.service.js:213`). Es el id del documento `publicProfiles` y el `userId` de las partidas, legibles sin sesión. El SteamID sigue expuesto aunque el usuario quite su enlace de Steam.
 3. **`usernames/{nombre}` se lee sin sesión** (`firestore.rules:913`) y devuelve el `uid`. Con él se lee el perfil público completo (`:246`). No permite listar usuarios, pero sí comprobar si un apodo concreto existe y saltar a su perfil.
 4. **Imágenes de guías desde cualquier host https** (portada, `<img>` del contenido y vista previa). Quien publica una guía puede ver las IPs de quienes la abren (rastreo por imagen). `referrerPolicy="no-referrer"` evita el Referer, pero no la IP.
@@ -76,5 +76,5 @@ Nombre de la app: **no existe `BRAND` ni otra constante de nombre** en `src/`. E
 1. **Confirmación de edad (18+)** en los tres flujos: registro con correo, primer inicio con Google y primer inicio con Steam. Hasta que exista, los términos dicen solo "Debes tener 18 años o más para usar el servicio."
 2. **Paso de aceptación de Términos y Privacidad** para Google y Steam (TODO en `authService.js:84-85`) antes de activar `REQUIRE_LEGAL_CONSENT`.
 3. **Herramientas de moderación:** quitar contenido ajeno, suspender o cerrar cuentas, y un motivo de reporte "parece menor de edad". Sin ellas, "la eliminaremos" y "podemos quitar contenido y cerrar cuentas" dependen de trabajo manual en la consola.
-4. **Limpiar `lastMessage`/`lastSenderId`** de chats de partida ajenos en `deleteAccount` (b1). Así se puede quitar el marcador de la sección de conservación.
+4. ~~Limpiar `lastMessage`/`lastSenderId` de chats de partida ajenos en `deleteAccount` (b1).~~ Hecho.
 5. Si se añaden anuncios, afiliados o analítica, o se activa App Check, hay que actualizar las secciones 2, 4 y 8 de privacidad.

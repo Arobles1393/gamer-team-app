@@ -56,6 +56,19 @@ const notificationsAbout = async (relatedIds) => {
   return refs;
 };
 
+// Chats de partida ajenos cuyo último mensaje es suyo: se borra la vista
+// previa (texto y autor). lastMessageAt se conserva: ordena la lista y lo
+// usa la limpieza diaria para saber si el chat sigue activo
+const clearLastMessagePreviews = async (uid, firestore = db()) => {
+  const groups = await docsOf(firestore.collection("group_chats").where("lastSenderId", "==", uid));
+  for (let i = 0; i < groups.length; i += BATCH_SIZE) {
+    const batch = firestore.batch();
+    groups.slice(i, i + BATCH_SIZE).forEach((g) => batch.update(g.ref, {lastMessage: "", lastSenderId: null}));
+    await batch.commit();
+  }
+  return groups.length;
+};
+
 // ---------- Storage (si el proyecto aún no tiene bucket, se omite) ----------
 const createStorage = async () => {
   try {
@@ -148,6 +161,9 @@ const steps = (uid, bucket) => {
       return deleteRefs(messages.map((m) => m.ref));
     }],
 
+    // d2. Y la vista previa de su último mensaje en esos chats
+    ["vista previa de chats de partida", () => clearLastMessagePreviews(uid)],
+
     // e. Chats 1:1: se borran para las dos personas, con sus archivos
     ["chats", async () => {
       const chats = await docsOf(db().collection("chats").where("participants", "array-contains", uid));
@@ -236,4 +252,4 @@ const deleteAccount = async (uid) => {
   return {success: true};
 };
 
-module.exports = {deleteAccount, assertRecentLogin, RecentLoginError, RECENT_LOGIN_SECONDS};
+module.exports = {deleteAccount, clearLastMessagePreviews, assertRecentLogin, RecentLoginError, RECENT_LOGIN_SECONDS};
