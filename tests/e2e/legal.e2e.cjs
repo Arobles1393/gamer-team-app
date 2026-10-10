@@ -52,16 +52,16 @@ const removeTmp = async () => {
       // ---------- 1. Sin sesión, en español ----------
       console.log("\n=== páginas sin sesión");
       let page = await newPage();
-      for (const [route, title, sections] of [["/privacidad", "Política de privacidad", 8], ["/terminos", "Términos de uso", 10]]) {
+      for (const [route, title, sections] of [["/privacidad", "Política de privacidad", 9], ["/terminos", "Términos de uso", 10]]) {
         await page.goto(`${BASE}${route}`);
         await page.locator(".legal__sections").waitFor({ timeout: 15000 });
         check(`${route}: abre sin sesión con su título`, (await page.locator("h1").innerText()).trim().toLowerCase() === title.toLowerCase());
-        check(`${route}: aviso de borrador`, await page.locator(".legal__notice--draft").isVisible());
-        check(`${route}: "Última actualización: Pendiente"`, /Última actualización: Pendiente/.test(await page.locator(".legal__updated").innerText()));
+        check(`${route}: aviso de versión provisional (quedan [PENDIENTE])`, /Versión provisional: puede cambiar/.test(await page.locator(".legal__notice--draft").innerText().catch(() => "")));
+        check(`${route}: con fecha de última actualización`, /Última actualización: \d{1,2} de \w+ de \d{4}/.test(await page.locator(".legal__updated").innerText()));
         check(`${route}: ${sections} secciones e índice con las mismas`, await page.locator(".legal__section").count() === sections
           && await page.locator(".legal__toc a").count() === sections);
-        // [APUNTE: ...] son notas internas para quien redacte (no texto legal)
-      check(`${route}: todo el contenido dice [PENDIENTE: ...] (o un [APUNTE: ...])`, (await page.locator(".legal__paragraph").allInnerTexts()).every((p) => p.startsWith("[PENDIENTE") || p.startsWith("[APUNTE")));
+        const paragraphs = await page.locator(".legal__paragraph").allInnerTexts();
+        check(`${route}: cada sección con su texto y sin notas internas [APUNTE]`, paragraphs.length === sections && paragraphs.every((p) => p.length > 40 && !p.includes("[APUNTE")));
         check(`${route}: sin aviso de "solo en español"`, await page.locator(".legal__notice:not(.legal__notice--draft)").count() === 0);
         check(`${route}: título de la pestaña`, (await page.title()).startsWith(title));
         // Índice: el último enlace lleva a la última sección
@@ -154,7 +154,7 @@ const removeTmp = async () => {
         if (!consent) await new Promise((resolve) => setTimeout(resolve, 1000));
       }
       check("guarda legalConsent con las versiones y la fecha",
-        consent?.termsVersion === "borrador-0" && consent?.privacyVersion === "borrador-0" && Boolean(consent?.acceptedAt), JSON.stringify(consent));
+        consent?.termsVersion === "provisional-1" && consent?.privacyVersion === "provisional-1" && Boolean(consent?.acceptedAt), JSON.stringify(consent));
       await close("consentimiento", page);
     }
   } finally {

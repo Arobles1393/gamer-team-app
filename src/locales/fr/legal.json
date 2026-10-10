@@ -6,7 +6,7 @@
   },
   "updatedAt": "Dernière mise à jour : {{date}}",
   "pending": "En attente",
-  "draftNotice": "Brouillon : ce document n'est pas encore complet.",
+  "draftNotice": "Version provisoire : elle peut changer",
   "onlySpanish": "Ce document n'est disponible qu'en espagnol pour le moment.",
   "toc": "Sommaire",
   "tocLabel": "Sommaire du document",

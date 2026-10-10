@@ -6,7 +6,7 @@
   },
   "updatedAt": "Última actualización: {{date}}",
   "pending": "Pendiente",
-  "draftNotice": "Borrador: este documento aún no está completo.",
+  "draftNotice": "Versión provisional: puede cambiar",
   "onlySpanish": "Este documento solo está disponible en español por ahora.",
   "toc": "Contenido",
   "tocLabel": "Índice del documento",

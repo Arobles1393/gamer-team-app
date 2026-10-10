@@ -1,46 +1,149 @@
-// Contenido de los documentos legales en español. SOLO un esqueleto: los
-// títulos son neutros y cada cuerpo dice "[PENDIENTE: ...]" hasta que se
-// redacte el texto real. No es texto legal.
+// Contenido de los documentos legales en español. Versión provisional: los
+// marcadores "[PENDIENTE: ...]" quedan hasta que se resuelvan, y mientras
+// haya alguno la página muestra el aviso de versión provisional.
 // Cada documento: { updatedAt: "AAAA-MM-DD" | null, sections: [{ id, title, body: [párrafos] }] }
-const PENDING = ["[PENDIENTE: redactar esta sección]"];
-
-// `note`: apunte interno para quien redacte la sección (no es texto legal)
-const section = (id, title, note) => ({
-  id,
-  title,
-  body: note ? [...PENDING, `[APUNTE: ${note}]`] : PENDING
-});
-
-const KOFI_NOTE =
-  "la app incluye un enlace saliente a Ko-fi (\"Apoyar el proyecto\", opcional y solo si está configurado); " +
-  "GamerMatch no transmite datos del usuario ni recibe datos de pago; el procesamiento lo hacen Ko-fi y su procesador de pagos"
 
 export const privacy = {
-  updatedAt: null,
+  updatedAt: "2026-10-10",
   sections: [
-    section("datos", "Qué datos recopilamos"),
-    section("uso", "Para qué los usamos"),
-    section("terceros", "Con quién se comparten (proveedores externos)", KOFI_NOTE),
-    section("conservacion", "Cuánto tiempo se conservan"),
-    section("derechos", "Tus derechos y cómo eliminar tu cuenta"),
-    section("menores", "Menores de edad"),
-    section("contacto", "Contacto"),
-    section("cambios", "Cambios a esta política")
+    {
+      id: "datos",
+      title: "Qué datos recopilamos",
+      body: [
+        "Los que tú nos das: correo electrónico (lo gestiona Firebase Authentication; nosotros nunca vemos tu contraseña), apodo, país o región, foto de perfil y portada, biografía, juegos favoritos, enlaces a tus redes (por ejemplo Steam, Discord o Twitch), preferencias de juego y lo que publicas o escribes: partidas, comentarios, mensajes de chat y archivos adjuntos. También los que se generan al usar la app: amistades y solicitudes, bloqueos y reportes, notificaciones, tus intereses en partidas, tu estado de conexión (“última vez activo”) y tus preferencias (idioma, guía de bienvenida, privacidad). Si entras con Google o Steam, recibimos el identificador de esa cuenta. [PENDIENTE: confirmar qué más llega de cada proveedor]. Google (Firebase) procesa además datos técnicos, como la dirección IP y el dispositivo, para operar el servicio. No pedimos número de teléfono ni datos de pago."
+      ]
+    },
+    {
+      id: "uso",
+      title: "Para qué los usamos",
+      body: [
+        "Para crear y mantener tu cuenta, mostrarte partidas y jugadores, permitir chats y amistades, mostrar tu presencia, moderar contenido y proteger a la comunidad. No vendemos tus datos. [PENDIENTE: actualizar si se añaden anuncios, afiliados o analítica]."
+      ]
+    },
+    {
+      id: "visibilidad",
+      title: "Quién puede ver qué",
+      body: [
+        "Tu apodo, foto, portada, biografía, país, juegos y enlaces son visibles para otros usuarios [PENDIENTE: confirmar si algo se ve sin iniciar sesión]. Los chats solo los ven sus participantes, y los chats de partida, los miembros de esa partida. Tu correo no es visible para otros usuarios. Quienes administran la plataforma pueden revisar los reportes [PENDIENTE: confirmar si pueden leer mensajes reportados]. Si activas “Permitir que se unan a mi partida de Steam”, tus amigos y quienes se interesaron en tus partidas verán que estás en una sala y podrán usar un enlace para entrar; puedes apagarlo cuando quieras [PENDIENTE: dejar solo si esa función ya está activa]."
+      ]
+    },
+    {
+      id: "terceros",
+      title: "Con quién se comparten",
+      body: [
+        "Usamos Google Firebase (autenticación, base de datos, archivos y funciones), cuyos servidores pueden estar fuera de tu país. Consultamos Steam (con tu enlace de Steam, para mostrar estadísticas y estado de juego públicos), Twitch (tu usuario, para saber si estás en directo), y RAWG y SteamGridDB (nombres de juegos, para datos e imágenes). Los enlaces de apoyo (Ko-fi) y los videos de YouTube salen de la app: al abrirlos se aplican sus propias políticas. No compartimos tus datos con anunciantes."
+      ]
+    },
+    {
+      id: "conservacion",
+      title: "Cuánto tiempo los conservamos",
+      body: [
+        "Mientras tu cuenta exista. Si la eliminas, borramos tu perfil, publicaciones, comentarios, mensajes y archivos [PENDIENTE: confirmar contra el inventario de datos]. Los reportes de moderación pueden conservarse como registro de seguridad. [PENDIENTE: copias de seguridad y registros del proveedor]."
+      ]
+    },
+    {
+      id: "derechos",
+      title: "Tus derechos y cómo eliminar tu cuenta",
+      body: [
+        "Puedes ver y editar tus datos desde tu perfil y eliminar tu cuenta en Perfil → “Eliminar mi cuenta” [PENDIENTE: confirmar que ya existe]. Para cualquier otra solicitud (acceso, copia, corrección, oposición), escríbenos a [PENDIENTE: correo de contacto]."
+      ]
+    },
+    {
+      id: "menores",
+      title: "Menores de edad",
+      body: [
+        "CONNECTION//GAMER está dirigido a personas de [PENDIENTE: edad mínima] años o más. Si crees que una persona menor tiene una cuenta, escríbenos y la eliminaremos."
+      ]
+    },
+    {
+      id: "almacenamiento",
+      title: "Almacenamiento en tu navegador",
+      body: [
+        "Usamos almacenamiento local solo para mantener tu sesión y recordar tu idioma. No usamos cookies de publicidad. [PENDIENTE: confirmar contra el inventario, incluidas fuentes y recursos externos]."
+      ]
+    },
+    {
+      id: "cambios",
+      title: "Cambios y contacto",
+      body: [
+        "Si cambiamos esta política, actualizaremos la fecha y, si el cambio es importante, te avisaremos en la app. Contacto: [PENDIENTE: correo de contacto]."
+      ]
+    }
   ]
 };
 
 export const terms = {
-  updatedAt: null,
+  updatedAt: "2026-10-10",
   sections: [
-    section("quien", "Quién puede usar GamerMatch"),
-    section("cuenta", "Tu cuenta"),
-    section("contenido", "Contenido que publicas"),
-    section("conductas", "Conductas no permitidas"),
-    section("moderacion", "Moderación, reportes y bloqueos"),
-    section("terceros", "Enlaces y servicios de terceros", KOFI_NOTE),
-    section("responsabilidad", "Limitación de responsabilidad"),
-    section("eliminacion", "Eliminación de cuentas"),
-    section("cambios", "Cambios a estos términos"),
-    section("contacto", "Contacto")
+    {
+      id: "quien",
+      title: "Quién puede usar el servicio",
+      body: [
+        "Personas de [PENDIENTE: edad mínima] años o más, para uso personal y con información veraz."
+      ]
+    },
+    {
+      id: "cuenta",
+      title: "Tu cuenta",
+      body: [
+        "Eres responsable de tu contraseña y de lo que ocurra en tu cuenta. Avísanos si sospechas un acceso no autorizado. No puedes vender ni ceder tu cuenta."
+      ]
+    },
+    {
+      id: "contenido",
+      title: "Contenido que publicas",
+      body: [
+        "Sigue siendo tuyo. Nos das permiso, gratuito y no exclusivo, para almacenarlo y mostrarlo dentro del servicio. Declaras que tienes derecho a publicarlo."
+      ]
+    },
+    {
+      id: "conductas",
+      title: "Conductas no permitidas",
+      body: [
+        "Acoso, amenazas, discurso de odio, contenido sexual explícito o que involucre a menores, violencia gráfica, suplantación de identidad, spam o estafas, compartir datos personales de otras personas sin permiso, malware, uso automatizado abusivo y cualquier actividad contraria a la ley o a los términos de Steam, Twitch u otros servicios que uses con la app."
+      ]
+    },
+    {
+      id: "moderacion",
+      title: "Moderación, reportes y bloqueos",
+      body: [
+        "Puedes reportar y bloquear a otros usuarios. Podemos quitar contenido y limitar o cerrar cuentas que incumplan estos términos, sin aviso previo en casos graves. No garantizamos una revisión inmediata."
+      ]
+    },
+    {
+      id: "seguridad",
+      title: "Seguridad entre jugadores",
+      body: [
+        "No verificamos identidades. No compartas datos sensibles (domicilio, teléfono, contraseñas) y ten cuidado en cualquier encuentro fuera de la plataforma: eres responsable de tus interacciones."
+      ]
+    },
+    {
+      id: "terceros",
+      title: "Servicios de terceros",
+      body: [
+        "Steam, Twitch, Google, RAWG, Ko-fi y otros se rigen por sus propios términos y no están afiliados a nosotros. El apoyo voluntario por Ko-fi no da funciones ni derechos adicionales."
+      ]
+    },
+    {
+      id: "responsabilidad",
+      title: "Servicio en beta y responsabilidad",
+      body: [
+        "El servicio se ofrece “tal cual”, puede tener errores, cambiar o interrumpirse. En la medida permitida por la ley, no respondemos por daños indirectos. [PENDIENTE: revisar con abogado según tu país]."
+      ]
+    },
+    {
+      id: "eliminacion",
+      title: "Eliminación de cuentas",
+      body: [
+        "Puedes eliminar tu cuenta cuando quieras. Podemos suspenderla o eliminarla si incumples estos términos."
+      ]
+    },
+    {
+      id: "cambios",
+      title: "Cambios, ley aplicable y contacto",
+      body: [
+        "Podemos actualizar estos términos; si sigues usando el servicio después, los aceptas, y avisaremos de los cambios importantes. Ley aplicable: [PENDIENTE: país o jurisdicción]. Contacto: [PENDIENTE: correo de contacto]."
+      ]
+    }
   ]
 };
