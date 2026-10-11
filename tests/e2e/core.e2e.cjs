@@ -212,7 +212,7 @@ const body = (page) => page.locator("body").innerText();
     try {
       await login(page, QA.diego);
       await page.goto(`${BASE}/findPlayers`);
-      await page.getByPlaceholder("Nombre de usuario…").fill("qa_");
+      await page.getByPlaceholder("Nickname…").fill("qa_");
       await page.waitForTimeout(3000);
       const results = await body(page);
       check("bloqueo: la búsqueda (publicProfiles) encuentra a las cuentas qa_", /qa_ana/.test(results) && /qa_eva/.test(results));
@@ -251,7 +251,7 @@ const body = (page) => page.locator("body").innerText();
     await page.screenshot({ path: `${SHOTS}/post-bloqueado.png` });
 
     await page.goto(`${BASE}/findPlayers`);
-    await page.getByPlaceholder("Nombre de usuario…").fill("qa_");
+    await page.getByPlaceholder("Nickname…").fill("qa_");
     await page.waitForTimeout(3000);
     check("bloqueo: qa_eva ya no sale en la búsqueda", !/qa_eva/.test(await body(page)));
   });

@@ -69,15 +69,15 @@ const cleanup = async () => {
     const reservation = await db.doc(`usernames/${generic.toLowerCase()}`).get();
     check("y su nombre reservado (sin uid)", reservation.exists && !("uid" in reservation.data()));
 
-    // ---------- Elige tu apodo ----------
+    // ---------- Elige tu nickname ----------
     const prompt = page.locator(".username-prompt");
-    check("pide \"Elige tu apodo\", con el campo vacío", await prompt.waitFor({ timeout: 15000 }).then(() => true, () => false)
+    check("pide \"Elige tu nickname\", con el campo vacío", await prompt.waitFor({ timeout: 15000 }).then(() => true, () => false)
       && await page.locator("#username-prompt-input").inputValue() === "");
     check("avisa que es público y con qué apodo sigue si lo salta", (await prompt.innerText()).includes("Es público") && (await prompt.innerText()).includes(generic));
     check("sin botón de cerrar", await prompt.locator(".p-dialog-header-close").count() === 0);
     await page.locator("#username-prompt-input").fill(QA.ana.username.toUpperCase());
-    await prompt.getByRole("button", { name: "Guardar apodo" }).click();
-    check("un apodo de otra cuenta: avisa que está en uso", await prompt.getByText("Ese apodo ya está en uso").waitFor({ timeout: 10000 }).then(() => true, () => false));
+    await prompt.getByRole("button", { name: "Guardar nickname" }).click();
+    check("un nickname de otra cuenta: avisa que está en uso", await prompt.getByText("Ese nickname ya está en uso").waitFor({ timeout: 10000 }).then(() => true, () => false));
     await page.locator("#username-prompt-input").fill(CHOSEN);
     await page.keyboard.press("Enter");
     await prompt.waitFor({ state: "detached", timeout: 10000 }).catch(() => {});
