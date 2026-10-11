@@ -9,6 +9,7 @@
     "inappropriate": "Inappropriate content",
     "harassment": "Harassment",
     "impersonation": "Impersonation",
+    "underage": "Seems to be underage",
     "other": "Other reason"
   },
   "dialog": {
@@ -46,6 +47,42 @@
     "commentGone": "The comment no longer exists",
     "viewComment": "View comment in its post",
     "reportedBy": "Reported by",
-    "markReviewed": "Mark as reviewed"
+    "markReviewed": "Mark as reviewed",
+    "moderation": {
+      "actions": {
+        "deletePost": "Delete post",
+        "deleteComment": "Delete comment",
+        "suspendUser": "Suspend account",
+        "deleteUser": "Delete account"
+      },
+      "confirm": {
+        "deletePost": {
+          "header": "Delete this post?",
+          "message": "The post, its comments, its interested players and its group chat are deleted. This can't be undone."
+        },
+        "deleteComment": {
+          "header": "Delete this comment?",
+          "message": "The comment and its attachment are deleted. This can't be undone."
+        },
+        "suspendUser": {
+          "header": "Suspend {{username}}'s account?",
+          "message": "They won't be able to log in again; an open session stops working within an hour. Their profile and content stay visible. It can be reactivated with npm run admin:unsuspend."
+        },
+        "deleteUser": {
+          "header": "Delete {{username}}'s account?",
+          "message": "The account and everything in it are deleted, just like \"Delete my account\". This can't be undone."
+        }
+      },
+      "done": {
+        "deletePost": "Post deleted",
+        "deleteComment": "Comment deleted",
+        "suspendUser": "Account suspended",
+        "deleteUser": "Account deleted"
+      },
+      "alreadyGone": "It no longer existed; the report was marked as reviewed.",
+      "error": "The action could not be completed.",
+      "forbiddenTarget": "It can't be applied to your own account or to another admin account.",
+      "needsFunctions": "This action needs Cloud Functions (local emulator or Blaze plan)."
+    }
   }
 }

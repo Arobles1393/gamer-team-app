@@ -5,7 +5,7 @@ import { Skeleton } from "primereact/skeleton";
 import { Button } from "primereact/button";
 import ChatEmptyState from "./ChatEmptyState";
 import MessageBubble from "./MessageBubble";
-import { formatDates } from "../../utils";
+import { formatDates, getDisplayName } from "../../utils";
 
 // Mensajes seguidos del mismo autor con menos de 5 min entre sí van en el mismo grupo
 const GROUP_WINDOW_MS = 5 * 60 * 1000;
@@ -198,7 +198,7 @@ export default function MessageList({
           >
             {senderProfiles && !item.mine && (
               <span className="chat-group__sender">
-                {senderProfiles[item.senderId]?.username || t("messages.player")}
+                {getDisplayName(senderProfiles[item.senderId], t("messages.player"))}
               </span>
             )}
             {item.messages.map((message) => (

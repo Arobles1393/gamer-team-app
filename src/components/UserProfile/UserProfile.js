@@ -27,8 +27,9 @@ function UserProfileSkeleton() {
 /**
  * Perfil de solo lectura de un jugador (se abre en UserProfileDialog).
  * `actions` son los botones de amistad / mensaje que van en el hero.
+ * `aboveContent`: franja entre el hero y las secciones (p. ej. "Unirme en Steam").
  */
-export default function UserProfile({ userId, actions, onClose }) {
+export default function UserProfile({ userId, actions, aboveContent = null, onClose }) {
   const { t } = useTranslation("profile");
   const { userData } = useUserProfile(userId);
 
@@ -69,6 +70,8 @@ export default function UserProfile({ userId, actions, onClose }) {
           </button>
         }
       />
+
+      {aboveContent}
 
       <div className="user-profile__grid">
         <div className="user-profile__column">

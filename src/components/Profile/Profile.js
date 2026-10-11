@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "primereact/button";
 import { Skeleton } from "primereact/skeleton";
@@ -12,11 +12,21 @@ import ProfileAbout from "./ProfileAbout";
 import ProfileSaveBar from "./ProfileSaveBar";
 import BlockedUsers from "./BlockedUsers";
 import LanguageSection from "./LanguageSection";
+import DangerZone from "./DangerZone";
+import { IMAGE_ACCEPT } from "../../utils/cropImage";
+import GuideSection from "./GuideSection";
+import PrivacySection from "./PrivacySection";
+import SupportSection from "./SupportSection";
+import { MyGuides } from "../Guides";
+import { MatchPreferences, MATCH_PREFERENCES_ID } from "../Matching";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useProfileForm, useGameSearch, useProfileImages } from "../../hooks";
 import { countries } from "../../data/countries";
 import { getCountryOptions } from "../../utils";
 import { useCurrentUser, useCurrentUserData } from "../../context";
 import "./Profile.css";
+
+const ImageCropDialog = lazy(() => import("./ImageCropDialog"));
 
 function ProfileSkeleton() {
   const { t } = useTranslation("profile");
@@ -56,17 +66,17 @@ export default function Profile() {
     email,
     canChangeEmail,
     username,
-    phone,
     description,
     links,
     games,
     region,
+    preferences,
     setEmail,
     setUsername,
-    setPhone,
     setDescription,
     setLinks,
     setRegion,
+    setPreferences,
     addGame,
     removeGame,
     handleSave,
@@ -76,6 +86,26 @@ export default function Profile() {
 
   const { suggestions, handleSearch } = useGameSearch();
 
+  // Desde "Compatibles contigo": entra en modo edición y baja a las
+  // preferencias. El state se limpia para que recargar no lo repita.
+  const location = useLocation();
+  const navigate = useNavigate();
+  const editPreferences = Boolean(location.state?.editPreferences);
+  const hasUserData = Boolean(userData);
+
+  const openPreferences = useCallback(() => {
+    setIsEditing(true);
+    requestAnimationFrame(() => {
+      document.getElementById(MATCH_PREFERENCES_ID)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, [setIsEditing]);
+
+  useEffect(() => {
+    if (!editPreferences || !hasUserData) return;
+    openPreferences();
+    navigate(location.pathname, { replace: true, state: null });
+  }, [editPreferences, hasUserData, openPreferences, navigate, location.pathname]);
+
   // Nombres de países en el idioma actual
   const countryOptions = useMemo(
     () => getCountryOptions(),
@@ -83,11 +113,18 @@ export default function Profile() {
     [i18n.resolvedLanguage]
   );
 
-  const { preview, bannerPreview, uploading, handleImageChange } = useProfileImages(
+  const { preview, bannerPreview, uploading, handleImageChange, cropRequest, confirmCrop, cancelCrop } = useProfileImages(
     user,
     showError,
     showSuccess
   );
+
+  // El recorte (react-easy-crop) se descarga la primera vez que se elige una
+  // imagen y queda montado para la animación de cierre
+  const [cropUsed, setCropUsed] = useState(false);
+  useEffect(() => {
+    if (cropRequest) setCropUsed(true);
+  }, [cropRequest]);
 
   const handleAddGame = (game) => {
     addGame(game);
@@ -109,14 +146,14 @@ export default function Profile() {
     <div className={`profile-page${isEditing ? " profile-page--editing" : ""}`}>
       <input
         type="file"
-        accept="image/*"
+        accept={IMAGE_ACCEPT}
         ref={avatarInputRef}
         hidden
         onChange={(e) => handleImageChange(e, "avatar")}
       />
       <input
         type="file"
-        accept="image/*"
+        accept={IMAGE_ACCEPT}
         ref={bannerInputRef}
         hidden
         onChange={(e) => handleImageChange(e, "banner")}
@@ -168,6 +205,13 @@ export default function Profile() {
             emptyText={t("page.emptyGames")}
             onEmptyAction={() => setIsEditing(true)}
           />
+          <MatchPreferences
+            preferences={preferences}
+            isEditing={isEditing}
+            onChange={setPreferences}
+            onConfigure={openPreferences}
+          />
+          <MyGuides user={user} />
           {/* Usa los links guardados, no los que se están editando */}
           <SteamSection
             links={userData.links}
@@ -180,14 +224,12 @@ export default function Profile() {
           <PersonalInfo
             email={email}
             username={username}
-            phone={phone}
             region={region}
             countries={countryOptions}
             canChangeEmail={canChangeEmail}
             isEditing={isEditing}
             onEmailChange={setEmail}
             onUsernameChange={setUsername}
-            onPhoneChange={setPhone}
             onRegionChange={setRegion}
           />
           <SocialLinks
@@ -198,10 +240,17 @@ export default function Profile() {
           />
           {/* Fuera del modo edición: el idioma se aplica y guarda al momento */}
           <LanguageSection user={user} onError={showError} />
+          {/* Usa los links guardados: el interruptor se guarda al momento */}
+          <PrivacySection user={user} links={userData.links} onError={showError} />
+          <GuideSection />
           {/* Solo aparece si bloqueaste a alguien */}
           <BlockedUsers user={user} onError={showError} />
         </div>
       </div>
+
+      <SupportSection />
+
+      <DangerZone user={user} username={userData.username} onError={showError} />
 
       {isEditing && (
         <ProfileSaveBar
@@ -210,6 +259,19 @@ export default function Profile() {
           onCancel={handleCancelEdit}
           onSave={handleSave}
         />
+      )}
+
+      {/* Recorte antes de subir avatar o portada */}
+      {cropUsed && (
+        <Suspense fallback={null}>
+          <ImageCropDialog
+            visible={Boolean(cropRequest)}
+            file={cropRequest?.file}
+            type={cropRequest?.type}
+            onCancel={cancelCrop}
+            onConfirm={confirmCrop}
+          />
+        </Suspense>
       )}
 
       <Toast ref={toast} />

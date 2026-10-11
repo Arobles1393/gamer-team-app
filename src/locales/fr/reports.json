@@ -9,6 +9,7 @@
     "inappropriate": "Contenu inapproprié",
     "harassment": "Harcèlement",
     "impersonation": "Usurpation d'identité",
+    "underage": "Semble mineur",
     "other": "Autre motif"
   },
   "dialog": {
@@ -46,6 +47,42 @@
     "commentGone": "Le commentaire n'existe plus",
     "viewComment": "Voir le commentaire dans sa publication",
     "reportedBy": "Signalé par",
-    "markReviewed": "Marquer comme examiné"
+    "markReviewed": "Marquer comme examiné",
+    "moderation": {
+      "actions": {
+        "deletePost": "Supprimer la partie",
+        "deleteComment": "Supprimer le commentaire",
+        "suspendUser": "Suspendre le compte",
+        "deleteUser": "Supprimer le compte"
+      },
+      "confirm": {
+        "deletePost": {
+          "header": "Supprimer cette partie ?",
+          "message": "La partie, ses commentaires, ses intéressés et son chat de groupe sont supprimés. Action irréversible."
+        },
+        "deleteComment": {
+          "header": "Supprimer ce commentaire ?",
+          "message": "Le commentaire et sa pièce jointe sont supprimés. Action irréversible."
+        },
+        "suspendUser": {
+          "header": "Suspendre le compte de {{username}} ?",
+          "message": "La personne ne pourra plus se connecter ; une session ouverte cesse de fonctionner en moins d'une heure. Son profil et son contenu restent visibles. Réactivation possible avec npm run admin:unsuspend."
+        },
+        "deleteUser": {
+          "header": "Supprimer le compte de {{username}} ?",
+          "message": "Le compte et tout son contenu sont supprimés, comme avec « Supprimer mon compte ». Action irréversible."
+        }
+      },
+      "done": {
+        "deletePost": "Partie supprimée",
+        "deleteComment": "Commentaire supprimé",
+        "suspendUser": "Compte suspendu",
+        "deleteUser": "Compte supprimé"
+      },
+      "alreadyGone": "Il n'existait plus ; le signalement a été marqué comme examiné.",
+      "error": "L'action n'a pas pu être effectuée.",
+      "forbiddenTarget": "Impossible sur votre propre compte ou sur un autre compte admin.",
+      "needsFunctions": "Cette action nécessite les Cloud Functions (émulateur local ou forfait Blaze)."
+    }
   }
 }

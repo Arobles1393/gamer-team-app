@@ -9,7 +9,7 @@ import PostCardSkeleton from "./PostCardSkeleton";
 import FeedEmptyState from "./FeedEmptyState";
 import "./Feed.css";
 import { UserProfileDialog } from "../UserProfile";
-import { useBlockedIds, usePosts, useFilteredPosts, usePostFilters, usePostListActions } from "../../hooks";
+import { useBlockedIds, usePosts, useFilteredPosts, usePostFilters, usePostListActions, useRequireVerified } from "../../hooks";
 import { EMPTY_TAG_FILTERS, excludeBlockedAuthors, hasTagFilters } from "../../utils";
 import { useCurrentUser } from "../../context";
 
@@ -18,6 +18,7 @@ import { useCurrentUser } from "../../context";
 export default function PostList({ setEditingPost, setShowCreatePost, onlyMine = false, joined = false }) {
   const { t } = useTranslation("posts");
   const user = useCurrentUser();
+  const requireVerified = useRequireVerified(user);
   const toast = useRef(null);
   const [search, setSearch] = useState("");
 
@@ -97,7 +98,7 @@ export default function PostList({ setEditingPost, setShowCreatePost, onlyMine =
         title={title}
         search={search}
         onSearchChange={setSearch}
-        onCreatePost={() => setShowCreatePost(true)}
+        onCreatePost={() => requireVerified() && setShowCreatePost(true)}
       />
       <PostFilters
         filterGame={filterGame}

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "primereact/button";
 import { Skeleton } from "primereact/skeleton";
 import { ProfileSection } from "../ProfileSection";
+import "../Credits/Credits.css";
 import GameAchievementsDialog from "./GameAchievementsDialog";
 import { useSteamStats } from "../../hooks";
 import { getIntlLocale } from "../../i18n";
@@ -162,6 +163,8 @@ export default function SteamSection({ links, isOwnProfile = false, onConnect })
             />
           ))}
         </ul>
+
+        <p className="data-source steam-section__source">{t("credits:steamData")}</p>
       </>
     );
   };

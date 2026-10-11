@@ -10,7 +10,7 @@ import NotificationsFilters from "./NotificationsFilters";
 import NotificationsEmptyState from "./NotificationsEmptyState";
 import { notificationService } from "../../services/notifications";
 import { friendService } from "../../services/friends";
-import { useNotifications } from "../../hooks";
+import { useNotifications, useRequireVerified } from "../../hooks";
 import { navigateNotification, formatDates, confirmDestructive } from "../../utils";
 import { useCurrentUser } from "../../context";
 import "../Posts/Feed.css";
@@ -61,6 +61,7 @@ const groupBySection = (notifications) =>
 export default function Notifications() {
   const { t } = useTranslation("notifications");
   const user = useCurrentUser();
+  const requireVerified = useRequireVerified(user);
   const navigate = useNavigate();
   const toast = useRef(null);
   const [filter, setFilter] = useState("all");
@@ -99,8 +100,9 @@ export default function Notifications() {
   }, [navigate]);
 
   const handleAcceptFriendRequest = useCallback((notification) => {
+    if (!requireVerified()) return Promise.resolve(false);
     return friendService.acceptFriendRequest(notification, user);
-  }, [user]);
+  }, [user, requireVerified]);
 
   const handleRejectFriendRequest = useCallback((notification) => {
     return friendService.rejectFriendRequest(notification);

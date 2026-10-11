@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AutoComplete } from "primereact/autocomplete";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
-import { useGameSearch, useCreatePost } from "../../hooks";
+import { useCreatePost } from "../../hooks";
+import { GameSelect } from "../GameSelect";
 import { SKILL_LEVELS, getLanguageOptions, platforms } from "../../constants";
-import { getPlatformKey, platformIcons, platformLabels } from "../../utils";
+import { platformIcons } from "../../utils";
 import { useCurrentUser, useCurrentUserData } from "../../context";
 import "./CreatePost.css";
 
@@ -22,23 +22,6 @@ const WHEN_OPTIONS = [
   { value: true, labelKey: "create.schedule", icon: "pi-calendar" }
 ];
 
-const suggestionTemplate = (item) => (
-  <div className="create-post__suggestion">
-    {item.image ? (
-      <img src={item.image} alt="" className="create-post__suggestion-img" />
-    ) : (
-      <span className="create-post__suggestion-img" aria-hidden="true" />
-    )}
-    <span>{item.label}</span>
-  </div>
-);
-
-// "PC · PS5 · XBOX" a partir de los nombres de plataforma de RAWG
-const getAvailableLabel = (gamePlatforms) => {
-  const keys = [...new Set((gamePlatforms ?? []).map(getPlatformKey).filter(Boolean))];
-  return keys.map((key) => platformLabels[key]).join(" · ");
-};
-
 function Field({ id, label, error, hint, children }) {
   return (
     <div className="gm-field create-post__field">
@@ -46,39 +29,6 @@ function Field({ id, label, error, hint, children }) {
       {children}
       {hint && !error && <p className="gm-field__hint">{hint}</p>}
       {error && <p className="gm-field__error" role="alert">{error}</p>}
-    </div>
-  );
-}
-
-function SelectedGame({ name, image, gamePlatforms, locked, onClear }) {
-  const { t } = useTranslation("posts");
-  const available = getAvailableLabel(gamePlatforms);
-
-  return (
-    <div className="create-post__game">
-      <span className="create-post__game-cover">
-        {image && <img src={image} alt="" />}
-      </span>
-      <span className="create-post__game-info">
-        <span className="create-post__game-name">{name}</span>
-        <span className="create-post__game-meta">
-          {locked
-            ? t("create.gameLocked")
-            : available
-              ? t("create.gameAvailable", { platforms: available })
-              : t("create.gameSelected")}
-        </span>
-      </span>
-      {!locked && (
-        <button
-          type="button"
-          className="create-post__game-clear"
-          aria-label={t("create.changeGame")}
-          onClick={onClear}
-        >
-          <i className="pi pi-times" aria-hidden="true" />
-        </button>
-      )}
     </div>
   );
 }
@@ -121,16 +71,7 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
     onError
   });
 
-  const { suggestions, handleSearch } = useGameSearch();
-
   const gameName = (typeof game === "string" ? game : game?.value ?? "").trim();
-
-  // Juego elegido de la lista de RAWG (o el del post, al editar)
-  const selectedGame = isEditing
-    ? { name: editingPost.game, image: editingPost.image, platforms: editingPost.platforms }
-    : typeof game === "object" && game?.value
-      ? { name: game.value, image: game.image, platforms: game.platforms }
-      : null;
 
   const playerCount = Number(players) || MIN_PLAYERS;
   const selectedPlatform = multiplatform ? MULTI : platform;
@@ -169,31 +110,18 @@ export default function CreatePost({ editingPost, onClose, onSuccess, onError })
   return (
     <form className="gm-form create-post" onSubmit={onSubmit} noValidate>
       <Field id="create-game" label={t("create.game")} error={submitted && errors.game}>
-        {selectedGame ? (
-          <SelectedGame
-            name={selectedGame.name}
-            image={selectedGame.image}
-            gamePlatforms={selectedGame.platforms}
-            locked={isEditing}
-            onClear={() => setGame("")}
-          />
-        ) : (
-          <AutoComplete
-            inputId="create-game"
-            value={game}
-            suggestions={suggestions}
-            completeMethod={handleSearch}
-            onChange={(e) => setGame(e.value)}
-            field="value"
-            itemTemplate={suggestionTemplate}
-            placeholder={t("create.gamePlaceholder")}
-            aria-labelledby="create-game-label"
-            className="gm-autocomplete"
-            inputClassName={`gm-input${submitted && errors.game ? " gm-input--invalid" : ""}`}
-            panelClassName="gm-panel"
-            autoFocus
-          />
-        )}
+        {/* Al editar, el juego queda fijo (game_stats cuenta por juego) */}
+        <GameSelect
+          inputId="create-game"
+          labelledBy="create-game-label"
+          value={game}
+          onChange={setGame}
+          lockedGame={isEditing
+            ? { name: editingPost.game, image: editingPost.image, platforms: editingPost.platforms }
+            : null}
+          invalid={Boolean(submitted && errors.game)}
+          autoFocus
+        />
       </Field>
 
       <Field id="create-platform" label={t("create.platform")} error={submitted && errors.platform}>

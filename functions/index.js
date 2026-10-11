@@ -6,15 +6,28 @@ const localSigner =
   process.env.FUNCTIONS_EMULATOR === "true" &&
   process.env.LOCAL_SIGNER_SERVICE_ACCOUNT;
 admin.initializeApp(
-  localSigner ? { serviceAccountId: localSigner } : undefined
+  localSigner ? {serviceAccountId: localSigner} : undefined,
 );
-const { getSteamStats, getSteamPresence } = require("./steam/steam.functions");
-const { getGameLogo, getGamePortada } = require("./steamgrid/steamgrid.functions");
-const { syncGamingNews } = require("./gamingNews/gamingNews.functions");
-const { cleanupCommentMedia } = require("./postComments/postComments.functions");
-const { loginWithSteam } = require("./steamAuth/steamAuth.functions");
-const { logGameSearch } = require("./games/games.functions");
-const { getTwitchPresence } = require("./twitch/twitch.functions");
+
+// Tope de instancias para todas las funciones (auditoría M-09): un abuso no
+// escala sin límite. Antes de cargar las funciones, que lo leen al definirse.
+// syncGamingNews fija 1 por su cuenta.
+const {setGlobalOptions} = require("firebase-functions/v2");
+setGlobalOptions({maxInstances: 10});
+const {getSteamStats, getSteamPresence} = require("./steam/steam.functions");
+const {getGameLogo, getGamePortada} = require("./steamgrid/steamgrid.functions");
+const {syncGamingNews} = require("./gamingNews/gamingNews.functions");
+const {cleanupCommentMedia} = require("./postComments/postComments.functions");
+const {loginWithSteam} = require("./steamAuth/steamAuth.functions");
+const {logGameSearch} = require("./games/games.functions");
+const {searchRawgGames, getRawgGameDetail} = require("./games/rawg.functions");
+const {getTwitchPresence} = require("./twitch/twitch.functions");
+const {fetchLinkPreview} = require("./guides/guides.functions");
+const {getCommunityStats} = require("./community/community.functions");
+const {deleteAccount} = require("./account/account.functions");
+const {getJoinInfo} = require("./steamJoin/steamJoin.functions");
+const {cleanupStaleData} = require("./cleanup/cleanup.functions");
+const {moderate} = require("./moderation/moderation.functions");
 
 exports.getSteamStats = getSteamStats;
 exports.getSteamPresence = getSteamPresence;
@@ -24,4 +37,17 @@ exports.syncGamingNews = syncGamingNews;
 exports.cleanupCommentMedia = cleanupCommentMedia;
 exports.loginWithSteam = loginWithSteam;
 exports.logGameSearch = logGameSearch;
+// RAWG sin la clave en el navegador (auditoría M-16). La app las usa solo con
+// REACT_APP_RAWG_VIA_FUNCTION=true; necesitan RAWG_API_KEY en functions/.env
+exports.searchRawgGames = searchRawgGames;
+exports.getRawgGameDetail = getRawgGameDetail;
 exports.getTwitchPresence = getTwitchPresence;
+exports.fetchLinkPreview = fetchLinkPreview;
+exports.getCommunityStats = getCommunityStats;
+exports.deleteAccount = deleteAccount;
+// Requiere plan Blaze para desplegarse; mientras tanto corre en el emulador
+exports.getJoinInfo = getJoinInfo;
+// Limpieza diaria de datos viejos u huérfanos (Blaze; a mano: npm run data:cleanup)
+exports.cleanupStaleData = cleanupStaleData;
+// Panel de reportes: borrar partida o comentario, suspender o eliminar cuenta
+exports.moderate = moderate;

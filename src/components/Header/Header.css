@@ -132,6 +132,7 @@
 
 /* ---------- AVATAR ---------- */
 .app-rail__avatar-btn {
+  position: relative;
   flex-shrink: 0;
   padding: 0;
   border: none;
@@ -205,6 +206,23 @@
 .gm-menu.p-menu .p-menuitem:not(.p-highlight):not(.p-disabled) > .p-menuitem-content:hover .p-menuitem-link .p-menuitem-icon,
 .gm-menu.p-menu .p-menuitem:not(.p-highlight):not(.p-disabled).p-focus > .p-menuitem-content .p-menuitem-link .p-menuitem-icon {
   color: var(--gm-label);
+}
+
+/* Encabezado de grupo (Administración) */
+.gm-menu.p-menu .p-submenu-header {
+  padding: 8px 12px 4px;
+  background: none;
+  font-family: var(--gm-font-display, inherit);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gm-label);
+}
+
+.app-rail__avatar-dot {
+  top: 0;
+  right: 0;
 }
 
 .gm-menu.p-menu .p-menu-separator {

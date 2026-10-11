@@ -8,9 +8,11 @@ import {
   useBlockedIds,
   useGroupChatWindow,
   usePostSummary,
+  useRequireVerified,
   useUserProfiles
 } from "../../hooks";
 import { excludeBlockedAuthors } from "../../utils";
+import { JoinSteam } from "../Steam";
 import { useCurrentUser } from "../../context";
 
 const MAX_AVATARS = 4;
@@ -38,6 +40,7 @@ function StackedAvatars({ users, total }) {
 export default function GroupChatWindow({ postId, onBack, onError }) {
   const { t } = useTranslation("chat");
   const user = useCurrentUser();
+  const requireVerified = useRequireVerified(user);
 
   const { messages, loading, error, retry, hasOlder, loadingOlder, loadOlder, participants, hasAccess, sendMessage } =
     useGroupChatWindow(postId, user.uid);
@@ -57,6 +60,8 @@ export default function GroupChatWindow({ postId, onBack, onError }) {
   const count = participants.length;
 
   const handleSend = async (text, file) => {
+    // Sin verificar: abre el diálogo; el composer conserva el texto
+    if (!requireVerified()) throw new Error("email-not-verified");
     try {
       await sendMessage(text, file);
     } catch (error) {
@@ -99,6 +104,14 @@ export default function GroupChatWindow({ postId, onBack, onError }) {
           </span>
         </div>
       </header>
+
+      {/* Sala del autor: solo para quien participa por su "Quiero jugar" */}
+      <JoinSteam
+        targetUid={post?.userId}
+        postId={postId}
+        enabled={Boolean(post?.userId) && post.userId !== user.uid && hasAccess}
+        className="chat-window__steam-join"
+      />
 
       {hasAccess || loading ? (
         <>

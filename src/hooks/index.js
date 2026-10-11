@@ -48,9 +48,13 @@ export * from "./auth/useAuth";
 export * from "./auth/useProviderLogin";
 export * from "./auth/useRequireAuth";
 export * from "./auth/useIsAdmin";
+export * from "./admin/useAdminPendingCounts";
 export * from "./auth/useAccountLanguage";
-export * from "./auth/useAccountEmail";
 export * from "./auth/useWelcomeNotice";
+export * from "./auth/useCooldown";
+export * from "./auth/usePasswordReset";
+export * from "./auth/useEmailVerificationState";
+export * from "./auth/useRequireVerified";
 
 // Juegos
 export * from "./games/useGameSearch";
@@ -58,8 +62,25 @@ export * from "./games/useGamingNews";
 export * from "./games/useGames";
 export * from "./games/useGameSearchLog";
 
+// Guías
+export * from "./guides/useApprovedGuides";
+export * from "./guides/useMyGuides";
+export * from "./guides/useGuideReview";
+export * from "./guides/useGuide";
+export * from "./guides/useLinkPreview";
+export * from "./guides/useCreateGuide";
+
 // Bloqueos y reportes
 export * from "./blocks/useBlockedIds";
 export * from "./blocks/useBlockStatus";
 export * from "./reports/useReportDialog";
 export * from "./reports/usePendingReports";
+export * from "./matching/useMatchProfile";
+export * from "./matching/useCompatibleMatches";
+export * from "./community/useCommunityStats";
+export * from "./account/useDeleteAccount";
+export * from "./legal/useLegalDocument";
+export * from "./onboarding/useOnboarding";
+export * from "./privacy/usePrivacySettings";
+export * from "./privacy/useAgeGate";
+export * from "./steam/useSteamJoinInfo";

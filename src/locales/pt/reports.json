@@ -9,6 +9,7 @@
     "inappropriate": "Conteúdo inapropriado",
     "harassment": "Assédio",
     "impersonation": "Falsidade ideológica",
+    "underage": "Parece ser menor de idade",
     "other": "Outro motivo"
   },
   "dialog": {
@@ -46,6 +47,42 @@
     "commentGone": "O comentário não existe mais",
     "viewComment": "Ver comentário na publicação",
     "reportedBy": "Denunciado por",
-    "markReviewed": "Marcar como analisada"
+    "markReviewed": "Marcar como analisada",
+    "moderation": {
+      "actions": {
+        "deletePost": "Apagar partida",
+        "deleteComment": "Apagar comentário",
+        "suspendUser": "Suspender conta",
+        "deleteUser": "Excluir conta"
+      },
+      "confirm": {
+        "deletePost": {
+          "header": "Apagar esta partida?",
+          "message": "A partida, seus comentários, interessados e chat de grupo são apagados. Não dá para desfazer."
+        },
+        "deleteComment": {
+          "header": "Apagar este comentário?",
+          "message": "O comentário e o anexo são apagados. Não dá para desfazer."
+        },
+        "suspendUser": {
+          "header": "Suspender a conta de {{username}}?",
+          "message": "A pessoa não poderá entrar de novo; uma sessão aberta para de funcionar em menos de uma hora. O perfil e o conteúdo continuam visíveis. Pode ser reativada com npm run admin:unsuspend."
+        },
+        "deleteUser": {
+          "header": "Excluir a conta de {{username}}?",
+          "message": "A conta e tudo o que é dela são apagados, como em \"Excluir minha conta\". Não dá para desfazer."
+        }
+      },
+      "done": {
+        "deletePost": "Partida apagada",
+        "deleteComment": "Comentário apagado",
+        "suspendUser": "Conta suspensa",
+        "deleteUser": "Conta excluída"
+      },
+      "alreadyGone": "Já não existia; a denúncia foi marcada como analisada.",
+      "error": "Não foi possível concluir a ação.",
+      "forbiddenTarget": "Não pode ser aplicada à sua própria conta nem a outra conta admin.",
+      "needsFunctions": "Esta ação precisa das Cloud Functions (emulador local ou plano Blaze)."
+    }
   }
 }

@@ -16,6 +16,7 @@ export default function AppHeader({
   unreadCount,
   hasUnreadMessages,
   items,
+  adminPendingCount = 0,
   onToggleNotifications,
   onLogin
 }) {
@@ -39,6 +40,7 @@ export default function AppHeader({
         <RailButton to="/findPlayers" icon="pi-search" label={t("nav.findPlayers")} />
         <RailButton to="/friends" icon="pi-users" label={t("nav.friends")} />
         <RailButton to="/chat" icon="pi-comments" label={t("nav.chats")} dot={hasUnreadMessages} />
+        <RailButton to="/guias" icon="pi-book" label={t("nav.guides")} />
         <RailButton to="/news" icon="pi-megaphone" label={t("nav.news")} />
         <RailButton
           icon="pi-bell"
@@ -63,7 +65,9 @@ export default function AppHeader({
           <button
             type="button"
             className="app-rail__avatar-btn"
-            aria-label={t("nav.accountMenu")}
+            aria-label={adminPendingCount > 0
+              ? t("nav.accountMenuPending", { count: adminPendingCount })
+              : t("nav.accountMenu")}
             aria-haspopup="menu"
             onClick={handleToggleMenu}
           >
@@ -72,6 +76,7 @@ export default function AppHeader({
               username={userData?.username}
               className="app-rail__avatar"
             />
+            {adminPendingCount > 0 && <span className="rail-btn__dot app-rail__avatar-dot" aria-hidden="true" />}
           </button>
         </>
       )}

@@ -1,4 +1,5 @@
 import { memo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { formatDates } from "../../utils";
 
 /**
@@ -6,6 +7,7 @@ import { formatDates } from "../../utils";
  * Sin imagen (o si falla) se usa una portada con degradado del tema.
  */
 function NewsCard({ item, featured = false }) {
+  const { t } = useTranslation();
   const [imageFailed, setImageFailed] = useState(false);
   const showImage = Boolean(item.image) && !imageFailed;
 
@@ -42,7 +44,7 @@ function NewsCard({ item, featured = false }) {
           <span className="news-card__description">{item.description}</span>
         )}
         <span className="news-card__cta">
-          Leer en {item.source}
+          {t("news.readOn", { source: item.source })}
           <i className="pi pi-external-link" aria-hidden="true" />
         </span>
       </span>

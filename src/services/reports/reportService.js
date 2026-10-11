@@ -12,7 +12,7 @@ import {
 import { db } from "../../firebase/config";
 
 // Motivos de reporte. El texto está en reports:reasons.{value}
-export const REPORT_REASONS = ["spam", "inappropriate", "harassment", "impersonation", "other"];
+export const REPORT_REASONS = ["spam", "inappropriate", "harassment", "impersonation", "underage", "other"];
 
 const createReport = ({ reporterId, targetType, targetId, reason, note = "" }) =>
   addDoc(collection(db, "reports"), {

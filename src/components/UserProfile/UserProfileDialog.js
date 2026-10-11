@@ -9,7 +9,8 @@ import { ReportDialog } from "../Reports";
 import { useBlockStatus, useReportDialog, useUserProfile } from "../../hooks";
 import { blockService } from "../../services/blocks";
 import { friendService } from "../../services/friends";
-import { confirmDestructive } from "../../utils";
+import { confirmDestructive, getDisplayName } from "../../utils";
+import { JoinSteam } from "../Steam";
 import { useCurrentUser } from "../../context";
 import "./UserProfile.css";
 
@@ -52,7 +53,7 @@ const UserProfileDialog = ({
   const showError = useCallback((detail) => {
     toast.current?.show({ severity: "error", summary: t("common:status.error"), detail, life: 3000 });
   }, [t]);
-  const { userData } = useUserProfile(selectedUserId);
+  const { userData, missing } = useUserProfile(selectedUserId);
   const { blocked, blockedByMe, blockId } = useBlockStatus(user, selectedUserId);
   const { reportTarget, openReport, closeReport } = useReportDialog(user);
 
@@ -61,7 +62,7 @@ const UserProfileDialog = ({
     return null;
   }
 
-  const username = userData?.username || t("actions.thisUser");
+  const username = getDisplayName(userData, t("actions.thisUser"), missing);
 
   const handleRemoveFriend = () => {
     confirmDestructive({
@@ -135,6 +136,14 @@ const UserProfileDialog = ({
               onBlock={handleBlock}
               onUnblock={handleUnblock}
               onReport={() => openReport("user", selectedUserId, t("dialog.reportLabel", { username }))}
+            />
+          }
+          aboveContent={
+            // Solo con amistad; la autorización real es la del servidor
+            <JoinSteam
+              targetUid={selectedUserId}
+              enabled={visible && friendStatus === "friends" && !blocked}
+              className="user-profile__steam-join"
             />
           }
         />

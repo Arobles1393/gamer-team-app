@@ -1,0 +1,99 @@
+/* =====================================================
+   VERIFICACIÓN DE CORREO
+   ===================================================== */
+.verify-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin: 0 0 24px;
+  padding: 14px 18px;
+  border: 1px solid rgba(244, 63, 94, 0.4);
+  border-radius: var(--gm-radius-card);
+  background: linear-gradient(90deg, var(--gm-accent-soft), var(--gm-primary-soft));
+  font-family: var(--gm-font-body);
+  color: var(--gm-text);
+}
+
+.verify-banner__icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--gm-accent-soft);
+  color: var(--gm-accent-text);
+}
+
+.verify-banner__text {
+  flex: 1;
+  min-width: min(100%, 260px);
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--gm-muted);
+}
+
+.verify-banner__text strong {
+  color: var(--gm-text);
+}
+
+.verify-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.verify-banner__actions .p-button,
+.verify-dialog__actions .p-button {
+  white-space: nowrap;
+}
+
+/* Diálogo al intentar una acción social sin verificar */
+.verify-dialog.p-dialog {
+  width: min(460px, calc(100vw - 32px));
+}
+
+.verify-dialog__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  color: var(--gm-text);
+}
+
+.verify-dialog__body p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.verify-dialog__icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 4px;
+  border-radius: 50%;
+  background: var(--gm-primary-soft);
+  font-size: 22px;
+  color: var(--gm-label);
+}
+
+.verify-dialog__icon .pi {
+  font-size: 22px;
+}
+
+.verify-dialog__hint {
+  font-size: 13px;
+  color: var(--gm-muted);
+}
+
+.verify-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}

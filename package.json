@@ -3,30 +3,52 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@sentry/react": "^11.6.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^13.5.0",
-    "axios": "^1.16.1",
+    "@tiptap/core": "3.31.4",
+    "@tiptap/extension-image": "3.31.4",
+    "@tiptap/pm": "3.31.4",
+    "@tiptap/react": "3.31.4",
+    "@tiptap/starter-kit": "3.31.4",
+    "d3-geo": "3.1.1",
+    "dompurify": "3.4.16",
     "emoji-picker-react": "4.19.1",
     "firebase": "^12.11.0",
-    "framer-motion": "^13.4.4",
     "i18next": "^26.4.2",
     "i18next-browser-languagedetector": "^8.2.1",
     "primeicons": "^7.0.0",
     "primereact": "^10.9.7",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "react-easy-crop": "6.2.4",
     "react-i18next": "^17.0.15",
     "react-router-dom": "^7.13.2",
     "react-scripts": "5.0.1",
+    "topojson-client": "3.1.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
+    "prebuild": "npm run credits:generate",
     "build": "react-scripts build",
+    "lint": "eslint --max-warnings=0 src",
+    "credits:generate": "node scripts/generateThirdPartyNotices.js",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "test:rules": "npx -y firebase-tools@13.35.1 emulators:exec --config tests/rules/firebase.json --only firestore --project demo-gamermatch \"node tests/rules/run.cjs\"",
+    "test:unit": "react-scripts test --watchAll=false",
+    "test:e2e": "node tests/e2e/run.cjs",
+    "qa:setup": "node tests/e2e/setup.cjs",
+    "qa:reset": "node tests/e2e/reset.cjs",
+    "qa:cleanup": "node tests/e2e/cleanup.cjs",
+    "test:functions": "node tests/functions/link-preview.test.cjs && node tests/functions/community.test.cjs && node tests/functions/account.test.cjs && node tests/functions/steam-join.test.cjs && node tests/functions/news-summary.test.cjs && node tests/functions/comment-media.test.cjs && node tests/functions/news-plan.test.cjs && node tests/functions/safe-error.test.cjs && node tests/functions/limits.test.cjs && node tests/functions/rawg.test.cjs && node tests/functions/steam-auth-origins.test.cjs && node tests/functions/game-search.test.cjs && node tests/functions/cleanup-plan.test.cjs && node tests/functions/moderation.test.cjs && node tests/functions/steam-uid.test.cjs",
+    "test:functions:emulator": "npx -y firebase-tools@13.35.1 emulators:exec --only firestore --project demo-gamermatch --config tests/rules/firebase.json \"node tests/functions/steam-join.emulator.cjs && node tests/functions/account-previews.emulator.cjs && node tests/functions/moderation.emulator.cjs\"",
+    "news:sync": "node functions/scripts/syncGamingNews.js",
+    "data:cleanup": "node functions/scripts/cleanupStaleData.js",
+    "admin:unsuspend": "node functions/scripts/unsuspendUser.js"
   },
   "eslintConfig": {
     "extends": [
@@ -45,5 +67,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "5.0.2",
+    "playwright-core": "1.63.0"
   }
 }

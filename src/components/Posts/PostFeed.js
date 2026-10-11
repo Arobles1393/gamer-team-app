@@ -18,7 +18,7 @@ import {
   usePostCategories,
   usePostFilters,
   usePostListActions,
-  useRequireAuth
+  useRequireVerified
 } from "../../hooks";
 import { useCurrentUser, useCurrentUserData } from "../../context";
 import { EMPTY_TAG_FILTERS, buildExploreUrl, hasTagFilters } from "../../utils";
@@ -29,7 +29,8 @@ export default function PostFeed({ setEditingPost, setShowCreatePost }) {
   const { t } = useTranslation("posts");
   const user = useCurrentUser();
   const userData = useCurrentUserData();
-  const requireAuth = useRequireAuth(user);
+  // Publicar pide sesión y correo verificado
+  const requireVerified = useRequireVerified(user);
   const navigate = useNavigate();
   const toast = useRef(null);
   const [search, setSearch] = useState("");
@@ -94,7 +95,7 @@ export default function PostFeed({ setEditingPost, setShowCreatePost }) {
         title={t("feed.title")}
         search={search}
         onSearchChange={setSearch}
-        onCreatePost={() => requireAuth() && setShowCreatePost(true)}
+        onCreatePost={() => requireVerified() && setShowCreatePost(true)}
       />
       {userData && !userData.region && <ProfileNudge />}
       <PostFilters

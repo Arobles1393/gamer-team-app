@@ -56,7 +56,9 @@
     "loadMore": "Carregar mais",
     "loadingMore": "Carregando…",
     "errorTitle": "Não foi possível carregar as partidas",
-    "errorText": "Verifique sua conexão e tente novamente."
+    "errorText": "Verifique sua conexão e tente novamente.",
+    "regionTitle": "Partidas de {{country}}",
+    "clearRegion": "Remover o filtro de {{country}}"
   },
   "card": {
     "playersNeeded_one": "{{count}} jogador necessário",
@@ -121,7 +123,8 @@
       "done": "Comentário excluído"
     },
     "blockedTitle": "Esta partida não está disponível",
-    "blockedText": "Você não pode ver publicações de usuários com quem há um bloqueio."
+    "blockedText": "Você não pode ver publicações de usuários com quem há um bloqueio.",
+    "eyebrow": "Partida"
   },
   "info": {
     "host": "Anfitrião",
@@ -147,7 +150,8 @@
     "title": "Jogadores interessados",
     "loading": "Carregando interessados",
     "emptyOwner": "Ninguém entrou ainda. Quando alguém tocar em «Quero jogar», aparecerá aqui.",
-    "empty": "Ninguém entrou ainda. Seja o primeiro!"
+    "empty": "Ninguém entrou ainda. Seja o primeiro!",
+    "loginPrompt": "Entre para ver quem quer jogar."
   },
   "comments": {
     "placeholder": "Escreva um comentário… que horas vocês jogam?",
@@ -165,7 +169,7 @@
     "reportLabel": "Comentário de {{username}}",
     "openImage": "Abrir imagem em outra aba",
     "imageAlt": "Imagem compartilhada por {{username}}",
-    "loginPrompt": "Entre para comentar e combinar a partida."
+    "loginPrompt": "Entre para ver os comentários, comentar e combinar a partida."
   },
   "nudge": {
     "text": "Adicione sua região para que outros jogadores saibam de onde você joga.",

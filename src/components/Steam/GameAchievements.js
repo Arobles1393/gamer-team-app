@@ -88,9 +88,12 @@ export default function GameAchievements({ game, steamId }) {
           <span style={{ width: `${progress}%` }} />
         </span>
         <span className="achievements__legend">
-          <span className="achievements__legend-item achievements__legend-item--rare">Raro &lt;10%</span>
-          <span className="achievements__legend-item achievements__legend-item--very-rare">Muy raro &lt;5%</span>
-          <span className="achievements__legend-item achievements__legend-item--ultra-rare">Ultra raro &lt;1%</span>
+          {/* Mismos umbrales que RARITIES, de menos a más raro */}
+          {[...RARITIES].reverse().map((rarity) => (
+            <span key={rarity.key} className={`achievements__legend-item achievements__legend-item--${rarity.key}`}>
+              {t(rarity.labelKey)} &lt;{rarity.max}%
+            </span>
+          ))}
         </span>
       </div>
 

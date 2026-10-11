@@ -18,12 +18,10 @@
     "nickname": "Nickname",
     "email": "Correo",
     "emailHint": "Te enviaremos un enlace al correo nuevo; el cambio se aplica cuando lo confirmes.",
-    "phone": "Teléfono",
     "region": "Región",
     "regionPlaceholder": "Selecciona tu región",
     "missing": "Sin agregar",
-    "emailManaged": "Es el correo de la cuenta con la que iniciaste sesión (por ejemplo, Google) y no se cambia desde aquí.",
-    "emailNone": "Tu cuenta no tiene correo: iniciaste sesión con Steam."
+    "emailManaged": "Es el correo de la cuenta con la que iniciaste sesión (por ejemplo, Google) y no se cambia desde aquí."
   },
   "about": {
     "title": "Sobre mí",
@@ -88,7 +86,8 @@
     "add": "Agregar link",
     "steamHint": "Pega el link de tu perfil de Steam para mostrar tus estadísticas.",
     "empty": "Este jugador no ha agregado redes.",
-    "genericProfile": "Perfil"
+    "genericProfile": "Perfil",
+    "max": "Puedes agregar hasta {{max}} redes."
   },
   "games": {
     "title": "Juegos favoritos",
@@ -96,7 +95,8 @@
     "searchLabel": "Buscar juego para agregar a favoritos",
     "remove": "Quitar {{name}} de favoritos",
     "empty": "Este jugador aún no tiene juegos favoritos.",
-    "add": "Agregar juegos"
+    "add": "Agregar juegos",
+    "max": "Llegaste al máximo de {{max}} juegos favoritos. Quita uno para agregar otro."
   },
   "steam": {
     "loading": "Cargando estadísticas de Steam",
@@ -133,14 +133,69 @@
     "updated": "Perfil actualizado",
     "reloginEmail": "Por seguridad, vuelve a iniciar sesión para cambiar tu correo.",
     "saveError": "No se pudo guardar el perfil. Intenta de nuevo.",
-    "emailVerificationSent": "Perfil actualizado. Te enviamos un enlace a {{email}} para confirmar tu nuevo correo."
+    "emailVerificationSent": "Perfil actualizado. Te enviamos un correo a {{email}} para confirmar el cambio; tu correo actual sigue activo hasta entonces."
   },
   "images": {
     "avatarUpdated": "Foto de perfil actualizada",
     "bannerUpdated": "Portada actualizada",
-    "onlyImages": "Solo se permiten imágenes",
+    "onlyImages": "Solo se permiten imágenes PNG, JPG, WebP o GIF",
     "maxSize": "La imagen debe pesar máximo {{mb}} MB",
     "avatarError": "No se pudo subir la foto de perfil.",
-    "bannerError": "No se pudo subir la portada."
+    "bannerError": "No se pudo subir la portada.",
+    "tooManyPixels": "La imagen es demasiado grande (más de {{mp}} megapíxeles). Usa una más pequeña.",
+    "unreadable": "No se pudo leer la imagen. Prueba con otro archivo."
+  },
+  "crop": {
+    "titleAvatar": "Ajusta tu foto de perfil",
+    "titleBanner": "Ajusta tu portada",
+    "help": "Arrastra para mover y usa el control para acercar. También puedes mover la imagen con las flechas del teclado.",
+    "gifNotice": "Los GIF se convertirán en imagen fija",
+    "areaLabel": "Área de recorte. Usa las flechas para mover la imagen.",
+    "zoom": "Acercar o alejar",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "apply": "Aplicar",
+    "applying": "Procesando...",
+    "error": "No se pudo recortar la imagen. Inténtalo de nuevo."
+  },
+  "danger": {
+    "title": "Zona de peligro",
+    "text": "Eliminar tu cuenta borra tu perfil y todo lo que publicaste. No se puede deshacer.",
+    "delete": "Eliminar mi cuenta",
+    "dialogTitle": "Eliminar mi cuenta",
+    "irreversible": "Esto es irreversible: no hay forma de recuperar la cuenta ni sus datos.",
+    "whatIsDeleted": "Se borrará todo esto:",
+    "items": {
+      "profile": "Tu perfil, tus preferencias y tus guías",
+      "posts": "Tus partidas, con sus comentarios y sus chats de partida",
+      "comments": "Tus comentarios, tus \"Quiero jugar\" y tus mensajes en partidas de otros",
+      "chats": "Tus chats 1:1 (también desaparecen para la otra persona)",
+      "friends": "Tus amistades, solicitudes, bloqueos y notificaciones",
+      "files": "Las imágenes y archivos que subiste"
+    },
+    "chatsNote": "Los reportes que hiciste se conservan como registro de moderación.",
+    "typeUsername": "Para confirmar, escribe tu nickname: {{username}}",
+    "password": "Tu contraseña",
+    "reauth": {
+      "google": "Al confirmar se abrirá la ventana de Google para verificar que eres tú.",
+      "steam": "Al confirmar se abrirá la ventana de Steam para verificar que eres tú."
+    },
+    "confirm": "Eliminar definitivamente",
+    "deleting": "Eliminando…",
+    "error": "No se pudo eliminar la cuenta. Intenta de nuevo.",
+    "deletedTitle": "Cuenta eliminada",
+    "deletedDetail": "Tu cuenta fue eliminada. ¡Gracias por haber jugado con nosotros!"
+  },
+  "privacy": {
+    "title": "Privacidad",
+    "steamJoin": "Permitir que mis amigos y quienes se interesen en mis partidas se unan a mi partida de Steam",
+    "needsSteam": "Vincula tu perfil de Steam en tus redes para activarlo.",
+    "help": {
+      "shared": "Se comparte que estás en una sala de Steam a la que se puede unir y el enlace para entrar.",
+      "who": "Solo pueden usarlo tus amigos de GamerMatch y quienes marcaron «Quiero jugar» en una de tus partidas.",
+      "noIp": "Nunca se comparte ninguna dirección IP.",
+      "turnOff": "Puedes apagarlo cuando quieras; el cambio puede tardar hasta un minuto en verse."
+    },
+    "saveError": "No se pudo guardar el cambio. Intenta de nuevo."
   }
 }

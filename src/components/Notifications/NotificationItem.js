@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { UserAvatar } from "../UserAvatar";
 import { Button } from "primereact/button";
 import { usePostSummary, useUserProfile } from "../../hooks";
-import { formatDates, getNotificationMeta } from "../../utils";
+import { formatDates, getDisplayName, getNotificationMeta } from "../../utils";
 
 const STATUS = {
   accepted: { labelKey: "status.accepted", icon: "pi-check" },
@@ -23,7 +23,7 @@ export default function NotificationItem({
   onError
 }) {
   const { t } = useTranslation("notifications");
-  const { userData: sender } = useUserProfile(notification.senderId);
+  const { userData: sender, missing: senderMissing } = useUserProfile(notification.senderId);
   const [responding, setResponding] = useState(null);
 
   const isGroupMessage = notification.type === "group_message";
@@ -34,7 +34,7 @@ export default function NotificationItem({
   const action = isGroupMessage && post?.game
     ? t("actions.group_message_game", { game: post.game })
     : t(actionKey);
-  const username = sender?.username || t("someone");
+  const username = getDisplayName(sender, t("someone"), senderMissing);
   const unread = !notification.read;
 
   const isFriendRequest = notification.type === "friend_request";

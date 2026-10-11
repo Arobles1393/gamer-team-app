@@ -4,8 +4,12 @@ import { commentsService } from "../../services/posts";
 export const usePostComments = (postId, postOwnerId, userId) => {
   const [comments, setComments] = useState([]);
 
+  // Sin sesión no se leen (firestore.rules, auditoría M-11)
   useEffect(() => {
-    if (!postId) return;
+    if (!postId || !userId) {
+      setComments([]);
+      return;
+    }
 
     const unsubscribe = commentsService.subscribeToComments(
       postId,
@@ -17,7 +21,7 @@ export const usePostComments = (postId, postOwnerId, userId) => {
     );
 
     return unsubscribe;
-  }, [postId]);
+  }, [postId, userId]);
 
   const publishComment = async (text, file) => {
     if (!text.trim()) {

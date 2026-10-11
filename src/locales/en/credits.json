@@ -1,0 +1,46 @@
+{
+  "purpose": {
+    "rawg": "Video game database (names, covers, information)",
+    "steamWebApi": "Stats, current game and Steam lobbies of players who link their account",
+    "twitch": "Showing whether a player is streaming live",
+    "news": "Gaming news (headlines linking to the original article)",
+    "naturalEarth": "World map in the Community section",
+    "steamgriddb": "Game logos and covers",
+    "youtube": "Videos embedded in guides",
+    "steamLogin": "Sign in with Steam",
+    "google": "Sign in with Google",
+    "firebase": "Accounts, database, files and server functions",
+    "sentry": "App error reports, without personal data",
+    "googleFonts": "Interface fonts",
+    "kofi": "Voluntary support for the project (payment happens on Ko-fi)"
+  },
+  "category": {
+    "data": "Data",
+    "media": "Images and video",
+    "auth": "Sign-in",
+    "infra": "Infrastructure",
+    "support": "Support"
+  },
+  "footer": {
+    "gameData": "Game data:",
+    "credits": "Credits",
+    "copyright": "© {{year}} GamerMatch"
+  },
+  "menu": "Credits",
+  "poweredBy": "Powered by",
+  "steamData": "Data from Steam",
+  "page": {
+    "title": "Credits",
+    "intro": "GamerMatch relies on third-party services and libraries. Here they all are, and what each one is used for.",
+    "services": "Data and services",
+    "owners": "The data, images and trademarks of each service belong to their respective owners.",
+    "newTab": "(opens in a new tab)",
+    "openSource": "Open source",
+    "openSourceIntro": "Open source libraries the app uses directly. This list is generated automatically.",
+    "library": "Library",
+    "version": "Version",
+    "license": "License",
+    "fullLicenses": "Full license texts (including indirect dependencies)",
+    "trademarks": "Trademarks"
+  }
+}

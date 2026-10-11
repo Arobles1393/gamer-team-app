@@ -17,17 +17,17 @@ const admin = require("firebase-admin");
 const PROJECT_ID = "gamerteam-4ed20";
 const write = process.argv.includes("--write");
 
-admin.initializeApp({ projectId: PROJECT_ID });
+admin.initializeApp({projectId: PROJECT_ID});
 const db = admin.firestore();
 
-const STATUS_PRIORITY = { pending: 3, accepted: 2, rejected: 1 };
+const STATUS_PRIORITY = {pending: 3, accepted: 2, rejected: 1};
 
 const millis = (value) => value?.toMillis?.() ?? 0;
 
 // El documento que se queda cuando varios van al mismo id
 const pickWinner = (docs, rank) =>
   [...docs].sort((a, b) =>
-    rank(b) - rank(a) || millis(b.data().createdAt) - millis(a.data().createdAt)
+    rank(b) - rank(a) || millis(b.data().createdAt) - millis(a.data().createdAt),
   )[0];
 
 const groupBy = (docs, keyOf) =>
@@ -40,13 +40,13 @@ const groupBy = (docs, keyOf) =>
 const main = async () => {
   const [requests, friends] = await Promise.all([
     db.collection("friend_requests").get(),
-    db.collection("friends").get()
+    db.collection("friends").get(),
   ]);
 
   const operations = [];
 
   const requestGroups = groupBy(requests.docs, (doc) => {
-    const { senderId, receiverId } = doc.data();
+    const {senderId, receiverId} = doc.data();
     return `${senderId}_${receiverId}`;
   });
 
@@ -58,7 +58,7 @@ const main = async () => {
 
     operations.push((batch) => batch.set(db.collection("friend_requests").doc(id), winner.data()));
     docs.filter((doc) => doc.id !== id)
-      .forEach((doc) => operations.push((batch) => batch.delete(doc.ref)));
+        .forEach((doc) => operations.push((batch) => batch.delete(doc.ref)));
   }
 
   const friendGroups = groupBy(friends.docs, (doc) => [...doc.data().users].sort().join("_"));
@@ -73,11 +73,11 @@ const main = async () => {
     operations.push((batch) =>
       batch.set(db.collection("friends").doc(id), {
         ...winner.data(),
-        users: [...winner.data().users].sort()
-      })
+        users: [...winner.data().users].sort(),
+      }),
     );
     docs.filter((doc) => doc.id !== id)
-      .forEach((doc) => operations.push((batch) => batch.delete(doc.ref)));
+        .forEach((doc) => operations.push((batch) => batch.delete(doc.ref)));
   }
 
   if (!write) {

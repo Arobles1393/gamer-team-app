@@ -1,0 +1,52 @@
+/* =====================================================
+   PIE GLOBAL (atribución de RAWG, créditos, legales)
+   Discreto: texto pequeño y atenuado.
+   ===================================================== */
+.app-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 48px;
+  padding: 20px 0 4px;
+  border-top: 1px solid var(--gm-border-soft);
+  font-family: var(--gm-font-body);
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--gm-subtle);
+}
+
+.app-footer__row,
+.app-footer__copy {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.app-footer a {
+  color: var(--gm-subtle);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.app-footer a:hover,
+.app-footer a:focus-visible {
+  color: var(--gm-label);
+}
+
+.app-footer .legal-links.app-footer__legal {
+  font-size: 12px;
+}
+
+.app-footer .legal-links.app-footer__legal a {
+  text-decoration: underline;
+}
+
+@media (max-width: 767px) {
+  .app-footer {
+    margin-top: 32px;
+  }
+}

@@ -7,9 +7,19 @@ const KNOWN_ERRORS = [
   "auth/too-many-requests",
   "auth/user-disabled",
   "auth/email-already-in-use",
+  // Registro y Mi perfil: nombre de usuario de otra cuenta
+  "auth/username-taken",
+  // Registro: sin marcar "Tengo 18 años o más"
+  "auth/age-not-confirmed",
   "auth/weak-password",
   "auth/account-exists-with-different-credential",
   "auth/popup-blocked",
+  // Recuperar contraseña y verificación de correo
+  "auth/missing-email",
+  "auth/requires-recent-login",
+  // Eliminar cuenta: confirmar con la contraseña
+  "auth/wrong-password",
+  "auth/missing-password",
   // loginWithSteam (Cloud Function): Steam no validó la respuesta
   "functions/invalid-argument"
 ];

@@ -5,8 +5,14 @@ import { collectFilteredPage, excludeBlockedAuthors } from "../../utils";
 
 const PAGE_SIZE = 15;
 
-// Página cruda de Firestore según la categoría de /explorar
-const createFetcher = ({ category, friendIds, region }) => {
+// Página cruda de Firestore según la categoría de /explorar.
+// authorRegion: "Recientes" de un país elegido en el mapa de la comunidad
+// (misma consulta que "Cerca de ti", con otra región)
+const createFetcher = ({ category, friendIds, region, authorRegion }) => {
+  if (authorRegion && category === "recent") {
+    return (cursor) => postService.getPostsPage({ sortBy: "nearby", region: authorRegion }, cursor, PAGE_SIZE);
+  }
+
   switch (category) {
     case "trendingVolume":
       return (cursor) => gameTrendsService.getTrendingPostsPage("postCount", cursor, PAGE_SIZE);
@@ -35,6 +41,7 @@ export const usePaginatedPosts = ({
   game,
   friendIds = [],
   region,
+  authorRegion = null,
   blockedIds = [],
   tags,
   ready = true
@@ -52,12 +59,12 @@ export const usePaginatedPosts = ({
 
   // Clave estable de la consulta
   const friendsKey = friendIds.slice(0, 30).join(",");
-  const queryKey = JSON.stringify({ category, platform, game, tags, friendsKey, region });
+  const queryKey = JSON.stringify({ category, platform, game, tags, friendsKey, region, authorRegion });
 
   const load = useCallback(async (reset) => {
     if (busyRef.current && !reset) return;
 
-    const { category: cat, platform: plat, game: gm, tags: tg, friendsKey: friends, region: reg } =
+    const { category: cat, platform: plat, game: gm, tags: tg, friendsKey: friends, region: reg, authorRegion: author } =
       JSON.parse(queryKey);
 
     const requestId = ++requestRef.current;
@@ -78,7 +85,8 @@ export const usePaginatedPosts = ({
         fetchRawPage: createFetcher({
           category: cat,
           friendIds: friends ? friends.split(",") : [],
-          region: reg
+          region: reg,
+          authorRegion: author
         }),
         cursor: cursorRef.current,
         filters: { platform: plat, game: gm, tags: tg },

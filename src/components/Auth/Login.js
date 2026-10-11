@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { Toast } from "primereact/toast";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { getAuthErrorMessage } from "../../utils/authErrors";
 import { authService } from "../../services/auth";
 import { useProviderLogin } from "../../hooks";
@@ -19,6 +20,7 @@ export default function Login({ onToggleMode, onBack }) {
   const [loading, setLoading] = useState(false);
   const toast = useRef(null);
   const { t } = useTranslation("auth");
+  const navigate = useNavigate();
 
   const { loadingProvider, loginWith } = useProviderLogin((message) => {
     toast.current?.show({
@@ -77,6 +79,14 @@ export default function Login({ onToggleMode, onBack }) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+
+        <button
+          type="button"
+          className="auth__forgot"
+          onClick={() => navigate("/recuperar", { state: { email } })}
+        >
+          {t("login.forgot")}
+        </button>
 
         <GradientButton
           label={t("login.submit")}

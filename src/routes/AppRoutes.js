@@ -7,7 +7,11 @@ import { Friends } from "../components/Friends";
 import { FindPlayers } from "../components/FindPlayers";
 import { GamingNews } from "../components/GamingNews";
 import { NotFound } from "../components/NotFound";
-import { AdminReports } from "../components/Admin";
+import { AdminReports, AdminGuides } from "../components/Admin";
+import { GuidesPage, GuideCreate, GuideDetail } from "../components/Guides";
+import { CommunityPage } from "../components/Community";
+import { LegalPage } from "../components/Legal";
+import { CreditsPage } from "../components/Credits";
 import RequireAuth from "./RequireAuth";
 import RequireAdmin from "./RequireAdmin";
 
@@ -26,6 +30,20 @@ const AppRoutes = ({
 						setShowCreatePost={setShowCreatePost}
 					/>
 				}
+			/>
+			{/* Legales: públicas (tiendas y servicios piden una URL abierta) */}
+			<Route
+				path="/privacidad"
+				element={<LegalPage type="privacy" />}
+			/>
+			<Route
+				path="/terminos"
+				element={<LegalPage type="terms" />}
+			/>
+			{/* Créditos: pública, como las legales */}
+			<Route
+				path="/creditos"
+				element={<CreditsPage />}
 			/>
 			<Route
 				path="/profile"
@@ -112,7 +130,40 @@ const AppRoutes = ({
 				path="/news"
 				element={<GamingNews />}
 			/>
-			{/* Admin: sin enlace en ningún menú */}
+			<Route
+				path="/comunidad"
+				element={
+					<RequireAuth>
+						<CommunityPage />
+					</RequireAuth>
+				}
+			/>
+			{/* Guías: las aprobadas se ven sin sesión; escribir pide sesión */}
+			<Route
+				path="/guias"
+				element={<GuidesPage />}
+			/>
+			<Route
+				path="/guias/nueva"
+				element={
+					<RequireAuth>
+						<GuideCreate />
+					</RequireAuth>
+				}
+			/>
+			<Route
+				path="/guias/:id"
+				element={<GuideDetail />}
+			/>
+			{/* Admin: accesos en el menú del avatar, solo para cuentas admin */}
+			<Route
+				path="/admin/guides"
+				element={
+					<RequireAdmin>
+						<AdminGuides />
+					</RequireAdmin>
+				}
+			/>
 			<Route
 				path="/admin/reports"
 				element={

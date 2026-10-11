@@ -18,12 +18,10 @@
     "nickname": "Pseudo",
     "email": "E-mail",
     "emailHint": "Nous enverrons un lien à la nouvelle adresse ; le changement s'applique une fois confirmé.",
-    "phone": "Téléphone",
     "region": "Région",
     "regionPlaceholder": "Sélectionnez votre région",
     "missing": "Non renseigné",
-    "emailManaged": "C'est l'e-mail du compte avec lequel vous vous êtes connecté (par exemple Google) ; il ne se modifie pas ici.",
-    "emailNone": "Votre compte n'a pas d'e-mail : vous vous êtes connecté avec Steam."
+    "emailManaged": "C'est l'e-mail du compte avec lequel vous vous êtes connecté (par exemple Google) ; il ne se modifie pas ici."
   },
   "about": {
     "title": "À propos de moi",
@@ -88,7 +86,8 @@
     "add": "Ajouter un lien",
     "steamHint": "Collez le lien de votre profil Steam pour afficher vos statistiques.",
     "empty": "Ce joueur n'a ajouté aucun réseau.",
-    "genericProfile": "Profil"
+    "genericProfile": "Profil",
+    "max": "Vous pouvez ajouter jusqu'à {{max}} liens."
   },
   "games": {
     "title": "Jeux favoris",
@@ -96,7 +95,8 @@
     "searchLabel": "Rechercher un jeu à ajouter aux favoris",
     "remove": "Retirer {{name}} des favoris",
     "empty": "Ce joueur n'a pas encore de jeux favoris.",
-    "add": "Ajouter des jeux"
+    "add": "Ajouter des jeux",
+    "max": "Vous avez atteint le maximum de {{max}} jeux favoris. Retirez-en un pour en ajouter un autre."
   },
   "steam": {
     "loading": "Chargement des statistiques Steam",
@@ -133,14 +133,69 @@
     "updated": "Profil mis à jour",
     "reloginEmail": "Par sécurité, reconnectez-vous pour changer votre e-mail.",
     "saveError": "Impossible d'enregistrer le profil. Réessayez.",
-    "emailVerificationSent": "Profil mis à jour. Nous avons envoyé un lien à {{email}} pour confirmer votre nouvelle adresse."
+    "emailVerificationSent": "Profil mis à jour. Nous avons envoyé un e-mail à {{email}} pour confirmer le changement ; votre adresse actuelle reste active d'ici là."
   },
   "images": {
     "avatarUpdated": "Photo de profil mise à jour",
     "bannerUpdated": "Couverture mise à jour",
-    "onlyImages": "Seules les images sont autorisées",
+    "onlyImages": "Seules les images PNG, JPG, WebP ou GIF sont autorisées",
     "maxSize": "L'image ne doit pas dépasser {{mb}} Mo",
     "avatarError": "Impossible d'envoyer la photo de profil.",
-    "bannerError": "Impossible d'envoyer la couverture."
+    "bannerError": "Impossible d'envoyer la couverture.",
+    "tooManyPixels": "L'image est trop grande (plus de {{mp}} mégapixels). Utilisez une image plus petite.",
+    "unreadable": "Impossible de lire l'image. Essayez un autre fichier."
+  },
+  "crop": {
+    "titleAvatar": "Ajustez votre photo de profil",
+    "titleBanner": "Ajustez votre bannière",
+    "help": "Faites glisser pour déplacer et utilisez le curseur pour zoomer. Vous pouvez aussi déplacer l'image avec les flèches du clavier.",
+    "gifNotice": "Les GIF seront convertis en image fixe",
+    "areaLabel": "Zone de recadrage. Utilisez les flèches pour déplacer l'image.",
+    "zoom": "Zoomer ou dézoomer",
+    "zoomIn": "Zoomer",
+    "zoomOut": "Dézoomer",
+    "apply": "Appliquer",
+    "applying": "Traitement...",
+    "error": "Impossible de recadrer l'image. Veuillez réessayer."
+  },
+  "danger": {
+    "title": "Zone de danger",
+    "text": "Supprimer votre compte efface votre profil et tout ce que vous avez publié. C'est définitif.",
+    "delete": "Supprimer mon compte",
+    "dialogTitle": "Supprimer mon compte",
+    "irreversible": "C'est irréversible : impossible de récupérer le compte ou ses données.",
+    "whatIsDeleted": "Tout ceci sera supprimé :",
+    "items": {
+      "profile": "Votre profil, vos préférences et vos guides",
+      "posts": "Vos parties, avec leurs commentaires et leurs chats de partie",
+      "comments": "Vos commentaires, vos « Je veux jouer » et vos messages dans les parties des autres",
+      "chats": "Vos chats 1:1 (ils disparaissent aussi pour l'autre personne)",
+      "friends": "Vos amitiés, demandes, blocages et notifications",
+      "files": "Les images et fichiers que vous avez envoyés"
+    },
+    "chatsNote": "Vos signalements sont conservés comme registre de modération.",
+    "typeUsername": "Pour confirmer, saisissez votre pseudo : {{username}}",
+    "password": "Votre mot de passe",
+    "reauth": {
+      "google": "En confirmant, la fenêtre Google s'ouvrira pour vérifier que c'est bien vous.",
+      "steam": "En confirmant, la fenêtre Steam s'ouvrira pour vérifier que c'est bien vous."
+    },
+    "confirm": "Supprimer définitivement",
+    "deleting": "Suppression…",
+    "error": "Impossible de supprimer le compte. Réessayez.",
+    "deletedTitle": "Compte supprimé",
+    "deletedDetail": "Votre compte a été supprimé. Merci d'avoir joué avec nous !"
+  },
+  "privacy": {
+    "title": "Confidentialité",
+    "steamJoin": "Permettre à mes amis et aux personnes intéressées par mes parties de rejoindre ma partie Steam",
+    "needsSteam": "Liez votre profil Steam dans vos réseaux pour l'activer.",
+    "help": {
+      "shared": "Cela indique que vous êtes dans un salon Steam ouvert et partage le lien pour le rejoindre.",
+      "who": "Seuls vos amis GamerMatch et les personnes ayant touché « Je veux jouer » sur l'une de vos parties peuvent l'utiliser.",
+      "noIp": "Aucune adresse IP n'est jamais partagée.",
+      "turnOff": "Vous pouvez le désactiver à tout moment ; le changement peut prendre jusqu'à une minute."
+    },
+    "saveError": "Impossible d'enregistrer le changement. Réessayez."
   }
 }

@@ -34,7 +34,17 @@
     "accountMenu": "Account menu",
     "myProfile": "My profile",
     "myPosts": "My posts",
-    "myParties": "My parties"
+    "myParties": "My parties",
+    "guides": "Guides",
+    "admin": "Admin",
+    "adminReports": "Reports",
+    "adminGuides": "Guides to review",
+    "withCount": "{{label}} ({{count}})",
+    "accountMenuPending": "Account menu ({{count}} pending review)",
+    "community": "Community",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "guide": "App guide"
   },
   "presence": {
     "online": "Online",
@@ -97,6 +107,21 @@
         "text": "Check your connection and try again.",
         "action": "Retry"
       }
-    }
+    },
+    "loading": "Loading news",
+    "readOn": "Read on {{source}}"
+  },
+  "deletedUser": "Deleted user",
+  "steamJoin": {
+    "join": "Join on Steam",
+    "playing": "Playing {{game}}",
+    "help": "Steam will open on your computer. If nothing happens, make sure Steam is running and the game is installed. The lobby may be full or private."
+  },
+  "errorBoundary": {
+    "eyebrow": "Error",
+    "title": "Something went wrong",
+    "text": "An unexpected error occurred on this screen. Reload the page or go back home.",
+    "reload": "Reload",
+    "home": "Go home"
   }
 }

@@ -9,6 +9,7 @@
     "inappropriate": "Contenido inapropiado",
     "harassment": "Acoso",
     "impersonation": "Suplantación de identidad",
+    "underage": "Parece menor de edad",
     "other": "Otro motivo"
   },
   "dialog": {
@@ -46,6 +47,42 @@
     "commentGone": "El comentario ya no existe",
     "viewComment": "Ver comentario en su publicación",
     "reportedBy": "Reportado por",
-    "markReviewed": "Marcar como revisado"
+    "markReviewed": "Marcar como revisado",
+    "moderation": {
+      "actions": {
+        "deletePost": "Borrar partida",
+        "deleteComment": "Borrar comentario",
+        "suspendUser": "Suspender cuenta",
+        "deleteUser": "Eliminar cuenta"
+      },
+      "confirm": {
+        "deletePost": {
+          "header": "¿Borrar esta partida?",
+          "message": "Se borran la partida, sus comentarios, sus interesados y su chat de grupo. No se puede deshacer."
+        },
+        "deleteComment": {
+          "header": "¿Borrar este comentario?",
+          "message": "Se borra el comentario y su archivo adjunto. No se puede deshacer."
+        },
+        "suspendUser": {
+          "header": "¿Suspender la cuenta de {{username}}?",
+          "message": "No podrá volver a iniciar sesión; una sesión ya abierta deja de funcionar en menos de una hora. Su perfil y su contenido siguen visibles. Se puede reactivar con npm run admin:unsuspend."
+        },
+        "deleteUser": {
+          "header": "¿Eliminar la cuenta de {{username}}?",
+          "message": "Se borra la cuenta y todo lo suyo, igual que con \"Eliminar mi cuenta\". No se puede deshacer."
+        }
+      },
+      "done": {
+        "deletePost": "Partida borrada",
+        "deleteComment": "Comentario borrado",
+        "suspendUser": "Cuenta suspendida",
+        "deleteUser": "Cuenta eliminada"
+      },
+      "alreadyGone": "Ya no existía; el reporte quedó revisado.",
+      "error": "No se pudo completar la acción.",
+      "forbiddenTarget": "No se puede aplicar a tu propia cuenta ni a otra cuenta admin.",
+      "needsFunctions": "Esta acción necesita las Cloud Functions (emulador en local o plan Blaze)."
+    }
   }
 }

@@ -18,12 +18,10 @@
     "nickname": "Nickname",
     "email": "Email",
     "emailHint": "We'll send a link to the new email; the change applies once you confirm it.",
-    "phone": "Phone",
     "region": "Region",
     "regionPlaceholder": "Select your region",
     "missing": "Not added",
-    "emailManaged": "This is the email of the account you signed in with (for example, Google) and can't be changed here.",
-    "emailNone": "Your account has no email: you signed in with Steam."
+    "emailManaged": "This is the email of the account you signed in with (for example, Google) and can't be changed here."
   },
   "about": {
     "title": "About me",
@@ -88,7 +86,8 @@
     "add": "Add link",
     "steamHint": "Paste your Steam profile link to show your stats.",
     "empty": "This player hasn't added any socials.",
-    "genericProfile": "Profile"
+    "genericProfile": "Profile",
+    "max": "You can add up to {{max}} links."
   },
   "games": {
     "title": "Favorite games",
@@ -96,7 +95,8 @@
     "searchLabel": "Search for a game to add to favorites",
     "remove": "Remove {{name}} from favorites",
     "empty": "This player has no favorite games yet.",
-    "add": "Add games"
+    "add": "Add games",
+    "max": "You've reached the maximum of {{max}} favorite games. Remove one to add another."
   },
   "steam": {
     "loading": "Loading Steam stats",
@@ -133,14 +133,69 @@
     "updated": "Profile updated",
     "reloginEmail": "For security, log in again to change your email.",
     "saveError": "Couldn't save the profile. Please try again.",
-    "emailVerificationSent": "Profile updated. We sent a link to {{email}} to confirm your new email."
+    "emailVerificationSent": "Profile updated. We sent an email to {{email}} to confirm the change; your current email stays active until then."
   },
   "images": {
     "avatarUpdated": "Profile picture updated",
     "bannerUpdated": "Cover updated",
-    "onlyImages": "Only images are allowed",
+    "onlyImages": "Only PNG, JPG, WebP or GIF images are allowed",
     "maxSize": "The image must be {{mb}} MB or less",
     "avatarError": "Couldn't upload the profile picture.",
-    "bannerError": "Couldn't upload the cover."
+    "bannerError": "Couldn't upload the cover.",
+    "tooManyPixels": "The image is too large (more than {{mp}} megapixels). Use a smaller one.",
+    "unreadable": "The image couldn't be read. Try another file."
+  },
+  "crop": {
+    "titleAvatar": "Adjust your profile picture",
+    "titleBanner": "Adjust your cover",
+    "help": "Drag to move and use the slider to zoom. You can also move the image with the arrow keys.",
+    "gifNotice": "GIFs will be converted to a still image",
+    "areaLabel": "Crop area. Use the arrow keys to move the image.",
+    "zoom": "Zoom in or out",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "apply": "Apply",
+    "applying": "Processing...",
+    "error": "The image couldn't be cropped. Please try again."
+  },
+  "danger": {
+    "title": "Danger zone",
+    "text": "Deleting your account removes your profile and everything you posted. It can't be undone.",
+    "delete": "Delete my account",
+    "dialogTitle": "Delete my account",
+    "irreversible": "This is irreversible: there's no way to recover the account or its data.",
+    "whatIsDeleted": "All of this will be deleted:",
+    "items": {
+      "profile": "Your profile, preferences and guides",
+      "posts": "Your matches, with their comments and match chats",
+      "comments": "Your comments, your \"I want to play\" and your messages in other people's matches",
+      "chats": "Your 1:1 chats (they disappear for the other person too)",
+      "friends": "Your friendships, requests, blocks and notifications",
+      "files": "The images and files you uploaded"
+    },
+    "chatsNote": "Reports you made are kept as a moderation record.",
+    "typeUsername": "To confirm, type your nickname: {{username}}",
+    "password": "Your password",
+    "reauth": {
+      "google": "When you confirm, the Google window will open to check it's you.",
+      "steam": "When you confirm, the Steam window will open to check it's you."
+    },
+    "confirm": "Delete permanently",
+    "deleting": "Deleting…",
+    "error": "Couldn't delete the account. Please try again.",
+    "deletedTitle": "Account deleted",
+    "deletedDetail": "Your account was deleted. Thanks for playing with us!"
+  },
+  "privacy": {
+    "title": "Privacy",
+    "steamJoin": "Let my friends and people interested in my matches join my Steam game",
+    "needsSteam": "Link your Steam profile in your social links to turn this on.",
+    "help": {
+      "shared": "It shares that you're in a Steam lobby that can be joined, and the link to join it.",
+      "who": "Only your GamerMatch friends and people who tapped \"I want to play\" on one of your matches can use it.",
+      "noIp": "No IP address is ever shared.",
+      "turnOff": "You can turn it off anytime; the change can take up to a minute to show."
+    },
+    "saveError": "Couldn't save the change. Please try again."
   }
 }

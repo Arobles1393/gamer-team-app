@@ -3,13 +3,15 @@ import i18n from "../../i18n";
 import { authService } from "../../services/auth";
 import { profileService } from "../../services/profile";
 import { getAuthErrorMessage } from "../../utils";
+import { EMPTY_MATCH_PREFERENCES, MAX_FAVORITE_GAMES } from "../../constants";
+import { useMatchProfile } from "../matching/useMatchProfile";
 
 // Errores del cambio de correo con mensaje propio
 const EMAIL_ERRORS = ["auth/email-already-in-use", "auth/invalid-email", "auth/too-many-requests"];
 
 const getSaveErrorMessage = (error) => {
   if (error.code === "auth/requires-recent-login") return i18n.t("profile:form.reloginEmail");
-  if (EMAIL_ERRORS.includes(error.code)) return getAuthErrorMessage(error);
+  if (EMAIL_ERRORS.includes(error.code) || error.code === "auth/username-taken") return getAuthErrorMessage(error);
   return i18n.t("profile:form.saveError");
 };
 
@@ -19,16 +21,18 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
 
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
-  const [phone, setPhone] = useState("");
   const [description, setDescription] = useState("");
   const [links, setLinks] = useState([]);
   const [games, setGames] = useState([]);
   const [region, setRegion] = useState("");
+  // Preferencias de juego (matchProfiles): se guardan con el resto del perfil
+  const { profile: matchProfile } = useMatchProfile(user);
+  const savedPreferences = matchProfile?.preferences ?? EMPTY_MATCH_PREFERENCES;
+  const [preferences, setPreferences] = useState(EMPTY_MATCH_PREFERENCES);
 
-  // El correo sale de Firebase Auth (users.email es una copia que puede ir
-  // atrasada hasta que se confirma un cambio). Solo las cuentas con
-  // contraseña lo cambian desde aquí.
-  const savedEmail = user?.email ?? userData?.email ?? "";
+  // El correo vive solo en Firebase Auth (users/{uid} no lo guarda). Solo
+  // las cuentas con contraseña lo cambian desde aquí.
+  const savedEmail = user?.email ?? "";
   const canChangeEmail = authService.hasPasswordSignIn(user);
 
   useEffect(() => {
@@ -37,12 +41,16 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
 
     setEmail(savedEmail);
     setUsername(userData.username || "");
-    setPhone(userData.phone || "");
     setDescription(userData.description || "");
     setLinks(userData.links || []);
     setGames(userData.games || []);
     setRegion(userData.region || "");
   }, [userData, isEditing, savedEmail]);
+
+  useEffect(() => {
+    if (!matchProfile || isEditing) return;
+    setPreferences(matchProfile.preferences);
+  }, [matchProfile, isEditing]);
 
   const isValidLink = (url) => {
     return url.startsWith("https://");
@@ -83,12 +91,13 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
 
       await profileService.updateUserProfile(user.uid, {
         username: username.trim(),
-        phone,
         // Los renglones vacíos no se guardan
         links: links.map((link) => link.trim()).filter(Boolean),
         description,
         games,
-        region
+        region,
+        // Si todavía no se cargaron, matchProfiles no se toca (undefined)
+        matchPreferences: matchProfile ? preferences : undefined
       });
 
       setIsEditing(false);
@@ -108,11 +117,11 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
   const handleCancel = () => {
     setEmail(savedEmail);
     setUsername(userData?.username || "");
-    setPhone(userData?.phone || "");
     setDescription(userData?.description || "");
     setLinks(userData?.links || []);
     setGames(userData?.games || []);
     setRegion(userData?.region || "");
+    setPreferences(savedPreferences);
 
     setIsEditing(false);
   };
@@ -121,13 +130,13 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
     return (
       email !== savedEmail ||
       username !== (userData?.username || "") ||
-      phone !== (userData?.phone || "") ||
       region !== (userData?.region || "") ||
       description !== (userData?.description || "") ||
       JSON.stringify(links) !==
         JSON.stringify(userData?.links || []) ||
       JSON.stringify(games) !==
-        JSON.stringify(userData?.games || [])
+        JSON.stringify(userData?.games || []) ||
+      JSON.stringify(preferences) !== JSON.stringify(savedPreferences)
     );
   };
 
@@ -139,7 +148,7 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
     };
 
     setGames(prev => {
-      if (prev.some(g => g.id === game.id)) {
+      if (prev.some(g => g.id === game.id) || prev.length >= MAX_FAVORITE_GAMES) {
         return prev;
       }
 
@@ -159,18 +168,18 @@ export const useProfileForm = (user, userData, onError, onSuccess) => {
     email,
     canChangeEmail,
     username,
-    phone,
     description,
     links,
     games,
     region,
+    preferences,
 
     setEmail,
     setUsername,
-    setPhone,
     setDescription,
     setLinks,
     setRegion,
+    setPreferences,
 
     handleSave,
     handleCancel,

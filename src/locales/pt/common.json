@@ -34,7 +34,17 @@
     "accountMenu": "Menu da conta",
     "myProfile": "Meu perfil",
     "myPosts": "Minhas publicações",
-    "myParties": "Minhas partidas"
+    "myParties": "Minhas partidas",
+    "guides": "Guias",
+    "admin": "Administração",
+    "adminReports": "Denúncias",
+    "adminGuides": "Guias para revisar",
+    "withCount": "{{label}} ({{count}})",
+    "accountMenuPending": "Menu da conta ({{count}} aguardando revisão)",
+    "community": "Comunidade",
+    "privacy": "Privacidade",
+    "terms": "Termos",
+    "guide": "Guia do app"
   },
   "presence": {
     "online": "Online",
@@ -97,6 +107,21 @@
         "text": "Verifique sua conexão e tente novamente.",
         "action": "Tentar novamente"
       }
-    }
+    },
+    "loading": "Carregando notícias",
+    "readOn": "Ler em {{source}}"
+  },
+  "deletedUser": "Usuário excluído",
+  "steamJoin": {
+    "join": "Entrar pela Steam",
+    "playing": "Jogando {{game}}",
+    "help": "A Steam vai abrir no seu computador. Se nada acontecer, confira se a Steam está aberta e se você tem o jogo instalado. A sala pode estar cheia ou ser privada."
+  },
+  "errorBoundary": {
+    "eyebrow": "Erro",
+    "title": "Algo deu errado",
+    "text": "Ocorreu um erro inesperado nesta tela. Recarregue a página ou volte ao início.",
+    "reload": "Recarregar",
+    "home": "Ir para o início"
   }
 }

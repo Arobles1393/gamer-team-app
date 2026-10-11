@@ -25,9 +25,14 @@ yarn-error.log*
 
 # firebase
 firebase-debug*.log
+firestore-debug.log
 
 # claude
 .claude/
 
 # impeccable
 .impeccable/
+
+# pruebas de interfaz: credenciales de las cuentas qa_* y capturas
+tests/e2e/.qa-users.json
+tests/e2e/screenshots/

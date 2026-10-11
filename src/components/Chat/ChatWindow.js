@@ -4,23 +4,27 @@ import MessageList from "./MessageList";
 import MessageComposer from "./MessageComposer";
 import { useMemo } from "react";
 import { TwitchLive } from "../Twitch";
-import { useBlockStatus, useChatWindow, useTwitchPresenceBatch, useUserProfile } from "../../hooks";
-import { getPresenceLabel, isOnline } from "../../utils";
+import { useBlockStatus, useChatWindow, useFriendStatus, useRequireVerified, useTwitchPresenceBatch, useUserProfile } from "../../hooks";
+import { JoinSteam } from "../Steam";
+import { getDisplayName, getPresenceLabel, isOnline } from "../../utils";
 import { useCurrentUser } from "../../context";
 
 export default function ChatWindow({ chatId, onBack, onError }) {
   const { t } = useTranslation("chat");
   const user = useCurrentUser();
+  const requireVerified = useRequireVerified(user);
 
   const { messages, loading, error, retry, hasOlder, loadingOlder, loadOlder, otherUserId, sendMessage } = useChatWindow(
     chatId,
     user.uid
   );
 
-  const { userData: otherUser } = useUserProfile(otherUserId);
+  const { userData: otherUser, missing: otherMissing } = useUserProfile(otherUserId);
+  const otherName = getDisplayName(otherUser, t("list.user"), otherMissing);
   // Con un bloqueo (en cualquier dirección) no se puede escribir;
   // firestore.rules también lo impide
   const { blocked } = useBlockStatus(user, otherUserId);
+  const { friendStatus } = useFriendStatus(user, otherUserId);
 
   const online = isOnline(otherUser?.lastSeen);
 
@@ -33,6 +37,8 @@ export default function ChatWindow({ chatId, onBack, onError }) {
   const twitchLive = useTwitchPresenceBatch(twitchPlayers)[otherUserId];
 
   const handleSend = async (text, file) => {
+    // Sin verificar: abre el diálogo; el composer conserva el texto
+    if (!requireVerified()) throw new Error("email-not-verified");
     try {
       await sendMessage(text, file);
     } catch (error) {
@@ -48,7 +54,7 @@ export default function ChatWindow({ chatId, onBack, onError }) {
   };
 
   return (
-    <section className="chat-window" aria-label={t("window.label", { username: otherUser?.username || t("list.user") })}>
+    <section className="chat-window" aria-label={t("window.label", { username: otherName })}>
       <header className="chat-window__header">
         <button
           type="button"
@@ -62,13 +68,20 @@ export default function ChatWindow({ chatId, onBack, onError }) {
         <ChatAvatar user={otherUser} size="sm" />
 
         <div className="chat-window__who">
-          <h2 className="chat-window__name">{otherUser?.username || t("list.user")}</h2>
+          <h2 className="chat-window__name">{otherName}</h2>
           <span className={`chat-window__status${online ? " chat-window__status--online" : ""}`}>
             {getPresenceLabel(otherUser?.lastSeen)}
           </span>
           <TwitchLive live={twitchLive} className="chat-window__twitch" />
         </div>
       </header>
+
+      {/* Solo con amistad (y sin bloqueo); la autorización real es la del servidor */}
+      <JoinSteam
+        targetUid={otherUserId}
+        enabled={friendStatus === "friends" && !blocked}
+        className="chat-window__steam-join"
+      />
 
       <MessageList
         messages={messages}

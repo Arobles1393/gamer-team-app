@@ -6,6 +6,9 @@ import { getAuthErrorMessage } from "../../utils/authErrors";
 import { authService } from "../../services/auth";
 import { clearWelcomeNotice, queueWelcomeNotice } from "../../utils/welcomeNotice";
 import { useProviderLogin } from "../../hooks";
+import { REQUIRE_LEGAL_CONSENT } from "../../legal";
+import { AgeConfirmCheckbox, LegalConsentCheckbox } from "../Legal";
+import { USERNAME_MAX } from "../../constants";
 import {
   AuthLayout,
   AuthInput,
@@ -20,8 +23,12 @@ export default function Register({ onToggleMode, onBack }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [phone, setPhone] = useState("");
   const [region, setRegion] = useState(null);
+  // Solo cuenta con REQUIRE_LEGAL_CONSENT (si no, no se muestra la casilla)
+  const [acceptedLegal, setAcceptedLegal] = useState(false);
+  // "Tengo 18 años o más": siempre obligatoria
+  const [confirmedAge, setConfirmedAge] = useState(false);
+  const missingConsent = (REQUIRE_LEGAL_CONSENT && !acceptedLegal) || !confirmedAge;
   const [loading, setLoading] = useState(false);
 
   const toast = useRef(null);
@@ -41,7 +48,7 @@ export default function Register({ onToggleMode, onBack }) {
   const handleRegister = async () => {
     if (loading) return;
 
-    if (!email || !password || !username || !region) {
+    if (!email || !password || !username || !region || missingConsent) {
       toast.current?.show({
         severity: "warn",
         summary: t("register.incompleteTitle"),
@@ -62,8 +69,9 @@ export default function Register({ onToggleMode, onBack }) {
         email,
         password,
         username,
-        phone,
-        region
+        region,
+        acceptedLegal,
+        confirmedAge
       });
     } catch (error) {
       clearWelcomeNotice();
@@ -111,19 +119,9 @@ export default function Register({ onToggleMode, onBack }) {
           label={t("fields.nickname")}
           placeholder={t("fields.nicknamePlaceholder")}
           autoComplete="nickname"
+          maxLength={USERNAME_MAX}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-        />
-
-        <AuthInput
-          id="phone"
-          label={t("fields.phone")}
-          hint={t("fields.optional")}
-          type="tel"
-          placeholder="55 1234 5678"
-          autoComplete="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
         />
 
         <AuthSelect
@@ -138,10 +136,16 @@ export default function Register({ onToggleMode, onBack }) {
           filter
         />
 
+        <AgeConfirmCheckbox checked={confirmedAge} onChange={setConfirmedAge} />
+
+        {REQUIRE_LEGAL_CONSENT && (
+          <LegalConsentCheckbox checked={acceptedLegal} onChange={setAcceptedLegal} />
+        )}
+
         <GradientButton
           label={t("register.submit")}
           loading={loading}
-          disabled={!email || !password || !username || !region}
+          disabled={!email || !password || !username || !region || missingConsent}
         />
 
         <AuthProviders

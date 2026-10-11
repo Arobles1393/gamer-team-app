@@ -1,8 +1,31 @@
-const API_KEY = process.env.REACT_APP_RAWG_API_KEY;
+import { httpsCallable } from "firebase/functions";
+import { functions } from "../firebase/config";
+
+// Búsqueda de juegos en RAWG. Con REACT_APP_RAWG_VIA_FUNCTION=true pasa por
+// las Cloud Functions searchRawgGames / getRawgGameDetail y la clave no va en
+// el JS de la app (auditoría M-16; necesita Blaze para desplegarse). Sin esa
+// variable se llama a RAWG directo con REACT_APP_RAWG_API_KEY, como antes.
+const VIA_FUNCTION = process.env.REACT_APP_RAWG_VIA_FUNCTION === "true";
+const API_KEY = VIA_FUNCTION ? null : process.env.REACT_APP_RAWG_API_KEY;
 
 const searchCache = new Map();
 
 let currentController = null;
+// Por la función no se puede cancelar: solo cuenta la última búsqueda
+let latestSearch = 0;
+
+const searchViaFunction = async (normalizedQuery) => {
+  const searchId = ++latestSearch;
+  try {
+    const { data } = await httpsCallable(functions, "searchRawgGames")({ query: normalizedQuery });
+    if (searchId !== latestSearch) return null;
+    return data?.results || [];
+  } catch (error) {
+    if (searchId !== latestSearch) return null;
+    console.error("Error buscando juegos:", error.code || error.message);
+    return [];
+  }
+};
 
 export const searchGames = async (query) => {
   if (!query || query.length < 2) return [];
@@ -12,6 +35,14 @@ export const searchGames = async (query) => {
   // 🔥 cache
   if (searchCache.has(normalizedQuery)) {
     return searchCache.get(normalizedQuery);
+  }
+
+  if (VIA_FUNCTION) {
+    const results = await searchViaFunction(normalizedQuery);
+    // Una búsqueda que ya quedó atrás vuelve vacía, como las canceladas
+    if (results === null) return [];
+    if (results.length > 0) searchCache.set(normalizedQuery, results);
+    return results;
   }
 
   // Cancela la búsqueda anterior si seguía en curso
@@ -59,6 +90,16 @@ export const searchGames = async (query) => {
 
 // Se llama una sola vez, cuando el usuario selecciona un juego del dropdown
 export const getGameDetail = async (gameId) => {
+
+  if (VIA_FUNCTION) {
+    try {
+      const { data } = await httpsCallable(functions, "getRawgGameDetail")({ gameId });
+      return { steamAppId: data?.steamAppId ?? null, clip: data?.clip ?? null };
+    } catch (error) {
+      console.error("Error obteniendo detalle del juego:", error.code || error.message);
+      return { steamAppId: null, clip: null };
+    }
+  }
 
   try {
     const res = await fetch(

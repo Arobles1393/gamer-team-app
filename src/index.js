@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+// Primero: así también se reportan los errores al cargar (si hay DSN)
+import { initErrorReporting } from "./monitoring/errorReporting";
 import './index.css';
 // Antes que la app: idioma, traducciones y locale de PrimeReact
 import './i18n';
@@ -11,13 +13,19 @@ import { PrimeReactProvider } from "primereact/api";
 import { BrowserRouter } from "react-router-dom";
 // Importado directo (no desde ./routes) para evitar el ciclo App → routes → App
 import RootRoutes from "./routes/RootRoutes";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+
+initErrorReporting();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <PrimeReactProvider value={{ ripple: true }}>
-        <RootRoutes />
+        {/* Último recurso: si algo falla fuera de las páginas */}
+        <ErrorBoundary>
+          <RootRoutes />
+        </ErrorBoundary>
       </PrimeReactProvider>
     </BrowserRouter>
   </React.StrictMode>

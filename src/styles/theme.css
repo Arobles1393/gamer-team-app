@@ -17,13 +17,19 @@
   --gm-accent-soft: rgba(244, 63, 94, 0.14);
   --gm-accent-text: #FDA4AF;
   --gm-danger: #EF4444;
-  --gm-gradient: linear-gradient(135deg, var(--gm-primary), var(--gm-accent));
+  /* El degradado lleva texto blanco encima (botones, avatares, insignias):
+     termina en un rosa más oscuro que --gm-accent para que el blanco tenga
+     4,7:1 en el extremo (con #F43F5E era 3,7:1; auditoría M-19) */
+  --gm-accent-strong: #E11D48;
+  --gm-gradient: linear-gradient(135deg, var(--gm-primary), var(--gm-accent-strong));
 
-  /* texto */
+  /* texto. Contraste WCAG AA (4,5:1) también sobre las tarjetas
+     (--gm-surface sobre --gm-bg) (auditoría M-19). --gm-primary no se usa
+     como color de texto (3,1:1): para texto violeta, --gm-label */
   --gm-text: #E2E8F0;
   --gm-muted: #94A3B8;
-  --gm-subtle: #7C7A94;
-  --gm-hint: #5E5C78;
+  --gm-subtle: #8A88A2;  /* 5,1:1 sobre tarjeta (antes #7C7A94: 4,2:1) */
+  --gm-hint: #82809A;    /* 4,6:1 sobre tarjeta (antes #5E5C78: 2,7:1) */
   --gm-label: #A78BFA;
 
   /* bordes y efectos */

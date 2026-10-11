@@ -1,109 +1,88 @@
 const admin = require("firebase-admin");
 const Parser = require("rss-parser");
+const {summarize} = require("./newsSummary");
+const {planNewsSync} = require("./newsPlan");
 const db = admin.firestore();
 const parser = new Parser();
 
 const feeds = [
   {
     source: "IGN",
-    url: "https://feeds.ign.com/ign/all"
+    url: "https://feeds.ign.com/ign/all",
   },
   {
     source: "GameSpot",
-    url: "https://www.gamespot.com/feeds/mashup/"
-  }
+    url: "https://www.gamespot.com/feeds/mashup/",
+  },
 ];
 
+// Trae los feeds y actualiza gaming_news en un solo batch (newsPlan.js): el
+// feed nunca queda vacío a medias, y si una fuente falla se conservan sus
+// noticias. Devuelve conteos (sin datos personales: son noticias públicas).
 const syncGamingNewsService = async () => {
-
-  const news = [];
+  const fresh = [];
+  const okSources = [];
+  const failedSources = [];
 
   for (const feed of feeds) {
+    try {
+      const rss = await parser.parseURL(feed.url);
 
-    const rss = await parser.parseURL(feed.url);
+      for (const item of rss.items) {
+        if (!item.link) {
+          continue;
+        }
 
-    for (const item of rss.items) {
+        const id = Buffer
+            .from(item.link)
+            .toString("base64")
+            .replace(/\//g, "_");
 
-      if (!item.link) {
-        continue;
+        fresh.push({
+          id,
+          data: {
+            title: item.title || "",
+            // Solo un resumen: algunos feeds traen el artículo completo
+            description: summarize(
+                item.contentSnippet ||
+              item["content:encodedSnippet"] ||
+              "",
+            ),
+            link: item.link,
+            image: getNewsImage(item),
+            source: feed.source,
+            publishedAt: item.pubDate ? new Date(item.pubDate) : new Date(),
+            createdAt: new Date(),
+          },
+        });
       }
 
-      const id = Buffer
-        .from(item.link)
-        .toString("base64")
-        .replace(/\//g, "_");
-
-      const image = getNewsImage(item);
-
-      news.push({
-        id,
-        data: {
-          title: item.title || "",
-          description:
-            item.contentSnippet ||
-            item["content:encodedSnippet"] ||
-            "",
-          link: item.link,
-          image,
-          source: feed.source,
-          publishedAt: item.pubDate
-            ? new Date(item.pubDate)
-            : new Date(),
-          createdAt: new Date()
-        }
-      });
+      okSources.push(feed.source);
+    } catch (error) {
+      failedSources.push(feed.source);
+      console.error(`syncGamingNews: falló el feed ${feed.source}:`, error.message);
     }
   }
 
-  // Si no encontramos noticias, no borramos las actuales
-  if (news.length === 0) {
-    return {
-      inserted: 0,
-      deleted: 0
-    };
+  // Ninguna fuente respondió: no se toca lo que hay
+  if (okSources.length === 0) {
+    return {inserted: 0, deleted: 0, failedSources};
   }
 
-  // Borrar noticias anteriores
-  const existingSnapshot =
-    await db
-      .collection("gaming_news")
-      .get();
+  const existing = (await db.collection("gaming_news").get()).docs
+      .map((doc) => ({id: doc.id, source: doc.data().source}));
 
-  const deleteBatch =
-    db.batch();
+  const {toSet, toDelete} = planNewsSync(existing, fresh, okSources);
 
-  existingSnapshot.forEach((doc) => {
-    deleteBatch.delete(doc.ref);
-  });
+  const batch = db.batch();
+  toSet.forEach((item) => batch.set(db.collection("gaming_news").doc(item.id), item.data));
+  toDelete.forEach((id) => batch.delete(db.collection("gaming_news").doc(id)));
+  await batch.commit();
 
-  await deleteBatch.commit();
-
-  // Insertar noticias nuevas
-  const insertBatch = db.batch();
-
-  news.forEach((item) => {
-
-    const docRef =
-      db
-        .collection("gaming_news")
-        .doc(item.id);
-
-    insertBatch.set(
-      docRef,
-      item.data
-    );
-  });
-
-  await insertBatch.commit();
-
-  return {
-    inserted: news.length,
-    deleted: existingSnapshot.size
-  };
+  return {inserted: toSet.length, deleted: toDelete.length, failedSources};
 };
 
 const getNewsImage = (item) => {
-
   if (item.enclosure?.url) {
     return item.enclosure.url;
   }
@@ -117,10 +96,9 @@ const getNewsImage = (item) => {
   }
 
   if (item["content:encoded"]) {
-
     const match =
       item["content:encoded"].match(
-        /<img[^>]+src="([^"]+)"/i
+          /<img[^>]+src="([^"]+)"/i,
       );
 
     if (match) {
@@ -132,5 +110,5 @@ const getNewsImage = (item) => {
 };
 
 module.exports = {
-  syncGamingNewsService
+  syncGamingNewsService,
 };

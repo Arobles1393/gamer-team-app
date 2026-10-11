@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useVisibleInterval } from "../polling/useVisibleInterval";
 import { steamStatsService } from "../../services/steam";
 import { getSteamIdFromLinks } from "../../utils";
 
-// Cada cuánto se refresca mientras la lista está abierta (cuota de la API de Steam)
+// Cada cuánto se refresca mientras la lista está abierta y la pestaña visible (cuota de la API de Steam)
 const REFRESH_MS = 90 * 1000;
 // Límite de GetPlayerSummaries por llamada
 const MAX_IDS = 100;
@@ -12,6 +13,8 @@ const MAX_IDS = 100;
 // Devuelve { [userId]: "Nombre del juego" } solo para quienes están jugando.
 export const useSteamPresenceBatch = (players) => {
   const [presence, setPresence] = useState({});
+  // Solo cuenta la respuesta de la última consulta (lista o pestaña cambiadas)
+  const requestRef = useRef(0);
 
   // userId -> identificador de Steam, solo de quienes lo tienen vinculado
   const steamIdsByUser = useMemo(
@@ -28,35 +31,25 @@ export const useSteamPresenceBatch = (players) => {
   // Clave estable: solo se vuelve a consultar si cambian los ids
   const idsKey = [...new Set(Object.values(steamIdsByUser))].sort().join(",");
 
-  useEffect(() => {
-    if (!idsKey) {
-      setPresence({});
-      return;
+  const fetchPresence = useCallback(async () => {
+    const requestId = ++requestRef.current;
+    try {
+      const data = await steamStatsService.getSteamPresence(idsKey.split(","));
+      if (requestId === requestRef.current) setPresence(data || {});
+    } catch (error) {
+      // Sin dato de Steam simplemente no se muestra la línea
+      console.error("Error al obtener presencia de Steam:", error);
     }
-
-    let cancelled = false;
-
-    const fetchPresence = async () => {
-      try {
-        const data = await steamStatsService.getSteamPresence(idsKey.split(","));
-
-        if (!cancelled) {
-          setPresence(data || {});
-        }
-      } catch (error) {
-        // Sin dato de Steam simplemente no se muestra la línea
-        console.error("Error al obtener presencia de Steam:", error);
-      }
-    };
-
-    fetchPresence();
-    const interval = setInterval(fetchPresence, REFRESH_MS);
-
-    return () => {
-      cancelled = true;
-      clearInterval(interval);
-    };
   }, [idsKey]);
+
+  useEffect(() => {
+    if (!idsKey) setPresence({});
+    // La respuesta pendiente ya no corresponde a esta lista
+    return () => { requestRef.current += 1; };
+  }, [idsKey]);
+
+  // Pausa con la pestaña oculta (auditoría B-27)
+  useVisibleInterval(fetchPresence, REFRESH_MS, Boolean(idsKey));
 
   return useMemo(
     () =>

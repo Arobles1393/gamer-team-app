@@ -3,7 +3,8 @@ import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
 
-export default function PlayersHeader({ search, onSearchChange }) {
+// showSearch: el buscador por nombre solo en su pestaña
+export default function PlayersHeader({ search, onSearchChange, showSearch = true }) {
   const { t } = useTranslation("friends");
 
   return (
@@ -13,20 +14,22 @@ export default function PlayersHeader({ search, onSearchChange }) {
         <h1 className="feed-header__title">{t("players.title")}</h1>
       </div>
 
-      <div className="feed-header__actions">
-        <IconField iconPosition="left" className="feed-search players-search">
-          <InputIcon className="pi pi-search" />
-          <InputText
-            type="search"
-            className="feed-search__input"
-            placeholder={t("players.searchPlaceholder")}
-            aria-label={t("players.searchLabel")}
-            value={search}
-            onChange={(e) => onSearchChange(e.target.value)}
-            autoFocus
-          />
-        </IconField>
-      </div>
+      {showSearch && (
+        <div className="feed-header__actions">
+          <IconField iconPosition="left" className="feed-search players-search">
+            <InputIcon className="pi pi-search" />
+            <InputText
+              type="search"
+              className="feed-search__input"
+              placeholder={t("players.searchPlaceholder")}
+              aria-label={t("players.searchLabel")}
+              value={search}
+              onChange={(e) => onSearchChange(e.target.value)}
+              autoFocus
+            />
+          </IconField>
+        </div>
+      )}
     </header>
   );
 }

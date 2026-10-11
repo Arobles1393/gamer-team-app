@@ -1,0 +1,46 @@
+{
+  "purpose": {
+    "rawg": "Base de données de jeux vidéo (noms, couvertures, informations)",
+    "steamWebApi": "Statistiques, jeu en cours et salons Steam des joueurs qui lient leur compte",
+    "twitch": "Savoir si un joueur est en direct",
+    "news": "Actualités jeux vidéo (titres avec lien vers l'article original)",
+    "naturalEarth": "Carte du monde de la section Communauté",
+    "steamgriddb": "Logos et couvertures de jeux",
+    "youtube": "Vidéos intégrées dans les guides",
+    "steamLogin": "Connexion avec Steam",
+    "google": "Connexion avec Google",
+    "firebase": "Comptes, base de données, fichiers et fonctions serveur",
+    "sentry": "Rapports d'erreurs de l'app, sans données personnelles",
+    "googleFonts": "Polices de l'interface",
+    "kofi": "Soutien volontaire au projet (le paiement s'effectue sur Ko-fi)"
+  },
+  "category": {
+    "data": "Données",
+    "media": "Images et vidéo",
+    "auth": "Connexion",
+    "infra": "Infrastructure",
+    "support": "Soutien"
+  },
+  "footer": {
+    "gameData": "Données de jeux :",
+    "credits": "Crédits",
+    "copyright": "© {{year}} GamerMatch"
+  },
+  "menu": "Crédits",
+  "poweredBy": "Propulsé par",
+  "steamData": "Données de Steam",
+  "page": {
+    "title": "Crédits",
+    "intro": "GamerMatch s'appuie sur des services et des bibliothèques tiers. Les voici tous, avec l'usage de chacun.",
+    "services": "Données et services",
+    "owners": "Les données, images et marques de chaque service appartiennent à leurs propriétaires respectifs.",
+    "newTab": "(s'ouvre dans un nouvel onglet)",
+    "openSource": "Open source",
+    "openSourceIntro": "Bibliothèques open source utilisées directement par l'application. Cette liste est générée automatiquement.",
+    "library": "Bibliothèque",
+    "version": "Version",
+    "license": "Licence",
+    "fullLicenses": "Textes complets des licences (y compris les dépendances indirectes)",
+    "trademarks": "Marques"
+  }
+}

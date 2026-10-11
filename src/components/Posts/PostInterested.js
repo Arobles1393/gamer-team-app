@@ -1,17 +1,34 @@
 import { useTranslation } from "react-i18next";
+import { Button } from "primereact/button";
 import { UserAvatar } from "../UserAvatar";
 import { Skeleton } from "primereact/skeleton";
 import { ProfileSection } from "../ProfileSection";
 import { useUserProfiles } from "../../hooks";
 import { getPresenceLabel, isOnline } from "../../utils";
 
-// Jugadores que tocaron "Quiero jugar": el anfitrión puede abrir su perfil y escribirles
-export default function PostInterested({ userIds, isOwner, onOpenProfile }) {
+// Jugadores que tocaron "Quiero jugar": el anfitrión puede abrir su perfil y escribirles.
+// Sin sesión (onLogin) no se sabe quiénes son (firestore.rules, auditoría M-11):
+// solo cuántos (guestCount) y la invitación a entrar
+export default function PostInterested({ userIds, isOwner, onOpenProfile, guestCount = null, onLogin = null }) {
   const { t } = useTranslation("posts");
-  // Perfiles públicos: con y sin sesión se ve el nombre y la presencia
   const { users, loading } = useUserProfiles(userIds);
+  const count = onLogin ? guestCount : userIds.length;
 
   const renderBody = () => {
+    if (onLogin) {
+      return (
+        <div className="comment-login">
+          <p className="comment-login__text">{t("interested.loginPrompt")}</p>
+          <Button
+            label={t("common:actions.login")}
+            icon="pi pi-sign-in"
+            className="gm-btn gm-btn--ghost comment-login__btn"
+            onClick={onLogin}
+          />
+        </div>
+      );
+    }
+
     if (loading) {
       return (
         <ul className="post-interested" aria-busy="true" aria-label={t("interested.loading")}>
@@ -75,7 +92,7 @@ export default function PostInterested({ userIds, isOwner, onOpenProfile }) {
       title={t("interested.title")}
       icon="pi-users"
       className="post-interested-section"
-      action={userIds.length > 0 && <span className="post-detail__count">{userIds.length}</span>}
+      action={count > 0 && <span className="post-detail__count">{count}</span>}
     >
       {renderBody()}
     </ProfileSection>

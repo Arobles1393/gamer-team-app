@@ -25,13 +25,13 @@ const PUBLIC_FIELDS = [
   "games",
   "links",
   "lastSeen",
-  "createdAt"
+  "createdAt",
 ];
 // Siempre presentes (null si el usuario no los tiene), como al crear el perfil
 const DEFAULT_NULL_FIELDS = ["avatar", "region"];
 const write = process.argv.includes("--write");
 
-admin.initializeApp({ projectId: PROJECT_ID });
+admin.initializeApp({projectId: PROJECT_ID});
 const db = admin.firestore();
 
 const main = async () => {
@@ -47,9 +47,9 @@ const main = async () => {
     }
 
     const publicData = Object.fromEntries(
-      PUBLIC_FIELDS
-        .filter((field) => data[field] !== undefined || DEFAULT_NULL_FIELDS.includes(field))
-        .map((field) => [field, data[field] ?? null])
+        PUBLIC_FIELDS
+            .filter((field) => data[field] !== undefined || DEFAULT_NULL_FIELDS.includes(field))
+            .map((field) => [field, data[field] ?? null]),
     );
 
     console.log(`- ${userDoc.id.slice(0, 8)}…: ${Object.keys(publicData).join(", ")}`);
