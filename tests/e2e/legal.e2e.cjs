@@ -70,7 +70,11 @@ const removeTmp = async () => {
         await page.goto(`${BASE}${route}`);
         await page.locator(".legal__sections").waitFor({ timeout: 15000 });
         check(`${route}: abre sin sesión con su título`, (await page.locator("h1").innerText()).trim().toLowerCase() === title.toLowerCase());
-        check(`${route}: aviso de versión provisional (quedan [PENDIENTE])`, /Versión provisional: puede cambiar/.test(await page.locator(".legal__notice--draft").innerText().catch(() => "")));
+        // El aviso sale solo mientras el documento tenga marcadores [PENDIENTE]
+        const pending = (await page.locator(".legal__sections").innerText()).includes("[PENDIENTE");
+        const draftNotice = await page.locator(".legal__notice--draft").innerText().catch(() => "");
+        check(`${route}: aviso de versión provisional solo si quedan [PENDIENTE] (${pending ? "quedan" : "no quedan"})`,
+          pending ? /Versión provisional: puede cambiar/.test(draftNotice) : draftNotice === "");
         check(`${route}: con fecha de última actualización`, /Última actualización: \d{1,2} de \w+ de \d{4}/.test(await page.locator(".legal__updated").innerText()));
         check(`${route}: ${sections} secciones e índice con las mismas`, await page.locator(".legal__section").count() === sections
           && await page.locator(".legal__toc a").count() === sections);
