@@ -27,6 +27,7 @@ const {getCommunityStats} = require("./community/community.functions");
 const {deleteAccount} = require("./account/account.functions");
 const {getJoinInfo} = require("./steamJoin/steamJoin.functions");
 const {cleanupStaleData} = require("./cleanup/cleanup.functions");
+const {moderate} = require("./moderation/moderation.functions");
 
 exports.getSteamStats = getSteamStats;
 exports.getSteamPresence = getSteamPresence;
@@ -48,3 +49,5 @@ exports.deleteAccount = deleteAccount;
 exports.getJoinInfo = getJoinInfo;
 // Limpieza diaria de datos viejos u huérfanos (Blaze; a mano: npm run data:cleanup)
 exports.cleanupStaleData = cleanupStaleData;
+// Panel de reportes: borrar partida o comentario, suspender o eliminar cuenta
+exports.moderate = moderate;

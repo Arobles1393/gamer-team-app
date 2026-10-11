@@ -24,7 +24,7 @@ export const privacy = {
       id: "visibilidad",
       title: "Quién puede ver qué",
       body: [
-        "Tu apodo, foto, portada, biografía, país, juegos, enlaces, tu última vez activo y la fecha en que te uniste son visibles para otros usuarios, y también sin iniciar sesión para quien abra tu perfil. Sin iniciar sesión se pueden ver las partidas, las guías publicadas y las noticias, con el apodo y la foto de quien las publicó, y a partir de ellas tu perfil público; los comentarios, quién se interesó en cada partida y la búsqueda de jugadores requieren iniciar sesión. Si completas tus preferencias de juego (horario, plataformas, idiomas, micrófono, nivel y valores), las pueden ver los usuarios con sesión: se usan para sugerir jugadores compatibles y se muestran las que tienen en común. Los chats solo los ven sus participantes, y los chats de partida, los miembros de esa partida. Tu correo no es visible para otros usuarios. Quienes administran la plataforma ven los reportes (quién reporta, el motivo, la nota opcional y el perfil, la partida o el comentario reportado) y las guías antes de publicarlas; los mensajes de chat no se pueden reportar y la app no les da acceso a los chats. Si activas “Permitir que mis amigos y quienes se interesen en mis partidas se unan a mi partida de Steam” (viene desactivado y requiere tu enlace de Steam), tus amigos y quienes se interesaron en tus partidas verán que estás en una sala y en qué juego, y podrán usar un enlace para entrar, salvo que haya un bloqueo entre ustedes; puedes apagarlo cuando quieras."
+        "Tu apodo, foto, portada, biografía, país, juegos, enlaces, tu última vez activo y la fecha en que te uniste son visibles para otros usuarios, y también sin iniciar sesión para quien abra tu perfil. Sin iniciar sesión se pueden ver las partidas, las guías publicadas y las noticias, con el apodo y la foto de quien las publicó, y a partir de ellas tu perfil público; los comentarios, quién se interesó en cada partida y la búsqueda de jugadores requieren iniciar sesión. Si completas tus preferencias de juego (horario, plataformas, idiomas, micrófono, nivel y valores), las pueden ver los usuarios con sesión: se usan para sugerir jugadores compatibles y se muestran las que tienen en común. Los chats solo los ven sus participantes, y los chats de partida, los miembros de esa partida. Tu correo no es visible para otros usuarios. Quienes administran la plataforma ven los reportes (quién reporta, el motivo, la nota opcional y el perfil, la partida o el comentario reportado) y las guías antes de publicarlas, y pueden borrar las partidas y los comentarios reportados y suspender o eliminar cuentas; cada una de estas acciones queda registrada. Los mensajes de chat no se pueden reportar y la app no les da acceso a los chats. Si activas “Permitir que mis amigos y quienes se interesen en mis partidas se unan a mi partida de Steam” (viene desactivado y requiere tu enlace de Steam), tus amigos y quienes se interesaron en tus partidas verán que estás en una sala y en qué juego, y podrán usar un enlace para entrar, salvo que haya un bloqueo entre ustedes; puedes apagarlo cuando quieras."
       ]
     },
     {
@@ -38,7 +38,7 @@ export const privacy = {
       id: "conservacion",
       title: "Cuánto tiempo los conservamos",
       body: [
-        "Mientras tu cuenta exista, salvo los avisos, que se borran a los 90 días (a los 30 si ya los leíste), y los chats de partida cerrados o cuya partida ya no existe, que se borran con sus mensajes y archivos tras 30 días sin actividad. Si eliminas tu cuenta, borramos tu perfil, tus partidas (con sus comentarios, interesados y chat de grupo), tus comentarios, tus “Quiero jugar”, tus mensajes en chats de partida, tus chats privados (para las dos personas), tus amistades, solicitudes y bloqueos, tus avisos, tus guías, tus preferencias, tus archivos y tu cuenta de acceso, y tu apodo queda libre, y se quita tu último mensaje de la vista previa de los chats de partida donde participabas. Se conservan los reportes de moderación (los que hiciste y los que te señalan) como registro de seguridad, y los contadores de partidas por juego, que no son datos personales. [PENDIENTE: copias de seguridad de la base de datos y registros (logs) del proveedor: si existen y cuánto tiempo se guardan, a confirmar en la consola de Firebase y Google Cloud]."
+        "Mientras tu cuenta exista, salvo los avisos, que se borran a los 90 días (a los 30 si ya los leíste), y los chats de partida cerrados o cuya partida ya no existe, que se borran con sus mensajes y archivos tras 30 días sin actividad. Si eliminas tu cuenta, borramos tu perfil, tus partidas (con sus comentarios, interesados y chat de grupo), tus comentarios, tus “Quiero jugar”, tus mensajes en chats de partida, tus chats privados (para las dos personas), tus amistades, solicitudes y bloqueos, tus avisos, tus guías, tus preferencias, tus archivos y tu cuenta de acceso, y tu apodo queda libre, y se quita tu último mensaje de la vista previa de los chats de partida donde participabas. Se conservan los reportes de moderación (los que hiciste y los que te señalan) y el registro de las acciones de moderación como registro de seguridad, y los contadores de partidas por juego, que no son datos personales. [PENDIENTE: copias de seguridad de la base de datos y registros (logs) del proveedor: si existen y cuánto tiempo se guardan, a confirmar en la consola de Firebase y Google Cloud]."
       ]
     },
     {
@@ -107,7 +107,7 @@ export const terms = {
       id: "moderacion",
       title: "Moderación, reportes y bloqueos",
       body: [
-        "Puedes reportar a otros usuarios, sus partidas y sus comentarios, y bloquear a otros usuarios. Revisamos los reportes, y las guías antes de publicarlas. Podemos quitar contenido y limitar o cerrar cuentas que incumplan estos términos, sin aviso previo en casos graves [PENDIENTE: la app todavía no tiene herramientas para quitar contenido ajeno ni para suspender o cerrar cuentas; hoy solo se puede hacer a mano desde la consola de Firebase]. No garantizamos una revisión inmediata."
+        "Puedes reportar a otros usuarios, sus partidas y sus comentarios, y bloquear a otros usuarios. Revisamos los reportes, y las guías antes de publicarlas. Podemos quitar contenido y suspender o eliminar cuentas que incumplan estos términos, sin aviso previo en casos graves. No garantizamos una revisión inmediata."
       ]
     },
     {
@@ -135,7 +135,7 @@ export const terms = {
       id: "eliminacion",
       title: "Eliminación de cuentas",
       body: [
-        "Puedes eliminar tu cuenta cuando quieras. Podemos suspenderla o eliminarla si incumples estos términos."
+        "Puedes eliminar tu cuenta cuando quieras. Podemos suspenderla o eliminarla si incumples estos términos o si no tienes 18 años o más."
       ]
     },
     {

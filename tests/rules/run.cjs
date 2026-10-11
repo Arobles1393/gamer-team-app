@@ -25,7 +25,8 @@ const SUITES = [
   "field-limits",
   "block-groups",
   "usernames",
-  "guest-reads"
+  "guest-reads",
+  "moderation"
 ];
 
 const results = [];

@@ -835,7 +835,7 @@ service cloud.firestore {
                     && request.resource.data.status == 'pending'
                     && request.resource.data.targetType in ['user', 'post', 'comment']
                     && request.resource.data.targetId is string && request.resource.data.targetId.size() <= 128
-                    && request.resource.data.reason in ['spam', 'inappropriate', 'harassment', 'impersonation', 'other']
+                    && request.resource.data.reason in ['spam', 'inappropriate', 'harassment', 'impersonation', 'underage', 'other']
                     && textUpTo('note', 500)
                     && request.resource.data.createdAt == request.time
                     && request.resource.data.get('reviewedAt', null) == null;
@@ -843,6 +843,13 @@ service cloud.firestore {
       allow update: if isAdmin()
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedAt']);
       allow delete: if false;
+    }
+
+    // ===== moderation_log (acciones del panel de reportes) =====
+    // Lo escribe solo la función moderate (Admin SDK); lo lee el admin
+    match /moderation_log/{logId} {
+      allow read: if isAdmin();
+      allow write: if false;
     }
 
     // ===== guides (guías: escritas en la app o links externos) =====

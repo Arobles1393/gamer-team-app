@@ -132,6 +132,14 @@
   border-radius: 4px;
 }
 
+/* Acciones de moderación y "Marcar como revisado" */
+.admin-report__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 .admin-report__muted {
   font-size: 14px;
   color: var(--gm-subtle);
@@ -142,7 +150,8 @@
     padding: 16px;
   }
 
-  .admin-report__footer .p-button {
+  .admin-report__footer .p-button,
+  .admin-report__actions {
     width: 100%;
   }
 }

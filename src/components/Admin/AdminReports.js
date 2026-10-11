@@ -1,11 +1,13 @@
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Skeleton } from "primereact/skeleton";
 import { Toast } from "primereact/toast";
+import { ConfirmDialog } from "primereact/confirmdialog";
 import AdminReportItem from "./AdminReportItem";
 import { EmptyState } from "../EmptyState";
 import { UserProfileDialog } from "../UserProfile";
-import { reportService } from "../../services/reports";
+import { moderationService, reportService } from "../../services/reports";
+import { confirmDestructive, getDisplayName } from "../../utils";
 import { usePendingReports, usePostListActions, useUserProfiles } from "../../hooks";
 import { useCurrentUser } from "../../context";
 import "../Posts/Feed.css";
@@ -13,13 +15,16 @@ import "./Admin.css";
 
 const noop = () => {};
 
-// /admin/reports: reportes pendientes. Solo ver y marcar como revisado;
-// las acciones correctivas (borrar, bloquear) se hacen a mano.
+// /admin/reports: reportes pendientes. Marcar como revisado o actuar sobre
+// lo reportado (borrar partida o comentario, suspender o eliminar la cuenta)
+// con la Cloud Function moderate, que también cierra los reportes.
 export default function AdminReports() {
   const { t } = useTranslation("reports");
   const user = useCurrentUser();
   const toast = useRef(null);
   const { reports, loading, error } = usePendingReports();
+  // { reportId, action } en curso
+  const [busy, setBusy] = useState(null);
 
   const showToast = useCallback((severity, summary, detail) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
@@ -49,6 +54,40 @@ export default function AdminReports() {
       console.error("Error marcando reporte:", err);
       showToast("error", t("common:status.error"), t("admin.markError"));
     }
+  };
+
+  const runModeration = async (report, action) => {
+    setBusy({ reportId: report.id, action });
+    try {
+      const { done } = await moderationService.moderate({ action, targetId: report.targetId, reportId: report.id });
+      if (done) {
+        showToast("success", t(`admin.moderation.done.${action}`));
+      } else {
+        showToast("info", t(`admin.moderation.done.${action}`), t("admin.moderation.alreadyGone"));
+      }
+    } catch (err) {
+      console.error("Error de moderación:", err.code || err.message);
+      const detail = err.code === "functions/failed-precondition"
+        ? t("admin.moderation.forbiddenTarget")
+        : err.code === "functions/internal" && err.message === "internal"
+          ? t("admin.moderation.needsFunctions")
+          : t("admin.moderation.error");
+      showToast("error", t("common:status.error"), detail);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  // Confirmación antes de actuar (nada de esto se puede deshacer salvo suspender)
+  const handleModerate = (report, action) => {
+    const username = getDisplayName(profiles[report.targetId], t("admin.userFallback"));
+    confirmDestructive({
+      header: t(`admin.moderation.confirm.${action}.header`, { username }),
+      message: t(`admin.moderation.confirm.${action}.message`),
+      acceptLabel: t(`admin.moderation.actions.${action}`),
+      icon: action === "suspendUser" ? "pi pi-ban" : "pi pi-trash",
+      onAccept: () => runModeration(report, action)
+    });
   };
 
   const renderBody = () => {
@@ -93,6 +132,8 @@ export default function AdminReports() {
             targetUser={report.targetType === "user" ? profiles[report.targetId] : null}
             onOpenProfile={openProfile}
             onMarkReviewed={handleMarkReviewed}
+            onModerate={handleModerate}
+            busyAction={busy?.reportId === report.id ? busy.action : null}
           />
         ))}
       </ul>
@@ -115,6 +156,7 @@ export default function AdminReports() {
       {renderBody()}
 
       <UserProfileDialog {...profileDialogProps} />
+      <ConfirmDialog />
       <Toast ref={toast} />
     </div>
   );

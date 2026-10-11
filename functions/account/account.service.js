@@ -56,6 +56,33 @@ const notificationsAbout = async (relatedIds) => {
   return refs;
 };
 
+// Una partida y todo lo ligado a ella en Firestore: comentarios,
+// interesados, chat del grupo (con sus mensajes) y avisos que apuntan a ella.
+// Devuelve el juego y los archivos de Storage que hay que borrar después
+// (lo usan deleteAccount y la moderación)
+const deletePostTree = async (post) => {
+  const mediaPaths = new Set();
+  const prefixes = new Set([`group_chats/${post.id}/`]);
+  const [comments, interests] = await Promise.all([
+    docsOf(db().collection("post_comments").where("postId", "==", post.id)),
+    docsOf(db().collection("post_interested").where("postId", "==", post.id)),
+  ]);
+  comments.forEach((c) => addCommentMedia(mediaPaths, c.data()));
+  await deleteRefs([...comments, ...interests].map((d) => d.ref));
+  await db().recursiveDelete(db().doc(`group_chats/${post.id}`));
+  await deleteRefs(await notificationsAbout([post.id]));
+  await post.ref.delete();
+  return {game: post.data().game || null, mediaPaths, prefixes};
+};
+
+// -n en game_stats por juego ({juego: n}), igual que al borrar una partida
+const decrementGameStats = async (perGame) => {
+  for (const [game, count] of Object.entries(perGame)) {
+    const stats = db().doc(`game_stats/${encodeURIComponent(game)}`);
+    if ((await stats.get()).exists) await stats.update({postCount: FieldValue.increment(-count)});
+  }
+};
+
 // Chats de partida ajenos cuyo último mensaje es suyo: se borra la vista
 // previa (texto y autor). lastMessageAt se conserva: ordena la lista y lo
 // usa la limpieza diaria para saber si el chat sigue activo
@@ -107,23 +134,12 @@ const steps = (uid, bucket) => {
       const posts = await docsOf(db().collection("posts").where("userId", "==", uid));
       const perGame = {};
       for (const post of posts) {
-        const [comments, interests] = await Promise.all([
-          docsOf(db().collection("post_comments").where("postId", "==", post.id)),
-          docsOf(db().collection("post_interested").where("postId", "==", post.id)),
-        ]);
-        comments.forEach((c) => addCommentMedia(mediaPaths, c.data()));
-        await deleteRefs([...comments, ...interests].map((d) => d.ref));
-        await db().recursiveDelete(db().doc(`group_chats/${post.id}`));
-        prefixes.add(`group_chats/${post.id}/`);
-        await deleteRefs(await notificationsAbout([post.id]));
-        const game = post.data().game;
-        if (game) perGame[game] = (perGame[game] || 0) + 1;
-        await post.ref.delete();
+        const removed = await deletePostTree(post);
+        removed.mediaPaths.forEach((path) => mediaPaths.add(path));
+        removed.prefixes.forEach((prefix) => prefixes.add(prefix));
+        if (removed.game) perGame[removed.game] = (perGame[removed.game] || 0) + 1;
       }
-      for (const [game, count] of Object.entries(perGame)) {
-        const stats = db().doc(`game_stats/${encodeURIComponent(game)}`);
-        if ((await stats.get()).exists) await stats.update({postCount: FieldValue.increment(-count)});
-      }
+      await decrementGameStats(perGame);
       return posts.length;
     }],
 
@@ -252,4 +268,15 @@ const deleteAccount = async (uid) => {
   return {success: true};
 };
 
-module.exports = {deleteAccount, clearLastMessagePreviews, assertRecentLogin, RecentLoginError, RECENT_LOGIN_SECONDS};
+module.exports = {
+  deleteAccount,
+  deletePostTree,
+  decrementGameStats,
+  createStorage,
+  deleteFile,
+  deletePrefix,
+  clearLastMessagePreviews,
+  assertRecentLogin,
+  RecentLoginError,
+  RECENT_LOGIN_SECONDS,
+};

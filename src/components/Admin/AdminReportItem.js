@@ -4,8 +4,15 @@ import { Link } from "react-router-dom";
 import { Button } from "primereact/button";
 import { UserAvatar } from "../UserAvatar";
 import { commentsService } from "../../services/posts";
-import { REPORT_REASONS } from "../../services/reports";
+import { MODERATION_ACTIONS, REPORT_REASONS } from "../../services/reports";
 import { formatDates, getDisplayName } from "../../utils";
+
+const ACTION_ICONS = {
+  deletePost: "pi pi-trash",
+  deleteComment: "pi pi-trash",
+  suspendUser: "pi pi-ban",
+  deleteUser: "pi pi-user-minus"
+};
 
 const TYPE_ICONS = {
   user: "pi-user",
@@ -69,7 +76,9 @@ function ReportTarget({ report, targetUser, onOpenProfile }) {
   );
 }
 
-export default function AdminReportItem({ report, reporter, targetUser, onOpenProfile, onMarkReviewed }) {
+// onModerate(report, action): pide confirmación y llama a moderate.
+// busyAction: la acción en curso sobre este reporte (o null)
+export default function AdminReportItem({ report, reporter, targetUser, onOpenProfile, onMarkReviewed, onModerate, busyAction }) {
   const { t } = useTranslation("reports");
   const [marking, setMarking] = useState(false);
   const type = TYPE_ICONS[report.targetType] ? report.targetType : "post";
@@ -117,13 +126,29 @@ export default function AdminReportItem({ report, reporter, targetUser, onOpenPr
           <ReportTarget report={report} targetUser={targetUser} onOpenProfile={onOpenProfile} />
         </div>
 
-        <Button
-          label={t("admin.markReviewed")}
-          icon="pi pi-check"
-          className="gm-btn gm-btn--ghost"
-          loading={marking}
-          onClick={handleMark}
-        />
+        <div className="admin-report__actions">
+          {(MODERATION_ACTIONS[report.targetType] ?? []).map((action) => (
+            <Button
+              key={action}
+              type="button"
+              label={t(`admin.moderation.actions.${action}`)}
+              icon={ACTION_ICONS[action]}
+              className="gm-btn gm-btn--danger"
+              loading={busyAction === action}
+              disabled={Boolean(busyAction) || marking}
+              onClick={() => onModerate(report, action)}
+            />
+          ))}
+          <Button
+            type="button"
+            label={t("admin.markReviewed")}
+            icon="pi pi-check"
+            className="gm-btn gm-btn--ghost"
+            loading={marking}
+            disabled={Boolean(busyAction)}
+            onClick={handleMark}
+          />
+        </div>
       </div>
     </li>
   );

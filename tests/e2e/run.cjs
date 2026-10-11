@@ -15,6 +15,8 @@
 //                        functions con deleteAccount; tarda ~6 min)
 //   E2E_COMMUNITY=1 incluye el mapa de la comunidad (necesita el emulador
 //                   de functions con getCommunityStats; tarda ~3 min)
+//   E2E_MODERATION=1 incluye la moderación del panel de reportes (necesita
+//                    el emulador de functions con moderate)
 //   E2E_GUIDES_EXTERNAL=1 incluye la guía de link externo (necesita el
 //                         emulador de functions con fetchLinkPreview)
 const fs = require("fs");
@@ -62,6 +64,7 @@ const node = (file, args = []) =>
     ["account.e2e.cjs"],
     ["missing-profile.e2e.cjs"],
     ["legal.e2e.cjs"],
+    ...(process.env.E2E_MODERATION === "1" ? [["moderation.e2e.cjs"]] : []),
     ["age.e2e.cjs"],
     ["onboarding.e2e.cjs"],
     ["steam-join.e2e.cjs"],
