@@ -64,7 +64,7 @@ const cleanup = async () => {
     const userDoc = (await db.doc(`users/${ACC.uid}`).get()).data() || {};
     const pub = (await db.doc(`publicProfiles/${ACC.uid}`).get()).data() || {};
     const generic = userDoc.username;
-    check("users con un apodo genérico (jugador_123456), no el correo", /^jugador_d{6}(_d{4})?$/.test(generic || "") && !generic.includes("qa.mp"), generic);
+    check("users con un apodo genérico (jugador_123456), no el correo", /^jugador_\d{6}(_\d{4})?$/.test(generic || "") && !generic.includes("qa.mp"), generic);
     check("y su perfil público, con fecha de creación", pub.username === generic && Boolean(pub.createdAt));
     const reservation = await db.doc(`usernames/${generic.toLowerCase()}`).get();
     check("y su nombre reservado (sin uid)", reservation.exists && !("uid" in reservation.data()));
