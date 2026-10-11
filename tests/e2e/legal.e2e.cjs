@@ -16,6 +16,12 @@ const QA = JSON.parse(fs.readFileSync(`${__dirname}/.qa-users.json`, "utf8"));
 const SHOTS = `${__dirname}/screenshots`;
 fs.mkdirSync(SHOTS, { recursive: true });
 const CONSENT = process.env.E2E_LEGAL_CONSENT === "1";
+// Correo de contacto: de src/config/contact.js (módulo ES), como LEGAL_VERSIONS
+const CONTACT_EMAIL = fs.readFileSync(path.join(__dirname, "../../src/config/contact.js"), "utf8")
+  .match(/CONTACT_EMAIL = "([^"]+)"/)[1];
+const MAILTO = `mailto:${CONTACT_EMAIL}`;
+// Sin desplazamiento horizontal de la página (móvil a 360 px)
+const noHorizontalScroll = (page) => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
 // Versiones vigentes, leídas de src/legal/legalConfig.js (módulo ES): así la
 // prueba no queda atrás cuando cambia LEGAL_VERSIONS
 const LEGAL_VERSIONS = (() => {
@@ -85,9 +91,32 @@ const removeTmp = async () => {
         });
         check(`${route}: el índice lleva a la sección`, inView);
       }
-      check("sin HTML en el contenido (solo texto)", await page.locator(".legal__paragraph *").count() === 0);
-      await page.screenshot({ path: `${SHOTS}/legal-terminos.png`, fullPage: true });
+      check("sin HTML en el contenido: solo el enlace mailto del correo de contacto",
+        await page.locator(".legal__paragraph *").count() === await page.locator(".legal__paragraph a.legal__contact").count());
+      check("términos: el correo de contacto como enlace mailto (sin marcador)", await page.locator(`.legal__paragraph a[href="${MAILTO}"]`).count() === 1
+        && !/PENDIENTE: correo/.test(await page.locator(".legal__sections").innerText()));
+      await page.goto(`${BASE}/privacidad`);
+      await page.locator(".legal__sections").waitFor({ timeout: 15000 });
+      check("privacidad: el correo como enlace mailto en derechos y en contacto", await page.locator(`.legal__paragraph a[href="${MAILTO}"]`).count() === 2
+        && (await page.locator(`.legal__paragraph a[href="${MAILTO}"]`).allInnerTexts()).every((text) => text === CONTACT_EMAIL));
+      check("pie: \"Contacto\" con mailto", await page.locator(`.app-footer .legal-links a[href="${MAILTO}"]`).innerText() === "Contacto");
+      await page.goto(`${BASE}/creditos`);
+      const contactLine = page.locator(".credits__contact");
+      await contactLine.waitFor({ timeout: 15000 });
+      check("créditos: línea \"Contacto\" con el mismo enlace", /^Contacto:/.test(await contactLine.innerText())
+        && await contactLine.locator(`a[href="${MAILTO}"]`).count() === 1);
       await close("páginas legales", page);
+
+      // Móvil a 360 px: el pie con "Contacto", créditos y las páginas legales no desbordan
+      page = await newPage("es-MX", { width: 360, height: 740 });
+      for (const route of ["/privacidad", "/terminos", "/creditos", "/"]) {
+        await page.goto(`${BASE}${route}`);
+        await page.locator(".app-footer .legal-links").waitFor({ timeout: 15000 });
+        await page.waitForTimeout(800);
+        check(`360 px: ${route} sin desplazamiento horizontal`, await noHorizontalScroll(page));
+      }
+      await page.locator(".app-footer").screenshot({ path: `${SHOTS}/pie-contacto-360.png` });
+      await close("móvil 360 px", page);
 
       // ---------- 2. Otros idiomas: caen al español con aviso ----------
       console.log("\n=== otros idiomas");
@@ -108,10 +137,10 @@ const removeTmp = async () => {
       const authLinks = page.locator(".auth__legal .legal-links a");
       await authLinks.first().waitFor({ timeout: 15000 });
       const linkTexts = (await authLinks.allInnerTexts()).join("|");
-      check("login: enlaces a Privacidad y Términos", linkTexts.toLowerCase() === "privacidad|términos", linkTexts);
+      check("login: enlaces a Privacidad, Términos y Contacto (pie global)", linkTexts.toLowerCase() === "privacidad|términos|contacto", linkTexts);
       await page.getByRole("button", { name: "Crear cuenta" }).click();
       await page.locator("#username").waitFor();
-      check("registro: también los enlaces", await page.locator(".auth__legal .legal-links a").count() === 2);
+      check("registro: también los enlaces", await page.locator(".auth__legal .legal-links a").count() === 3);
       check("registro: sin la casilla de consentimiento (flag en false)", await page.locator("#legal-consent").count() === 0);
       await page.locator("#email").fill(QA.ana.email);
       await page.getByRole("button", { name: "Iniciar sesión" }).click().catch(() => {});
@@ -122,7 +151,7 @@ const removeTmp = async () => {
       await page.waitForURL((url) => !url.pathname.startsWith("/login"), { timeout: 15000 });
       await page.goto(`${BASE}/profile`);
       await page.locator(".app-footer .legal-links").waitFor({ timeout: 15000 });
-      check("Mi perfil: enlaces al final (pie global)", await page.locator(".app-footer .legal-links a").count() === 2);
+      check("Mi perfil: enlaces al final (pie global, con Contacto)", await page.locator(".app-footer .legal-links a").count() === 3);
       await page.locator(".app-rail__avatar-btn").click();
       await page.locator(".gm-menu").getByText("Términos", { exact: true }).click();
       await page.waitForURL(/\/terminos$/, { timeout: 10000 });

@@ -13,7 +13,8 @@
   "linksLabel": "Legal documents",
   "links": {
     "privacy": "Privacy",
-    "terms": "Terms"
+    "terms": "Terms",
+    "contact": "Contact"
   },
   "consent": "I have read and accept the <terms>Terms</terms> and the <privacy>Privacy policy</privacy>"
 }

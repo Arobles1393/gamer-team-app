@@ -3,6 +3,8 @@
 // haya alguno la página muestra el aviso de versión provisional.
 // Cada documento: { updatedAt: "AAAA-MM-DD" | null, sections: [{ id, title, body: [párrafos] }] }
 
+import { CONTACT_EMAIL } from "../../config/contact";
+
 export const privacy = {
   updatedAt: "2026-10-10",
   sections: [
@@ -45,7 +47,7 @@ export const privacy = {
       id: "derechos",
       title: "Tus derechos y cómo eliminar tu cuenta",
       body: [
-        "Puedes ver y editar los datos de tu perfil desde Mi perfil y eliminar tu cuenta en Mi perfil → “Eliminar mi cuenta”. Para cualquier otra solicitud (acceso, copia, corrección, oposición), escríbenos a [PENDIENTE: correo de contacto, lo decide el responsable del servicio]."
+        `Puedes ver y editar los datos de tu perfil desde Mi perfil y eliminar tu cuenta en Mi perfil → “Eliminar mi cuenta”. Para cualquier otra solicitud (acceso, copia, corrección, oposición), escríbenos a ${CONTACT_EMAIL}.`
       ]
     },
     {
@@ -66,7 +68,7 @@ export const privacy = {
       id: "cambios",
       title: "Cambios y contacto",
       body: [
-        "Si cambiamos esta política, actualizaremos la fecha y, si el cambio es importante, te avisaremos en la app. Contacto: [PENDIENTE: correo de contacto, lo decide el responsable del servicio]."
+        `Si cambiamos esta política, actualizaremos la fecha y, si el cambio es importante, te avisaremos en la app. Contacto: ${CONTACT_EMAIL}.`
       ]
     }
   ]
@@ -142,7 +144,7 @@ export const terms = {
       id: "cambios",
       title: "Cambios, ley aplicable y contacto",
       body: [
-        "Podemos actualizar estos términos; si sigues usando el servicio después, los aceptas, y avisaremos de los cambios importantes. Ley aplicable: [PENDIENTE: país o jurisdicción cuya ley se aplica, lo decide el responsable del servicio con revisión legal]. Contacto: [PENDIENTE: correo de contacto, lo decide el responsable del servicio]."
+        `Podemos actualizar estos términos; si sigues usando el servicio después, los aceptas, y avisaremos de los cambios importantes. Ley aplicable: [PENDIENTE: país o jurisdicción cuya ley se aplica, lo decide el responsable del servicio con revisión legal]. Contacto: ${CONTACT_EMAIL}.`
       ]
     }
   ]

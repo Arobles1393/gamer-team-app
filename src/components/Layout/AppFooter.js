@@ -6,7 +6,7 @@ import "./AppFooter.css";
 
 /**
  * Pie global: atribución de RAWG (su plan gratuito exige un enlace activo
- * en cada página que use sus datos), créditos, legales y año.
+ * en cada página que use sus datos), créditos, legales, contacto y año.
  */
 export default function AppFooter({ className = "" }) {
   const { t } = useTranslation("credits");
@@ -27,7 +27,7 @@ export default function AppFooter({ className = "" }) {
         <span aria-hidden="true">·</span>
         <Link to="/creditos">{t("footer.credits")}</Link>
       </p>
-      <LegalLinks className="app-footer__legal" />
+      <LegalLinks className="app-footer__legal" showContact />
       <p className="app-footer__copy">{t("footer.copyright", { year: new Date().getFullYear() })}</p>
     </footer>
   );

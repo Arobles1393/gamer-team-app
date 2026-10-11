@@ -116,6 +116,12 @@
   white-space: pre-line;
 }
 
+/* Correo de contacto dentro del texto (mailto:); largo: puede partirse en móvil */
+.legal__contact {
+  color: var(--gm-label);
+  overflow-wrap: anywhere;
+}
+
 /* Enlaces discretos (login, registro, Mi perfil) */
 .legal-links {
   display: flex;

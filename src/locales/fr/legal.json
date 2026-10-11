@@ -13,7 +13,8 @@
   "linksLabel": "Documents légaux",
   "links": {
     "privacy": "Confidentialité",
-    "terms": "Conditions"
+    "terms": "Conditions",
+    "contact": "Contact"
   },
   "consent": "J'ai lu et j'accepte les <terms>Conditions</terms> et la <privacy>Politique de confidentialité</privacy>"
 }

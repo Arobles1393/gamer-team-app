@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { CREDITS } from "../../credits/credits";
 import { TRADEMARKS_NOTICE_ES } from "../../credits/trademarks";
+import { CONTACT_EMAIL, CONTACT_MAILTO } from "../../config/contact";
 import openSourceLibraries from "../../credits/openSourceLibraries.json";
 import "../Posts/Feed.css";
 import "../Legal/Legal.css";
@@ -99,6 +100,10 @@ export default function CreditsPage() {
         )}
         <p className="credits__text credits__trademarks" lang="es">{TRADEMARKS_NOTICE_ES}</p>
       </section>
+
+      <p className="credits__text credits__contact">
+        {t("legal:links.contact")}: <a href={CONTACT_MAILTO}>{CONTACT_EMAIL}</a>
+      </p>
     </article>
   );
 }

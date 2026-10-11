@@ -1,12 +1,23 @@
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useLegalDocument } from "../../hooks";
 import { getIntlLocale } from "../../i18n";
+import { CONTACT_EMAIL, CONTACT_MAILTO } from "../../config/contact";
 import "../Posts/Feed.css";
 import "./Legal.css";
 
 const formatDate = (isoDate) =>
   new Intl.DateTimeFormat(getIntlLocale(), { dateStyle: "long" }).format(new Date(`${isoDate}T12:00:00`));
+
+// Párrafo como texto, con el correo de contacto como enlace mailto:
+// (elementos de React: el contenido nunca se inserta como HTML)
+const withContactLink = (paragraph) =>
+  paragraph.split(CONTACT_EMAIL).map((part, i) => (
+    <Fragment key={i}>
+      {i > 0 && <a href={CONTACT_MAILTO} className="legal__contact">{CONTACT_EMAIL}</a>}
+      {part}
+    </Fragment>
+  ));
 
 /**
  * /privacidad y /terminos (públicas). Un solo componente para los dos
@@ -79,7 +90,7 @@ export default function LegalPage({ type }) {
                 {section.title}
               </h2>
               {section.body.map((paragraph, i) => (
-                <p key={i} className="legal__paragraph">{paragraph}</p>
+                <p key={i} className="legal__paragraph">{withContactLink(paragraph)}</p>
               ))}
             </section>
           ))}
