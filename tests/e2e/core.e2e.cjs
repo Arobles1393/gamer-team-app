@@ -198,18 +198,25 @@ const body = (page) => page.locator("body").innerText();
     // Antes del bloqueo comparten dos chats de partida (auditoría M-07):
     // qa_eva en una partida temporal de qa_diego y qa_diego en la de qa_eva
     const FV = admin.firestore.FieldValue;
+    // Sin la partida fija de qa_eva no se puede preparar: se avisa antes de
+    // crear nada (si no, la partida temporal quedaba en el feed)
+    if (!(await db.doc(`posts/${QA.evaPostId}`).get()).exists) {
+      throw new Error(`La partida fija de qa_eva (${QA.evaPostId}) no existe: recréala antes de correr "bloqueo"`);
+    }
     const diegoPost = db.collection("posts").doc();
-    await diegoPost.set({ userId: QA.diego.uid, game: "Valorant", comments: "qa bloqueo", scheduledAt: null, interestedCount: 1, createdAt: FV.serverTimestamp() });
-    await db.doc(`group_chats/${diegoPost.id}`).set({ postId: diegoPost.id, participants: [QA.diego.uid, QA.eva.uid], active: true });
-    await db.doc(`post_interested/${diegoPost.id}_${QA.eva.uid}`).set({ postId: diegoPost.id, userId: QA.eva.uid, createdAt: FV.serverTimestamp() });
-    await db.doc(`post_interested/${QA.evaPostId}_${QA.diego.uid}`).set({ postId: QA.evaPostId, userId: QA.diego.uid, createdAt: FV.serverTimestamp() });
-    await db.doc(`posts/${QA.evaPostId}`).update({ interestedCount: FV.increment(1) });
-    await db.doc(`group_chats/${QA.evaPostId}`).update({ participants: FV.arrayUnion(QA.diego.uid) });
-    const evaCountBefore = (await db.doc(`posts/${QA.evaPostId}`).get()).data().interestedCount;
 
-    // La partida temporal se borra aunque algo falle a medias: si no, queda
-    // en el feed y empuja a las partidas fijas de las cuentas QA
+    // La partida temporal se borra aunque algo falle a medias (también en
+    // la preparación): si no, queda en el feed y empuja a las partidas fijas
+    // de las cuentas QA
     try {
+      await diegoPost.set({ userId: QA.diego.uid, game: "Valorant", comments: "qa bloqueo", scheduledAt: null, interestedCount: 1, createdAt: FV.serverTimestamp() });
+      await db.doc(`group_chats/${diegoPost.id}`).set({ postId: diegoPost.id, participants: [QA.diego.uid, QA.eva.uid], active: true });
+      await db.doc(`post_interested/${diegoPost.id}_${QA.eva.uid}`).set({ postId: diegoPost.id, userId: QA.eva.uid, createdAt: FV.serverTimestamp() });
+      await db.doc(`post_interested/${QA.evaPostId}_${QA.diego.uid}`).set({ postId: QA.evaPostId, userId: QA.diego.uid, createdAt: FV.serverTimestamp() });
+      await db.doc(`posts/${QA.evaPostId}`).update({ interestedCount: FV.increment(1) });
+      await db.doc(`group_chats/${QA.evaPostId}`).update({ participants: FV.arrayUnion(QA.diego.uid) });
+      const evaCountBefore = (await db.doc(`posts/${QA.evaPostId}`).get()).data().interestedCount;
+
       await login(page, QA.diego);
       await page.goto(`${BASE}/findPlayers`);
       await page.getByPlaceholder("Nickname…").fill("qa_");
