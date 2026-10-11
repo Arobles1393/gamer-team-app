@@ -1,6 +1,9 @@
 // Vista previa de una guía externa: imagen + título + descripción + sitio.
 // large: la versión grande del detalle. Los textos vienen de otro sitio:
-// React los escapa, nunca se insertan como HTML.
+// React los escapa, nunca se insertan como HTML. La imagen también: no se
+// carga sola salvo con autoLoad (quien está creando la guía)
+import ExternalImage from "./ExternalImage";
+
 const hostOf = (url) => {
   try {
     return new URL(url).hostname.replace(/^www\./, "");
@@ -9,14 +12,14 @@ const hostOf = (url) => {
   }
 };
 
-export default function LinkPreviewCard({ url, preview, large = false }) {
+export default function LinkPreviewCard({ url, preview, large = false, autoLoad = false }) {
   const { title, description, image } = preview ?? {};
 
   return (
     <div className={`link-preview${large ? " link-preview--large" : ""}`}>
       {image && (
         <span className="link-preview__image">
-          <img src={image} alt="" loading="lazy" referrerPolicy="no-referrer" />
+          <ExternalImage src={image} autoLoad={autoLoad} />
         </span>
       )}
       <span className="link-preview__body">

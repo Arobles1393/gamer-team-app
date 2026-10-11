@@ -3,12 +3,16 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { UserAvatar } from "../UserAvatar";
 import { useUserProfile } from "../../hooks";
-import { formatDates, getDisplayName } from "../../utils";
+import { formatDates, getDisplayName, isTrustedImageUrl } from "../../utils";
 import { GuideStatusBadge, GuideTypeBadge } from "./GuideBadges";
 
-// Imagen de la card: la portada (escrita) o la de la vista previa (externa)
-const coverOf = (guide) =>
-  guide.type === "original" ? guide.coverImage : guide.externalPreview?.image;
+// Imagen de la card: la portada (escrita) o la de la vista previa (externa).
+// Solo si viene de un sitio de confianza: en la lista no se pide nada a
+// otros sitios (en el detalle se puede mostrar al pulsar)
+const coverOf = (guide) => {
+  const image = guide.type === "original" ? guide.coverImage : guide.externalPreview?.image;
+  return isTrustedImageUrl(image) ? image : null;
+};
 
 // Card de una guía (lista de /guias y Mis guías). showStatus: Mis guías
 function GuideCard({ guide, showStatus = false }) {

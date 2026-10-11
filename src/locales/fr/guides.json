@@ -126,5 +126,9 @@
     "rejected": "Guide refusé",
     "reviewError": "Impossible d'enregistrer la validation. Réessayez.",
     "noPreview": "Aucun aperçu"
+  },
+  "externalImage": {
+    "show": "Afficher l'image de {{host}}",
+    "hint": "L'image provient d'un autre site : en l'affichant, ce site reçoit votre adresse IP."
   }
 }

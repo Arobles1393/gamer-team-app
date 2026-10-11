@@ -899,3 +899,52 @@
     transform: none;
   }
 }
+
+/* Imagen de otro sitio sin cargar: "Mostrar imagen de <sitio>"
+   (ExternalImage y GuideContent). Ocupa el lugar de la imagen */
+.guide-external-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 96px;
+  margin: 8px 0;
+  padding: 16px;
+  border: 1px dashed var(--gm-border);
+  border-radius: 12px;
+  background: var(--gm-primary-soft);
+  font: inherit;
+  font-size: 14px;
+  color: var(--gm-label);
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.guide-external-image:hover {
+  border-color: var(--gm-label);
+}
+
+.guide-external-image:focus-visible {
+  outline: 2px solid var(--gm-label);
+  outline-offset: 2px;
+}
+
+.guide-external-image .pi {
+  flex-shrink: 0;
+  font-size: 16px;
+}
+
+.guide-detail__cover.guide-external-image {
+  min-height: 160px;
+  margin: 0;
+}
+
+.link-preview__image .guide-external-image {
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  font-size: 13px;
+}

@@ -257,7 +257,7 @@ export default function GuideCreate() {
               </p>
             )}
             {preview.url === form.externalUrl.trim() && preview.status === "ready" && (
-              <LinkPreviewCard url={preview.url} preview={preview.preview} />
+              <LinkPreviewCard url={preview.url} preview={preview.preview} autoLoad />
             )}
             {preview.url === form.externalUrl.trim() && preview.status === "failed" && (
               <p className="guide-form__preview-status" role="status">

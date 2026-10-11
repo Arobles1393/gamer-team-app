@@ -232,6 +232,45 @@ const body = (page) => page.locator("body").innerText();
     check("el texto legítimo sí se muestra", /Texto normal/.test(html));
     await close("HTML malicioso", page);
 
+    // ---------- 6b. Imágenes de otros sitios: solo al pulsar "Mostrar imagen" ----------
+    console.log("\n=== imágenes de otros sitios");
+    const EXT_HOST = "example.com";
+    const extGuide = await db.collection("guides").add({
+      authorId: QA.ana.uid, game: "Valorant", title: `Guía QA imágenes ${Date.now().toString(36)}`, type: "original", status: "approved",
+      content: `<p>Antes</p><img src="https://${EXT_HOST}/qa-texto.png"><img src="${IMAGE}"><p>Después</p>`,
+      coverImage: `https://${EXT_HOST}/qa-portada.png`, youtubeVideoId: null, externalUrl: null, externalPreview: null,
+      reviewNote: null, reviewedAt: null, createdAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+    createdIds.push(extGuide.id);
+    page = await session(null);
+    const extRequests = [];
+    page.on("request", (req) => {
+      if (new URL(req.url()).hostname === EXT_HOST) extRequests.push(req.url());
+    });
+    await page.goto(`${BASE}/guias`);
+    await page.locator(".guide-card").first().waitFor({ timeout: 15000 });
+    await page.waitForTimeout(1500);
+    check("lista de guías: no pide nada a otros sitios", extRequests.length === 0, extRequests.join(", "));
+    await page.goto(`${BASE}/guias/${extGuide.id}`);
+    await page.locator(".guide-content").waitFor({ timeout: 10000 });
+    await page.waitForTimeout(1500);
+    const extButtons = page.locator(".guide-external-image");
+    check("detalle: sin pedir nada a example.com hasta pulsar", extRequests.length === 0, extRequests.join(", "));
+    check("detalle: portada e imagen del texto como \"Mostrar imagen de example.com\"", await extButtons.count() === 2
+      && (await extButtons.allInnerTexts()).every((text) => text.includes("Mostrar imagen de example.com")));
+    check("detalle: la imagen de RAWG (de confianza) sí se carga", await page.locator(`.guide-content img[src="${IMAGE}"]`).count() === 1);
+    await page.screenshot({ path: `${SHOTS}/guia-imagenes-externas.png`, fullPage: true });
+    await page.locator(".guide-content .guide-external-image").click();
+    await page.waitForTimeout(1500);
+    check("al pulsar, se pide solo esa imagen", extRequests.length === 1 && extRequests[0].endsWith("/qa-texto.png"), extRequests.join(", "));
+    check("y aparece en su lugar (el texto sigue en orden)", await page.locator(".guide-content img").count() === 2
+      && /Antes[\s\S]*Después/.test(await page.locator(".guide-content").innerText()));
+    await page.locator(".guide-detail__cover.guide-external-image").press("Enter");
+    await page.waitForTimeout(1500);
+    check("la portada se muestra con el teclado (Enter)", await page.locator("img.guide-detail__cover").count() === 1
+      && extRequests.some((url) => url.endsWith("/qa-portada.png")));
+    await close("imágenes de otros sitios", page);
+
     // ---------- 7. Guía de link externo (necesita el emulador de functions) ----------
     if (process.env.E2E_GUIDES_EXTERNAL === "1") {
       console.log("\n=== guía externa");

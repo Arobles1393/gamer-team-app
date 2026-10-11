@@ -126,5 +126,9 @@
     "rejected": "Guide rejected",
     "reviewError": "Couldn't save the review. Please try again.",
     "noPreview": "No preview"
+  },
+  "externalImage": {
+    "show": "Show image from {{host}}",
+    "hint": "The image comes from another site: when shown, that site receives your IP address."
   }
 }

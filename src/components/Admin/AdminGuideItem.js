@@ -1,10 +1,10 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
 import { UserAvatar } from "../UserAvatar";
-import { GuideTypeBadge, LinkPreviewCard, YoutubeEmbed } from "../Guides";
-import { formatDates, getDisplayName, sanitizeGuideHtml } from "../../utils";
+import { ExternalImage, GuideContent, GuideTypeBadge, LinkPreviewCard, YoutubeEmbed } from "../Guides";
+import { formatDates, getDisplayName } from "../../utils";
 
 const NOTE_MAX = 500;
 
@@ -14,11 +14,6 @@ export default function AdminGuideItem({ guide, author, onReview }) {
   const { t } = useTranslation("guides");
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(null);
-
-  const safeHtml = useMemo(
-    () => (guide.type === "original" ? sanitizeGuideHtml(guide.content) : ""),
-    [guide]
-  );
 
   const review = async (status) => {
     setSaving(status);
@@ -49,13 +44,9 @@ export default function AdminGuideItem({ guide, author, onReview }) {
       <div className="admin-guide__preview">
         {guide.type === "original" ? (
           <>
-            {guide.coverImage && <img className="admin-guide__cover" src={guide.coverImage} alt="" referrerPolicy="no-referrer" />}
+            <ExternalImage className="admin-guide__cover" src={guide.coverImage} />
             <YoutubeEmbed videoId={guide.youtubeVideoId} title={guide.title} />
-            <div
-              className="guide-content guide-content--compact"
-              // eslint-disable-next-line react/no-danger
-              dangerouslySetInnerHTML={{ __html: safeHtml }}
-            />
+            <GuideContent html={guide.content} className="guide-content guide-content--compact" />
           </>
         ) : (
           <>

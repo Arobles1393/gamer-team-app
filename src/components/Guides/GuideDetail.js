@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Skeleton } from "primereact/skeleton";
@@ -6,9 +5,11 @@ import { EmptyState } from "../EmptyState";
 import { UserAvatar } from "../UserAvatar";
 import { useBlockedIds, useGuide, useUserProfile } from "../../hooks";
 import { useCurrentUser } from "../../context";
-import { formatDates, getDisplayName, sanitizeGuideHtml } from "../../utils";
+import { formatDates, getDisplayName } from "../../utils";
 import { GuideStatusBadge, GuideTypeBadge } from "./GuideBadges";
 import LinkPreviewCard from "./LinkPreviewCard";
+import GuideContent from "./GuideContent";
+import ExternalImage from "./ExternalImage";
 import YoutubeEmbed from "./YoutubeEmbed";
 import "../Posts/Feed.css";
 import "./Guides.css";
@@ -38,11 +39,6 @@ export default function GuideDetail() {
   const { guide, loading, error } = useGuide(id);
   const { userData: author, missing: authorMissing } = useUserProfile(guide?.authorId);
   const { blockedIds, loading: loadingBlocks } = useBlockedIds(user);
-
-  const safeHtml = useMemo(
-    () => (guide?.type === "original" ? sanitizeGuideHtml(guide.content) : ""),
-    [guide]
-  );
 
   if (loading || loadingBlocks) {
     return <GuideDetailSkeleton />;
@@ -102,15 +98,9 @@ export default function GuideDetail() {
 
       {guide.type === "original" ? (
         <>
-          {guide.coverImage && (
-            <img className="guide-detail__cover" src={guide.coverImage} alt="" referrerPolicy="no-referrer" />
-          )}
+          <ExternalImage className="guide-detail__cover" src={guide.coverImage} />
           <YoutubeEmbed videoId={guide.youtubeVideoId} title={t("detail.video")} />
-          <div
-            className="guide-content"
-            // eslint-disable-next-line react/no-danger
-            dangerouslySetInnerHTML={{ __html: safeHtml }}
-          />
+          <GuideContent html={guide.content} />
         </>
       ) : (
         <div className="guide-detail__external">

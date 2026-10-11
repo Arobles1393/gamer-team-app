@@ -126,5 +126,9 @@
     "rejected": "Guía rechazada",
     "reviewError": "No se pudo guardar la revisión. Intenta de nuevo.",
     "noPreview": "Sin vista previa"
+  },
+  "externalImage": {
+    "show": "Mostrar imagen de {{host}}",
+    "hint": "La imagen viene de otro sitio: al mostrarla, ese sitio recibe tu dirección IP."
   }
 }
