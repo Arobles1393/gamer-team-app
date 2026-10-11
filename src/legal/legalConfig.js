@@ -1,6 +1,6 @@
 // Versión de cada documento: se guarda con el consentimiento (legalConsent)
 // para saber qué versión aceptó cada usuario
-export const LEGAL_VERSIONS = { terms: "provisional-4", privacy: "provisional-6" };
+export const LEGAL_VERSIONS = { terms: "provisional-4", privacy: "provisional-7" };
 
 // Casilla "He leído y acepto..." en el registro. Se pondrá en true cuando
 // el contenido real exista
