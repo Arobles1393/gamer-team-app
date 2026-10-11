@@ -59,6 +59,12 @@ const toastText = async (page, timeout = 30000) => {
   await toast.waitFor({ timeout });
   return (await toast.innerText()).replace(/\s+/g, " ");
 };
+// Espera el aviso que dice expected (los anteriores pueden seguir en pantalla)
+const toastWith = async (page, expected, timeout = 60000) => {
+  const toast = page.locator(".p-toast-message", { hasText: expected }).last();
+  const ok = await toast.waitFor({ timeout }).then(() => true, () => false);
+  return ok ? (await toast.innerText()).replace(/\s+/g, " ") : `(sin aviso "${expected}"; último: ${await toastText(page, 1000).catch(() => "ninguno")})`;
+};
 
 const createAccount = async (acc) => {
   const user = await admin.auth().createUser({ email: acc.email, password: acc.password, displayName: acc.username, emailVerified: true });
@@ -69,11 +75,12 @@ const createAccount = async (acc) => {
   await db.doc(`usernames/${acc.username}`).set({ uid: acc.uid, createdAt: new Date() });
   await db.doc(`users/${acc.uid}/private/preferences`).set({ onboarding: { completed: true, showAgain: false, completedVersion: 1 }, ageConfirmation: { minAge: 18, confirmedAt: new Date() } });
 };
-const createPost = async (id, uid) => {
-  const now = new Date();
+// minutesAgo: la partida a reportar es la más nueva (primera en el feed)
+const createPost = async (id, uid, label, minutesAgo = 0) => {
+  const now = new Date(Date.now() - minutesAgo * 60000);
   await db.doc(`posts/${id}`).set({
     userId: uid, game: "Hades", platform: "pc", platforms: ["PC"], multiplatform: false, playersNeeded: 3,
-    comments: `Partida de prueba de moderación ${STAMP}`, image: null, logo: null, clip: null, portada: null,
+    comments: `Partida de prueba de moderación ${label} ${STAMP}`, image: null, logo: null, clip: null, portada: null,
     scheduledAt: null, requiresMic: false, skillLevel: "casual", language: "es", authorRegion: "México",
     interestedCount: 0, createdAt: now
   });
@@ -118,8 +125,8 @@ let moderatedPost = false;
   try {
     await createAccount(T1);
     await createAccount(T2);
-    await createPost(POST_DEL, T1.uid);
-    await createPost(POST_KEEP, T1.uid);
+    await createPost(POST_DEL, T1.uid, "reportada");
+    await createPost(POST_KEEP, T1.uid, "con comentario", 60);
     await db.doc(`post_comments/${COMMENT}`).set({ postId: POST_KEEP, userId: T1.uid, text: `Comentario reportado ${STAMP}`, createdAt: new Date() });
 
     // ---------- 1. Motivo "Parece menor de edad" ----------
@@ -156,36 +163,37 @@ let moderatedPost = false;
       && await item("suspender").getByRole("button", { name: "Eliminar cuenta" }).count() === 1);
     await page.screenshot({ path: `${SHOTS}/admin-moderacion.png`, fullPage: true });
 
-    const act = async (label, button) => {
+    // Pulsa la acción, confirma y espera el aviso del resultado
+    const act = async (label, button, expected) => {
       await item(label).getByRole("button", { name: button }).click();
       const dialog = page.locator(".gm-confirm");
       await dialog.waitFor({ timeout: 5000 });
       await dialog.getByRole("button", { name: button }).click();
-      return toastText(page);
+      return toastWith(page, expected);
     };
 
     console.log("\n=== borrar partida");
-    let toast = await act("menor", "Borrar partida");
+    let toast = await act("menor", "Borrar partida", "Partida borrada");
     moderatedPost = true;
-    check("aviso \"Partida borrada\"", /Partida borrada/.test(toast), toast);
+    check("aviso \"Partida borrada\"", /Partida borrada/.test(toast) && !/Ya no existía/.test(toast), toast);
     check("la partida y su chat de grupo ya no existen", await until(async () => !(await db.doc(`posts/${POST_DEL}`).get()).exists && !(await db.doc(`group_chats/${POST_DEL}`).get()).exists));
     check("el reporte sale de la lista", await until(async () => await item("menor").count() === 0));
     const log = (await db.collection("moderation_log").where("targetId", "==", POST_DEL).get()).docs[0]?.data();
     check("queda en moderation_log (admin, acción, autor)", log?.adminId === QA.diego.uid && log?.action === "deletePost" && log?.authorId === T1.uid, JSON.stringify(log));
 
     console.log("\n=== borrar comentario");
-    toast = await act("comentario", "Borrar comentario");
-    check("aviso \"Comentario borrado\"", /Comentario borrado/.test(toast), toast);
+    toast = await act("comentario", "Borrar comentario", "Comentario borrado");
+    check("aviso \"Comentario borrado\"", /Comentario borrado/.test(toast) && !/Ya no existía/.test(toast), toast);
     check("el comentario ya no existe y la partida sigue", await until(async () => !(await db.doc(`post_comments/${COMMENT}`).get()).exists) && (await db.doc(`posts/${POST_KEEP}`).get()).exists);
 
     console.log("\n=== suspender cuenta");
-    toast = await act("suspender", "Suspender cuenta");
+    toast = await act("suspender", "Suspender cuenta", "Cuenta suspendida");
     check("aviso \"Cuenta suspendida\"", /Cuenta suspendida/.test(toast), toast);
     check("la cuenta queda desactivada en Auth", (await admin.auth().getUser(T1.uid)).disabled === true);
     check("su contenido sigue (solo se suspende)", (await db.doc(`posts/${POST_KEEP}`).get()).exists);
 
     console.log("\n=== eliminar cuenta");
-    toast = await act("eliminar", "Eliminar cuenta");
+    toast = await act("eliminar", "Eliminar cuenta", "Cuenta eliminada");
     check("aviso \"Cuenta eliminada\"", /Cuenta eliminada/.test(toast), toast);
     check("la cuenta y su perfil ya no existen", !(await admin.auth().getUser(T2.uid).catch(() => null)) && !(await db.doc(`publicProfiles/${T2.uid}`).get()).exists);
     const closed = (await db.collection("reports").where("targetId", "==", T2.uid).get()).docs.map((d) => d.data());
