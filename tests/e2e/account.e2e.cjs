@@ -69,10 +69,11 @@ const removeTmp = async () => {
       await db.doc(`group_chats/${postId}`).update({ participants: admin.firestore.FieldValue.arrayRemove(user.uid) }).catch(() => {});
     }
     for (const comment of (await db.collection("post_comments").where("userId", "==", user.uid).get()).docs) await comment.ref.delete();
+    // Su nombre reservado (nombres únicos): el de su perfil
+    const usernameLower = (await db.doc(`users/${user.uid}`).get()).get("usernameLower");
+    if (usernameLower) await db.doc(`usernames/${usernameLower}`).delete();
     await db.recursiveDelete(db.doc(`users/${user.uid}`));
     await Promise.all(["publicProfiles", "matchProfiles"].map((c) => db.doc(`${c}/${user.uid}`).delete()));
-    // Su nombre reservado (nombres únicos)
-    for (const name of (await db.collection("usernames").where("uid", "==", user.uid).get()).docs) await name.ref.delete();
     await admin.auth().deleteUser(user.uid);
   }
 };
@@ -122,7 +123,7 @@ const removeTmp = async () => {
       JSON.stringify(Object.keys(priv.data() || {}).sort()));
     check("publicProfiles creado con región", pub.exists && pub.data().region === "México");
     const reservation = await db.doc(`usernames/${TMP.username.toLowerCase()}`).get();
-    check("el nombre queda reservado para la cuenta", reservation.exists && reservation.data().uid === authUser.uid);
+    check("el nombre queda reservado, sin decir de quién (sin uid)", reservation.exists && !("uid" in reservation.data()) && priv.data().usernameLower === TMP.username.toLowerCase());
 
     // ---------- 2. Mi perfil: correo desde Auth, sin teléfono ----------
     console.log("\n=== Mi perfil");

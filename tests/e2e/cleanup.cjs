@@ -70,14 +70,10 @@ const byField = async (collection, field, op = "in") => {
     refs.set(`publicProfiles/${uid}`, db.doc(`publicProfiles/${uid}`));
     refs.set(`matchProfiles/${uid}`, db.doc(`matchProfiles/${uid}`));
   });
-  // Sus nombres reservados (nombres únicos)
-  for (const uidChunk of [...uids].reduce((chunks, uid, i) => {
-    if (i % 30 === 0) chunks.push([]);
-    chunks[chunks.length - 1].push(uid);
-    return chunks;
-  }, [])) {
-    (await db.collection("usernames").where("uid", "in", uidChunk).get()).docs
-      .forEach((d) => refs.set(d.ref.path, d.ref));
+  // Sus nombres reservados (nombres únicos): los de sus perfiles
+  for (const uid of uids) {
+    const usernameLower = (await db.doc(`users/${uid}`).get()).get("usernameLower");
+    if (usernameLower) refs.set(`usernames/${usernameLower}`, db.doc(`usernames/${usernameLower}`));
   }
 
   const counts = {};

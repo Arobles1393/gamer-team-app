@@ -213,14 +213,22 @@ const steps = (uid, bucket) => {
 
     // h. Guías, preferencias de compatibilidad y perfil público
     ["guías y perfil", async () => {
-      const [guides, usernames] = await Promise.all([
+      const [guides, profile, legacyReservations] = await Promise.all([
         docsOf(db().collection("guides").where("authorId", "==", uid)),
-        // Su nombre de usuario queda libre (auditoría M-08)
+        db().doc(`users/${uid}`).get(),
+        // Reservas del formato anterior, que guardaban el uid
         docsOf(db().collection("usernames").where("uid", "==", uid)),
       ]);
+      // Su nombre de usuario queda libre (auditoría M-08): la reserva es la
+      // del nombre de su perfil (ya no guarda el uid)
+      const usernameLower = profile.get("usernameLower");
+      const reservation = typeof usernameLower === "string" && usernameLower ?
+        [db().doc(`usernames/${usernameLower}`)] :
+        [];
       return deleteRefs([
         ...guides.map((g) => g.ref),
-        ...usernames.map((u) => u.ref),
+        ...reservation,
+        ...legacyReservations.map((u) => u.ref),
         db().doc(`matchProfiles/${uid}`),
         db().doc(`publicProfiles/${uid}`),
       ]);

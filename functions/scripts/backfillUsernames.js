@@ -1,11 +1,15 @@
-// Reserva en usernames/{usernameLower} el nombre de cada perfil existente
-// (auditoría M-08: nombres únicos). Los perfiles nuevos ya lo reservan solos;
-// esto es para los creados antes. Si dos perfiles tuvieran el mismo nombre,
-// solo reserva el del más antiguo y lista los demás para resolverlos a mano.
+// Pone al día las reservas de nombres usernames/{usernameLower} (auditoría
+// M-08: nombres únicos) con lo que dicen los perfiles:
+// - reserva el nombre de los perfiles que no la tienen (creados antes de M-08);
+// - quita el uid de las reservas del formato anterior: la reserva solo dice
+//   que el nombre está ocupado, no de quién (se lee sin sesión);
+// - lista (y con --write borra) las reservas de nombres que ningún perfil usa.
+// Si dos perfiles tuvieran el mismo nombre, no toca ese nombre y los lista
+// para resolverlos a mano.
 //
-// Uso (desde functions/):
-//   node scripts/backfillUsernames.js           -> solo muestra qué haría
-//   node scripts/backfillUsernames.js --write   -> escribe en Firestore
+// Uso (desde la raíz):
+//   node functions/scripts/backfillUsernames.js           -> solo muestra qué haría
+//   node functions/scripts/backfillUsernames.js --write   -> escribe en Firestore
 //
 // Credenciales: GOOGLE_APPLICATION_CREDENTIALS apuntando a las de
 // `firebase login` o a una cuenta de servicio del proyecto.
@@ -14,50 +18,57 @@ const admin = require("firebase-admin");
 
 const PROJECT_ID = "gamerteam-4ed20";
 const WRITE = process.argv.includes("--write");
+const BATCH_SIZE = 400;
 
 admin.initializeApp({projectId: PROJECT_ID});
 const db = admin.firestore();
+const {FieldValue} = admin.firestore;
+
+const commitInBatches = async (ops) => {
+  for (let i = 0; i < ops.length; i += BATCH_SIZE) {
+    const batch = db.batch();
+    ops.slice(i, i + BATCH_SIZE).forEach((op) => op(batch));
+    await batch.commit();
+  }
+};
 
 (async () => {
   const [users, reserved] = await Promise.all([
     db.collection("users").get(),
     db.collection("usernames").get(),
   ]);
-  const taken = new Map(reserved.docs.map((d) => [d.id, d.data().uid]));
 
-  // Más antiguos primero: si hubiera un nombre repetido, se lo queda el primero
-  const profiles = users.docs
-      .map((d) => ({uid: d.id, ...d.data()}))
-      .filter((u) => typeof u.usernameLower === "string" && u.usernameLower)
-      .sort((a, b) => (a.createdAt?.toMillis?.() ?? 0) - (b.createdAt?.toMillis?.() ?? 0));
+  // Nombre -> perfiles que lo usan
+  const owners = new Map();
+  users.docs.forEach((d) => {
+    const lower = d.get("usernameLower");
+    if (typeof lower !== "string" || !lower) return;
+    owners.set(lower, [...(owners.get(lower) ?? []), d.id]);
+  });
+  const reservations = new Map(reserved.docs.map((d) => [d.id, d]));
 
-  const toCreate = [];
-  const conflicts = [];
-  for (const profile of profiles) {
-    const owner = taken.get(profile.usernameLower);
-    if (owner === profile.uid) continue;
-    if (owner) {
-      conflicts.push(`${profile.usernameLower} (${profile.uid} y ${owner})`);
-      continue;
-    }
-    taken.set(profile.usernameLower, profile.uid);
-    toCreate.push(profile);
+  const conflicts = [...owners].filter(([, uids]) => uids.length > 1);
+  const toCreate = [...owners.keys()].filter((lower) => owners.get(lower).length === 1 && !reservations.has(lower));
+  const toStrip = reserved.docs.filter((d) => d.get("uid") !== undefined && owners.has(d.id));
+  const orphans = reserved.docs.filter((d) => !owners.has(d.id));
+
+  console.log(`Perfiles con nombre: ${owners.size}. Reservas: ${reserved.size}.`);
+  console.log(`Por reservar: ${toCreate.length}. Con uid (formato anterior): ${toStrip.length}. Sin perfil que las use: ${orphans.length}.`);
+  if (orphans.length) console.log(`Reservas sin perfil: ${orphans.map((d) => d.id).join(", ")}`);
+  if (conflicts.length) {
+    console.log(`Nombres repetidos (resolver a mano):\n  ${conflicts.map(([lower, uids]) => `${lower} (${uids.join(", ")})`).join("\n  ")}`);
   }
-
-  console.log(`Perfiles: ${profiles.length}. Ya reservados: ${reserved.size}. Por reservar: ${toCreate.length}.`);
-  if (conflicts.length) console.log(`Nombres repetidos (resolver a mano):\n  ${conflicts.join("\n  ")}`);
   if (!WRITE) {
-    console.log("Modo prueba: no se escribió nada. Usa --write para reservar.");
+    console.log("Modo prueba: no se escribió nada. Usa --write para aplicarlo.");
     process.exit(0);
   }
 
-  const batch = db.batch();
-  toCreate.forEach((p) => batch.create(db.doc(`usernames/${p.usernameLower}`), {
-    uid: p.uid,
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-  }));
-  await batch.commit();
-  console.log(`Reservados: ${toCreate.length}.`);
+  await commitInBatches([
+    ...toCreate.map((lower) => (batch) => batch.create(db.doc(`usernames/${lower}`), {createdAt: FieldValue.serverTimestamp()})),
+    ...toStrip.map((d) => (batch) => batch.update(d.ref, {uid: FieldValue.delete()})),
+    ...orphans.map((d) => (batch) => batch.delete(d.ref)),
+  ]);
+  console.log(`Reservadas: ${toCreate.length}. Sin uid: ${toStrip.length}. Borradas: ${orphans.length}.`);
   process.exit(0);
 })().catch((error) => {
   console.error("Error:", error.message);

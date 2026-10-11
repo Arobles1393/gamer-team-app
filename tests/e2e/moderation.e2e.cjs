@@ -72,7 +72,7 @@ const createAccount = async (acc) => {
   const profile = { username: acc.username, usernameLower: acc.username, avatar: null, region: "México", description: "", games: [], links: [], createdAt: new Date() };
   await db.doc(`users/${acc.uid}`).set(profile);
   await db.doc(`publicProfiles/${acc.uid}`).set(profile);
-  await db.doc(`usernames/${acc.username}`).set({ uid: acc.uid, createdAt: new Date() });
+  await db.doc(`usernames/${acc.username}`).set({ createdAt: new Date() });
   await db.doc(`users/${acc.uid}/private/preferences`).set({ onboarding: { completed: true, showAgain: false, completedVersion: 1 }, ageConfirmation: { minAge: 18, confirmedAt: new Date() } });
 };
 // minutesAgo: la partida a reportar es la más nueva (primera en el feed)

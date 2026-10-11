@@ -11,9 +11,11 @@ const userProfileExists = async (userId) => {
 };
 
 // ---------- Nombres únicos (auditoría M-08) ----------
-// usernames/{nombre en minúsculas} = { uid }: reserva del nombre. Las reglas
-// solo dejan crearla si no existe y en la misma operación en que el perfil
-// toma ese nombre, así que dos cuentas nunca terminan con el mismo.
+// usernames/{nombre en minúsculas} = { createdAt }: reserva del nombre. Las
+// reglas solo dejan crearla si no existe y en la misma operación en que el
+// perfil toma ese nombre, así que dos cuentas nunca terminan con el mismo.
+// No guarda el uid (se consulta sin sesión): de quién es lo dice el perfil
+// (users/{uid}.usernameLower).
 
 const usernameRef = (usernameLower) => doc(db, "usernames", usernameLower);
 
@@ -23,13 +25,12 @@ const cleanUsername = (username) => String(username ?? "").trim().slice(0, USERN
 const usernameTakenError = () =>
   Object.assign(new Error("auth/username-taken"), { code: "auth/username-taken" });
 
-// true si el nombre está libre o ya es de esta cuenta. Funciona sin sesión:
-// el registro avisa antes de crear la cuenta
-const isUsernameAvailable = async (username, userId = null) => {
+// true si el nombre está libre. Funciona sin sesión: el registro avisa
+// antes de crear la cuenta
+const isUsernameAvailable = async (username) => {
   const lower = cleanUsername(username).toLowerCase();
   if (!lower) return false;
-  const snap = await getDoc(usernameRef(lower));
-  return !snap.exists() || snap.data().uid === userId;
+  return !(await getDoc(usernameRef(lower))).exists();
 };
 
 // Para Google, Steam y perfiles rehechos: el nombre que traen, o el mismo con
@@ -63,14 +64,12 @@ const updateUserProfile = async (userId, profileData) => {
 
   const previousLower = (await getDoc(userRef)).data()?.usernameLower ?? null;
   if (usernameLower !== previousLower) {
-    const reserved = await getDoc(usernameRef(usernameLower));
-    if (reserved.exists() && reserved.data().uid !== userId) throw usernameTakenError();
-    if (!reserved.exists()) {
-      batch.set(usernameRef(usernameLower), { uid: userId, createdAt: serverTimestamp() });
-    }
-    if (previousLower) {
-      const previous = await getDoc(usernameRef(previousLower));
-      if (previous.exists() && previous.data().uid === userId) batch.delete(usernameRef(previousLower));
+    // usernameLower distinto del actual: si ya está reservado, es de otra cuenta
+    if ((await getDoc(usernameRef(usernameLower))).exists()) throw usernameTakenError();
+    batch.set(usernameRef(usernameLower), { createdAt: serverTimestamp() });
+    // El anterior era de esta cuenta (lo dice su perfil): se libera
+    if (previousLower && (await getDoc(usernameRef(previousLower))).exists()) {
+      batch.delete(usernameRef(previousLower));
     }
   }
 
@@ -130,8 +129,7 @@ const createUserProfile = (userId, profileData, { autoSuffix = false } = {}) =>
 
     let username = null;
     for (const candidate of candidates) {
-      const reserved = await transaction.get(usernameRef(candidate.toLowerCase()));
-      if (!reserved.exists() || reserved.data().uid === userId) {
+      if (!(await transaction.get(usernameRef(candidate.toLowerCase()))).exists()) {
         username = candidate;
         break;
       }
@@ -141,7 +139,7 @@ const createUserProfile = (userId, profileData, { autoSuffix = false } = {}) =>
     const { userData, publicData } = buildNewProfile(profileData, username);
     transaction.set(doc(db, "users", userId), userData);
     transaction.set(publicProfileRef(userId), publicData);
-    transaction.set(usernameRef(userData.usernameLower), { uid: userId, createdAt: serverTimestamp() });
+    transaction.set(usernameRef(userData.usernameLower), { createdAt: serverTimestamp() });
   });
 
 // Nombre para un perfil que hay que rehacer: el de la cuenta, la parte del
@@ -159,8 +157,7 @@ const ensureUserProfile = (user) =>
 
     let username = null;
     for (const candidate of suffixedCandidates(fallbackUsername(user))) {
-      const reserved = await transaction.get(usernameRef(candidate.toLowerCase()));
-      if (!reserved.exists() || reserved.data().uid === user.uid) {
+      if (!(await transaction.get(usernameRef(candidate.toLowerCase()))).exists()) {
         username = candidate;
         break;
       }
@@ -170,7 +167,7 @@ const ensureUserProfile = (user) =>
     const { userData, publicData } = buildNewProfile({ avatar: user.photoURL || null, region: null }, username);
     transaction.set(userRef, userData);
     transaction.set(publicProfileRef(user.uid), publicData);
-    transaction.set(usernameRef(userData.usernameLower), { uid: user.uid, createdAt: serverTimestamp() });
+    transaction.set(usernameRef(userData.usernameLower), { createdAt: serverTimestamp() });
     return true;
   });
 

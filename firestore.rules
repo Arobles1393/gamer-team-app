@@ -130,12 +130,14 @@ service cloud.firestore {
              && ((!changedField('username') && !changedField('usernameLower'))
                  || !('usernameLower' in data)
                  || (data.get('username', null) is string && data.usernameLower == data.username.lower()))
-             // Nombre único (auditoría M-08): un nombre nuevo tiene que estar
-             // reservado a nombre de quien escribe en usernames/{usernameLower},
-             // en la misma operación. Los perfiles viejos sin reserva siguen
-             // funcionando mientras no cambien de nombre.
+             // Nombre único (auditoría M-08): un nombre nuevo se reserva en
+             // usernames/{usernameLower} en la misma operación (no existía y
+             // ahora sí; esa reserva solo la puede crear quien toma el nombre).
+             // Los perfiles viejos sin reserva siguen funcionando mientras no
+             // cambien de nombre.
              && (!changedField('usernameLower') || !('usernameLower' in data)
-                 || getAfter(/databases/$(database)/documents/usernames/$(data.usernameLower)).data.uid == request.auth.uid)
+                 || (!exists(/databases/$(database)/documents/usernames/$(data.usernameLower))
+                     && existsAfter(/databases/$(database)/documents/usernames/$(data.usernameLower))))
              && (!changedField('avatar') || urlFrom(data.get('avatar', null), avatarHost()))
              && (!changedField('banner') || urlFrom(data.get('banner', null), storageHost()))
              && (!changedField('region') || optText(data.get('region', null), 60))
@@ -927,21 +929,29 @@ service cloud.firestore {
     // ===== usernames/{usernameLower} (reserva de nombres, auditoría M-08) =====
     // Cada nombre (en minúsculas) pertenece a una cuenta. Se crea solo si no
     // existe, en la misma operación en que el perfil toma ese nombre, y se
-    // libera al cambiarlo. Se puede consultar un nombre (el registro avisa
-    // antes de crear la cuenta) pero no listarlos todos.
+    // libera al cambiarlo. Se puede consultar un nombre sin sesión (el
+    // registro avisa antes de crear la cuenta) pero no listarlos todos.
+    // Sin uid: la reserva solo dice que el nombre está ocupado, no de quién
+    // (con el uid, sin sesión se llegaba del nombre al perfil). De quién es
+    // lo dice users/{uid}.usernameLower.
     match /usernames/{name} {
+      function myProfile() {
+        return /databases/$(database)/documents/users/$(request.auth.uid);
+      }
+
       allow get: if true;
       allow list: if false;
       allow create: if isSignedIn()
-                    && request.resource.data.keys().hasOnly(['uid', 'createdAt'])
-                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.keys().hasOnly(['createdAt'])
                     && request.resource.data.createdAt == request.time
                     && name.size() > 0 && name.size() <= 40
-                    && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.usernameLower == name;
-      // Liberar el nombre anterior al cambiarlo (el perfil ya no lo usa)
+                    && getAfter(myProfile()).data.usernameLower == name;
+      // Liberar el nombre anterior al cambiarlo: era el de mi perfil y en la
+      // misma operación deja de serlo
       allow delete: if isSignedIn()
-                    && resource.data.uid == request.auth.uid
-                    && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.usernameLower != name;
+                    && exists(myProfile())
+                    && get(myProfile()).data.get('usernameLower', null) == name
+                    && getAfter(myProfile()).data.usernameLower != name;
       allow update: if false;
     }
 

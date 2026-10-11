@@ -1,4 +1,6 @@
-// Nombres de usuario únicos (auditoría M-08): usernames/{usernameLower}
+// Nombres de usuario únicos (auditoría M-08): usernames/{usernameLower}.
+// La reserva no guarda el uid (solo createdAt): de quién es lo dice el
+// perfil (users/{uid}.usernameLower).
 const { assertSucceeds, assertFails } = require("@firebase/rules-unit-testing");
 const {
   doc, collection, getDoc, getDocs, setDoc, updateDoc, deleteDoc, writeBatch, serverTimestamp, Timestamp
@@ -20,7 +22,7 @@ module.exports = async ({ env, test }) => {
     const profile = { username, usernameLower: lower, region: null, createdAt: serverTimestamp() };
     batch.set(doc(s, "users", uid), profile);
     batch.set(doc(s, "publicProfiles", uid), { ...profile, avatar: null });
-    if (reserve) batch.set(doc(s, "usernames", reserveAs ?? lower), { uid, createdAt: serverTimestamp() });
+    if (reserve) batch.set(doc(s, "usernames", reserveAs ?? lower), { createdAt: serverTimestamp() });
     return batch.commit();
   };
 
@@ -28,7 +30,7 @@ module.exports = async ({ env, test }) => {
   const rename = (uid, from, to, { release = true, reserve = true } = {}) => {
     const s = db(uid);
     const batch = writeBatch(s);
-    if (reserve) batch.set(doc(s, "usernames", to.toLowerCase()), { uid, createdAt: serverTimestamp() });
+    if (reserve) batch.set(doc(s, "usernames", to.toLowerCase()), { createdAt: serverTimestamp() });
     if (release) batch.delete(doc(s, "usernames", from.toLowerCase()));
     const data = { username: to, usernameLower: to.toLowerCase() };
     batch.update(doc(s, "users", uid), data);
@@ -47,8 +49,18 @@ module.exports = async ({ env, test }) => {
   await test("no se puede reservar un nombre distinto del que usa el perfil", () =>
     assertFails(register(B, "Bea", { reserveAs: "otro" })));
 
-  await test("no se puede reservar un nombre a nombre de otra cuenta", () =>
-    assertFails(setDoc(doc(db(B), "usernames", "fantasma"), { uid: A, createdAt: serverTimestamp() })));
+  await test("no se puede reservar un nombre que el perfil no usa", () =>
+    assertFails(setDoc(doc(db(B), "usernames", "fantasma"), { createdAt: serverTimestamp() })));
+
+  await test("la reserva no puede guardar el uid (formato anterior)", async () => {
+    const s = db(B);
+    const batch = writeBatch(s);
+    const profile = { username: "Bea", usernameLower: "bea", region: null, createdAt: serverTimestamp() };
+    batch.set(doc(s, "users", B), profile);
+    batch.set(doc(s, "publicProfiles", B), { ...profile, avatar: null });
+    batch.set(doc(s, "usernames", "bea"), { uid: B, createdAt: serverTimestamp() });
+    await assertFails(batch.commit());
+  });
 
   await test("cuenta de Steam con su nombre", () => assertSucceeds(register(S, "Steamer")));
 
@@ -69,6 +81,12 @@ module.exports = async ({ env, test }) => {
   await test("no se puede borrar la reserva de otra cuenta", () =>
     assertFails(deleteDoc(doc(db(B), "usernames", "anagamer"))));
 
+  await test("ni liberar la de otra cuenta cambiando el propio nombre a la vez", () =>
+    assertFails(rename(B, "anagamer", "Beatriz")));
+
+  await test("una cuenta sin perfil no puede borrar reservas", () =>
+    assertFails(deleteDoc(doc(db("zzzSinPerfil"), "usernames", "steamer"))));
+
   await test("no se puede borrar la propia reserva mientras se usa", () =>
     assertFails(deleteDoc(doc(db(A), "usernames", "anagamer"))));
 
@@ -77,6 +95,11 @@ module.exports = async ({ env, test }) => {
 
   await test("sin sesión se puede consultar un nombre (el registro avisa antes)", () =>
     assertSucceeds(getDoc(doc(anon, "usernames", "anagamer"))));
+
+  await test("y la reserva no dice de quién es (sin uid)", async () => {
+    const snap = await getDoc(doc(anon, "usernames", "anagamer"));
+    if (!snap.exists() || Object.keys(snap.data()).join() !== "createdAt") throw new Error(JSON.stringify(snap.data()));
+  });
 
   await test("pero no listar todos los nombres", () =>
     assertFails(getDocs(collection(anon, "usernames"))));

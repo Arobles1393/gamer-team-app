@@ -84,7 +84,8 @@ const body = (page) => page.locator("body").innerText();
     const user = await admin.auth().getUserByEmail("qa.eva@example.com");
     const [priv, pub] = await Promise.all([db.doc(`users/${user.uid}`).get(), db.doc(`publicProfiles/${user.uid}`).get()]);
     check("registro: users sin correo ni teléfono (el correo vive en Auth)", priv.exists && !("email" in priv.data()) && !("phone" in priv.data()) && user.email === "qa.eva@example.com");
-    check("registro: nombre reservado", (await db.doc("usernames/qa_eva").get()).data()?.uid === user.uid);
+    const evaReservation = await db.doc("usernames/qa_eva").get();
+    check("registro: nombre reservado, sin uid", evaReservation.exists && !("uid" in evaReservation.data()) && priv.data().usernameLower === "qa_eva");
     check("registro: publicProfiles sin correo ni teléfono, con región", pub.exists && !("email" in pub.data()) && !("phone" in pub.data()) && pub.data().region === "México", JSON.stringify(Object.keys(pub.data() || {})));
     // Como el resto de cuentas qa_: verificada (las reglas lo piden para publicar)
     await admin.auth().updateUser(user.uid, { emailVerified: true });

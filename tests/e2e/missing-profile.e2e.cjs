@@ -22,10 +22,11 @@ const check = (name, ok, extra = "") => {
 
 const cleanup = async () => {
   if (!ACC.uid) return;
+  // Su nombre reservado (nombres únicos): el de su perfil
+  const usernameLower = (await db.doc(`users/${ACC.uid}`).get()).get("usernameLower");
+  if (usernameLower) await db.doc(`usernames/${usernameLower}`).delete();
   await db.recursiveDelete(db.doc(`users/${ACC.uid}`));
   await db.doc(`publicProfiles/${ACC.uid}`).delete();
-  // Su nombre reservado (nombres únicos)
-  for (const name of (await db.collection("usernames").where("uid", "==", ACC.uid).get()).docs) await name.ref.delete();
   await admin.auth().deleteUser(ACC.uid).catch(() => {});
 };
 
@@ -62,7 +63,7 @@ const cleanup = async () => {
     check("users con el nombre de la parte del correo antes de la @", userDoc.username === expected && userDoc.usernameLower === expected.toLowerCase(), userDoc.username);
     check("y su perfil público, con fecha de creación", pub.username === expected && Boolean(pub.createdAt));
     const reservation = await db.doc(`usernames/${expected.toLowerCase()}`).get();
-    check("y su nombre reservado", reservation.exists && reservation.data().uid === ACC.uid);
+    check("y su nombre reservado (sin uid)", reservation.exists && !("uid" in reservation.data()));
     check("sin errores de JS", errors.length === 0, errors.join(" | ").slice(0, 200));
   } finally {
     if (browser) await browser.close();

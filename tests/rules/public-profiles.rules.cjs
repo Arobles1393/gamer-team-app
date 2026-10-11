@@ -19,7 +19,7 @@ module.exports = async ({ env, test, expect }) => {
     batch.set(doc(f, "users", A), userData);
     batch.set(pub(f, A), pick({ avatar: null, region: null, ...userData }));
     // Nombre único (usernames.rules.cjs)
-    batch.set(doc(f, "usernames", "alfa"), { uid: A, createdAt: serverTimestamp() });
+    batch.set(doc(f, "usernames", "alfa"), { createdAt: serverTimestamp() });
     return assertSucceeds(batch.commit());
   });
 

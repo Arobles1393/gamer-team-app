@@ -42,9 +42,10 @@ const ageSaved = async (uid) => {
 const removeAccount = async (acc) => {
   const user = acc.uid ? { uid: acc.uid } : await admin.auth().getUserByEmail(acc.email).catch(() => null);
   if (!user) return;
+  const usernameLower = (await db.doc(`users/${user.uid}`).get()).get("usernameLower");
+  if (usernameLower) await db.doc(`usernames/${usernameLower}`).delete();
   await db.recursiveDelete(db.doc(`users/${user.uid}`));
   await db.doc(`publicProfiles/${user.uid}`).delete();
-  for (const d of (await db.collection("usernames").where("uid", "==", user.uid).get()).docs) await d.ref.delete();
   await admin.auth().deleteUser(user.uid).catch(() => {});
 };
 
@@ -101,7 +102,7 @@ const login = async (page, acc) => {
     const profile = { username: GATE.username, usernameLower: GATE.username, avatar: null, region: "México", description: "", games: [], links: [], createdAt: new Date() };
     await db.doc(`users/${GATE.uid}`).set(profile);
     await db.doc(`publicProfiles/${GATE.uid}`).set(profile);
-    await db.doc(`usernames/${GATE.username}`).set({ uid: GATE.uid, createdAt: new Date() });
+    await db.doc(`usernames/${GATE.username}`).set({ createdAt: new Date() });
     // Sin preferencias: la guía de bienvenida también querría abrirse
 
     page = await newPage();
