@@ -204,13 +204,49 @@ const getPublicProfile = async (steamId64) => {
   };
 };
 
+// ---------- uid de las cuentas de Steam ----------
+// Seudónimo (verificación legal, punto 6): el uid aparece en datos públicos
+// (id del perfil, autor de partidas y comentarios), así que no puede llevar
+// el SteamID. Se deriva con HMAC-SHA256 y una clave que solo tiene el
+// servidor (STEAM_UID_SECRET): la misma cuenta de Steam siempre da el mismo
+// uid, y sin la clave no se puede volver al SteamID. 28 caracteres
+// base64url, como los uid de Firebase.
+// Las cuentas creadas antes usan "steam:<SteamID64>" y lo conservan.
+const MIN_SECRET_LENGTH = 32;
+const legacySteamUid = (steamId64) => `steam:${steamId64}`;
+
+const steamUid = (steamId64, secret) => {
+  if (typeof secret !== "string" || secret.length < MIN_SECRET_LENGTH) {
+    throw new Error(`STEAM_UID_SECRET no configurada (mínimo ${MIN_SECRET_LENGTH} caracteres)`);
+  }
+  return crypto.createHmac("sha256", secret)
+      .update(`steam-uid:${steamId64}`)
+      .digest("base64url")
+      .slice(0, 28);
+};
+
+// uid con el que entra esta cuenta de Steam: el anterior si ya existe esa
+// cuenta; si no, el seudónimo. getUser se puede reemplazar en pruebas
+const resolveSteamUid = async (steamId64, {
+  secret = process.env.STEAM_UID_SECRET,
+  getUser = (uid) => admin.auth().getUser(uid),
+} = {}) => {
+  const legacy = legacySteamUid(steamId64);
+  const existing = await getUser(legacy).catch((error) => {
+    if (error.code === "auth/user-not-found") return null;
+    throw error;
+  });
+  return existing ? legacy : steamUid(steamId64, secret);
+};
+
 const loginWithSteam = async (params) => {
   const steamId64 = await verifyOpenIdResponse(params);
 
   await consumeNonce(params);
 
+  const uid = await resolveSteamUid(steamId64);
   const [customToken, profile] = await Promise.all([
-    admin.auth().createCustomToken(`steam:${steamId64}`),
+    admin.auth().createCustomToken(uid),
     getPublicProfile(steamId64).catch((error) => {
       // Sin perfil público igual se puede iniciar sesión
       console.error(
@@ -230,6 +266,8 @@ const loginWithSteam = async (params) => {
 
 module.exports = {
   loginWithSteam,
+  steamUid,
+  resolveSteamUid,
   verifyOpenIdResponse,
   getPublicProfile,
   getAllowedOrigins,

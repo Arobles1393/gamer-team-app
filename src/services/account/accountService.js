@@ -6,7 +6,8 @@ import { authService } from "../auth";
 const callable = httpsCallable(functions, "deleteAccount");
 
 // Método con el que entra la cuenta: "password", "google" o "steam".
-// Steam usa custom token: sin providerData o con uid "steam:..."
+// Steam usa custom token: sin providerData (las cuentas de Steam anteriores
+// además tienen uid "steam:..."; las nuevas, un uid seudónimo)
 export const getSignInMethod = (user) => {
   const providers = user?.providerData?.map((provider) => provider.providerId) ?? [];
   if (!providers.length || user?.uid?.startsWith("steam:")) return "steam";
