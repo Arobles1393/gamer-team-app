@@ -32,8 +32,8 @@
   },
   "players": {
     "title": "Trouver des joueurs",
-    "searchPlaceholder": "Nom d'utilisateur…",
-    "searchLabel": "Rechercher un joueur par nom d'utilisateur",
+    "searchPlaceholder": "Pseudo…",
+    "searchLabel": "Rechercher un joueur par pseudo",
     "searching": "Recherche de joueurs",
     "found_one": "{{count}} joueur trouvé",
     "found_other": "{{count}} joueurs trouvés",
@@ -41,7 +41,7 @@
     "empty": {
       "idle": {
         "title": "Trouvez votre prochaine squad",
-        "text": "Saisissez le nom d'utilisateur d'un joueur pour commencer."
+        "text": "Saisissez le pseudo d'un joueur pour commencer."
       },
       "empty": {
         "title": "Aucun joueur ne correspond",

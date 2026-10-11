@@ -8,7 +8,7 @@
     "tabGroup": "Chats de partida",
     "unreadBadge": "{{count}} não lidos",
     "searchDirect": "Buscar chat…",
-    "searchDirectLabel": "Buscar chat por nome de usuário",
+    "searchDirectLabel": "Buscar chat por nickname",
     "searchGroup": "Buscar por jogo…",
     "searchGroupLabel": "Buscar chat de partida por jogo",
     "user": "Usuário",
@@ -33,7 +33,7 @@
     },
     "noMatch": {
       "title": "Nenhum chat corresponde",
-      "text": "Você não tem chats com alguém cujo usuário contenha \"{{search}}\".",
+      "text": "Você não tem chats com alguém cujo nickname contenha \"{{search}}\".",
       "action": "Limpar busca"
     },
     "noGroupMatch": {

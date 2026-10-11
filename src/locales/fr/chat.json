@@ -8,7 +8,7 @@
     "tabGroup": "Discussions de partie",
     "unreadBadge": "{{count}} non lues",
     "searchDirect": "Rechercher une discussion…",
-    "searchDirectLabel": "Rechercher une discussion par nom d'utilisateur",
+    "searchDirectLabel": "Rechercher une discussion par pseudo",
     "searchGroup": "Rechercher par jeu…",
     "searchGroupLabel": "Rechercher une discussion de partie par jeu",
     "user": "Utilisateur",

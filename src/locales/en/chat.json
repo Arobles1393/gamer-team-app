@@ -8,7 +8,7 @@
     "tabGroup": "Party chats",
     "unreadBadge": "{{count}} unread",
     "searchDirect": "Search chats…",
-    "searchDirectLabel": "Search chats by username",
+    "searchDirectLabel": "Search chats by nickname",
     "searchGroup": "Search by game…",
     "searchGroupLabel": "Search party chats by game",
     "user": "User",
@@ -33,7 +33,7 @@
     },
     "noMatch": {
       "title": "No chats match",
-      "text": "You have no chats with anyone whose username contains \"{{search}}\".",
+      "text": "You have no chats with anyone whose nickname contains \"{{search}}\".",
       "action": "Clear search"
     },
     "noGroupMatch": {

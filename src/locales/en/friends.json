@@ -15,7 +15,7 @@
       },
       "noMatch": {
         "title": "No friends match",
-        "text": "None of your friends has a username containing \"{{search}}\".",
+        "text": "None of your friends has a nickname containing \"{{search}}\".",
         "action": "Clear search"
       },
       "offline": {
@@ -32,8 +32,8 @@
   },
   "players": {
     "title": "Find players",
-    "searchPlaceholder": "Username…",
-    "searchLabel": "Search players by username",
+    "searchPlaceholder": "Nickname…",
+    "searchLabel": "Search players by nickname",
     "searching": "Searching players",
     "found_one": "{{count}} player found",
     "found_other": "{{count}} players found",
@@ -41,11 +41,11 @@
     "empty": {
       "idle": {
         "title": "Find your next squad",
-        "text": "Type a player's username to get started."
+        "text": "Type a player's nickname to get started."
       },
       "empty": {
         "title": "No players match",
-        "text": "We couldn't find anyone whose username starts with \"{{search}}\".",
+        "text": "We couldn't find anyone whose nickname starts with \"{{search}}\".",
         "action": "Clear search"
       },
       "error": {

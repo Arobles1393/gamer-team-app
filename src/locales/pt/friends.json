@@ -15,7 +15,7 @@
       },
       "noMatch": {
         "title": "Nenhum amigo corresponde",
-        "text": "Nenhum dos seus amigos tem um usuário que contenha \"{{search}}\".",
+        "text": "Nenhum dos seus amigos tem um nickname que contenha \"{{search}}\".",
         "action": "Limpar busca"
       },
       "offline": {
@@ -32,8 +32,8 @@
   },
   "players": {
     "title": "Buscar jogadores",
-    "searchPlaceholder": "Nome de usuário…",
-    "searchLabel": "Buscar jogador por nome de usuário",
+    "searchPlaceholder": "Nickname…",
+    "searchLabel": "Buscar jogador por nickname",
     "searching": "Buscando jogadores",
     "found_one": "{{count}} jogador encontrado",
     "found_other": "{{count}} jogadores encontrados",
@@ -41,11 +41,11 @@
     "empty": {
       "idle": {
         "title": "Encontre seu próximo squad",
-        "text": "Digite o nome de usuário de um jogador para começar."
+        "text": "Digite o nickname de um jogador para começar."
       },
       "empty": {
         "title": "Nenhum jogador corresponde",
-        "text": "Não encontramos ninguém cujo usuário comece com \"{{search}}\".",
+        "text": "Não encontramos ninguém cujo nickname comece com \"{{search}}\".",
         "action": "Limpar busca"
       },
       "error": {
