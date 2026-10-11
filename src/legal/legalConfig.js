@@ -2,6 +2,10 @@
 // para saber qué versión aceptó cada usuario
 export const LEGAL_VERSIONS = { terms: "provisional-4", privacy: "provisional-8" };
 
+// Estado de los textos legales: "provisional" muestra el aviso "Versión
+// provisional: puede cambiar" aunque ya no queden marcadores [PENDIENTE]
+export const LEGAL_STATUS = "provisional";
+
 // Casilla "He leído y acepto..." en el registro. Se pondrá en true cuando
 // el contenido real exista
 export const REQUIRE_LEGAL_CONSENT = false;

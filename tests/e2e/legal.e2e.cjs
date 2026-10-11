@@ -20,6 +20,9 @@ const CONSENT = process.env.E2E_LEGAL_CONSENT === "1";
 const CONTACT_EMAIL = fs.readFileSync(path.join(__dirname, "../../src/config/contact.js"), "utf8")
   .match(/CONTACT_EMAIL = "([^"]+)"/)[1];
 const MAILTO = `mailto:${CONTACT_EMAIL}`;
+// Estado de los textos (src/legal/legalConfig.js): "provisional" muestra el aviso siempre
+const LEGAL_STATUS = fs.readFileSync(path.join(__dirname, "../../src/legal/legalConfig.js"), "utf8")
+  .match(/LEGAL_STATUS = "([^"]+)"/)[1];
 // Sin desplazamiento horizontal de la página (móvil a 360 px)
 const noHorizontalScroll = (page) => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
 // Versiones vigentes, leídas de src/legal/legalConfig.js (módulo ES): así la
@@ -70,11 +73,12 @@ const removeTmp = async () => {
         await page.goto(`${BASE}${route}`);
         await page.locator(".legal__sections").waitFor({ timeout: 15000 });
         check(`${route}: abre sin sesión con su título`, (await page.locator("h1").innerText()).trim().toLowerCase() === title.toLowerCase());
-        // El aviso sale solo mientras el documento tenga marcadores [PENDIENTE]
+        // El aviso sale mientras LEGAL_STATUS sea "provisional" o el documento tenga marcadores [PENDIENTE]
         const pending = (await page.locator(".legal__sections").innerText()).includes("[PENDIENTE");
+        const expectNotice = LEGAL_STATUS === "provisional" || pending;
         const draftNotice = await page.locator(".legal__notice--draft").innerText().catch(() => "");
-        check(`${route}: aviso de versión provisional solo si quedan [PENDIENTE] (${pending ? "quedan" : "no quedan"})`,
-          pending ? /Versión provisional: puede cambiar/.test(draftNotice) : draftNotice === "");
+        check(`${route}: aviso de versión provisional ${expectNotice ? "visible" : "oculto"} (estado ${LEGAL_STATUS}, ${pending ? "quedan" : "sin"} [PENDIENTE])`,
+          expectNotice ? /Versión provisional: puede cambiar/.test(draftNotice) : draftNotice === "");
         check(`${route}: con fecha de última actualización`, /Última actualización: \d{1,2} de \w+ de \d{4}/.test(await page.locator(".legal__updated").innerText()));
         check(`${route}: ${sections} secciones e índice con las mismas`, await page.locator(".legal__section").count() === sections
           && await page.locator(".legal__toc a").count() === sections);

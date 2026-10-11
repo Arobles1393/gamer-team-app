@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useLegalDocument } from "../../hooks";
 import { getIntlLocale } from "../../i18n";
 import { CONTACT_EMAIL, CONTACT_MAILTO } from "../../config/contact";
+import { LEGAL_STATUS } from "../../legal/legalConfig";
 import "../Posts/Feed.css";
 import "./Legal.css";
 
@@ -27,6 +28,9 @@ const withContactLink = (paragraph) =>
 export default function LegalPage({ type }) {
   const { t } = useTranslation("legal");
   const { document: legalDoc, fallback, isDraft } = useLegalDocument(type);
+  // "Versión provisional": mientras los textos estén en estado provisional o
+  // quede algún marcador [PENDIENTE]
+  const showDraftNotice = LEGAL_STATUS === "provisional" || isDraft;
   const title = t(`titles.${type}`);
 
   useEffect(() => {
@@ -55,7 +59,7 @@ export default function LegalPage({ type }) {
         </div>
       </header>
 
-      {isDraft && (
+      {showDraftNotice && (
         <p className="legal__notice legal__notice--draft" role="note">
           <i className="pi pi-pencil" aria-hidden="true" />
           {t("draftNotice")}

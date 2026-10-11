@@ -130,7 +130,7 @@ export const terms = {
       id: "responsabilidad",
       title: "Servicio en beta y responsabilidad",
       body: [
-        "El servicio se ofrece “tal cual”, puede tener errores, cambiar o interrumpirse. En la medida permitida por la ley, no respondemos por daños indirectos. [PENDIENTE: revisión por un abogado de todo el texto (privacidad y términos), en especial esta sección, la ley aplicable y la edad mínima, según el país desde el que se ofrece el servicio]."
+        "El servicio se ofrece “tal cual”, puede tener errores, cambiar o interrumpirse. En la medida permitida por la ley, no respondemos por daños indirectos."
       ]
     },
     {
@@ -144,7 +144,7 @@ export const terms = {
       id: "cambios",
       title: "Cambios, ley aplicable y contacto",
       body: [
-        `Podemos actualizar estos términos; si sigues usando el servicio después, los aceptas, y avisaremos de los cambios importantes. Ley aplicable: [PENDIENTE: país o jurisdicción cuya ley se aplica, lo decide el responsable del servicio con revisión legal]. Contacto: ${CONTACT_EMAIL}.`
+        `Podemos actualizar estos términos; si sigues usando el servicio después, los aceptas, y avisaremos de los cambios importantes. Ley aplicable: Estos términos se rigen por las leyes de México, sin perjuicio de los derechos que la ley imperativa de tu país de residencia te reconozca. Contacto: ${CONTACT_EMAIL}.`
       ]
     }
   ]
