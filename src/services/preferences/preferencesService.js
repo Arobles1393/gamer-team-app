@@ -7,6 +7,8 @@ import { LEGAL_VERSIONS, MIN_AGE } from "../../legal/legalConfig";
 // - onboarding: { completed, showAgain, completedVersion } (guía de bienvenida)
 // - legalConsent: { termsVersion, privacyVersion, acceptedAt }
 // - ageConfirmation: { minAge, confirmedAt } ("Tengo 18 años o más")
+// - chooseUsername: true = falta "Elige tu apodo" (cuenta de Google o perfil
+//   rehecho, que empiezan con un apodo genérico)
 const preferencesRef = (uid) => doc(db, "users", uid, "private", "preferences");
 
 // Una sola lectura (sin listener). null si todavía no existe el documento
@@ -38,9 +40,13 @@ const saveAgeConfirmation = (uid) =>
     }
   });
 
+const setChooseUsername = (uid, value) =>
+  updatePreferences(uid, { chooseUsername: value });
+
 export const preferencesService = {
   getPreferences,
   updatePreferences,
   saveLegalConsent,
-  saveAgeConfirmation
+  saveAgeConfirmation,
+  setChooseUsername
 };

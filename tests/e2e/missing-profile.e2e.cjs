@@ -1,6 +1,8 @@
 // Cuenta sin perfil (registro que falló a medias, auditoría M-13): al
-// iniciar sesión, la app espera unos segundos y crea un perfil básico, avisa
-// y Mi perfil se muestra. Cuenta temporal qa_mp_* que se borra al final.
+// iniciar sesión, la app espera unos segundos y crea un perfil básico con un
+// apodo genérico (no el correo), avisa, Mi perfil se muestra y pide "Elige
+// tu apodo" (lo mismo que el primer inicio con Google). Cuenta temporal
+// qa_mp_* que se borra al final.
 const fs = require("fs");
 const path = require("path");
 const { chromium } = require("playwright-core");
@@ -13,6 +15,8 @@ const db = admin.firestore();
 const BASE = process.env.E2E_BASE_URL || "http://localhost:3000";
 const STAMP = Date.now().toString(36);
 const ACC = { email: `qa.mp.${STAMP}@example.com`, password: `Qa-${STAMP}m4` };
+const CHOSEN = `qa_mp_elegido_${STAMP}`;
+const QA = JSON.parse(fs.readFileSync(`${__dirname}/.qa-users.json`, "utf8"));
 
 const results = [];
 const check = (name, ok, extra = "") => {
@@ -59,11 +63,34 @@ const cleanup = async () => {
 
     const userDoc = (await db.doc(`users/${ACC.uid}`).get()).data() || {};
     const pub = (await db.doc(`publicProfiles/${ACC.uid}`).get()).data() || {};
-    const expected = ACC.email.split("@")[0];
-    check("users con el nombre de la parte del correo antes de la @", userDoc.username === expected && userDoc.usernameLower === expected.toLowerCase(), userDoc.username);
-    check("y su perfil público, con fecha de creación", pub.username === expected && Boolean(pub.createdAt));
-    const reservation = await db.doc(`usernames/${expected.toLowerCase()}`).get();
+    const generic = userDoc.username;
+    check("users con un apodo genérico (jugador_123456), no el correo", /^jugador_d{6}(_d{4})?$/.test(generic || "") && !generic.includes("qa.mp"), generic);
+    check("y su perfil público, con fecha de creación", pub.username === generic && Boolean(pub.createdAt));
+    const reservation = await db.doc(`usernames/${generic.toLowerCase()}`).get();
     check("y su nombre reservado (sin uid)", reservation.exists && !("uid" in reservation.data()));
+
+    // ---------- Elige tu apodo ----------
+    const prompt = page.locator(".username-prompt");
+    check("pide \"Elige tu apodo\", con el campo vacío", await prompt.waitFor({ timeout: 15000 }).then(() => true, () => false)
+      && await page.locator("#username-prompt-input").inputValue() === "");
+    check("avisa que es público y con qué apodo sigue si lo salta", (await prompt.innerText()).includes("Es público") && (await prompt.innerText()).includes(generic));
+    check("sin botón de cerrar", await prompt.locator(".p-dialog-header-close").count() === 0);
+    await page.locator("#username-prompt-input").fill(QA.ana.username.toUpperCase());
+    await prompt.getByRole("button", { name: "Guardar apodo" }).click();
+    check("un apodo de otra cuenta: avisa que está en uso", await prompt.getByText("Ese apodo ya está en uso").waitFor({ timeout: 10000 }).then(() => true, () => false));
+    await page.locator("#username-prompt-input").fill(CHOSEN);
+    await page.keyboard.press("Enter");
+    await prompt.waitFor({ state: "detached", timeout: 10000 }).catch(() => {});
+    check("con Enter guarda y se cierra", await prompt.count() === 0);
+    const after = (await db.doc(`users/${ACC.uid}`).get()).data() || {};
+    const afterPub = (await db.doc(`publicProfiles/${ACC.uid}`).get()).data() || {};
+    check("users y perfil público con el apodo elegido", after.username === CHOSEN && after.usernameLower === CHOSEN && afterPub.username === CHOSEN);
+    check("reserva el nuevo y libera el genérico", (await db.doc(`usernames/${CHOSEN}`).get()).exists && !(await db.doc(`usernames/${generic.toLowerCase()}`).get()).exists);
+    check("ya no queda pendiente", (await db.doc(`users/${ACC.uid}/private/preferences`).get()).get("chooseUsername") === false);
+    await page.reload();
+    await page.locator(".profile-hero").waitFor({ timeout: 15000 });
+    check("al recargar no vuelve a preguntar", !(await prompt.waitFor({ timeout: 4000 }).then(() => true, () => false)));
+    check("Mi perfil muestra el apodo elegido", (await page.locator(".profile-hero").innerText()).includes(CHOSEN));
     check("sin errores de JS", errors.length === 0, errors.join(" | ").slice(0, 200));
   } finally {
     if (browser) await browser.close();

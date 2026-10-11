@@ -59,3 +59,28 @@
 .age-gate__actions .p-button {
   white-space: nowrap;
 }
+
+/* "Elige tu apodo" (UsernameDialog): mismo diálogo, con un campo */
+.username-prompt__form {
+  align-items: stretch;
+}
+
+.username-prompt__form .age-gate__icon {
+  align-self: center;
+}
+
+.username-prompt__label {
+  margin-top: 4px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gm-label);
+}
+
+.username-prompt__form .p-inputtext {
+  width: 100%;
+}
+
+.username-prompt__form .age-gate__actions {
+  margin-top: 12px;
+}

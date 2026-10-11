@@ -83,4 +83,14 @@ module.exports = async ({ env, test }) => {
     assertFails(setDoc(prefs(unverified), { ageConfirmation: true }, { merge: true })));
   await test("Otro usuario no puede confirmarla por mí", () =>
     assertFails(setDoc(prefs(other, ME), { ageConfirmation: { minAge: 18, confirmedAt: serverTimestamp() } }, { merge: true })));
+
+  // ---------- chooseUsername ("Elige tu apodo" pendiente) ----------
+  await test("Sin verificar: marco y desmarco Elige tu apodo", async () => {
+    await assertSucceeds(setDoc(prefs(unverified), { chooseUsername: true }, { merge: true }));
+    await assertSucceeds(setDoc(prefs(unverified), { chooseUsername: false }, { merge: true }));
+  });
+  await test("chooseUsername solo booleano", () =>
+    assertFails(setDoc(prefs(unverified), { chooseUsername: "sí" }, { merge: true })));
+  await test("Otro usuario no puede cambiarlo", () =>
+    assertFails(setDoc(prefs(other, ME), { chooseUsername: false }, { merge: true })));
 };

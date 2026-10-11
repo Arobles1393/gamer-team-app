@@ -5,7 +5,7 @@ import i18n from "../../i18n";
 import { postAppNotice } from "../../utils/appNotice";
 import { REQUIRE_LEGAL_CONSENT } from "../../legal/legalConfig";
 import { preferencesService } from "../preferences";
-import { profileService } from "../profile";
+import { genericUsername, profileService } from "../profile";
 import { requestSteamOpenIdParams } from "./steamPopup";
 
 const login = async (
@@ -94,6 +94,8 @@ const refreshUser = async (user, { forceToken = true } = {}) => {
 // Crea el perfil solo en el primer login con Google; si ya existe
 // no se toca, para no pisar lo que el usuario haya personalizado.
 // Google no da región: queda en null y se completa desde el perfil.
+// El nombre de Google no se usa (suele ser el nombre real): empieza con un
+// apodo genérico y al entrar se pide elegir uno ("Elige tu apodo").
 // La edad mínima se confirma después, en AgeGate (primer inicio).
 // TODO: el login con Google y Steam también necesitará un paso de
 // aceptación de Términos y Privacidad cuando REQUIRE_LEGAL_CONSENT se active.
@@ -103,14 +105,19 @@ const loginWithGoogle = async () => {
     googleProvider
   );
 
-  const { uid, email, displayName, photoURL } = userCredential.user;
+  const { uid, photoURL } = userCredential.user;
 
   const exists = await profileService.userProfileExists(uid);
 
   if (!exists) {
-    // Si el nombre de Google ya está en uso, se le agrega un número
+    // Antes del perfil: AgeGateProvider lee las preferencias cuando el perfil
+    // existe y así sabe que tiene que pedir el apodo
+    await preferencesService.setChooseUsername(uid, true).catch((error) => {
+      console.error("Error guardando el aviso de elegir apodo:", error.code || error.message);
+    });
+    // Si el genérico ya está en uso, se le agrega un número
     await profileService.createUserProfile(uid, {
-      username: displayName || email.split("@")[0],
+      username: genericUsername(),
       avatar: photoURL,
       region: null
     }, { autoSuffix: true });

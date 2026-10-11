@@ -37,7 +37,7 @@ Nombre de la app: **no existe `BRAND` ni otra constante de nombre** en `src/`. E
 2. **Perfil público.** Incluye **última vez activo** (`lastSeen`) y **fecha de alta** (`createdAt`), y se lee sin sesión por id. El borrador no lo mencionaba.
 3. **Preferencias de juego** (horario, plataformas, idiomas, micrófono, nivel y valores). Las puede leer cualquier usuario con sesión. El borrador solo las listaba como datos recopilados.
 4. **Moderación prometida sin herramienta.** "Podemos quitar contenido y limitar o cerrar cuentas" y "la eliminaremos" (menores) no tienen herramienta en la app. Hoy solo es posible a mano en la consola de Firebase, y para cerrar una cuenta ajena no existe un script que borre todo como `deleteAccount`.
-5. **Datos de Google y Steam.** Con Google llegan correo, nombre y foto, y el **nombre de Google (posible nombre real) se vuelve el apodo público** inicial. Con Steam, el perfil de Steam se agrega a los enlaces públicos.
+5. **[CORREGIDO el nombre de Google: la cuenta empieza con un apodo genérico (jugador_123456) y al entrar se pide "Elige tu apodo", vacío y con aviso de que es público; también los perfiles rehechos; privacidad provisional-8. La foto de Google sigue siendo la foto de perfil inicial]** **Datos de Google y Steam.** Con Google llegan correo, nombre y foto, y el **nombre de Google (posible nombre real) se vuelve el apodo público** inicial. Con Steam, el perfil de Steam se agrega a los enlaces públicos.
 6. **Terceros que faltaban:** IGN y GameSpot (noticias e imágenes), las páginas de enlaces de guías que visita el servidor, y los hosts arbitrarios de imágenes de guías, que reciben la IP de quien abre la guía, también sin sesión.
 
 ## (b) Hallazgos de seguridad o privacidad de paso

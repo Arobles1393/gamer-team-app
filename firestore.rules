@@ -227,8 +227,10 @@ service cloud.firestore {
       // privacy.allowSteamJoin: "Unirme en Steam" (ausente = false)
       allow create, update: if isOwner(userId)
                             && docId == "preferences"
-                            && request.resource.data.keys().hasOnly(["onboarding", "legalConsent", "privacy", "ageConfirmation"])
+                            && request.resource.data.keys().hasOnly(["onboarding", "legalConsent", "privacy", "ageConfirmation", "chooseUsername"])
                             && validAgeConfirmation()
+                            // "Elige tu apodo" pendiente (cuentas que empiezan con uno genérico)
+                            && (!("chooseUsername" in request.resource.data) || request.resource.data.chooseUsername is bool)
                             && (!("privacy" in request.resource.data)
                                 || (request.resource.data.privacy.keys().hasOnly(["allowSteamJoin"])
                                     && request.resource.data.privacy.allowSteamJoin is bool));
