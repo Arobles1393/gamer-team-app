@@ -125,7 +125,10 @@ const login = async (page, acc) => {
     // Cerrar sesión desde el diálogo
     await gate(page).getByRole("button", { name: "Cerrar sesión" }).click();
     await page.locator(".rail-btn--login").waitFor({ timeout: 10000 }).catch(() => {});
-    check("\"Cerrar sesión\" sale de la cuenta", await page.locator(".rail-btn--login").count() > 0 && await gate(page).count() === 0);
+    // El diálogo se va con una animación de cierre
+    await gate(page).waitFor({ state: "detached", timeout: 5000 }).catch(() => {});
+    const loggedOut = { login: await page.locator(".rail-btn--login").count(), gate: await gate(page).count(), url: page.url() };
+    check("\"Cerrar sesión\" sale de la cuenta", loggedOut.login > 0 && loggedOut.gate === 0, JSON.stringify(loggedOut));
     check("no se guardó ninguna confirmación", !(await prefsOf(GATE.uid))?.ageConfirmation);
 
     // Volver a entrar y confirmar
