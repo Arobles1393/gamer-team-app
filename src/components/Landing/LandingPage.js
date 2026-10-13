@@ -57,13 +57,19 @@ export default function LandingPage() {
   useEffect(() => {
     let cancelled = false;
     import("./controller3d")
-      .then(({ createControllerScene }) => {
+      .then(async ({ createControllerScene }) => {
         if (cancelled || !canvasRef.current) return;
         try {
-          sceneRef.current = createControllerScene(canvasRef.current, { reducedMotion });
+          // Resuelve cuando el modelo ha cargado; hasta entonces, la imagen fija
+          const controller = await createControllerScene(canvasRef.current, { reducedMotion });
+          if (cancelled) {
+            controller.dispose();
+            return;
+          }
+          sceneRef.current = controller;
           setScene3d("ready");
         } catch (error) {
-          console.error("Sin WebGL: se muestra la imagen fija del mando", error.message);
+          console.error("Sin WebGL o sin modelo: se muestra la imagen fija del mando", error.message);
           setScene3d("failed");
         }
       })

@@ -63,6 +63,15 @@ export const CREDITS = [
     requiresAttribution: false
   },
   {
+    // Modelo 3D CC0 (no exige atribución, pero se agradece)
+    id: "polyHaven",
+    name: "Poly Haven",
+    url: "https://polyhaven.com",
+    purposeKey: "purpose.polyHaven",
+    category: "media",
+    requiresAttribution: false
+  },
+  {
     id: "youtube",
     name: "YouTube",
     url: "https://www.youtube.com",

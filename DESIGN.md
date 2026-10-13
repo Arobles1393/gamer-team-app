@@ -139,7 +139,7 @@ GamerMatch es una sala de juegos de noche: un fondo azul casi negro (void-navy) 
 
 La tipografía tiene dos voces. Russo One, una display gruesa y geométrica de rótulo de arcade, nombra cosas: titulares, juegos, fichas, botones de acción. Chakra Petch, técnica y de esquinas cortadas, lo explica todo lo demás. La densidad es la de una app de uso diario: tarjetas compactas que se deciden sin abrirse, chips pequeños con iconos, y un rail lateral que en móvil se convierte en barra inferior.
 
-La portada sin sesión lleva el mundo a escena sin salir de él: un mando 3D procedural (cuerpo oscuro, contorno de neón violeta con halo aditivo suave, piezas que se encienden en rosa) como pantalla de selección de personaje. Es una expresión de la portada, no un patrón para el resto de pantallas.
+La portada sin sesión lleva el mundo a escena sin salir de él: un mando 3D realista (el modelo CC0 "Gamepad" de Poly Haven, sin cable, con luz de estudio, contraluz violeta y un brillo violeta suave detrás; la zona elegida se enciende en rosa) como pantalla de selección de personaje. Es una expresión de la portada, no un patrón para el resto de pantallas.
 
 **Key Characteristics:**
 - Fondo void-navy con dos resplandores radiales fijos (violeta 14 %, rosa 9 %).

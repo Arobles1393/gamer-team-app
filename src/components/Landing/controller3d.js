@@ -1,243 +1,170 @@
 import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 
-// Mando 3D de la portada (LandingPage), hecho con geometría: cuerpo extruido
-// con un contorno de neón violeta y cuatro partes que se encienden en rosa, una
-// por razón de GamerMatch. Este módulo se importa con import() para que
-// three.js vaya en su propio archivo y solo se descargue en la portada.
+// Mando 3D de la portada (LandingPage): el modelo "Gamepad" de Poly Haven
+// (Josh Dean, CC0), sin el cable (public/landing/gamepad.glb, ver
+// public/landing/README.md). Cada razón de GamerMatch enciende en rosa una
+// zona del mando. Este módulo se importa con import() para que three.js vaya
+// en su propio archivo y solo se descargue en la portada.
+
+const MODEL_URL = "/landing/gamepad.glb";
 
 const COLORS = {
-  body: 0x16152e,
-  rim: 0x8b5cf6,
-  part: 0x2a2550,
-  idle: 0x7c3aed,
-  active: 0xf43f5e
+  glow: "rgba(139, 92, 246, 0.5)",
+  active: 0xf43f5e,
+  violet: 0x7c3aed
 };
 
-// Parte del mando que corresponde a cada razón, en el orden de las fichas:
-// 0 partidas claras (botones de acción), 1 compatibilidad (stick izquierdo),
-// 2 Steam (panel táctil y sus luces), 3 comunidad (cruceta)
-export const PART_ORDER = ["face", "leftStick", "touchpad", "dpad"];
+// Zonas del mando en coordenadas del modelo (x, z: centro; rx, rz: radios
+// de la elipse; minY: altura mínima, para encender solo lo que sobresale).
+// El orden coincide con las fichas: 0 partidas claras (botones de acción),
+// 1 compatibilidad (Select), 2 Steam (Start), 3 comunidad (cruceta)
+const ZONES = [
+  { x: 0.066, z: 0.1902, rx: 0.023, rz: 0.023, minY: 0.0161 },
+  { x: 0.0126, z: 0.1992, rx: 0.0068, rz: 0.0038, minY: 0 },
+  { x: 0.0316, z: 0.1992, rx: 0.0068, rz: 0.0038, minY: 0 },
+  { x: -0.0195, z: 0.1902, rx: 0.02, rz: 0.02, minY: 0.0161 }
+];
 
 // Hacia dónde mira el mando para cada ficha: y = izquierda/derecha,
 // x = arriba/abajo (fichas superiores e inferiores de cada lado)
 const FACING = [
-  { y: -0.45, x: -0.3 },
-  { y: -0.45, x: -0.04 },
-  { y: 0.45, x: -0.3 },
-  { y: 0.45, x: -0.04 }
+  { y: -0.42, x: -0.28 },
+  { y: -0.42, x: -0.02 },
+  { y: 0.42, x: -0.28 },
+  { y: 0.42, x: -0.02 }
 ];
 
-// Contorno del cuerpo: la mitad derecha, que se refleja para la izquierda
-// Forma inspirada en los mandos de consola actuales: frente ancho para el panel
-// táctil y grips redondeados que se abren hacia abajo y afuera
-const RIGHT_HALF = [
-  [0, 1.02], [0.9, 1.06], [1.75, 1.1], [2.4, 0.94], [2.8, 0.48], [3.0, -0.2],
-  [3.14, -1.1], [3.22, -1.9], [3.02, -2.45], [2.58, -2.58], [2.2, -2.25], [1.88, -1.55],
-  [1.45, -1.3], [0.75, -1.22], [0, -1.2]
-];
+// Tamaño en la escena: el mando mide 14,4 cm de ancho
+const SCALE = 46;
 
-// Rectángulo de esquinas redondeadas centrado en el origen (panel táctil)
-const roundedRect = (w, h, r) => {
-  const shape = new THREE.Shape();
-  const x = -w / 2;
-  const y = -h / 2;
-  shape.moveTo(x + r, y);
-  shape.lineTo(x + w - r, y);
-  shape.quadraticCurveTo(x + w, y, x + w, y + r);
-  shape.lineTo(x + w, y + h - r);
-  shape.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-  shape.lineTo(x + r, y + h);
-  shape.quadraticCurveTo(x, y + h, x, y + h - r);
-  shape.lineTo(x, y + r);
-  shape.quadraticCurveTo(x, y, x + r, y);
-  return shape;
-};
-
-// Recorrido: mitad derecha de arriba abajo y mitad izquierda de abajo arriba
-const bodyShape = () => {
-  const right = RIGHT_HALF.map(([x, y]) => new THREE.Vector2(x, y));
-  const left = RIGHT_HALF.slice(1, -1).map(([x, y]) => new THREE.Vector2(-x, y)).reverse();
-  const outline = [...right, ...left];
-  const shape = new THREE.Shape();
-  shape.moveTo(outline[0].x, outline[0].y);
-  shape.splineThru([...outline.slice(1), outline[0]]);
-  return shape;
-};
-
-const buildController = () => {
-  const group = new THREE.Group();
-  const disposables = [];
-  const track = (thing) => {
-    disposables.push(thing);
-    return thing;
+// Enciende en rosa la zona elegida: se suma a la emisión del material en el
+// shader, así el modelo sigue siendo una sola pieza
+const addHighlight = (material) => {
+  const uniforms = {
+    uZone: { value: new THREE.Vector4() },
+    uMinY: { value: 0 },
+    uGlow: { value: 0 },
+    uColor: { value: new THREE.Color(COLORS.active) }
   };
+  material.onBeforeCompile = (shader) => {
+    Object.assign(shader.uniforms, uniforms);
+    shader.vertexShader = shader.vertexShader
+      .replace("#include <common>", "#include <common>\nvarying vec3 vModelPos;")
+      .replace("#include <begin_vertex>", "#include <begin_vertex>\nvModelPos = position;");
+    shader.fragmentShader = shader.fragmentShader
+      .replace("#include <common>", "#include <common>\nvarying vec3 vModelPos;\nuniform vec4 uZone;\nuniform float uMinY;\nuniform float uGlow;\nuniform vec3 uColor;")
+      .replace("#include <emissivemap_fragment>", `#include <emissivemap_fragment>
+        vec2 zoneDist = (vModelPos.xz - uZone.xy) / uZone.zw;
+        float zoneMask = 1.0 - smoothstep(0.7, 1.0, length(zoneDist));
+        zoneMask *= smoothstep(uMinY - 0.0006, uMinY + 0.0004, vModelPos.y);
+        totalEmissiveRadiance += uColor * zoneMask * uGlow;`);
+  };
+  return uniforms;
+};
 
-  // Cuerpo
-  const depth = 0.36;
-  const bodyGeometry = track(new THREE.ExtrudeGeometry(bodyShape(), {
-    depth,
-    bevelEnabled: true,
-    bevelThickness: 0.16,
-    bevelSize: 0.13,
-    bevelSegments: 6,
-    curveSegments: 48
-  }));
-  bodyGeometry.translate(0, 0.35, -depth / 2);
-  const bodyMaterial = track(new THREE.MeshStandardMaterial({ color: COLORS.body, metalness: 0.35, roughness: 0.42 }));
-  group.add(new THREE.Mesh(bodyGeometry, bodyMaterial));
+const loadController = async () => {
+  const gltf = await new GLTFLoader().loadAsync(MODEL_URL);
+  const disposables = [];
+  let mesh = null;
+  gltf.scene.traverse((child) => {
+    if (child.isMesh && !mesh) mesh = child;
+  });
+  if (!mesh) throw new Error("El modelo del mando no tiene malla");
+  disposables.push(mesh.geometry, mesh.material);
+  ["map", "normalMap", "roughnessMap", "metalnessMap"].forEach((key) => {
+    if (mesh.material[key]) disposables.push(mesh.material[key]);
+  });
 
-  // Contorno de neón: el mismo cuerpo un poco más grande, solo por detrás
-  // (técnica de "casco invertido"), centrado sobre el cuerpo
-  bodyGeometry.computeBoundingBox();
-  const center = bodyGeometry.boundingBox.getCenter(new THREE.Vector3());
-  // El trazo nítido del contorno
-  const rimScale = 1.03;
-  const rimMaterial = track(new THREE.MeshBasicMaterial({ color: COLORS.rim, side: THREE.BackSide }));
-  const rim = new THREE.Mesh(bodyGeometry, rimMaterial);
-  rim.scale.setScalar(rimScale);
-  rim.position.copy(center).multiplyScalar(1 - rimScale);
-  group.add(rim);
+  const highlight = addHighlight(mesh.material);
 
-  // Y su brillo: un plano detrás del cuerpo con un degradado radial suave
-  // (aditivo), en vez de un pase de bloom, para no cargar la GPU
+  // Centrado y de frente: el modelo está tumbado (los botones miran a +y)
+  mesh.geometry.computeBoundingBox();
+  const center = mesh.geometry.boundingBox.getCenter(new THREE.Vector3());
+  mesh.removeFromParent();
+  mesh.position.copy(center).multiplyScalar(-1);
+  mesh.rotation.set(0, 0, 0);
+  mesh.scale.setScalar(1);
+  const lying = new THREE.Group();
+  lying.add(mesh);
+  lying.rotation.x = Math.PI / 2;
+  lying.scale.setScalar(SCALE);
+
+  const group = new THREE.Group();
+  group.add(lying);
+
+  // Brillo violeta detrás del mando: un plano con un degradado radial suave
   const glowCanvas = document.createElement("canvas");
   glowCanvas.width = 256;
   glowCanvas.height = 256;
   const ctx = glowCanvas.getContext("2d");
   const gradient = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-  gradient.addColorStop(0, "rgba(139, 92, 246, 0.55)");
-  gradient.addColorStop(0.45, "rgba(139, 92, 246, 0.22)");
-  gradient.addColorStop(0.75, "rgba(244, 63, 94, 0.07)");
+  gradient.addColorStop(0, COLORS.glow);
+  gradient.addColorStop(0.45, "rgba(139, 92, 246, 0.2)");
+  gradient.addColorStop(0.75, "rgba(244, 63, 94, 0.06)");
   gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, 256, 256);
-  const glowTexture = track(new THREE.CanvasTexture(glowCanvas));
-  const glowMaterial = track(new THREE.MeshBasicMaterial({
+  const glowTexture = new THREE.CanvasTexture(glowCanvas);
+  const glowMaterial = new THREE.MeshBasicMaterial({
     map: glowTexture,
     transparent: true,
     depthWrite: false,
     blending: THREE.AdditiveBlending
-  }));
-  const glow = new THREE.Mesh(track(new THREE.PlaneGeometry(8.6, 5.4)), glowMaterial);
-  glow.position.set(center.x, center.y, -0.9);
-  group.add(glow);
-
-  const front = depth / 2 + 0.16;
-  const parts = {};
-  const partMaterial = () => track(new THREE.MeshStandardMaterial({
-    color: COLORS.part,
-    emissive: new THREE.Color(COLORS.idle),
-    emissiveIntensity: 0.25,
-    metalness: 0.2,
-    roughness: 0.35
-  }));
-  const addPart = (name, meshes) => {
-    const material = partMaterial();
-    const partGroup = new THREE.Group();
-    meshes.forEach(({ geometry, position, rotation }) => {
-      const mesh = new THREE.Mesh(track(geometry), material);
-      mesh.position.set(...position);
-      if (rotation) mesh.rotation.set(...rotation);
-      partGroup.add(mesh);
-    });
-    group.add(partGroup);
-    parts[name] = { group: partGroup, material };
-  };
-
-  // Botones de acción (rombo de cuatro), a la derecha
-  // Abombados: media esfera aplastada sobre la cara
-  addPart("face", [[0, 0.36], [0.36, 0], [0, -0.36], [-0.36, 0]].flatMap(([x, y]) => [
-    {
-      geometry: new THREE.CylinderGeometry(0.15, 0.15, 0.06, 32),
-      position: [2.05 + x, 0.5 + y, front - 0.02],
-      rotation: [Math.PI / 2, 0, 0]
-    },
-    {
-      geometry: new THREE.SphereGeometry(0.15, 32, 12, 0, Math.PI * 2, 0, Math.PI / 2).scale(1, 0.55, 1),
-      position: [2.05 + x, 0.5 + y, front + 0.02],
-      rotation: [Math.PI / 2, 0, 0]
-    }
-  ]));
-
-  // Cruceta, a la izquierda
-  addPart("dpad", [
-    { geometry: new THREE.BoxGeometry(0.74, 0.22, 0.12), position: [-2.05, 0.5, front] },
-    { geometry: new THREE.BoxGeometry(0.22, 0.74, 0.12), position: [-2.05, 0.5, front] }
-  ]);
-
-  // Sticks: base y cabeza
-  const stick = (x) => [
-    { geometry: new THREE.CylinderGeometry(0.31, 0.34, 0.1, 40), position: [x, -0.42, front - 0.02], rotation: [Math.PI / 2, 0, 0] },
-    { geometry: new THREE.SphereGeometry(0.23, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), position: [x, -0.42, front + 0.03], rotation: [Math.PI / 2, 0, 0] }
-  ];
-  // Simétricos, juntos abajo en el centro
-  addPart("leftStick", stick(-0.78));
-  addPart("rightStick", stick(0.78));
-
-  // Panel táctil ancho arriba al centro, con una franja de luz a cada lado
-  const pad = new THREE.ExtrudeGeometry(roundedRect(1.7, 0.95, 0.16), {
-    depth: 0.04, bevelEnabled: true, bevelThickness: 0.03, bevelSize: 0.03, bevelSegments: 3
   });
-  addPart("touchpad", [
-    { geometry: pad, position: [0, 0.78, front - 0.04] },
-    ...[-1, 1].map((side) => ({
-      geometry: new THREE.CapsuleGeometry(0.035, 0.7, 4, 12),
-      position: [side * 0.98, 0.72, front - 0.01],
-      rotation: [0, 0, side * 0.12]
-    }))
-  ]);
+  const glowGeometry = new THREE.PlaneGeometry(10, 5.6);
+  const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+  glow.position.z = -1.2;
+  group.add(glow);
+  disposables.push(glowTexture, glowMaterial, glowGeometry);
 
-  // Botón central pequeño, entre el panel y los sticks
-  addPart("home", [{
-    geometry: new THREE.CylinderGeometry(0.11, 0.11, 0.06, 32),
-    position: [0, 0.1, front],
-    rotation: [Math.PI / 2, 0, 0]
-  }]);
-
-  // Gatillos superiores
-  addPart("bumpers", [-1, 1].map((side) => ({
-    geometry: new THREE.CapsuleGeometry(0.12, 0.95, 6, 16),
-    position: [side * 1.95, 1.5, 0],
-    rotation: [0, 0, Math.PI / 2]
-  })));
-
-  // Gatillos traseros, detrás de los superiores
-  addPart("triggers", [-1, 1].map((side) => ({
-    geometry: new THREE.BoxGeometry(0.7, 0.34, 0.36),
-    position: [side * 1.95, 1.5, -0.32],
-    rotation: [0.35, 0, 0]
-  })));
-
-  return { group, parts, disposables };
+  return { group, highlight, disposables };
 };
 
 /**
  * Monta el mando en el canvas. reducedMotion: sin flotar ni rotar solo; se
- * dibuja solo cuando algo cambia. Devuelve { select(i), setPointer(x, y),
- * dispose() }. Lanza un error si WebGL no está disponible (la portada muestra
- * entonces la imagen fija).
+ * dibuja solo cuando algo cambia. Resuelve con { select(i), setPointer(x, y),
+ * dispose() } cuando el modelo ha cargado. Falla si WebGL no está disponible
+ * o el modelo no carga (la portada muestra entonces la imagen fija).
  */
-export const createControllerScene = (canvas, { reducedMotion = false } = {}) => {
+export const createControllerScene = async (canvas, { reducedMotion = false } = {}) => {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "low-power" });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+  let loaded;
+  try {
+    loaded = await loadController();
+  } catch (error) {
+    renderer.dispose();
+    throw error;
+  }
+  const { group, highlight, disposables } = loaded;
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
-  camera.position.set(0, -0.32, 9.9);
+  // Reflejos realistas: una habitación de estudio como entorno de luz
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  scene.environment = environment;
+  scene.environmentIntensity = 0.7;
+  pmrem.dispose();
 
-  scene.add(new THREE.AmbientLight(0xffffff, 0.55));
-  const key = new THREE.DirectionalLight(0xffffff, 1.1);
+  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
+  camera.position.set(0, 0, 10);
+
+  const key = new THREE.DirectionalLight(0xffffff, 1.4);
   key.position.set(2, 4, 6);
   scene.add(key);
-  const violet = new THREE.PointLight(COLORS.idle, 40, 30);
-  violet.position.set(-5, 2.5, 4);
+  // Luz de contorno violeta desde atrás y una rosa más suave, del mundo de la app
+  const violet = new THREE.DirectionalLight(COLORS.violet, 2.2);
+  violet.position.set(-4, 3, -5);
   scene.add(violet);
-  const pink = new THREE.PointLight(COLORS.active, 30, 30);
-  pink.position.set(5, -1.5, 4);
+  const pink = new THREE.PointLight(COLORS.active, 18, 30);
+  pink.position.set(5, -2, 4);
   scene.add(pink);
 
-  const { group, parts, disposables } = buildController();
   group.rotation.x = FACING[0].x;
   scene.add(group);
 
@@ -246,6 +173,10 @@ export const createControllerScene = (canvas, { reducedMotion = false } = {}) =>
   let frame = null;
   let visible = true;
   let last = performance.now();
+
+  function render() {
+    renderer.render(scene, camera);
+  }
 
   const resize = () => {
     const { clientWidth: w, clientHeight: h } = canvas;
@@ -256,17 +187,12 @@ export const createControllerScene = (canvas, { reducedMotion = false } = {}) =>
     render();
   };
 
-  const paintParts = (glow) => {
-    Object.entries(parts).forEach(([name, part]) => {
-      const active = name === PART_ORDER[state.selected];
-      part.material.emissive.setHex(active ? COLORS.active : COLORS.idle);
-      part.material.emissiveIntensity = active ? glow : 0.22;
-    });
+  const paintZone = (glow) => {
+    const zone = ZONES[state.selected] ?? ZONES[0];
+    highlight.uZone.value.set(zone.x, zone.z, zone.rx, zone.rz);
+    highlight.uMinY.value = zone.minY;
+    highlight.uGlow.value = glow;
   };
-
-  function render() {
-    renderer.render(scene, camera);
-  }
 
   const tick = (now) => {
     frame = null;
@@ -280,7 +206,7 @@ export const createControllerScene = (canvas, { reducedMotion = false } = {}) =>
     group.rotation.y += (targetY - group.rotation.y) * Math.min(dt * 5, 1);
     group.rotation.x += (targetX - group.rotation.x) * Math.min(dt * 5, 1);
     group.position.y = Math.sin(state.pulse * 1.2) * 0.08;
-    paintParts(1.1 + Math.sin(state.pulse * 3) * 0.35 + state.flash * 2.2);
+    paintZone(0.9 + Math.sin(state.pulse * 3) * 0.3 + state.flash * 1.8);
     render();
     if (visible) frame = requestAnimationFrame(tick);
   };
@@ -313,7 +239,7 @@ export const createControllerScene = (canvas, { reducedMotion = false } = {}) =>
   const settleStatic = () => {
     group.rotation.y = state.target.y;
     group.rotation.x = state.target.x;
-    paintParts(1.2);
+    paintZone(1);
     render();
   };
 
@@ -337,6 +263,7 @@ export const createControllerScene = (canvas, { reducedMotion = false } = {}) =>
       ro.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
       disposables.forEach((thing) => thing.dispose());
+      environment.dispose();
       renderer.dispose();
     }
   };
