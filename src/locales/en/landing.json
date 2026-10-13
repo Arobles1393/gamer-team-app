@@ -1,0 +1,84 @@
+{
+  "pageTitle": "GamerMatch · Find your squad",
+  "title": "Find your squad.",
+  "lead": "Whenever you want to play. Post a party or join one in seconds, with people who play like you.",
+  "selectLabel": "Why GamerMatch",
+  "tabsLabel": "Pick a reason",
+  "reasons": {
+    "parties": {
+      "name": "Clear parties",
+      "hint": "Everything in sight",
+      "title": "Every party tells you what you need",
+      "body": "Game, platform, spots, mic, skill level, language and time. Tap “I want to play” and you’re in the group chat."
+    },
+    "compatible": {
+      "name": "Compatible with you",
+      "hint": "People like you",
+      "title": "Players who fit you",
+      "body": "We suggest players based on your schedule, platforms, languages and how you like to play. Your preferences stay private."
+    },
+    "steam": {
+      "name": "Steam",
+      "hint": "Log in and join",
+      "title": "Connect your Steam",
+      "body": "Log in with your Steam account, see what your squad is playing and, if they allow it, join their lobby."
+    },
+    "community": {
+      "name": "Community",
+      "hint": "In Spanish",
+      "title": "A community in your language",
+      "body": "Player-written guides, gaming news, friends and chats, all in Spanish."
+    }
+  },
+  "autoplay": {
+    "pause": "Pause",
+    "play": "Play"
+  },
+  "actions": {
+    "register": "Create account",
+    "browse": "Browse parties",
+    "haveAccount": "Already have an account?",
+    "login": "Log in"
+  },
+  "demo": {
+    "example": "Example",
+    "parties": {
+      "game": "Rocket League",
+      "description": "Competitive 2v2. We play at night, good vibes.",
+      "slots": "spots",
+      "mic": "Mic",
+      "competitive": "Competitive",
+      "join": "I want to play"
+    },
+    "compatible": {
+      "player": "NightGamer",
+      "score": "87% compatible",
+      "common": "What you have in common",
+      "signals": {
+        "night": "Nights",
+        "pc": "PC",
+        "spanish": "Spanish",
+        "noToxic": "No toxicity"
+      }
+    },
+    "steam": {
+      "login": "Log in with Steam",
+      "playing": "Playing now: Counter-Strike 2",
+      "join": "Join on Steam"
+    },
+    "community": {
+      "guide": {
+        "kind": "Guide",
+        "text": "How to rank up in Valorant"
+      },
+      "news": {
+        "kind": "News",
+        "text": "This week in gaming"
+      },
+      "chat": {
+        "kind": "Group chat",
+        "text": "3 players · 10 PM?"
+      }
+    }
+  }
+}

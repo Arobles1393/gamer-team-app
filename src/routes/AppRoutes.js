@@ -12,6 +12,8 @@ import { GuidesPage, GuideCreate, GuideDetail } from "../components/Guides";
 import { CommunityPage } from "../components/Community";
 import { LegalPage } from "../components/Legal";
 import { CreditsPage } from "../components/Credits";
+import { LandingPage } from "../components/Landing";
+import { useCurrentUser } from "../context";
 import RequireAuth from "./RequireAuth";
 import RequireAdmin from "./RequireAdmin";
 
@@ -19,16 +21,22 @@ const AppRoutes = ({
 	setEditingPost,
 	setShowCreatePost
 }) => {
+	const user = useCurrentUser();
 
 	return (
 		<Routes>
+			{/* Sin sesión, la portada de presentación; con sesión, el feed */}
 			<Route
 				path="/"
 				element={
-					<PostFeed
-						setEditingPost={setEditingPost}
-						setShowCreatePost={setShowCreatePost}
-					/>
+					user ? (
+						<PostFeed
+							setEditingPost={setEditingPost}
+							setShowCreatePost={setShowCreatePost}
+						/>
+					) : (
+						<LandingPage />
+					)
 				}
 			/>
 			{/* Legales: públicas (tiendas y servicios piden una URL abierta) */}

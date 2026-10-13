@@ -1,0 +1,84 @@
+{
+  "pageTitle": "GamerMatch · Encontre seu squad",
+  "title": "Encontre seu squad.",
+  "lead": "Quando quiser jogar. Publique uma partida ou entre em uma em segundos, com gente que joga como você.",
+  "selectLabel": "Por que GamerMatch",
+  "tabsLabel": "Escolha um motivo",
+  "reasons": {
+    "parties": {
+      "name": "Partidas claras",
+      "hint": "Tudo à vista",
+      "title": "Cada partida diz o que você precisa",
+      "body": "Jogo, plataforma, vagas, microfone, nível, idioma e horário. Toque em «Quero jogar» e você entra no chat do grupo."
+    },
+    "compatible": {
+      "name": "Compatíveis com você",
+      "hint": "Gente como você",
+      "title": "Jogadores que combinam com você",
+      "body": "Sugerimos jogadores conforme seu horário, suas plataformas, seus idiomas e como você gosta de jogar. Suas preferências são privadas."
+    },
+    "steam": {
+      "name": "Steam",
+      "hint": "Entre e participe",
+      "title": "Conecte sua Steam",
+      "body": "Entre com sua conta Steam, veja o que seu squad está jogando e, se permitirem, entre no lobby deles."
+    },
+    "community": {
+      "name": "Comunidade",
+      "hint": "Em espanhol",
+      "title": "Uma comunidade no seu idioma",
+      "body": "Guias escritos por jogadores, notícias de games, amigos e chats, tudo em espanhol."
+    }
+  },
+  "autoplay": {
+    "pause": "Pausar",
+    "play": "Reproduzir"
+  },
+  "actions": {
+    "register": "Criar conta",
+    "browse": "Ver partidas",
+    "haveAccount": "Já tem conta?",
+    "login": "Entrar"
+  },
+  "demo": {
+    "example": "Exemplo",
+    "parties": {
+      "game": "Rocket League",
+      "description": "2v2 competitivo. Jogamos à noite, clima bom.",
+      "slots": "vagas",
+      "mic": "Microfone",
+      "competitive": "Competitivo",
+      "join": "Quero jogar"
+    },
+    "compatible": {
+      "player": "NoiteGamer",
+      "score": "87% compatível",
+      "common": "O que vocês têm em comum",
+      "signals": {
+        "night": "Noites",
+        "pc": "PC",
+        "spanish": "Espanhol",
+        "noToxic": "Sem tóxicos"
+      }
+    },
+    "steam": {
+      "login": "Entrar com Steam",
+      "playing": "Jogando agora: Counter-Strike 2",
+      "join": "Entrar na Steam"
+    },
+    "community": {
+      "guide": {
+        "kind": "Guia",
+        "text": "Como subir de rank no Valorant"
+      },
+      "news": {
+        "kind": "Notícia",
+        "text": "As novidades da semana nos games"
+      },
+      "chat": {
+        "kind": "Chat do grupo",
+        "text": "3 jogadores · Às 22h?"
+      }
+    }
+  }
+}

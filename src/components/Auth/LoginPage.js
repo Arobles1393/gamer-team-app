@@ -3,7 +3,8 @@ import { useAuthReady, useCurrentUser } from "../../context";
 import Auth from "./Auth";
 
 // Ruta /login. Al iniciar sesión (con cualquier método) regresa a la página
-// desde la que se pidió el login; sin origen, al feed.
+// desde la que se pidió el login; sin origen, al feed. state.mode
+// "register" abre directamente el registro (p. ej. "Crear cuenta" de la portada).
 export default function LoginPage() {
   const user = useCurrentUser();
   const ready = useAuthReady();
@@ -18,5 +19,5 @@ export default function LoginPage() {
     return <Navigate to={from} replace />;
   }
 
-  return <Auth onBack={() => navigate(from, { replace: true })} />;
+  return <Auth initialMode={location.state?.mode} onBack={() => navigate(from, { replace: true })} />;
 }

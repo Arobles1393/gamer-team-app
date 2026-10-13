@@ -114,6 +114,12 @@
     "url": "https://github.com/remix-run/react-router"
   },
   {
+    "name": "three",
+    "version": "0.180.0",
+    "license": "MIT",
+    "url": "https://threejs.org/"
+  },
+  {
     "name": "topojson-client",
     "version": "3.1.0",
     "license": "ISC",

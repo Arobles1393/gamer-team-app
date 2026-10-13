@@ -24,5 +24,6 @@ export const NAMESPACES = [
   "legal",
   "onboarding",
   "support",
-  "credits"
+  "credits",
+  "landing"
 ];
