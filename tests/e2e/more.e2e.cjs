@@ -128,8 +128,10 @@ const body = (page) => page.locator("body").innerText();
   // ---------------- Reportes y panel de admin ----------------
   await scenario("reportes", async () => {
     let page = await session(QA.carla);
-    // En el detalle no hay botón para reportar la partida: se reporta desde su tarjeta
-    await page.goto(`${BASE}/`);
+    // En el detalle no hay botón para reportar la partida: se reporta desde su
+    // tarjeta. En /explorar filtrado por su juego, porque en el inicio cada
+    // fila muestra solo 6 y otras partidas más nuevas pueden dejarla fuera
+    await page.goto(`${BASE}/explorar?game=${encodeURIComponent("Fortnite Battle Royale")}`);
     await page.locator(".post-card", { hasText: "qa_bruno" }).first().getByRole("button", { name: "Denunciar publicação" }).click();
     await page.getByText("Spam", { exact: true }).click();
     await page.locator("#report-note").fill("Reporte de prueba QA");
