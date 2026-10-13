@@ -50,7 +50,7 @@
 
 .landing__controller {
   position: absolute;
-  inset: -40px 19% 10px;
+  inset: -44px 15% 6px;
   pointer-events: none;
 }
 
@@ -99,7 +99,7 @@
     "b . d";
   align-content: center;
   gap: 18px 24px;
-  min-height: 350px;
+  min-height: 400px;
 }
 
 .landing-reason:nth-child(1) { grid-area: a; }
@@ -668,8 +668,11 @@
     flex-direction: column-reverse;
   }
 
+  /* Una columna: el espacio reservado (la ficha más alta) queda debajo,
+     no entre el texto y la demo */
   .landing__panel {
     grid-template-columns: 1fr;
+    align-content: start;
     gap: 16px;
   }
 

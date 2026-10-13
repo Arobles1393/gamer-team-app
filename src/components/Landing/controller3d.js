@@ -70,24 +70,37 @@ const buildController = () => {
   // (técnica de "casco invertido"), centrado sobre el cuerpo
   bodyGeometry.computeBoundingBox();
   const center = bodyGeometry.boundingBox.getCenter(new THREE.Vector3());
-  // Dos capas: el trazo nítido y un halo aditivo más ancho que hace de brillo
-  const addRim = (scale, opacity, additive) => {
-    const material = track(new THREE.MeshBasicMaterial({
-      color: COLORS.rim,
-      side: THREE.BackSide,
-      transparent: true,
-      opacity,
-      depthWrite: false,
-      blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending
-    }));
-    const rim = new THREE.Mesh(bodyGeometry, material);
-    rim.scale.setScalar(scale);
-    rim.position.copy(center).multiplyScalar(1 - scale);
-    group.add(rim);
-  };
-  addRim(1.03, 0.95, false);
-  addRim(1.075, 0.22, true);
-  addRim(1.12, 0.08, true);
+  // El trazo nítido del contorno
+  const rimScale = 1.03;
+  const rimMaterial = track(new THREE.MeshBasicMaterial({ color: COLORS.rim, side: THREE.BackSide }));
+  const rim = new THREE.Mesh(bodyGeometry, rimMaterial);
+  rim.scale.setScalar(rimScale);
+  rim.position.copy(center).multiplyScalar(1 - rimScale);
+  group.add(rim);
+
+  // Y su brillo: un plano detrás del cuerpo con un degradado radial suave
+  // (aditivo), en vez de un pase de bloom, para no cargar la GPU
+  const glowCanvas = document.createElement("canvas");
+  glowCanvas.width = 256;
+  glowCanvas.height = 256;
+  const ctx = glowCanvas.getContext("2d");
+  const gradient = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+  gradient.addColorStop(0, "rgba(139, 92, 246, 0.55)");
+  gradient.addColorStop(0.45, "rgba(139, 92, 246, 0.22)");
+  gradient.addColorStop(0.75, "rgba(244, 63, 94, 0.07)");
+  gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 256, 256);
+  const glowTexture = track(new THREE.CanvasTexture(glowCanvas));
+  const glowMaterial = track(new THREE.MeshBasicMaterial({
+    map: glowTexture,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  }));
+  const glow = new THREE.Mesh(track(new THREE.PlaneGeometry(8.6, 5.4)), glowMaterial);
+  glow.position.set(center.x, center.y, -0.9);
+  group.add(glow);
 
   const front = depth / 2 + 0.22;
   const parts = {};
@@ -177,7 +190,7 @@ export const createControllerScene = (canvas, { reducedMotion = false } = {}) =>
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
-  camera.position.set(0, 0.2, 9.4);
+  camera.position.set(0, 0.25, 8.7);
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.55));
   const key = new THREE.DirectionalLight(0xffffff, 1.1);
