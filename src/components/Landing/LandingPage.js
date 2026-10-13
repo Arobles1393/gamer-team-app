@@ -112,8 +112,6 @@ export default function LandingPage() {
     );
   };
 
-  const reason = REASONS[selected];
-
   const renderTab = (item, index) => {
     const active = index === selected;
     return (
@@ -124,7 +122,7 @@ export default function LandingPage() {
         role="tab"
         id={`landing-tab-${item.id}`}
         aria-selected={active}
-        aria-controls="landing-panel"
+        aria-controls={`landing-panel-${item.id}`}
         tabIndex={active ? 0 : -1}
         className={`landing-reason${active ? " landing-reason--active" : ""}`}
         onClick={() => choose(index)}
@@ -164,7 +162,7 @@ export default function LandingPage() {
           </div>
 
           <div className={`landing__controller landing__controller--${scene3d}`} aria-hidden="true">
-            <img className="landing__poster" src="/video/vidControl-poster.jpg" alt="" />
+            <img className="landing__poster" src="/landing/controller.png" alt="" />
             <canvas ref={canvasRef} className="landing__canvas" />
           </div>
 
@@ -181,18 +179,29 @@ export default function LandingPage() {
           )}
         </div>
 
-        <div
-          id="landing-panel"
-          role="tabpanel"
-          aria-labelledby={`landing-tab-${reason.id}`}
-          className="landing__panel"
-          key={reason.id}
-        >
-          <div className="landing__panel-text">
-            <h2 className="landing__panel-title">{t(`reasons.${reason.id}.title`)}</h2>
-            <p className="landing__panel-body">{t(`reasons.${reason.id}.body`)}</p>
-          </div>
-          <LandingDemo id={reason.id} />
+        {/* Las cuatro fichas en la misma celda: la altura es siempre la de la
+            más alta y "Crear cuenta" no se mueve al cambiar de razón */}
+        <div className="landing__panels">
+          {REASONS.map((item, index) => {
+            const active = index === selected;
+            return (
+              <div
+                key={item.id}
+                id={`landing-panel-${item.id}`}
+                role="tabpanel"
+                aria-labelledby={`landing-tab-${item.id}`}
+                aria-hidden={!active}
+                inert={!active}
+                className={`landing__panel${active ? " landing__panel--active" : ""}`}
+              >
+                <div className="landing__panel-text">
+                  <h2 className="landing__panel-title">{t(`reasons.${item.id}.title`)}</h2>
+                  <p className="landing__panel-body">{t(`reasons.${item.id}.body`)}</p>
+                </div>
+                <LandingDemo id={item.id} />
+              </div>
+            );
+          })}
         </div>
 
       </section>

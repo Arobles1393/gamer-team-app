@@ -50,7 +50,7 @@
 
 .landing__controller {
   position: absolute;
-  inset: -16px 23% 18px;
+  inset: -40px 19% 10px;
   pointer-events: none;
 }
 
@@ -74,12 +74,10 @@
   height: 100%;
 }
 
-/* Imagen fija del mando: mientras carga three.js o si no hay WebGL */
+/* Imagen fija del mando (un render del mismo mando 3D, fondo transparente):
+   mientras carga three.js o si no hay WebGL */
 .landing__poster {
   object-fit: contain;
-  -webkit-mask-image: radial-gradient(closest-side, #000 62%, transparent);
-  mask-image: radial-gradient(closest-side, #000 62%, transparent);
-  opacity: 0.85;
   transition: opacity 0.5s var(--gm-ease-out);
 }
 
@@ -101,7 +99,7 @@
     "b . d";
   align-content: center;
   gap: 18px 24px;
-  min-height: 330px;
+  min-height: 350px;
 }
 
 .landing-reason:nth-child(1) { grid-area: a; }
@@ -220,20 +218,26 @@
   to { transform: scaleX(1); }
 }
 
-/* ---------- Ficha abierta ---------- */
-.landing__panel {
+/* ---------- Ficha abierta: texto y demostración directo sobre el fondo
+   (la demo es la única tarjeta). Las cuatro van en la misma celda ---------- */
+.landing__panels {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  align-items: center;
-  gap: 28px;
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
-  padding: 18px 24px;
-  border: 1px solid var(--gm-border-soft);
-  border-radius: var(--gm-radius-card);
-  background: var(--gm-surface);
-  box-shadow: var(--gm-glow);
+}
+
+.landing__panel {
+  display: grid;
+  grid-area: 1 / 1;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 32px;
+  visibility: hidden;
+}
+
+.landing__panel--active {
+  visibility: visible;
   animation: landing-panel-in 0.34s var(--gm-ease-out);
 }
 
@@ -667,7 +671,6 @@
   .landing__panel {
     grid-template-columns: 1fr;
     gap: 16px;
-    padding: 18px;
   }
 
   .landing .landing__cta.p-button,

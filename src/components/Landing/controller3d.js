@@ -18,8 +18,14 @@ const COLORS = {
 // 2 Steam (botón central), 3 comunidad (cruceta)
 export const PART_ORDER = ["face", "leftStick", "guide", "dpad"];
 
-// Hacia dónde gira el mando para mirar a cada ficha (izquierda o derecha)
-const FACING = [-0.38, -0.38, 0.38, 0.38];
+// Hacia dónde mira el mando para cada ficha: y = izquierda/derecha,
+// x = arriba/abajo (fichas superiores e inferiores de cada lado)
+const FACING = [
+  { y: -0.45, x: -0.3 },
+  { y: -0.45, x: -0.04 },
+  { y: 0.45, x: -0.3 },
+  { y: 0.45, x: -0.04 }
+];
 
 // Contorno del cuerpo: la mitad derecha, que se refleja para la izquierda
 const RIGHT_HALF = [
@@ -64,12 +70,24 @@ const buildController = () => {
   // (técnica de "casco invertido"), centrado sobre el cuerpo
   bodyGeometry.computeBoundingBox();
   const center = bodyGeometry.boundingBox.getCenter(new THREE.Vector3());
-  const rimScale = 1.035;
-  const rimMaterial = track(new THREE.MeshBasicMaterial({ color: COLORS.rim, side: THREE.BackSide, transparent: true, opacity: 0.9 }));
-  const rim = new THREE.Mesh(bodyGeometry, rimMaterial);
-  rim.scale.setScalar(rimScale);
-  rim.position.copy(center).multiplyScalar(1 - rimScale);
-  group.add(rim);
+  // Dos capas: el trazo nítido y un halo aditivo más ancho que hace de brillo
+  const addRim = (scale, opacity, additive) => {
+    const material = track(new THREE.MeshBasicMaterial({
+      color: COLORS.rim,
+      side: THREE.BackSide,
+      transparent: true,
+      opacity,
+      depthWrite: false,
+      blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending
+    }));
+    const rim = new THREE.Mesh(bodyGeometry, material);
+    rim.scale.setScalar(scale);
+    rim.position.copy(center).multiplyScalar(1 - scale);
+    group.add(rim);
+  };
+  addRim(1.03, 0.95, false);
+  addRim(1.075, 0.22, true);
+  addRim(1.12, 0.08, true);
 
   const front = depth / 2 + 0.22;
   const parts = {};
@@ -94,11 +112,19 @@ const buildController = () => {
   };
 
   // Botones de acción (rombo de cuatro), a la derecha
-  addPart("face", [[0, 0.42], [0.42, 0], [0, -0.42], [-0.42, 0]].map(([x, y]) => ({
-    geometry: new THREE.CylinderGeometry(0.17, 0.17, 0.16, 32),
-    position: [1.85 + x, 0.55 + y, front],
-    rotation: [Math.PI / 2, 0, 0]
-  })));
+  // Abombados: media esfera aplastada sobre la cara
+  addPart("face", [[0, 0.42], [0.42, 0], [0, -0.42], [-0.42, 0]].flatMap(([x, y]) => [
+    {
+      geometry: new THREE.CylinderGeometry(0.18, 0.18, 0.08, 32),
+      position: [1.85 + x, 0.55 + y, front - 0.02],
+      rotation: [Math.PI / 2, 0, 0]
+    },
+    {
+      geometry: new THREE.SphereGeometry(0.18, 32, 12, 0, Math.PI * 2, 0, Math.PI / 2).scale(1, 0.55, 1),
+      position: [1.85 + x, 0.55 + y, front + 0.02],
+      rotation: [Math.PI / 2, 0, 0]
+    }
+  ]));
 
   // Cruceta, a la izquierda
   addPart("dpad", [
@@ -128,6 +154,13 @@ const buildController = () => {
     rotation: [0, 0, Math.PI / 2]
   })));
 
+  // Gatillos traseros, detrás de los superiores
+  addPart("triggers", [-1, 1].map((side) => ({
+    geometry: new THREE.BoxGeometry(0.75, 0.42, 0.5),
+    position: [side * 1.95, 1.62, -0.42],
+    rotation: [0.35, 0, 0]
+  })));
+
   return { group, parts, disposables };
 };
 
@@ -143,8 +176,8 @@ export const createControllerScene = (canvas, { reducedMotion = false } = {}) =>
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
-  camera.position.set(0, 0.15, 11.5);
+  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
+  camera.position.set(0, 0.2, 9.4);
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.55));
   const key = new THREE.DirectionalLight(0xffffff, 1.1);
@@ -158,10 +191,11 @@ export const createControllerScene = (canvas, { reducedMotion = false } = {}) =>
   scene.add(pink);
 
   const { group, parts, disposables } = buildController();
-  group.rotation.x = -0.18;
+  group.rotation.x = FACING[0].x;
   scene.add(group);
 
-  const state = { selected: 0, pointerX: 0, pointerY: 0, targetY: FACING[0], pulse: 0 };
+  // flash: destello de luz al elegir una ficha (decae en ~0,6 s)
+  const state = { selected: 0, pointerX: 0, pointerY: 0, target: FACING[0], pulse: 0, flash: 0 };
   let frame = null;
   let visible = true;
   let last = performance.now();
@@ -193,12 +227,13 @@ export const createControllerScene = (canvas, { reducedMotion = false } = {}) =>
     last = now;
     state.pulse += dt;
     // Gira hacia la ficha elegida y se inclina un poco hacia el puntero
-    const targetY = state.targetY + state.pointerX * 0.18;
-    const targetX = -0.18 + state.pointerY * 0.1;
+    const targetY = state.target.y + state.pointerX * 0.18;
+    const targetX = state.target.x + state.pointerY * 0.1;
+    state.flash = Math.max(0, state.flash - dt * 1.7);
     group.rotation.y += (targetY - group.rotation.y) * Math.min(dt * 5, 1);
     group.rotation.x += (targetX - group.rotation.x) * Math.min(dt * 5, 1);
     group.position.y = Math.sin(state.pulse * 1.2) * 0.08;
-    paintParts(1.1 + Math.sin(state.pulse * 3) * 0.35);
+    paintParts(1.1 + Math.sin(state.pulse * 3) * 0.35 + state.flash * 2.2);
     render();
     if (visible) frame = requestAnimationFrame(tick);
   };
@@ -229,8 +264,8 @@ export const createControllerScene = (canvas, { reducedMotion = false } = {}) =>
   ro.observe(canvas);
 
   const settleStatic = () => {
-    group.rotation.y = state.targetY;
-    group.rotation.x = -0.18;
+    group.rotation.y = state.target.y;
+    group.rotation.x = state.target.x;
     paintParts(1.2);
     render();
   };
@@ -241,7 +276,8 @@ export const createControllerScene = (canvas, { reducedMotion = false } = {}) =>
   return {
     select(index) {
       state.selected = index;
-      state.targetY = FACING[index] ?? 0;
+      state.target = FACING[index] ?? FACING[0];
+      state.flash = 1;
       if (reducedMotion) settleStatic();
     },
     setPointer(x, y) {

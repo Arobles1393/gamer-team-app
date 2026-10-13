@@ -55,3 +55,15 @@
   --gm-rail-width: 88px;
   --gm-bottom-bar-height: 68px;
 }
+
+/* Superficies del navegador con la paleta: selección de texto y cursor */
+::selection {
+  background: rgba(124, 58, 237, 0.45);
+  color: #fff;
+}
+
+input,
+textarea,
+[contenteditable="true"] {
+  caret-color: var(--gm-accent);
+}

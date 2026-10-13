@@ -15,7 +15,9 @@ export default function LandingDemo({ id }) {
           <p className="landing-demo__text">{t("demo.parties.description")}</p>
           <p className="landing-demo__facts">
             <span className="landing-demo__slots">
-              <strong>1</strong>/2 <span className="landing-demo__bar"><span /></span> {t("demo.parties.slots")}
+              <span><strong>1</strong>/2</span>
+              <span className="landing-demo__bar"><span /></span>
+              {t("demo.parties.slots")}
             </span>
             <span className="landing-demo__tag"><i className="pi pi-microphone" aria-hidden="true" />{t("demo.parties.mic")}</span>
             <span className="landing-demo__tag landing-demo__tag--hot"><i className="pi pi-trophy" aria-hidden="true" />{t("demo.parties.competitive")}</span>
