@@ -64,6 +64,7 @@ const node = (file, args = []) =>
     ["account.e2e.cjs"],
     ["missing-profile.e2e.cjs"],
     ["legal.e2e.cjs"],
+    ["landing.e2e.cjs"],
     ...(process.env.E2E_MODERATION === "1" ? [["moderation.e2e.cjs"]] : []),
     ["age.e2e.cjs"],
     ["onboarding.e2e.cjs"],
