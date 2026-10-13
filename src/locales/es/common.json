@@ -44,7 +44,9 @@
     "community": "Comunidad",
     "privacy": "Privacidad",
     "terms": "Términos",
-    "guide": "Guía de la app"
+    "guide": "Guía de la app",
+    "expand": "Expandir menú",
+    "collapse": "Contraer menú"
   },
   "presence": {
     "online": "En línea",

@@ -44,7 +44,9 @@
     "community": "Community",
     "privacy": "Privacy",
     "terms": "Terms",
-    "guide": "App guide"
+    "guide": "App guide",
+    "expand": "Expand menu",
+    "collapse": "Collapse menu"
   },
   "presence": {
     "online": "Online",

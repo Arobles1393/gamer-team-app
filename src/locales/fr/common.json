@@ -44,7 +44,9 @@
     "community": "Communauté",
     "privacy": "Confidentialité",
     "terms": "Conditions",
-    "guide": "Guide de l'app"
+    "guide": "Guide de l'app",
+    "expand": "Déplier le menu",
+    "collapse": "Replier le menu"
   },
   "presence": {
     "online": "En ligne",

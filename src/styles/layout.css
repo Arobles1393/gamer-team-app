@@ -13,6 +13,18 @@ main.app-content {
   max-width: 1440px;
   margin: 0 auto;
   padding: 28px 48px 48px calc(var(--gm-rail-width) + 48px);
+  transition: padding-left 0.22s var(--gm-ease-out);
+}
+
+/* Rail expandido (AppHeader): el contenido se aparta */
+html.gm-rail-expanded {
+  --gm-rail-width: 248px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main.app-content {
+    transition: none;
+  }
 }
 
 @media (max-width: 1279px) {

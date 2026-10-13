@@ -17,6 +17,19 @@
   backdrop-filter: blur(14px);
   border-right: 1px solid var(--gm-border-soft);
   font-family: var(--gm-font-body);
+  transition: width 0.22s var(--gm-ease-out), padding 0.22s var(--gm-ease-out);
+}
+
+/* Logo (y, expandido, el nombre): lleva al inicio */
+.app-rail__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  margin-bottom: 36px;
+  border-radius: 12px;
+  color: var(--gm-text);
+  text-decoration: none;
 }
 
 .app-rail__logo {
@@ -25,7 +38,6 @@
   flex-shrink: 0;
   width: 44px;
   height: 44px;
-  margin-bottom: 36px;
   border-radius: 12px;
   background: var(--gm-gradient);
   box-shadow: var(--gm-cta-shadow);
@@ -35,9 +47,20 @@
   text-decoration: none;
 }
 
-.app-rail__logo:hover {
-  color: #fff;
+.app-rail__brand:hover .app-rail__logo {
   filter: brightness(1.1);
+}
+
+.app-rail__wordmark,
+.rail-btn__label,
+.app-rail__avatar-name {
+  display: none;
+}
+
+/* Inicio solo en la barra inferior de mobile (en desktop lleva el logo).
+   .rail-btn.rail-btn--home: más específico que .rail-btn, que va después */
+.rail-btn.rail-btn--home {
+  display: none;
 }
 
 .app-rail__nav {
@@ -88,7 +111,7 @@
 }
 
 .rail-btn:focus-visible,
-.app-rail__logo:focus-visible,
+.app-rail__brand:focus-visible,
 .app-rail__avatar-btn:focus-visible {
   outline: 2px solid var(--gm-label);
   outline-offset: 2px;
@@ -253,8 +276,19 @@
     border-top: 1px solid var(--gm-border-soft);
   }
 
-  .app-rail__logo,
-  .app-rail__spacer {
+  .app-rail__brand,
+  .app-rail__spacer,
+  .app-rail__toggle {
+    display: none;
+  }
+
+  .rail-btn.rail-btn--home {
+    display: grid;
+  }
+
+  /* La barra inferior es siempre solo iconos, aunque el rail esté expandido */
+  .app-rail.app-rail--expanded .rail-btn__label,
+  .app-rail.app-rail--expanded .app-rail__avatar-name {
     display: none;
   }
 
@@ -298,6 +332,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .app-rail,
   .rail-btn,
   .app-rail .app-rail__avatar.p-avatar {
     transition: none;
@@ -323,4 +358,110 @@
 
 @keyframes rail-badge-fade {
   from { opacity: 0; }
+}
+
+/* =====================================================
+   RAIL EXPANDIDO (desktop): iconos con su nombre. El ancho lo da
+   --gm-rail-width (html.gm-rail-expanded, styles/layout.css)
+   ===================================================== */
+.app-rail__toggle .pi {
+  font-size: 16px;
+}
+
+@media (min-width: 768px) {
+  .app-rail--expanded {
+    align-items: stretch;
+    padding: 24px 16px;
+  }
+
+  .app-rail--expanded .app-rail__brand {
+    padding-left: 2px;
+  }
+
+  .app-rail--expanded .app-rail__wordmark {
+    display: block;
+    font-family: var(--gm-font-display);
+    font-size: 17px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+
+  .app-rail--expanded .app-rail__nav {
+    gap: 6px;
+  }
+
+  .app-rail--expanded .rail-btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 14px;
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+  }
+
+  .app-rail--expanded .rail-btn--home {
+    display: none;
+  }
+
+  .app-rail--expanded .rail-btn .pi {
+    width: 20px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+
+  .app-rail--expanded .rail-btn__label {
+    display: block;
+    overflow: hidden;
+    font-size: 15px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Contador y punto: al final de la fila, no encima del icono */
+  .app-rail--expanded .rail-btn__badge,
+  .app-rail--expanded .rail-btn__dot {
+    position: static;
+    margin-left: auto;
+  }
+
+  .app-rail--expanded .app-rail__toggle {
+    margin-bottom: 12px;
+    color: var(--gm-subtle);
+  }
+
+  .app-rail--expanded .app-rail__toggle .rail-btn__label {
+    font-size: 13px;
+  }
+
+  .app-rail--expanded .app-rail__avatar-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 4px;
+    border-radius: 14px;
+    text-align: left;
+  }
+
+  .app-rail--expanded .app-rail__avatar-btn:hover {
+    background: rgba(124, 58, 237, 0.12);
+  }
+
+  .app-rail--expanded .app-rail__avatar-name {
+    display: block;
+    overflow: hidden;
+    font-family: var(--gm-font-body);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--gm-text);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Sin sesión: "Iniciar sesión" con su nombre, centrado */
+  .app-rail--expanded .rail-btn--login {
+    justify-content: center;
+  }
 }

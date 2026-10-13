@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 /**
  * Botón de icono del rail. Con `to` navega (y marca activo según la ruta);
  * sin `to` actúa como botón normal (p. ej. abrir notificaciones).
+ * El nombre (rail-btn__label) solo se ve con el rail expandido; el nombre
+ * accesible es siempre aria-label.
  */
 export default function RailButton({
   to,
@@ -29,6 +31,7 @@ export default function RailButton({
   const content = (
     <>
       <i className={`pi ${icon}`} aria-hidden="true" />
+      <span className="rail-btn__label" aria-hidden="true">{label}</span>
       {dot && <span className="rail-btn__dot" aria-hidden="true" />}
       {badge > 0 && (
         <span key={badge} className={`rail-btn__badge${bump ? " rail-btn__badge--bump" : ""}`} aria-hidden="true">
