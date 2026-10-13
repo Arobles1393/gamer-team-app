@@ -58,10 +58,10 @@
   overflow: hidden;
 }
 
-.post-card__cover--0 { background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%); }
-.post-card__cover--1 { background: linear-gradient(160deg, #F43F5E 0%, #7C3AED 100%); }
-.post-card__cover--2 { background: linear-gradient(135deg, #4C1D95 0%, #F43F5E 100%); }
-.post-card__cover--3 { background: linear-gradient(135deg, #5B21B6 0%, #A78BFA 100%); }
+.post-card__cover--0 { background: var(--gm-cover-0); }
+.post-card__cover--1 { background: var(--gm-cover-1); }
+.post-card__cover--2 { background: var(--gm-cover-2); }
+.post-card__cover--3 { background: var(--gm-cover-3); }
 
 .post-card__image {
   position: absolute;

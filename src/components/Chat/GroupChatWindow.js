@@ -11,7 +11,7 @@ import {
   useRequireVerified,
   useUserProfiles
 } from "../../hooks";
-import { excludeBlockedAuthors } from "../../utils";
+import { excludeBlockedAuthors, getCoverVariant } from "../../utils";
 import { JoinSteam } from "../Steam";
 import { useCurrentUser } from "../../context";
 
@@ -78,7 +78,9 @@ export default function GroupChatWindow({ postId, onBack, onError }) {
 
   return (
     <section className="chat-window chat-window--group" aria-label={t("window.groupLabel", { title })}>
-      <header className="chat-window__header">
+      {/* La portada del juego de fondo (o su portada decorativa) */}
+      <header className={`chat-window__header chat-window__header--cover game-cover--${getCoverVariant(postId)}`}>
+        {post?.image && <img src={post.image} alt="" className="chat-window__cover" />}
         <button
           type="button"
           className="chat-window__back"
@@ -88,13 +90,12 @@ export default function GroupChatWindow({ postId, onBack, onError }) {
           <i className="pi pi-arrow-left" aria-hidden="true" />
         </button>
 
-        <StackedAvatars users={users.slice(0, MAX_AVATARS)} total={count} />
-
         <div className="chat-window__who">
           <h2 className="chat-window__name">
+            {/* Con logo, el logo es el título (como en la card) */}
             {post ? (
               <Link to={`/post/${postId}`} className="chat-window__post-link">
-                {title}
+                {post.logo ? <img src={post.logo} alt={title} className="chat-window__logo" /> : title}
               </Link>
             ) : title}
           </h2>
@@ -103,6 +104,8 @@ export default function GroupChatWindow({ postId, onBack, onError }) {
             {t("window.participants", { count })}
           </span>
         </div>
+
+        <StackedAvatars users={users.slice(0, MAX_AVATARS)} total={count} />
       </header>
 
       {/* Sala del autor: solo para quien participa por su "Quiero jugar" */}

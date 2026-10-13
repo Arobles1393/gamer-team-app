@@ -9,20 +9,10 @@ import PostSlots from "./PostSlots";
 import JoinedLabel from "./JoinedLabel";
 import { ReportButton } from "../Reports";
 import { useJoinFeedback, useUserProfile } from "../../hooks";
-import { formatDates } from "../../utils";
+import { formatDates, getCoverVariant } from "../../utils";
 import "./PostCard.css";
 import { useCurrentUser } from "../../context";
 
-// Portadas decorativas para posts sin imagen; se elige una fija por post
-const COVER_VARIANTS = 4;
-
-const getCoverVariant = (id = "") => {
-  let hash = 0;
-  for (let i = 0; i < id.length; i++) {
-    hash = (hash + id.charCodeAt(i)) % COVER_VARIANTS;
-  }
-  return hash;
-};
 
 
 const formatRelativeTime = (timestamp) => {

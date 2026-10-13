@@ -22,6 +22,11 @@
      4,7:1 en el extremo (con #F43F5E era 3,7:1; auditoría M-19) */
   --gm-accent-strong: #E11D48;
   --gm-gradient: linear-gradient(135deg, var(--gm-primary), var(--gm-accent-strong));
+  /* Portadas decorativas de una partida sin imagen (card, chat del grupo) */
+  --gm-cover-0: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%);
+  --gm-cover-1: linear-gradient(160deg, #F43F5E 0%, #7C3AED 100%);
+  --gm-cover-2: linear-gradient(135deg, #4C1D95 0%, #F43F5E 100%);
+  --gm-cover-3: linear-gradient(135deg, #5B21B6 0%, #A78BFA 100%);
 
   /* texto. Contraste WCAG AA (4,5:1) también sobre las tarjetas
      (--gm-surface sobre --gm-bg) (auditoría M-19). --gm-primary no se usa

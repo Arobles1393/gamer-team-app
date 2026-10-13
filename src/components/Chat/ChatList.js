@@ -133,7 +133,7 @@ export default function ChatList({ activeChat, onSelectChat }) {
             <GroupChatListItem
               key={group.id}
               group={group}
-              game={groupPosts[group.id]?.game}
+              post={groupPosts[group.id]}
               currentUserId={user.uid}
               active={active}
               unread={!active && unreadGroupIds.has(group.id)}

@@ -1,11 +1,12 @@
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { formatDates } from "../../utils";
+import GameThumb from "./GameThumb";
 
-// Fila de un chat de grupo en la lista: icono de grupo y el juego del post
-function GroupChatListItem({ group, game, currentUserId, active, unread, onSelect }) {
+// Fila de un chat de grupo en la lista: la portada y el juego del post
+function GroupChatListItem({ group, post, currentUserId, active, unread, onSelect }) {
   const { t } = useTranslation("chat");
-  const title = game || t("list.groupFallback");
+  const title = post?.game || t("list.groupFallback");
 
   const preview = group.lastMessage
     ? (group.lastSenderId === currentUserId ? t("list.you", { message: group.lastMessage }) : group.lastMessage)
@@ -26,9 +27,7 @@ function GroupChatListItem({ group, game, currentUserId, active, unread, onSelec
         aria-label={t(unread ? "list.groupItemLabelUnread" : "list.groupItemLabel", { title })}
         onClick={() => onSelect({ type: "group", id: group.id })}
       >
-        <span className="chat-item__group-icon" aria-hidden="true">
-          <i className="pi pi-users" />
-        </span>
+        <GameThumb postId={group.id} post={post} title={title} />
 
         <span className="chat-item__body">
           <span className="chat-item__top">

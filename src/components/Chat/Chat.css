@@ -355,6 +355,50 @@
   text-decoration: underline;
 }
 
+/* Cabecera del grupo: la portada del juego de fondo, oscurecida hacia la
+   izquierda para que el título y los participantes se lean */
+.chat-window__header--cover {
+  position: relative;
+  isolation: isolate;
+  min-height: 92px;
+  overflow: hidden;
+}
+
+.chat-window__header--cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, rgba(15, 15, 35, 0.94) 0%, rgba(15, 15, 35, 0.78) 45%, rgba(15, 15, 35, 0.5) 100%);
+}
+
+.chat-window__cover {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.chat-window__header--cover .chat-window__who {
+  flex: 1;
+}
+
+.chat-window__logo {
+  display: block;
+  width: auto;
+  max-width: min(220px, 100%);
+  max-height: 40px;
+  object-fit: contain;
+  object-position: left center;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+}
+
+.chat-window__header--cover .chat-window__status {
+  color: var(--gm-text);
+}
+
 /* Avatares apilados de los participantes */
 .chat-stack {
   display: inline-flex;
@@ -399,20 +443,38 @@
   color: var(--gm-label);
 }
 
-/* Icono de grupo en la lista de chats (en lugar del avatar) */
-.chat-item__group-icon {
+/* Miniatura del juego en la lista de chats: cuadrada (las personas son
+   círculos), con la portada de la partida o su portada decorativa */
+.game-thumb {
+  position: relative;
   display: grid;
   flex-shrink: 0;
   place-items: center;
   width: 46px;
   height: 46px;
-  border-radius: 50%;
-  background: var(--gm-primary-soft);
-  color: var(--gm-label);
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
-.chat-item__group-icon .pi {
-  font-size: 18px;
+.game-thumb--0, .game-cover--0 { background: var(--gm-cover-0); }
+.game-thumb--1, .game-cover--1 { background: var(--gm-cover-1); }
+.game-thumb--2, .game-cover--2 { background: var(--gm-cover-2); }
+.game-thumb--3, .game-cover--3 { background: var(--gm-cover-3); }
+
+.game-thumb__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.game-thumb__initial {
+  font-family: var(--gm-font-display);
+  font-size: 19px;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }
 
 .chat-window__status--online {
@@ -917,6 +979,14 @@
     gap: 10px;
     min-height: 64px;
     padding: 10px 12px;
+  }
+
+  .chat-window__header--cover {
+    min-height: 76px;
+  }
+
+  .chat-window__logo {
+    max-height: 32px;
   }
 
   .chat-messages {

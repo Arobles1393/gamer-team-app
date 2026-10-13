@@ -25,3 +25,4 @@ export { sanitizeGuideHtml, guideHtmlToText, isSafeImageUrl, MAX_GUIDE_HTML } fr
 export { isTrustedImageUrl, imageHost, markExternalImages } from "./externalImages";
 export { computeCompatibility, COMPATIBILITY_WEIGHTS } from "./computeCompatibility";
 export { getDisplayName } from "./displayName";
+export { getCoverVariant, COVER_VARIANTS } from "./coverVariant";
