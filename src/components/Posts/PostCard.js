@@ -87,8 +87,8 @@ function PostCard({
 
   const relativeTime = formatRelativeTime(post.createdAt);
 
-  // Qué partida es: el juego (siempre en texto, también si hay logo) y la
-  // descripción de quien la publica (modo, rango, horario…)
+  // Qué partida es: el juego (su logo en la portada o, sin logo, el nombre en
+  // texto) y la descripción de quien la publica (modo, rango, horario…)
   const description = typeof post.comments === "string" ? post.comments.trim() : "";
   const needed = Number(post.playersNeeded) || 0;
   const interested = Math.max(0, Number(post.interestedCount) || 0);
@@ -119,16 +119,16 @@ function PostCard({
             {formatDates.formatScheduledTime(post.scheduledAt)}
           </span>
         )}
-        {/* El logo es arte de la portada; el nombre va en texto en el cuerpo */}
+        {/* Con logo, el logo es el título (sin repetir el nombre en texto) */}
         {post.logo && (
           <div className="post-card__cover-title">
-            <img src={post.logo} alt="" className="post-card__logo" />
+            <img src={post.logo} alt={post.game} className="post-card__logo" />
           </div>
         )}
       </div>
 
       <div className="post-card__body">
-        <h3 className="post-card__title">{post.game}</h3>
+        {!post.logo && <h3 className="post-card__title">{post.game}</h3>}
         {description && <p className="post-card__description">{description}</p>}
 
         {/* Lo que decide si te encaja: plazas y lo que se sale de lo normal */}

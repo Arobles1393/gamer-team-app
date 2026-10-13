@@ -125,7 +125,8 @@
   box-shadow: 0 4px 14px -4px rgba(244, 63, 94, 0.7);
 }
 
-/* Logo del juego superpuesto abajo de la portada (el nombre en texto va en el cuerpo) */
+/* Logo del juego superpuesto abajo de la portada: es el título de la card
+   (sin logo, el nombre va en texto en el cuerpo) */
 .post-card__cover-title {
   position: absolute;
   left: 0;
@@ -163,10 +164,11 @@
   white-space: nowrap;
 }
 
-/* Descripción de quien publica (modo, rango, horario…): 2 líneas como mucho */
+/* Descripción de quien publica (modo, rango, horario…): 2 líneas como mucho.
+   Debajo del nombre si no hay logo; si lo hay, abre el cuerpo */
 .post-card__description {
   display: -webkit-box;
-  margin: 6px 0 0;
+  margin: 0;
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -174,6 +176,10 @@
   line-height: 1.45;
   color: var(--gm-muted);
   overflow-wrap: anywhere;
+}
+
+.post-card__title + .post-card__description {
+  margin-top: 6px;
 }
 
 /* ---------- SI TE ENCAJA: plazas y etiquetas ---------- */
