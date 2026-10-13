@@ -15,8 +15,8 @@ const COLORS = {
 
 // Parte del mando que corresponde a cada razón, en el orden de las fichas:
 // 0 partidas claras (botones de acción), 1 compatibilidad (stick izquierdo),
-// 2 Steam (botón central), 3 comunidad (cruceta)
-export const PART_ORDER = ["face", "leftStick", "guide", "dpad"];
+// 2 Steam (panel táctil y sus luces), 3 comunidad (cruceta)
+export const PART_ORDER = ["face", "leftStick", "touchpad", "dpad"];
 
 // Hacia dónde mira el mando para cada ficha: y = izquierda/derecha,
 // x = arriba/abajo (fichas superiores e inferiores de cada lado)
@@ -28,11 +28,30 @@ const FACING = [
 ];
 
 // Contorno del cuerpo: la mitad derecha, que se refleja para la izquierda
-// Estilizado: cintura estrecha y grips largos que se afinan hacia abajo
+// Forma inspirada en los mandos de consola actuales: frente ancho para el panel
+// táctil y grips redondeados que se abren hacia abajo y afuera
 const RIGHT_HALF = [
-  [0, 0.92], [0.95, 0.98], [1.8, 1.06], [2.45, 0.86], [2.82, 0.3], [3.0, -0.55],
-  [3.02, -1.45], [2.78, -2.2], [2.42, -2.42], [2.08, -2.15], [1.75, -1.4], [1.2, -0.82], [0, -0.72]
+  [0, 1.02], [0.9, 1.06], [1.75, 1.1], [2.4, 0.94], [2.8, 0.48], [3.0, -0.2],
+  [3.14, -1.1], [3.22, -1.9], [3.02, -2.45], [2.58, -2.58], [2.2, -2.25], [1.88, -1.55],
+  [1.45, -1.3], [0.75, -1.22], [0, -1.2]
 ];
+
+// Rectángulo de esquinas redondeadas centrado en el origen (panel táctil)
+const roundedRect = (w, h, r) => {
+  const shape = new THREE.Shape();
+  const x = -w / 2;
+  const y = -h / 2;
+  shape.moveTo(x + r, y);
+  shape.lineTo(x + w - r, y);
+  shape.quadraticCurveTo(x + w, y, x + w, y + r);
+  shape.lineTo(x + w, y + h - r);
+  shape.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  shape.lineTo(x + r, y + h);
+  shape.quadraticCurveTo(x, y + h, x, y + h - r);
+  shape.lineTo(x, y + r);
+  shape.quadraticCurveTo(x, y, x + r, y);
+  return shape;
+};
 
 // Recorrido: mitad derecha de arriba abajo y mitad izquierda de abajo arriba
 const bodyShape = () => {
@@ -127,51 +146,65 @@ const buildController = () => {
 
   // Botones de acción (rombo de cuatro), a la derecha
   // Abombados: media esfera aplastada sobre la cara
-  addPart("face", [[0, 0.38], [0.38, 0], [0, -0.38], [-0.38, 0]].flatMap(([x, y]) => [
+  addPart("face", [[0, 0.36], [0.36, 0], [0, -0.36], [-0.36, 0]].flatMap(([x, y]) => [
     {
       geometry: new THREE.CylinderGeometry(0.15, 0.15, 0.06, 32),
-      position: [1.85 + x, 0.55 + y, front - 0.02],
+      position: [2.05 + x, 0.5 + y, front - 0.02],
       rotation: [Math.PI / 2, 0, 0]
     },
     {
       geometry: new THREE.SphereGeometry(0.15, 32, 12, 0, Math.PI * 2, 0, Math.PI / 2).scale(1, 0.55, 1),
-      position: [1.85 + x, 0.55 + y, front + 0.02],
+      position: [2.05 + x, 0.5 + y, front + 0.02],
       rotation: [Math.PI / 2, 0, 0]
     }
   ]));
 
   // Cruceta, a la izquierda
   addPart("dpad", [
-    { geometry: new THREE.BoxGeometry(0.74, 0.22, 0.12), position: [-1.85, 0.55, front] },
-    { geometry: new THREE.BoxGeometry(0.22, 0.74, 0.12), position: [-1.85, 0.55, front] }
+    { geometry: new THREE.BoxGeometry(0.74, 0.22, 0.12), position: [-2.05, 0.5, front] },
+    { geometry: new THREE.BoxGeometry(0.22, 0.74, 0.12), position: [-2.05, 0.5, front] }
   ]);
 
   // Sticks: base y cabeza
   const stick = (x) => [
-    { geometry: new THREE.CylinderGeometry(0.31, 0.34, 0.1, 40), position: [x, -0.45, front - 0.02], rotation: [Math.PI / 2, 0, 0] },
-    { geometry: new THREE.SphereGeometry(0.23, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), position: [x, -0.45, front + 0.03], rotation: [Math.PI / 2, 0, 0] }
+    { geometry: new THREE.CylinderGeometry(0.31, 0.34, 0.1, 40), position: [x, -0.42, front - 0.02], rotation: [Math.PI / 2, 0, 0] },
+    { geometry: new THREE.SphereGeometry(0.23, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), position: [x, -0.42, front + 0.03], rotation: [Math.PI / 2, 0, 0] }
   ];
-  addPart("leftStick", stick(-0.95));
-  addPart("rightStick", stick(0.95));
+  // Simétricos, juntos abajo en el centro
+  addPart("leftStick", stick(-0.78));
+  addPart("rightStick", stick(0.78));
 
-  // Botón central
-  addPart("guide", [{
-    geometry: new THREE.CylinderGeometry(0.18, 0.18, 0.08, 40),
-    position: [0, 0.68, front],
+  // Panel táctil ancho arriba al centro, con una franja de luz a cada lado
+  const pad = new THREE.ExtrudeGeometry(roundedRect(1.7, 0.95, 0.16), {
+    depth: 0.04, bevelEnabled: true, bevelThickness: 0.03, bevelSize: 0.03, bevelSegments: 3
+  });
+  addPart("touchpad", [
+    { geometry: pad, position: [0, 0.78, front - 0.04] },
+    ...[-1, 1].map((side) => ({
+      geometry: new THREE.CapsuleGeometry(0.035, 0.7, 4, 12),
+      position: [side * 0.98, 0.72, front - 0.01],
+      rotation: [0, 0, side * 0.12]
+    }))
+  ]);
+
+  // Botón central pequeño, entre el panel y los sticks
+  addPart("home", [{
+    geometry: new THREE.CylinderGeometry(0.11, 0.11, 0.06, 32),
+    position: [0, 0.1, front],
     rotation: [Math.PI / 2, 0, 0]
   }]);
 
   // Gatillos superiores
   addPart("bumpers", [-1, 1].map((side) => ({
     geometry: new THREE.CapsuleGeometry(0.12, 0.95, 6, 16),
-    position: [side * 1.9, 1.47, 0],
+    position: [side * 1.95, 1.5, 0],
     rotation: [0, 0, Math.PI / 2]
   })));
 
   // Gatillos traseros, detrás de los superiores
   addPart("triggers", [-1, 1].map((side) => ({
     geometry: new THREE.BoxGeometry(0.7, 0.34, 0.36),
-    position: [side * 1.9, 1.47, -0.32],
+    position: [side * 1.95, 1.5, -0.32],
     rotation: [0.35, 0, 0]
   })));
 
@@ -191,7 +224,7 @@ export const createControllerScene = (canvas, { reducedMotion = false } = {}) =>
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
-  camera.position.set(0, -0.2, 9.4);
+  camera.position.set(0, -0.32, 9.9);
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.55));
   const key = new THREE.DirectionalLight(0xffffff, 1.1);
