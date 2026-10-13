@@ -303,3 +303,24 @@
     transition: none;
   }
 }
+
+/* Contador de avisos: "pop" cuando llega uno nuevo (RailButton) */
+.rail-btn__badge--bump {
+  animation: rail-badge-bump 0.45s var(--gm-ease-out);
+}
+
+@keyframes rail-badge-bump {
+  0% { transform: scale(0.4); }
+  55% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail-btn__badge--bump {
+    animation: rail-badge-fade 0.15s linear;
+  }
+}
+
+@keyframes rail-badge-fade {
+  from { opacity: 0; }
+}

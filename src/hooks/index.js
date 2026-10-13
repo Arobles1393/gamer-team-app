@@ -6,6 +6,7 @@ export * from "./posts/useFilteredPosts";
 export * from "./posts/usePostFilters";
 export * from "./posts/useInterestedPosts";
 export * from "./posts/usePostInterest";
+export * from "./posts/useJoinFeedback";
 export * from "./posts/usePostInterestStatus";
 export * from "./posts/usePostComments";
 export * from "./posts/usePostCategories";

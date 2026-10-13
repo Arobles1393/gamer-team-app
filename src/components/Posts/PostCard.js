@@ -5,8 +5,9 @@ import { Button } from "primereact/button";
 import { memo, useCallback } from "react";
 import PostPlatforms from "./PostPlatforms";
 import PostTags from "./PostTags";
+import JoinedLabel from "./JoinedLabel";
 import { ReportButton } from "../Reports";
-import { useUserProfile } from "../../hooks";
+import { useJoinFeedback, useUserProfile } from "../../hooks";
 import { formatDates } from "../../utils";
 import "./PostCard.css";
 import { useCurrentUser } from "../../context";
@@ -44,11 +45,15 @@ function PostCard({
   const { userData: author } = useUserProfile(post.userId);
 
   const isInterested = Boolean(interestedDoc);
+  // "Quiero jugar": espera mientras se guarda y "¡Dentro!" al unirse
+  const { phase, run } = useJoinFeedback();
+  const joined = phase === "joined";
 
-  const handleInterest = useCallback(async (event) => {
+  const handleInterest = useCallback((event) => {
     event.stopPropagation();
-    await onToggleInterested(post, interestedDoc);
-  }, [onToggleInterested, post, interestedDoc]);
+    if (phase === "saving") return;
+    run(isInterested, () => onToggleInterested(post, interestedDoc));
+  }, [phase, run, isInterested, onToggleInterested, post, interestedDoc]);
 
   const handleEdit = useCallback((event) => {
     event.stopPropagation();
@@ -100,7 +105,7 @@ function PostCard({
           <img src={post.image} alt="" className="post-card__image" loading="lazy" />
         )}
         {showInterestedBadge && (
-          <span className="post-card__interested">{t("card.interestedBadge")}</span>
+          <span className={`post-card__interested${joined ? " gm-pop-in" : ""}`}>{t("card.interestedBadge")}</span>
         )}
         <PostPlatforms
           multiplatform={post.multiplatform}
@@ -172,12 +177,24 @@ function PostCard({
             </>
           ) : (
             <Button
-              label={isInterested ? t("card.leave") : t("card.join")}
-              className={`post-card__btn ${isInterested ? "post-card__btn--leave" : "post-card__btn--primary"}`}
+              label={joined ? undefined : isInterested ? t("card.leave") : t("card.join")}
+              className={[
+                "post-card__btn gm-join-btn",
+                isInterested && !joined ? "post-card__btn--leave" : "post-card__btn--primary",
+                phase === "saving" && "gm-join-btn--saving",
+                joined && "gm-join-btn--joined"
+              ].filter(Boolean).join(" ")}
+              aria-busy={phase === "saving"}
               onClick={handleInterest}
-            />
+            >
+              {joined && <JoinedLabel />}
+            </Button>
           )}
         </div>
+        {/* Para lectores de pantalla: el cambio del botón no se anuncia solo */}
+        <span className="gm-sr-only" role="status">
+          {joined ? t("card.joinedAnnounce", { game: post.game }) : ""}
+        </span>
       </div>
     </article>
   );

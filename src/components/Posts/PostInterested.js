@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "primereact/button";
 import { UserAvatar } from "../UserAvatar";
@@ -13,6 +14,13 @@ export default function PostInterested({ userIds, isOwner, onOpenProfile, guestC
   const { t } = useTranslation("posts");
   const { users, loading } = useUserProfiles(userIds);
   const count = onLogin ? guestCount : userIds.length;
+  // Quienes ya estaban al cargar la lista; los que llegan después (p. ej.
+  // tú al tocar "Quiero jugar") entran con movimiento
+  const initialIds = useRef(null);
+  if (!loading && initialIds.current === null) {
+    initialIds.current = new Set(users.map((player) => player.id));
+  }
+  const isNew = (id) => initialIds.current !== null && !initialIds.current.has(id);
 
   const renderBody = () => {
     if (onLogin) {
@@ -58,7 +66,7 @@ export default function PostInterested({ userIds, isOwner, onOpenProfile, guestC
           const online = isOnline(player.lastSeen);
 
           return (
-            <li key={player.id}>
+            <li key={player.id} className={isNew(player.id) ? "post-interested__new" : undefined}>
               <button
                 type="button"
                 className="post-interested__item"

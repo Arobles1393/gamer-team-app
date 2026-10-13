@@ -3,6 +3,9 @@
    de PrimeReact (se carga después que este archivo).
    ===================================================== */
 .post-card {
+  /* Contenedor del aviso para lectores de pantalla (.gm-sr-only): sin esto
+     se sale del carrusel y ensancha la página */
+  position: relative;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -14,6 +17,26 @@
   color: var(--gm-text);
   cursor: pointer;
   transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Entrada: las tarjetas llegan en cascada al dibujarse (40 ms entre una y
+   otra, máximo 6). En los carruseles cada tarjeta va en .feed-row__item;
+   en las listas, directa. Relleno "backwards": al terminar manda el hover */
+.post-card {
+  animation: post-card-in 0.42s var(--gm-ease-out) backwards;
+}
+
+.post-card:nth-child(2), :nth-child(2) > .post-card { animation-delay: 40ms; }
+.post-card:nth-child(3), :nth-child(3) > .post-card { animation-delay: 80ms; }
+.post-card:nth-child(4), :nth-child(4) > .post-card { animation-delay: 120ms; }
+.post-card:nth-child(5), :nth-child(5) > .post-card { animation-delay: 160ms; }
+.post-card:nth-child(6), :nth-child(6) > .post-card { animation-delay: 200ms; }
+
+@keyframes post-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
 }
 
 .post-card:hover {
@@ -370,8 +393,20 @@
     transition: none;
   }
 
+  /* Sin desplazamiento: solo aparecen */
+  .post-card,
+  .post-card:nth-child(n) {
+    animation-name: post-card-fade;
+    animation-duration: 0.15s;
+    animation-delay: 0ms;
+  }
+
   .post-card:hover,
   .post-card:hover .post-card__image {
     transform: none;
   }
+}
+
+@keyframes post-card-fade {
+  from { opacity: 0; }
 }

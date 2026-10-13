@@ -71,7 +71,9 @@
     "join": "Quiero jugar",
     "leave": "Ya no me interesa",
     "edit": "Editar",
-    "delete": "Eliminar"
+    "delete": "Eliminar",
+    "joined": "¡Dentro!",
+    "joinedAnnounce": "Te uniste a la partida de {{game}}"
   },
   "tags": {
     "label": "Etiquetas de la partida",

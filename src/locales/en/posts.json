@@ -71,7 +71,9 @@
     "join": "I want to play",
     "leave": "Not interested anymore",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "joined": "You're in!",
+    "joinedAnnounce": "You joined the {{game}} party"
   },
   "tags": {
     "label": "Party tags",

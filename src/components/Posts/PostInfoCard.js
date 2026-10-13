@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { UserAvatar } from "../UserAvatar";
 import { Button } from "primereact/button";
@@ -6,6 +7,8 @@ import { JoinSteam } from "../Steam";
 import { countries } from "../../data/countries";
 import { formatDates, getCountryLabel } from "../../utils";
 import { getLanguageLabel, getSkillLevelLabel } from "../../constants";
+import { useJoinFeedback } from "../../hooks";
+import JoinedLabel from "./JoinedLabel";
 
 function InfoRow({ icon, label, children }) {
   return (
@@ -43,6 +46,17 @@ export default function PostInfoCard({
   const username = author?.username || t("comments.player");
   const country = countries.find((c) => c.value === author?.region);
   const playersNeeded = Number(post.playersNeeded) || 0;
+  // "Quiero jugar": espera mientras se guarda y "¡Dentro!" al unirse
+  const { phase, run } = useJoinFeedback();
+  const joined = phase === "joined";
+  // El número de interesados sube o baja con un pequeño movimiento cuando
+  // cambia (no al abrir la partida)
+  const previousCount = useRef(interestedCount);
+  const countDirection = interestedCount > previousCount.current ? "up"
+    : interestedCount < previousCount.current ? "down" : null;
+  useEffect(() => {
+    previousCount.current = interestedCount;
+  }, [interestedCount]);
 
   return (
     <ProfileSection title={t("create.details")} icon="pi-info-circle" className="post-info">
@@ -95,7 +109,12 @@ export default function PostInfoCard({
           <InfoRow icon="pi-language" label={t("info.language")}>{getLanguageLabel(post.language)}</InfoRow>
         )}
         <InfoRow icon="pi-users" label={t("info.interested")}>
-          {t("info.players", { count: interestedCount })}
+          <span
+            key={interestedCount}
+            className={`post-info__count${countDirection ? ` post-info__count--${countDirection}` : ""}`}
+          >
+            {t("info.players", { count: interestedCount })}
+          </span>
         </InfoRow>
         {/* Sin sesión los comentarios no se leen: no hay cuenta que mostrar */}
         {commentsCount !== null && (
@@ -132,12 +151,21 @@ export default function PostInfoCard({
         ) : (
           <>
             <Button
-              label={isInterested ? t("card.leave") : t("card.join")}
-              icon={isInterested ? "pi pi-times" : "pi pi-bolt"}
-              className={`gm-btn ${isInterested ? "gm-btn--danger" : "gm-btn--primary"}`}
-              loading={togglingInterest}
-              onClick={onToggleInterest}
-            />
+              label={joined ? undefined : isInterested ? t("card.leave") : t("card.join")}
+              icon={joined ? undefined : isInterested ? "pi pi-times" : "pi pi-bolt"}
+              className={[
+                "gm-btn gm-join-btn",
+                isInterested && !joined ? "gm-btn--danger" : "gm-btn--primary",
+                (phase === "saving" || togglingInterest) && "gm-join-btn--saving",
+                joined && "gm-join-btn--joined"
+              ].filter(Boolean).join(" ")}
+              aria-busy={phase === "saving" || togglingInterest}
+              onClick={() => {
+                if (phase !== "saving") run(isInterested, onToggleInterest);
+              }}
+            >
+              {joined && <JoinedLabel />}
+            </Button>
             <Button
               label={t("info.messageHost")}
               icon="pi pi-comments"
@@ -148,6 +176,11 @@ export default function PostInfoCard({
           </>
         )}
       </div>
+
+      {/* Para lectores de pantalla: el cambio del botón no se anuncia solo */}
+      <span className="gm-sr-only" role="status">
+        {joined ? t("card.joinedAnnounce", { game: post.game }) : ""}
+      </span>
 
       {/* Sala de Steam del autor, solo para quien marcó "Quiero jugar" */}
       <JoinSteam

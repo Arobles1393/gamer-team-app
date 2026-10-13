@@ -1,0 +1,143 @@
+/* =====================================================
+   MOVIMIENTO COMPARTIDO
+   El momento "Quiero jugar" (useJoinFeedback + JoinedLabel): mientras se
+   guarda, el botón muestra que trabaja; al confirmar, un destello lo cruza,
+   se dibuja un check y dice "¡Dentro!". Solo transform, opacity y un
+   destello acotado al botón; todo de una sola vez salvo la espera.
+   ===================================================== */
+
+/* Texto solo para lectores de pantalla (avisos de estado) */
+.gm-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* El destello y la espera van dentro del botón */
+.gm-join-btn.p-button {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.gm-join-btn.p-button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.38) 50%, transparent 80%);
+  opacity: 0;
+  transform: translateX(-110%);
+  pointer-events: none;
+}
+
+/* Guardando: un brillo que recorre el botón hasta que llega la respuesta */
+.gm-join-btn--saving.p-button {
+  cursor: progress;
+}
+
+.gm-join-btn--saving.p-button::after {
+  opacity: 0.6;
+  animation: gm-join-wait 1.1s ease-in-out infinite;
+}
+
+/* Confirmado: un solo destello de energía de izquierda a derecha */
+.gm-join-btn--joined.p-button::after {
+  animation: gm-join-sweep 0.7s var(--gm-ease-out) both;
+}
+
+.gm-join-btn--joined.p-button {
+  animation: gm-join-press 0.42s var(--gm-ease-out);
+}
+
+/* "¡Dentro!" con su check dibujado */
+.gm-joined {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  animation: gm-joined-in 0.32s var(--gm-ease-out) both;
+}
+
+.gm-joined__check {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 22;
+  stroke-dashoffset: 22;
+  animation: gm-check-draw 0.38s 0.12s var(--gm-ease-out) forwards;
+}
+
+/* Etiquetas que aparecen por la acción (p. ej. "Te interesa") */
+.gm-pop-in {
+  animation: gm-pop-in 0.36s var(--gm-ease-out) both;
+}
+
+@keyframes gm-join-wait {
+  from { transform: translateX(-110%); }
+  to { transform: translateX(110%); }
+}
+
+@keyframes gm-join-sweep {
+  0% { opacity: 1; transform: translateX(-110%); }
+  100% { opacity: 1; transform: translateX(110%); }
+}
+
+@keyframes gm-join-press {
+  0% { transform: scale(1); }
+  35% { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+
+@keyframes gm-joined-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes gm-check-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes gm-pop-in {
+  0% { opacity: 0; transform: scale(0.6); }
+  60% { opacity: 1; transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Reducir movimiento: sin desplazamientos ni destellos; el check, el texto
+   "¡Dentro!" y las etiquetas siguen apareciendo (con un fundido corto) */
+@media (prefers-reduced-motion: reduce) {
+  .gm-join-btn--saving.p-button::after,
+  .gm-join-btn--joined.p-button::after,
+  .gm-join-btn--joined.p-button {
+    animation: none;
+  }
+
+  .gm-join-btn--saving.p-button::after {
+    opacity: 0.25;
+    transform: none;
+  }
+
+  .gm-joined,
+  .gm-pop-in {
+    animation: gm-fade-in 0.15s linear both;
+  }
+
+  .gm-joined__check {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes gm-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

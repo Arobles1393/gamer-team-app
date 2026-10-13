@@ -180,11 +180,12 @@ export default function PostDetail({ setEditingPost, setShowCreatePost }) {
     }
   };
 
+  // Devuelve true si se guardó (PostInfoCard celebra al unirse)
   const handleToggleInterest = async () => {
     setTogglingInterest(true);
 
     try {
-      await handleInterested(post, interestedDoc);
+      return await handleInterested(post, interestedDoc);
     } finally {
       setTogglingInterest(false);
     }

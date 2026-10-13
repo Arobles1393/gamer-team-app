@@ -39,6 +39,9 @@
   --gm-glow: 0 18px 40px -18px rgba(124, 58, 237, 0.55);
   --gm-cta-shadow: 0 10px 30px -10px rgba(244, 63, 94, 0.55);
 
+  /* movimiento (src/styles/motion.css): llegada con frenado natural */
+  --gm-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
   /* tipografía */
   --gm-font-display: "Russo One", sans-serif;
   --gm-font-body: "Chakra Petch", sans-serif;

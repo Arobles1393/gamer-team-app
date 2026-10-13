@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -15,12 +16,22 @@ export default function RailButton({
   badge = 0,
   className = ""
 }) {
+  // El contador hace "pop" cuando sube (no al cargar ni al bajar). key={badge}
+  // monta un elemento nuevo en cada cambio, así la animación corre una vez
+  const previousBadge = useRef(badge);
+  const bumpedBadge = useRef(null);
+  if (badge > previousBadge.current) bumpedBadge.current = badge;
+  useEffect(() => {
+    previousBadge.current = badge;
+  }, [badge]);
+  const bump = bumpedBadge.current === badge;
+
   const content = (
     <>
       <i className={`pi ${icon}`} aria-hidden="true" />
       {dot && <span className="rail-btn__dot" aria-hidden="true" />}
       {badge > 0 && (
-        <span className="rail-btn__badge" aria-hidden="true">
+        <span key={badge} className={`rail-btn__badge${bump ? " rail-btn__badge--bump" : ""}`} aria-hidden="true">
           {badge > 9 ? "9+" : badge}
         </span>
       )}
