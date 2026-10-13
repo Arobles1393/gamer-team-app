@@ -61,8 +61,6 @@
     "clearRegion": "Retirer le filtre {{country}}"
   },
   "card": {
-    "playersNeeded_one": "{{count}} joueur recherché",
-    "playersNeeded_other": "{{count}} joueurs recherchés",
     "open": "Voir la partie de {{game}}",
     "interestedBadge": "Ça vous intéresse",
     "scheduledTitle": "Partie programmée",
@@ -73,7 +71,11 @@
     "edit": "Modifier",
     "delete": "Supprimer",
     "joined": "C'est parti !",
-    "joinedAnnounce": "Vous avez rejoint la partie de {{game}}"
+    "joinedAnnounce": "Vous avez rejoint la partie de {{game}}",
+    "slotsWord_one": "place",
+    "slotsWord_other": "places",
+    "slotsFull": "complète",
+    "slotsLabel": "{{interested}} places prises sur {{needed}}"
   },
   "tags": {
     "label": "Étiquettes de la partie",

@@ -61,8 +61,6 @@
     "clearRegion": "Remove the {{country}} filter"
   },
   "card": {
-    "playersNeeded_one": "{{count}} player needed",
-    "playersNeeded_other": "{{count}} players needed",
     "open": "View {{game}} party",
     "interestedBadge": "You're interested",
     "scheduledTitle": "Scheduled party",
@@ -73,7 +71,11 @@
     "edit": "Edit",
     "delete": "Delete",
     "joined": "You're in!",
-    "joinedAnnounce": "You joined the {{game}} party"
+    "joinedAnnounce": "You joined the {{game}} party",
+    "slotsWord_one": "spot",
+    "slotsWord_other": "spots",
+    "slotsFull": "full",
+    "slotsLabel": "{{interested}} of {{needed}} spots taken"
   },
   "tags": {
     "label": "Party tags",

@@ -61,8 +61,6 @@
     "clearRegion": "Remover o filtro de {{country}}"
   },
   "card": {
-    "playersNeeded_one": "{{count}} jogador necessário",
-    "playersNeeded_other": "{{count}} jogadores necessários",
     "open": "Ver partida de {{game}}",
     "interestedBadge": "Você tem interesse",
     "scheduledTitle": "Partida agendada",
@@ -73,7 +71,11 @@
     "edit": "Editar",
     "delete": "Excluir",
     "joined": "Você entrou!",
-    "joinedAnnounce": "Você entrou na partida de {{game}}"
+    "joinedAnnounce": "Você entrou na partida de {{game}}",
+    "slotsWord_one": "vaga",
+    "slotsWord_other": "vagas",
+    "slotsFull": "completa",
+    "slotsLabel": "{{interested}} de {{needed}} vagas ocupadas"
   },
   "tags": {
     "label": "Etiquetas da partida",

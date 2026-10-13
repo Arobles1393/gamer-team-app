@@ -5,6 +5,7 @@ import { Button } from "primereact/button";
 import { memo, useCallback } from "react";
 import PostPlatforms from "./PostPlatforms";
 import PostTags from "./PostTags";
+import PostSlots from "./PostSlots";
 import JoinedLabel from "./JoinedLabel";
 import { ReportButton } from "../Reports";
 import { useJoinFeedback, useUserProfile } from "../../hooks";
@@ -86,11 +87,11 @@ function PostCard({
 
   const relativeTime = formatRelativeTime(post.createdAt);
 
-  const gameTitle = post.logo ? (
-    <img src={post.logo} alt={post.game} className="post-card__logo" />
-  ) : (
-    <h3 className="post-card__title">{post.game}</h3>
-  );
+  // Qué partida es: el juego (siempre en texto, también si hay logo) y la
+  // descripción de quien la publica (modo, rango, horario…)
+  const description = typeof post.comments === "string" ? post.comments.trim() : "";
+  const needed = Number(post.playersNeeded) || 0;
+  const interested = Math.max(0, Number(post.interestedCount) || 0);
 
   return (
     <article
@@ -118,22 +119,27 @@ function PostCard({
             {formatDates.formatScheduledTime(post.scheduledAt)}
           </span>
         )}
-        <div className="post-card__cover-title">
-          {gameTitle}
-        </div>
+        {/* El logo es arte de la portada; el nombre va en texto en el cuerpo */}
+        {post.logo && (
+          <div className="post-card__cover-title">
+            <img src={post.logo} alt="" className="post-card__logo" />
+          </div>
+        )}
       </div>
 
       <div className="post-card__body">
-        <p className="post-card__meta">
-          <i className="pi pi-user" aria-hidden="true" />
-          {t("card.playersNeeded", { count: Number(post.playersNeeded) || 0 })}
-        </p>
+        <h3 className="post-card__title">{post.game}</h3>
+        {description && <p className="post-card__description">{description}</p>}
 
-        <PostTags
-          requiresMic={post.requiresMic}
-          skillLevel={post.skillLevel}
-          language={post.language}
-        />
+        {/* Lo que decide si te encaja: plazas y lo que se sale de lo normal */}
+        <div className="post-card__facts">
+          {needed > 0 && <PostSlots interested={interested} needed={needed} />}
+          <PostTags
+            requiresMic={post.requiresMic}
+            skillLevel={post.skillLevel}
+            language={post.language}
+          />
+        </div>
 
         <div className="post-card__author">
           <button

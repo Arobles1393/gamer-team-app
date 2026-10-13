@@ -125,7 +125,7 @@
   box-shadow: 0 4px 14px -4px rgba(244, 63, 94, 0.7);
 }
 
-/* Nombre del juego superpuesto abajo de la portada: logo o texto */
+/* Logo del juego superpuesto abajo de la portada (el nombre en texto va en el cuerpo) */
 .post-card__cover-title {
   position: absolute;
   left: 0;
@@ -149,6 +149,7 @@
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
 }
 
+/* ---------- QUÉ PARTIDA ES ---------- */
 .post-card .post-card__title {
   margin: 0;
   font-family: var(--gm-font-display);
@@ -160,7 +161,83 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Descripción de quien publica (modo, rango, horario…): 2 líneas como mucho */
+.post-card__description {
+  display: -webkit-box;
+  margin: 6px 0 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--gm-muted);
+  overflow-wrap: anywhere;
+}
+
+/* ---------- SI TE ENCAJA: plazas y etiquetas ---------- */
+.post-card__facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.post-card__facts:empty {
+  display: none;
+}
+
+.post-card__slots {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 24px;
+  margin: 0;
+  padding: 0 10px 0 9px;
+  border: 1px solid var(--gm-border-soft);
+  border-radius: var(--gm-radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gm-muted);
+}
+
+.post-card__slots-count {
+  font-variant-numeric: tabular-nums;
+}
+
+.post-card__slots-count strong {
+  font-weight: 700;
+  color: var(--gm-text);
+}
+
+.post-card__slots-bar {
+  position: relative;
+  width: 40px;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: rgba(124, 58, 237, 0.22);
+}
+
+/* Se llena al unirse alguien (transform: el ancho no se anima) */
+.post-card__slots-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--gm-gradient);
+  transform-origin: left center;
+  transition: transform 0.5s var(--gm-ease-out);
+}
+
+.post-card__slots--full {
+  border-color: rgba(244, 63, 94, 0.4);
+  color: var(--gm-accent-text);
+}
+
+.post-card__slots--full .post-card__slots-fill {
+  background: var(--gm-accent);
 }
 
 /* ---------- CONTENIDO ---------- */
@@ -172,21 +249,12 @@
 }
 
 
-.post-card__meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 14px;
-  font-size: 14px;
-  color: var(--gm-muted);
-}
-
 /* Etiquetas (micrófono, competitivo, idioma): solo si hay alguna */
 .post-card__tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: -6px 0 14px;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -218,17 +286,15 @@
   color: var(--gm-accent-text);
 }
 
-.post-card__meta .pi {
-  font-size: 12px;
-  color: var(--gm-subtle);
-}
-
+/* ---------- QUIÉN Y ACCIÓN: abajo; el espacio sobrante queda encima ---------- */
 .post-card__author {
   display: flex;
   align-items: center;
   gap: 6px;
   min-width: 0;
-  margin-bottom: 18px;
+  margin-top: auto;
+  padding-top: 16px;
+  margin-bottom: 16px;
   font-size: 14px;
 }
 
@@ -389,7 +455,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .post-card,
-  .post-card__image {
+  .post-card__image,
+  .post-card__slots-fill {
     transition: none;
   }
 
