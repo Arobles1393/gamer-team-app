@@ -52,12 +52,13 @@ const noOverflow = (page) => page.evaluate(() => document.documentElement.scroll
     await page.waitForTimeout(500);
     const expected = ORDER[(ORDER.indexOf(beforeArrow) + 1) % ORDER.length];
     check("flecha a la derecha: siguiente pestaña y su ficha", await selectedName(page) === expected
-      && await page.locator('[role="tabpanel"]').getAttribute("aria-labelledby") === await page.locator('[role="tab"][aria-selected="true"]').getAttribute("id"),
+      && await page.locator('.landing__panel--active').getAttribute("aria-labelledby") === await page.locator('[role="tab"][aria-selected="true"]').getAttribute("id")
+      && await page.locator('[role="tabpanel"]:not([aria-hidden="true"])').count() === 1,
       `${beforeArrow} -> ${await selectedName(page)}`);
     await page.keyboard.press("End");
     await page.waitForTimeout(500);
     check("Fin: última pestaña", await selectedName(page) === "Comunidad");
-    check("la ficha marca el ejemplo como ejemplo", /Ejemplo/i.test(await page.locator(".landing-demo__label").innerText()));
+    check("la ficha marca el ejemplo como ejemplo", /Ejemplo/i.test(await page.locator(".landing__panel--active .landing-demo__label").innerText()));
     await page.locator(".landing__cta").click();
     await page.waitForURL(/\/login/, { timeout: 10000 });
     check("\"Crear cuenta\" abre el registro", await page.locator("#username").waitFor({ timeout: 8000 }).then(() => true, () => false));
