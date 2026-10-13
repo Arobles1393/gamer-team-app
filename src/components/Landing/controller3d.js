@@ -28,9 +28,10 @@ const FACING = [
 ];
 
 // Contorno del cuerpo: la mitad derecha, que se refleja para la izquierda
+// Estilizado: cintura estrecha y grips largos que se afinan hacia abajo
 const RIGHT_HALF = [
-  [0, 1.05], [1.0, 1.15], [1.9, 1.2], [2.55, 1.0], [2.85, 0.4], [2.95, -0.5],
-  [2.85, -1.4], [2.45, -1.95], [1.95, -1.85], [1.55, -1.25], [1.0, -0.8], [0, -0.75]
+  [0, 0.92], [0.95, 0.98], [1.8, 1.06], [2.45, 0.86], [2.82, 0.3], [3.0, -0.55],
+  [3.02, -1.45], [2.78, -2.2], [2.42, -2.42], [2.08, -2.15], [1.75, -1.4], [1.2, -0.82], [0, -0.72]
 ];
 
 // Recorrido: mitad derecha de arriba abajo y mitad izquierda de abajo arriba
@@ -53,13 +54,13 @@ const buildController = () => {
   };
 
   // Cuerpo
-  const depth = 0.55;
+  const depth = 0.36;
   const bodyGeometry = track(new THREE.ExtrudeGeometry(bodyShape(), {
     depth,
     bevelEnabled: true,
-    bevelThickness: 0.22,
-    bevelSize: 0.18,
-    bevelSegments: 4,
+    bevelThickness: 0.16,
+    bevelSize: 0.13,
+    bevelSegments: 6,
     curveSegments: 48
   }));
   bodyGeometry.translate(0, 0.35, -depth / 2);
@@ -102,7 +103,7 @@ const buildController = () => {
   glow.position.set(center.x, center.y, -0.9);
   group.add(glow);
 
-  const front = depth / 2 + 0.22;
+  const front = depth / 2 + 0.16;
   const parts = {};
   const partMaterial = () => track(new THREE.MeshStandardMaterial({
     color: COLORS.part,
@@ -126,14 +127,14 @@ const buildController = () => {
 
   // Botones de acción (rombo de cuatro), a la derecha
   // Abombados: media esfera aplastada sobre la cara
-  addPart("face", [[0, 0.42], [0.42, 0], [0, -0.42], [-0.42, 0]].flatMap(([x, y]) => [
+  addPart("face", [[0, 0.38], [0.38, 0], [0, -0.38], [-0.38, 0]].flatMap(([x, y]) => [
     {
-      geometry: new THREE.CylinderGeometry(0.18, 0.18, 0.08, 32),
+      geometry: new THREE.CylinderGeometry(0.15, 0.15, 0.06, 32),
       position: [1.85 + x, 0.55 + y, front - 0.02],
       rotation: [Math.PI / 2, 0, 0]
     },
     {
-      geometry: new THREE.SphereGeometry(0.18, 32, 12, 0, Math.PI * 2, 0, Math.PI / 2).scale(1, 0.55, 1),
+      geometry: new THREE.SphereGeometry(0.15, 32, 12, 0, Math.PI * 2, 0, Math.PI / 2).scale(1, 0.55, 1),
       position: [1.85 + x, 0.55 + y, front + 0.02],
       rotation: [Math.PI / 2, 0, 0]
     }
@@ -141,36 +142,36 @@ const buildController = () => {
 
   // Cruceta, a la izquierda
   addPart("dpad", [
-    { geometry: new THREE.BoxGeometry(0.85, 0.27, 0.16), position: [-1.85, 0.55, front] },
-    { geometry: new THREE.BoxGeometry(0.27, 0.85, 0.16), position: [-1.85, 0.55, front] }
+    { geometry: new THREE.BoxGeometry(0.74, 0.22, 0.12), position: [-1.85, 0.55, front] },
+    { geometry: new THREE.BoxGeometry(0.22, 0.74, 0.12), position: [-1.85, 0.55, front] }
   ]);
 
   // Sticks: base y cabeza
   const stick = (x) => [
-    { geometry: new THREE.CylinderGeometry(0.36, 0.4, 0.14, 40), position: [x, -0.45, front - 0.02], rotation: [Math.PI / 2, 0, 0] },
-    { geometry: new THREE.SphereGeometry(0.27, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), position: [x, -0.45, front + 0.04], rotation: [Math.PI / 2, 0, 0] }
+    { geometry: new THREE.CylinderGeometry(0.31, 0.34, 0.1, 40), position: [x, -0.45, front - 0.02], rotation: [Math.PI / 2, 0, 0] },
+    { geometry: new THREE.SphereGeometry(0.23, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), position: [x, -0.45, front + 0.03], rotation: [Math.PI / 2, 0, 0] }
   ];
   addPart("leftStick", stick(-0.95));
   addPart("rightStick", stick(0.95));
 
   // Botón central
   addPart("guide", [{
-    geometry: new THREE.CylinderGeometry(0.22, 0.22, 0.12, 40),
-    position: [0, 0.75, front],
+    geometry: new THREE.CylinderGeometry(0.18, 0.18, 0.08, 40),
+    position: [0, 0.68, front],
     rotation: [Math.PI / 2, 0, 0]
   }]);
 
   // Gatillos superiores
   addPart("bumpers", [-1, 1].map((side) => ({
-    geometry: new THREE.CapsuleGeometry(0.16, 0.9, 6, 16),
-    position: [side * 1.95, 1.62, 0],
+    geometry: new THREE.CapsuleGeometry(0.12, 0.95, 6, 16),
+    position: [side * 1.9, 1.47, 0],
     rotation: [0, 0, Math.PI / 2]
   })));
 
   // Gatillos traseros, detrás de los superiores
   addPart("triggers", [-1, 1].map((side) => ({
-    geometry: new THREE.BoxGeometry(0.75, 0.42, 0.5),
-    position: [side * 1.95, 1.62, -0.42],
+    geometry: new THREE.BoxGeometry(0.7, 0.34, 0.36),
+    position: [side * 1.9, 1.47, -0.32],
     rotation: [0.35, 0, 0]
   })));
 
@@ -190,7 +191,7 @@ export const createControllerScene = (canvas, { reducedMotion = false } = {}) =>
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
-  camera.position.set(0, 0.25, 8.7);
+  camera.position.set(0, -0.2, 9.4);
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.55));
   const key = new THREE.DirectionalLight(0xffffff, 1.1);
