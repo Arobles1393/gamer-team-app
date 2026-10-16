@@ -5,12 +5,16 @@ import { VerifyEmailDialog } from "../components/EmailVerification";
 import { OnboardingProvider } from "../components/Onboarding";
 import { AgeGateProvider } from "../components/AgeGate";
 import { LoginPage, PasswordReset, SteamReturn } from "../components/Auth";
+import { ScrollToTop } from "../components/Routing";
 
 // Rutas de primer nivel: el retorno de Steam no necesita sesión; /login y la
 // app comparten el AuthProvider (sin rail en /login)
 const RootRoutes = () => {
 
 	return (
+		<>
+		{/* Al cambiar de página se empieza arriba (o donde estaba, con atrás) */}
+		<ScrollToTop />
 		<Routes>
 			<Route
 				path="/auth/steam/return"
@@ -49,6 +53,7 @@ const RootRoutes = () => {
 				/>
 			</Route>
 		</Routes>
+		</>
 	);
 
 };
