@@ -65,8 +65,6 @@ export const useUnreadNotifications = (user) => {
     loaded,
     // Contador de la campana: sin los mensajes, que ya cuenta Chats
     unreadCount: unread.filter((notification) => !isMessageNotification(notification)).length,
-    // Todas, mensajes incluidos (p. ej. para "Marcar todas como leídas")
-    unreadTotal: unread.length,
     // Conversaciones (1:1 y de grupo) con mensajes sin leer, para el contador de Chats
     unreadChatCount: unreadChatIds.size + unreadGroupIds.size,
     unreadChatIds,

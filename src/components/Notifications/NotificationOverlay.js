@@ -13,10 +13,7 @@ export default function NotificationOverlay({
   notificationRef,
   notifications,
   loading,
-  // Sin los mensajes (los cuenta Chats)
   unreadCount,
-  // Hay no leídas de cualquier tipo, mensajes incluidos
-  canMarkAll,
   onAccept,
   onReject,
   onMarkAsRead,
@@ -123,7 +120,7 @@ export default function NotificationOverlay({
             type="button"
             className="notif-panel__link"
             onClick={handleMarkAllAsRead}
-            disabled={!canMarkAll || markingAll}
+            disabled={unreadCount === 0 || markingAll}
           >
             {t("markAllRead")}
           </button>

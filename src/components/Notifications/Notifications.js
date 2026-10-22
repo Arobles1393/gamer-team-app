@@ -11,7 +11,7 @@ import NotificationsEmptyState from "./NotificationsEmptyState";
 import { notificationService } from "../../services/notifications";
 import { friendService } from "../../services/friends";
 import { useNotifications, useRequireVerified } from "../../hooks";
-import { navigateNotification, formatDates, confirmDestructive, isMessageNotification } from "../../utils";
+import { navigateNotification, formatDates, confirmDestructive } from "../../utils";
 import { useCurrentUser } from "../../context";
 import "../Posts/Feed.css";
 import "./Notifications.css";
@@ -21,11 +21,10 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const isPendingRequest = (notification) =>
   notification.type === "friend_request" && notification.status === "pending";
 
-// "Sin leer" sin los mensajes de chat, igual que la campana (los cuenta
-// Chats); en "Todas" sí aparecen
+// Sin mensajes de chat: no llegan aquí (viven en Chats)
 const FILTER_FNS = {
   all: () => true,
-  unread: (notification) => !notification.read && !isMessageNotification(notification),
+  unread: (notification) => !notification.read,
   requests: isPendingRequest
 };
 
@@ -74,9 +73,7 @@ export default function Notifications() {
   const counts = useMemo(() => ({
     all: notifications.length,
     unread: notifications.filter(FILTER_FNS.unread).length,
-    requests: notifications.filter(FILTER_FNS.requests).length,
-    // Cualquier no leída, mensajes incluidos (para "Marcar todas como leídas")
-    anyUnread: notifications.some((notification) => !notification.read)
+    requests: notifications.filter(FILTER_FNS.requests).length
   }), [notifications]);
 
   const sections = useMemo(
@@ -189,7 +186,7 @@ export default function Notifications() {
   return (
     <div className="feed notifications">
       <NotificationsHeader
-        canMarkAll={counts.anyUnread}
+        unreadCount={counts.unread}
         hasNotifications={hasNotifications}
         markingAll={markingAll}
         onMarkAllAsRead={handleMarkAllAsRead}

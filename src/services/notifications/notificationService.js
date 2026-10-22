@@ -13,7 +13,10 @@ import {
 } from "firebase/firestore";
 
 import { db } from "../../firebase/config";
+import { BELL_NOTIFICATION_TYPES, isMessageNotification } from "../../utils/notificationMeta";
 
+// Campana y /notifications: sin los mensajes de chat (viven en Chats).
+// Índice: userId + type + createdAt desc
 const subscribeToNotifications = (
   userId,
   onChange,
@@ -24,6 +27,7 @@ const subscribeToNotifications = (
   const constraints = [
     collection(db, "notifications"),
     where("userId", "==", userId),
+    where("type", "in", BELL_NOTIFICATION_TYPES),
     orderBy("createdAt", "desc")
   ];
 
@@ -94,10 +98,13 @@ const markAllNotificationsAsRead = async (userId) => {
 
   const snapshot = await getDocs(q);
 
-  const operations = snapshot.docs.map((docSnap) => ({
-    type: "update",
-    ref: docSnap.ref
-  }));
+  // Los mensajes no: se leen al abrir su chat
+  const operations = snapshot.docs
+    .filter((docSnap) => !isMessageNotification(docSnap.data()))
+    .map((docSnap) => ({
+      type: "update",
+      ref: docSnap.ref
+    }));
 
   await commitInBatches(operations);
 };
@@ -131,10 +138,13 @@ const deleteAllNotifications = async (userId) => {
 
   const snapshot = await getDocs(q);
 
-  const operations = snapshot.docs.map((docSnap) => ({
-    type: "delete",
-    ref: docSnap.ref
-  }));
+  // Los mensajes no: marcan los chats sin leer
+  const operations = snapshot.docs
+    .filter((docSnap) => !isMessageNotification(docSnap.data()))
+    .map((docSnap) => ({
+      type: "delete",
+      ref: docSnap.ref
+    }));
 
   await commitInBatches(operations);
 };
