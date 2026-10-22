@@ -28,7 +28,7 @@ const readExpanded = () => {
  */
 export default function AppHeader({
   unreadCount,
-  hasUnreadMessages,
+  unreadChatCount = 0,
   items,
   adminPendingCount = 0,
   onToggleNotifications,
@@ -66,7 +66,7 @@ export default function AppHeader({
         <RailButton to="/" end icon="pi-home" label={t("nav.home")} className="rail-btn--home" />
         <RailButton to="/findPlayers" icon="pi-search" label={t("nav.findPlayers")} />
         <RailButton to="/friends" icon="pi-users" label={t("nav.friends")} />
-        <RailButton to="/chat" icon="pi-comments" label={t("nav.chats")} dot={hasUnreadMessages} />
+        <RailButton to="/chat" icon="pi-comments" label={t("nav.chats")} badge={unreadChatCount} />
         <RailButton to="/guias" icon="pi-book" label={t("nav.guides")} />
         <RailButton to="/news" icon="pi-megaphone" label={t("nav.news")} />
         <RailButton

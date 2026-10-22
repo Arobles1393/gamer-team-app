@@ -64,7 +64,8 @@ export const useUnreadNotifications = (user) => {
     unread,
     loaded,
     unreadCount: unread.length,
-    hasUnreadMessages: unreadChatIds.size > 0 || unreadGroupIds.size > 0,
+    // Conversaciones (1:1 y de grupo) con mensajes sin leer, para el contador de Chats
+    unreadChatCount: unreadChatIds.size + unreadGroupIds.size,
     unreadChatIds,
     unreadGroupIds
   };
