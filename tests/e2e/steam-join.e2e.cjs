@@ -33,11 +33,11 @@ const session = async (acc) => {
   await page.locator("button[type=submit]").click();
   await page.waitForURL((url) => !url.pathname.startsWith("/login"), { timeout: 15000 });
   await page.goto(`${BASE}/configuracion`);
-  await page.locator(".profile-privacy").waitFor({ timeout: 15000 });
+  await page.locator(".profile-privacy:not(.profile-sound)").waitFor({ timeout: 15000 });
   await page.waitForTimeout(1500);
   return page;
 };
-const toggle = (page) => page.locator(".profile-privacy .p-inputswitch");
+const toggle = (page) => page.locator(".profile-privacy:not(.profile-sound) .p-inputswitch");
 const saved = async () => (await db.doc(`users/${ACC.uid}/private/preferences`).get()).data()?.privacy?.allowSteamJoin;
 
 const cleanup = async () => {
@@ -64,7 +64,7 @@ const cleanup = async () => {
     // ---------- Sin Steam vinculado ----------
     console.log("\n=== sin Steam");
     let page = await session(QA.ana);
-    const section = page.locator(".profile-privacy");
+    const section = page.locator(".profile-privacy:not(.profile-sound)");
     check("sección Privacidad en Configuración (sin modo edición)", await section.isVisible() && await page.locator(".profile-savebar").count() === 0);
     check("sin Steam en las redes: interruptor deshabilitado", await toggle(page).locator("input").isDisabled());
     check("con el aviso para vincular Steam", /Vincula tu perfil de Steam/.test(await section.innerText()));
@@ -76,7 +76,7 @@ const cleanup = async () => {
     console.log("\n=== con Steam");
     page = await session(ACC);
     check("apagado por defecto", !(await toggle(page).getAttribute("class")).includes("p-highlight") && (await saved()) === undefined);
-    check("habilitado y sin aviso de vincular", await toggle(page).locator("input").isEnabled() && !/Vincula tu perfil/.test(await page.locator(".profile-privacy").innerText()));
+    check("habilitado y sin aviso de vincular", await toggle(page).locator("input").isEnabled() && !/Vincula tu perfil/.test(await page.locator(".profile-privacy:not(.profile-sound)").innerText()));
     await toggle(page).click();
     let value;
     for (let i = 0; i < 10 && value !== true; i += 1) {
@@ -86,7 +86,7 @@ const cleanup = async () => {
     check("al encenderlo se guarda privacy.allowSteamJoin true", value === true);
     await page.screenshot({ path: `${SHOTS}/privacidad-steam.png` });
     await page.reload();
-    await page.locator(".profile-privacy").waitFor();
+    await page.locator(".profile-privacy:not(.profile-sound)").waitFor();
     await page.waitForTimeout(1500);
     check("tras recargar sigue encendido", (await toggle(page).getAttribute("class")).includes("p-highlight"));
     await toggle(page).click();
