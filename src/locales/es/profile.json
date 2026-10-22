@@ -204,5 +204,10 @@
     "hint": "Un sonido para los mensajes de chat y otro para lo demás. No suena si ya tienes abierto ese chat. Se guarda en este navegador.",
     "previewMessage": "Probar mensaje",
     "previewDefault": "Probar notificación"
+  },
+  "settings": {
+    "eyebrow": "Tu cuenta",
+    "title": "Configuración",
+    "loading": "Cargando configuración"
   }
 }

@@ -8,7 +8,7 @@ import OnboardingDialog from "./OnboardingDialog";
 import OnboardingQuestion from "./OnboardingQuestion";
 import { useAgeGatePending } from "../AgeGate";
 
-// Solo la acción de abrirla a mano (menú del avatar y Mi perfil): estable,
+// Solo la acción de abrirla a mano (menú del avatar): estable,
 // para que ningún componente se vuelva a dibujar por el estado de la guía
 const OpenOnboardingContext = createContext(() => {});
 export const useOpenOnboarding = () => useContext(OpenOnboardingContext);

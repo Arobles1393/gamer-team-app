@@ -4,7 +4,7 @@ import { ProfileSection } from "../ProfileSection";
 import { usePrivacySettings } from "../../hooks";
 import { getSteamIdFromLinks } from "../../utils";
 
-// Mi perfil (fuera del modo edición): "Unirme en Steam". Se guarda al
+// Configuración: "Unirme en Steam". Se guarda al
 // momento. Sin enlace de Steam en las redes no se puede activar.
 export default function PrivacySection({ user, links, onError }) {
   const { t } = useTranslation("profile");

@@ -1,6 +1,6 @@
 // Versión de cada documento: se guarda con el consentimiento (legalConsent)
 // para saber qué versión aceptó cada usuario
-export const LEGAL_VERSIONS = { terms: "provisional-4", privacy: "provisional-8" };
+export const LEGAL_VERSIONS = { terms: "provisional-4", privacy: "provisional-9" };
 
 // Estado de los textos legales: "provisional" muestra el aviso "Versión
 // provisional: puede cambiar" aunque ya no queden marcadores [PENDIENTE]

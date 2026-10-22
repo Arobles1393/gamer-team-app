@@ -1,4 +1,4 @@
-// "Unirme en Steam" (1): el interruptor de privacidad en Mi perfil.
+// "Unirme en Steam" (1): el interruptor de privacidad en Configuración.
 // Cuenta temporal qa_sj_* con un enlace de Steam; qa_ana no tiene Steam.
 const fs = require("fs");
 const path = require("path");
@@ -32,7 +32,7 @@ const session = async (acc) => {
   await page.locator("#password").fill(acc.password);
   await page.locator("button[type=submit]").click();
   await page.waitForURL((url) => !url.pathname.startsWith("/login"), { timeout: 15000 });
-  await page.goto(`${BASE}/profile`);
+  await page.goto(`${BASE}/configuracion`);
   await page.locator(".profile-privacy").waitFor({ timeout: 15000 });
   await page.waitForTimeout(1500);
   return page;
@@ -65,7 +65,7 @@ const cleanup = async () => {
     console.log("\n=== sin Steam");
     let page = await session(QA.ana);
     const section = page.locator(".profile-privacy");
-    check("sección Privacidad en Mi perfil (fuera del modo edición)", await section.isVisible() && await page.locator(".profile-savebar").count() === 0);
+    check("sección Privacidad en Configuración (sin modo edición)", await section.isVisible() && await page.locator(".profile-savebar").count() === 0);
     check("sin Steam en las redes: interruptor deshabilitado", await toggle(page).locator("input").isDisabled());
     check("con el aviso para vincular Steam", /Vincula tu perfil de Steam/.test(await section.innerText()));
     check("el texto explica qué se comparte, quién y que no hay IP",

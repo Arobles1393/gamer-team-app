@@ -22,6 +22,13 @@ export const createHeaderMenu = (
     }
   },
   {
+    label: t("nav.settings"),
+    icon: "pi pi-cog",
+    command: () => {
+      navigate("/configuracion");
+    }
+  },
+  {
     label: t("nav.myPosts"),
     icon: "pi pi-file",
     command: () => {

@@ -1,6 +1,6 @@
 // Guía de bienvenida: se abre sola la primera vez, navegación con ratón y
 // teclado, pregunta final ("No" / "Sí" / cerrar sin responder), apertura
-// manual desde el menú y desde Mi perfil, y dónde no se abre. Usa una
+// manual desde el menú del avatar, y dónde no se abre. Usa una
 // cuenta temporal qa_onb_* SIN verificar (también prueba que puede guardar
 // su respuesta) y la borra al terminar.
 const fs = require("fs");
@@ -107,7 +107,7 @@ const cleanup = async () => {
     check("Atrás retrocede", /Bienvenido/.test(await stepTitle()));
     check("el punto activo sigue al paso", await page.locator(".onboarding__dots li").nth(0).getAttribute("class").then((c) => c.includes("active")));
     await goToLastStep();
-    check("el último paso explica dónde reabrirla", /menú de tu avatar|Mi perfil/.test(await guide().innerText()));
+    check("el último paso explica dónde reabrirla", /menú de tu avatar/.test(await guide().innerText()));
     check("y su botón dice Terminar", await guide().getByRole("button", { name: "Terminar" }).count() === 1);
 
     // ---------- 3. Escape = saltar -> pregunta; respuesta "No" ----------
@@ -138,11 +138,14 @@ const cleanup = async () => {
     const manualDismiss = (await prefsRef().get()).data().onboarding;
     check("abierta a mano, cerrar la pregunta sin responder no cambia showAgain", manualDismiss.showAgain === false);
 
-    // ---------- 5. Desde Mi perfil, respuesta "Sí" ----------
+    // ---------- 5. Otra vez desde el menú (ya no está en Mi perfil), respuesta "Sí" ----------
     console.log("\n=== respuesta Sí");
     await page.goto(`${BASE}/profile`);
-    await page.locator(".profile-guide").getByRole("button", { name: "Ver la guía" }).click();
-    check("el botón de Mi perfil (junto al idioma) la abre", await guideOpens(5000));
+    await page.locator(".profile-hero").waitFor({ timeout: 15000 });
+    check("Mi perfil ya no tiene la tarjeta de la guía", await page.locator(".profile-guide").count() === 0);
+    await page.locator(".app-rail__avatar-btn").click();
+    await page.locator(".gm-menu").getByText("Guía de la app", { exact: true }).click();
+    check("Guía de la app (menú) la vuelve a abrir", await guideOpens(5000));
     await goToLastStep();
     await guide().getByRole("button", { name: "Terminar" }).click();
     await question().getByRole("button", { name: "Sí, mostrármela de nuevo" }).click();

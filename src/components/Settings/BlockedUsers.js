@@ -10,7 +10,7 @@ import { confirmDestructive, formatDates } from "../../utils";
 
 const CONFIRM_GROUP = "blocked-users";
 
-// Mi perfil: usuarios que bloqueé, para poder desbloquearlos. Es el único
+// Configuración: usuarios que bloqueé, para poder desbloquearlos. Es el único
 // lugar donde aparecen: sus posts, comentarios y perfil quedan ocultos.
 // Si alguien me bloqueó a mí no sale aquí (solo quien bloquea desbloquea).
 // Sin bloqueos, la sección no se muestra.

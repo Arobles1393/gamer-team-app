@@ -46,11 +46,11 @@
     },
     "safety": {
       "title": "Sua segurança",
-      "body": "Se alguém te incomodar, denuncie ou bloqueie pelo perfil da pessoa. Os usuários bloqueados ficam em Meu perfil."
+      "body": "Se alguém te incomodar, denuncie ou bloqueie pelo perfil da pessoa. Os usuários bloqueados ficam em Configurações."
     },
     "closing": {
       "title": "Pronto para jogar!",
-      "body": "Você pode reabrir este guia quando quiser pelo menu do seu avatar ou em Meu perfil."
+      "body": "Você pode reabrir este guia quando quiser pelo menu do seu avatar."
     }
   },
   "question": {
@@ -67,10 +67,5 @@
     "title": "Não foi possível salvar sua resposta",
     "detail": "Verifique sua conexão e tente de novo.",
     "retry": "Tentar de novo"
-  },
-  "profile": {
-    "title": "Guia do app",
-    "text": "Revise em um minuto tudo o que você pode fazer no GamerMatch.",
-    "open": "Ver o guia"
   }
 }

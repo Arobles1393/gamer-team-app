@@ -6,6 +6,7 @@ export const APP_PATHS = [
   "/explorar",
   "/post/:id",
   "/profile",
+  "/configuracion",
   "/myposts",
   "/myparties",
   "/chat",

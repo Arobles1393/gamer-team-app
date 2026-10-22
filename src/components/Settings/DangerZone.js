@@ -4,7 +4,7 @@ import { Button } from "primereact/button";
 import { ProfileSection } from "../ProfileSection";
 import DeleteAccountDialog from "./DeleteAccountDialog";
 
-// Final de Mi perfil: eliminar la cuenta
+// Final de Configuración: eliminar la cuenta
 export default function DangerZone({ user, username, onError }) {
   const { t } = useTranslation("profile");
   const [open, setOpen] = useState(false);

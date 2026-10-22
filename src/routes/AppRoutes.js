@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { PostList, PostFeed, PostDetail, ExplorePage } from "../components/Posts";
 import { Profile } from "../components/Profile";
+import { SettingsPage } from "../components/Settings";
 import { ChatPage } from "../components/Chat";
 import { Notifications } from "../components/Notifications";
 import { Friends } from "../components/Friends";
@@ -58,6 +59,15 @@ const AppRoutes = ({
 				element={
 					<RequireAuth>
 						<Profile />
+					</RequireAuth>
+				}
+			/>
+			{/* Idioma, sonido, privacidad, bloqueos y eliminar cuenta */}
+			<Route
+				path="/configuracion"
+				element={
+					<RequireAuth>
+						<SettingsPage />
 					</RequireAuth>
 				}
 			/>
@@ -189,4 +199,4 @@ const AppRoutes = ({
 
 };
 
-export default AppRoutes;
+export default AppRoutes;

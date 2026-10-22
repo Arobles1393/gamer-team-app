@@ -33,6 +33,7 @@
     "unreadCount": "{{label}} ({{count}} non lues)",
     "accountMenu": "Menu du compte",
     "myProfile": "Mon profil",
+    "settings": "Paramètres",
     "myPosts": "Mes publications",
     "myParties": "Mes parties",
     "guides": "Guides",

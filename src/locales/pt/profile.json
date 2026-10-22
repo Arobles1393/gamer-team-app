@@ -204,5 +204,10 @@
     "hint": "Um som para as mensagens de chat e outro para o resto. Não toca se esse chat já estiver aberto. Fica salvo neste navegador.",
     "previewMessage": "Testar mensagem",
     "previewDefault": "Testar notificação"
+  },
+  "settings": {
+    "eyebrow": "Sua conta",
+    "title": "Configurações",
+    "loading": "Carregando configurações"
   }
 }

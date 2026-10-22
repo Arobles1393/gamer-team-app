@@ -145,7 +145,7 @@ let browser;
     await batch.commit();
     check("datos cruzados creados", (await traces(A.uid, [postA], [chatAB])) !== "");
 
-    // ---------- 1. A elimina su cuenta desde Mi perfil ----------
+    // ---------- 1. A elimina su cuenta desde Configuración ----------
     console.log("\n=== eliminar desde la interfaz");
     browser = await chromium.launch({ channel: process.env.E2E_BROWSER || "msedge", headless: true });
     let context = await browser.newContext({ locale: "es-MX", viewport: { width: 1366, height: 900 } });
@@ -161,10 +161,10 @@ let browser;
       await page.waitForTimeout(2000);
     };
     await login(A);
-    await page.goto(`${BASE}/profile`);
+    await page.goto(`${BASE}/configuracion`);
     const zone = page.locator(".danger-zone");
     await zone.waitFor({ timeout: 15000 });
-    check("Mi perfil termina con la Zona de peligro", (await page.locator(".gm-section").last().getAttribute("class")).includes("danger-zone"));
+    check("Configuración termina con la Zona de peligro", (await page.locator(".gm-section").last().getAttribute("class")).includes("danger-zone"));
     await zone.getByRole("button", { name: "Eliminar mi cuenta" }).click();
     const dialog = page.locator(".delete-account");
     await dialog.waitFor({ timeout: 5000 });

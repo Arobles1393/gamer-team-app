@@ -51,7 +51,7 @@ function App() {
   const { notifications, loading: loadingNotifications } = useNotifications(user, { limitCount: 10 });
   // Badge y punto rosa en "Chats" del rail: cuentan todas las no leídas, no solo las 10 del overlay
   const { unread, loaded: unreadLoaded, unreadCount, hasUnreadMessages } = useUnreadNotifications(user);
-  // Blip para mensajes, campanita para el resto (silenciable en Mi perfil)
+  // Blip para mensajes, campanita para el resto (silenciable en Configuración)
   useNotificationSound(user, unread, unreadLoaded);
   useUserPresence(user);
   // Accesos de admin en el menú del avatar, con lo que hay por revisar

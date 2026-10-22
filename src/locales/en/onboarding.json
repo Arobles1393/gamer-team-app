@@ -46,11 +46,11 @@
     },
     "safety": {
       "title": "Your safety",
-      "body": "If someone bothers you, report or block them from their profile. Blocked users are managed in My profile."
+      "body": "If someone bothers you, report or block them from their profile. Blocked users are managed in Settings."
     },
     "closing": {
       "title": "Ready to play!",
-      "body": "You can reopen this guide anytime from your avatar menu or from My profile."
+      "body": "You can reopen this guide anytime from your avatar menu."
     }
   },
   "question": {
@@ -67,10 +67,5 @@
     "title": "Couldn't save your answer",
     "detail": "Check your connection and try again.",
     "retry": "Try again"
-  },
-  "profile": {
-    "title": "App guide",
-    "text": "Go over everything you can do in GamerMatch in a minute.",
-    "open": "See the guide"
   }
 }

@@ -3,7 +3,7 @@ import { ProfileSection } from "../ProfileSection";
 import { SupportButton } from "../Support";
 import { getSupportUrl } from "../../utils/supportUrl";
 
-// Mi perfil, antes de la zona de peligro. Sin enlace configurado no se muestra
+// Configuración, antes de la zona de peligro. Sin enlace configurado no se muestra
 export default function SupportSection() {
   const { t } = useTranslation("support");
   if (!getSupportUrl()) return null;

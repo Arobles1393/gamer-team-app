@@ -4,7 +4,7 @@ import { ProfileSection } from "../ProfileSection";
 import { profileService } from "../../services/profile";
 import { APP_LANGUAGES, getAppLanguage, setAppLanguage } from "../../i18n";
 
-// Idioma de la interfaz. Siempre visible (no depende de Editar perfil): se
+// Configuración: idioma de la interfaz. Se
 // aplica al momento, queda en localStorage para este navegador y se guarda en
 // users/{uid}.language para aplicarlo al iniciar sesión en otro dispositivo.
 // Los nombres van en su propio idioma ("English", "Français"…), sin traducir.

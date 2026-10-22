@@ -10,14 +10,7 @@ import { SteamSection } from "../Steam";
 import PersonalInfo from "./PersonalInfo/PersonalInfo";
 import ProfileAbout from "./ProfileAbout";
 import ProfileSaveBar from "./ProfileSaveBar";
-import BlockedUsers from "./BlockedUsers";
-import LanguageSection from "./LanguageSection";
-import DangerZone from "./DangerZone";
 import { IMAGE_ACCEPT } from "../../utils/cropImage";
-import GuideSection from "./GuideSection";
-import PrivacySection from "./PrivacySection";
-import NotificationSoundSection from "./NotificationSoundSection";
-import SupportSection from "./SupportSection";
 import { MyGuides } from "../Guides";
 import { MatchPreferences, MATCH_PREFERENCES_ID } from "../Matching";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -239,21 +232,8 @@ export default function Profile() {
             onLinksChange={setLinks}
             emptyText={t("page.emptyLinks")}
           />
-          {/* Fuera del modo edición: el idioma se aplica y guarda al momento */}
-          <LanguageSection user={user} onError={showError} />
-          {/* Usa los links guardados: el interruptor se guarda al momento */}
-          <PrivacySection user={user} links={userData.links} onError={showError} />
-          {/* Sonido de notificaciones: se guarda al momento en este navegador */}
-          <NotificationSoundSection />
-          <GuideSection />
-          {/* Solo aparece si bloqueaste a alguien */}
-          <BlockedUsers user={user} onError={showError} />
         </div>
       </div>
-
-      <SupportSection />
-
-      <DangerZone user={user} username={userData.username} onError={showError} />
 
       {isEditing && (
         <ProfileSaveBar

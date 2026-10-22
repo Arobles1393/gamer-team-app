@@ -10,7 +10,7 @@ import {
   subscribeToNotificationSound
 } from "../../utils/notificationSound";
 
-// Mi perfil (fuera del modo edición): sonido al llegar una notificación.
+// Configuración: sonido al llegar una notificación.
 // Se guarda al momento en este navegador. Los botones dejan escuchar cada
 // sonido aunque esté apagado.
 export default function NotificationSoundSection() {

@@ -204,5 +204,10 @@
     "hint": "Un son pour les messages du chat et un autre pour le reste. Il ne joue pas si ce chat est déjà ouvert. Enregistré dans ce navigateur.",
     "previewMessage": "Tester un message",
     "previewDefault": "Tester une notification"
+  },
+  "settings": {
+    "eyebrow": "Votre compte",
+    "title": "Paramètres",
+    "loading": "Chargement des paramètres"
   }
 }

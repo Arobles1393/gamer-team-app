@@ -6,7 +6,7 @@
 import { CONTACT_EMAIL } from "../../config/contact";
 
 export const privacy = {
-  updatedAt: "2026-10-10",
+  updatedAt: "2026-10-21",
   sections: [
     {
       id: "datos",
@@ -47,7 +47,7 @@ export const privacy = {
       id: "derechos",
       title: "Tus derechos y cómo eliminar tu cuenta",
       body: [
-        `Puedes ver y editar los datos de tu perfil desde Mi perfil y eliminar tu cuenta en Mi perfil → “Eliminar mi cuenta”. Para cualquier otra solicitud (acceso, copia, corrección, oposición), escríbenos a ${CONTACT_EMAIL}.`
+        `Puedes ver y editar los datos de tu perfil desde Mi perfil y eliminar tu cuenta en Configuración → “Eliminar mi cuenta”. Para cualquier otra solicitud (acceso, copia, corrección, oposición), escríbenos a ${CONTACT_EMAIL}.`
       ]
     },
     {

@@ -68,13 +68,15 @@ const check = (name, ok, extra = "") => {
       await page.keyboard.press("Escape");
     }
 
-    // Mi perfil
+    // Mi perfil ya no la tiene: está en Configuración, antes de la zona de peligro
     await page.goto(`${BASE}/profile`);
     await page.locator(".profile-hero").waitFor({ timeout: 15000 });
+    check("Mi perfil: sin tarjeta de apoyo", await page.locator(".profile-support").count() === 0);
+    await page.goto(`${BASE}/configuracion`);
     await page.locator(".danger-zone").waitFor({ timeout: 15000 });
     const card = page.locator(".profile-support");
-    check(`Mi perfil: tarjeta ${EXPECT ? "visible" : "ausente"}`, (await card.count()) === (EXPECT ? 1 : 0));
-    check(`ningún enlace a ko-fi.com en el perfil${EXPECT ? " salvo el de la tarjeta" : ""}`,
+    check(`Configuración: tarjeta ${EXPECT ? "visible" : "ausente"}`, (await card.count()) === (EXPECT ? 1 : 0));
+    check(`ningún enlace a ko-fi.com en Configuración${EXPECT ? " salvo el de la tarjeta" : ""}`,
       (await page.locator('a[href*="ko-fi.com"]').count()) === (EXPECT ? 1 : 0));
     if (EXPECT) {
       const text = await card.innerText();

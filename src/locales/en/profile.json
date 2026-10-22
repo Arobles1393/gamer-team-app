@@ -204,5 +204,10 @@
     "hint": "One sound for chat messages and another for everything else. It won't play if that chat is already open. Saved in this browser.",
     "previewMessage": "Test message",
     "previewDefault": "Test notification"
+  },
+  "settings": {
+    "eyebrow": "Your account",
+    "title": "Settings",
+    "loading": "Loading settings"
   }
 }
