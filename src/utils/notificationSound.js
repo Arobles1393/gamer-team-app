@@ -82,8 +82,9 @@ const playBlip = (context, destination) => {
   filter.frequency.value = 2600;
   filter.connect(destination);
 
-  playTone(context, filter, { type: "square", freq: 520, freqEnd: 1040, start: t, duration: 0.11, peak: 0.35 });
-  playTone(context, filter, { type: "square", freq: 1040, freqEnd: 1320, start: t + 0.1, duration: 0.1, peak: 0.25 });
+  // Picos subidos para que llegue al mismo nivel que la campanita
+  playTone(context, filter, { type: "square", freq: 520, freqEnd: 1040, start: t, duration: 0.11, peak: 0.75 });
+  playTone(context, filter, { type: "square", freq: 1040, freqEnd: 1320, start: t + 0.1, duration: 0.1, peak: 0.54 });
 };
 
 const playBell = (context, destination) => {
