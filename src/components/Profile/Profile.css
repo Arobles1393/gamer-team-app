@@ -396,3 +396,21 @@
     transition: none;
   }
 }
+
+
+/* =====================================================
+   SONIDO DE NOTIFICACIONES (reutiliza el interruptor de privacidad)
+   ===================================================== */
+.profile-sound__hint {
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--gm-muted);
+}
+
+.profile-sound__previews {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}

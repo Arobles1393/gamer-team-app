@@ -197,5 +197,12 @@
       "turnOff": "Vous pouvez le désactiver à tout moment ; le changement peut prendre jusqu'à une minute."
     },
     "saveError": "Impossible d'enregistrer le changement. Réessayez."
+  },
+  "sound": {
+    "title": "Son",
+    "label": "Jouer un son à l’arrivée d’une notification",
+    "hint": "Un son pour les messages du chat et un autre pour le reste. Il ne joue pas si ce chat est déjà ouvert. Enregistré dans ce navigateur.",
+    "previewMessage": "Tester un message",
+    "previewDefault": "Tester une notification"
   }
 }

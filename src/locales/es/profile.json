@@ -197,5 +197,12 @@
       "turnOff": "Puedes apagarlo cuando quieras; el cambio puede tardar hasta un minuto en verse."
     },
     "saveError": "No se pudo guardar el cambio. Intenta de nuevo."
+  },
+  "sound": {
+    "title": "Sonido",
+    "label": "Sonar al llegar una notificación",
+    "hint": "Un sonido para los mensajes de chat y otro para lo demás. No suena si ya tienes abierto ese chat. Se guarda en este navegador.",
+    "previewMessage": "Probar mensaje",
+    "previewDefault": "Probar notificación"
   }
 }

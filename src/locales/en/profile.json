@@ -197,5 +197,12 @@
       "turnOff": "You can turn it off anytime; the change can take up to a minute to show."
     },
     "saveError": "Couldn't save the change. Please try again."
+  },
+  "sound": {
+    "title": "Sound",
+    "label": "Play a sound for new notifications",
+    "hint": "One sound for chat messages and another for everything else. It won't play if that chat is already open. Saved in this browser.",
+    "previewMessage": "Test message",
+    "previewDefault": "Test notification"
   }
 }

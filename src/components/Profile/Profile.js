@@ -16,6 +16,7 @@ import DangerZone from "./DangerZone";
 import { IMAGE_ACCEPT } from "../../utils/cropImage";
 import GuideSection from "./GuideSection";
 import PrivacySection from "./PrivacySection";
+import NotificationSoundSection from "./NotificationSoundSection";
 import SupportSection from "./SupportSection";
 import { MyGuides } from "../Guides";
 import { MatchPreferences, MATCH_PREFERENCES_ID } from "../Matching";
@@ -242,6 +243,8 @@ export default function Profile() {
           <LanguageSection user={user} onError={showError} />
           {/* Usa los links guardados: el interruptor se guarda al momento */}
           <PrivacySection user={user} links={userData.links} onError={showError} />
+          {/* Sonido de notificaciones: se guarda al momento en este navegador */}
+          <NotificationSoundSection />
           <GuideSection />
           {/* Solo aparece si bloqueaste a alguien */}
           <BlockedUsers user={user} onError={showError} />

@@ -6,6 +6,9 @@ import { useBlockedIds } from "../blocks/useBlockedIds";
 // Conteo de no leídas y si hay mensajes sin leer, sin el límite de la lista del overlay
 export const useUnreadNotifications = (user) => {
   const [allUnread, setUnread] = useState([]);
+  // true tras la primera respuesta de Firestore (el sonido no suena por las
+  // que ya estaban sin leer al abrir la app)
+  const [loaded, setLoaded] = useState(false);
   const { blockedIds } = useBlockedIds(user);
 
   // Las de usuarios con bloqueo de por medio no cuentan
@@ -15,6 +18,8 @@ export const useUnreadNotifications = (user) => {
   );
 
   useEffect(() => {
+    setLoaded(false);
+
     if (!user) {
       setUnread([]);
       return;
@@ -22,7 +27,10 @@ export const useUnreadNotifications = (user) => {
 
     const unsubscribe = notificationService.subscribeToUnreadNotifications(
       user.uid,
-      setUnread,
+      (data) => {
+        setUnread(data);
+        setLoaded(true);
+      },
       (error) => {
         console.error("Error obteniendo notificaciones sin leer:", error);
         setUnread([]);
@@ -53,6 +61,8 @@ export const useUnreadNotifications = (user) => {
   );
 
   return {
+    unread,
+    loaded,
     unreadCount: unread.length,
     hasUnreadMessages: unreadChatIds.size > 0 || unreadGroupIds.size > 0,
     unreadChatIds,

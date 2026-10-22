@@ -43,6 +43,7 @@ export * from "./chat/useMyGroupChats";
 // Notificaciones
 export * from "./notifications/useNotifications";
 export * from "./notifications/useUnreadNotifications";
+export * from "./notifications/useNotificationSound";
 
 // Auth
 export * from "./auth/useAuth";

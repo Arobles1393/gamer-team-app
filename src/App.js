@@ -8,7 +8,7 @@ import { AppHeader, createHeaderMenu } from "./components/Header";
 import { NotificationOverlay } from "./components/Notifications";
 import { notificationService } from "./services/notifications";
 import { friendService } from "./services/friends";
-import { useNotifications, useUnreadNotifications, useUserPresence, useRequireAuth, useRequireVerified, useWelcomeNotice, useIsAdmin, useAdminPendingCounts } from "./hooks";
+import { useNotifications, useUnreadNotifications, useNotificationSound, useUserPresence, useRequireAuth, useRequireVerified, useWelcomeNotice, useIsAdmin, useAdminPendingCounts } from "./hooks";
 import { useAuthReady, useCurrentUser } from "./context";
 import { AppRoutes } from "./routes";
 import { CreatePostDialog } from "./components/Posts";
@@ -50,7 +50,9 @@ function App() {
   const openOnboarding = useOpenOnboarding();
   const { notifications, loading: loadingNotifications } = useNotifications(user, { limitCount: 10 });
   // Badge y punto rosa en "Chats" del rail: cuentan todas las no leídas, no solo las 10 del overlay
-  const { unreadCount, hasUnreadMessages } = useUnreadNotifications(user);
+  const { unread, loaded: unreadLoaded, unreadCount, hasUnreadMessages } = useUnreadNotifications(user);
+  // Blip para mensajes, campanita para el resto (silenciable en Mi perfil)
+  useNotificationSound(user, unread, unreadLoaded);
   useUserPresence(user);
   // Accesos de admin en el menú del avatar, con lo que hay por revisar
   const { isAdmin } = useIsAdmin(user);

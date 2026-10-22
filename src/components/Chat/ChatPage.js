@@ -6,6 +6,7 @@ import ChatList from "./ChatList";
 import ChatWindow from "./ChatWindow";
 import GroupChatWindow from "./GroupChatWindow";
 import ChatEmptyState from "./ChatEmptyState";
+import { setOpenChat } from "../../utils/openChat";
 import "../Posts/Feed.css";
 import "./Chat.css";
 
@@ -32,6 +33,12 @@ export default function ChatPage() {
       setActiveChat({ type, id });
     }
   }, [requestedKey]);
+
+  // El sonido de notificación no suena por mensajes del chat abierto
+  useEffect(() => {
+    setOpenChat(activeChat);
+    return () => setOpenChat(null);
+  }, [activeChat]);
 
   const showError = useCallback((detail) => {
     toast.current?.show({

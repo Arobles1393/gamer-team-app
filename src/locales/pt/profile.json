@@ -197,5 +197,12 @@
       "turnOff": "Você pode desativar quando quiser; a mudança pode levar até um minuto para aparecer."
     },
     "saveError": "Não foi possível salvar a alteração. Tente novamente."
+  },
+  "sound": {
+    "title": "Som",
+    "label": "Tocar um som ao receber uma notificação",
+    "hint": "Um som para as mensagens de chat e outro para o resto. Não toca se esse chat já estiver aberto. Fica salvo neste navegador.",
+    "previewMessage": "Testar mensagem",
+    "previewDefault": "Testar notificação"
   }
 }
