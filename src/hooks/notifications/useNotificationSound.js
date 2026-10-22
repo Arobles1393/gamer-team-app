@@ -4,11 +4,10 @@ import {
   unlockNotificationSound
 } from "../../utils/notificationSound";
 import { isNotificationForOpenChat } from "../../utils/openChat";
+import { isMessageNotification } from "../../utils/notificationMeta";
 
 // Entre dos sonidos: si llegan varias seguidas, suena una sola vez
 const MIN_INTERVAL_MS = 1500;
-
-const MESSAGE_TYPES = new Set(["message", "group_message"]);
 
 /**
  * Suena al llegar una notificación nueva (blip para mensajes, campanita para
@@ -61,7 +60,7 @@ export const useNotificationSound = (user, unread, loaded) => {
     if (now - lastPlayedAt.current < MIN_INTERVAL_MS) return;
     lastPlayedAt.current = now;
 
-    const hasMessage = audible.some((notification) => MESSAGE_TYPES.has(notification.type));
+    const hasMessage = audible.some(isMessageNotification);
     playNotificationSound(hasMessage ? "message" : "default");
   }, [user, unread, loaded]);
 };

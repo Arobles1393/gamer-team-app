@@ -8,7 +8,7 @@ export { getAuthErrorMessage } from "./authErrors";
 export { getPlatform } from "./getPlatform";
 export { getLabel } from "./getLabel";
 export { searchGames, getGameDetail } from "./searchGames";
-export { getNotificationMeta } from "./notificationMeta";
+export { getNotificationMeta, isMessageNotification } from "./notificationMeta";
 export { platformLabels } from "./platformLabels";
 export { getLastSeenMs, isOnline, getPresenceLabel } from "./presence";
 export { getSteamIdFromLinks } from "./steamLinks";

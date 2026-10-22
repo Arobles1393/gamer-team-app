@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { notificationService } from "../../services/notifications";
-import { excludeBlockedAuthors } from "../../utils";
+import { excludeBlockedAuthors, isMessageNotification } from "../../utils";
 import { useBlockedIds } from "../blocks/useBlockedIds";
-
-const MESSAGE_TYPES = new Set(["message", "group_message"]);
 
 // Conteo de no leídas y si hay mensajes sin leer, sin el límite de la lista del overlay
 export const useUnreadNotifications = (user) => {
@@ -66,7 +64,7 @@ export const useUnreadNotifications = (user) => {
     unread,
     loaded,
     // Contador de la campana: sin los mensajes, que ya cuenta Chats
-    unreadCount: unread.filter((notification) => !MESSAGE_TYPES.has(notification.type)).length,
+    unreadCount: unread.filter((notification) => !isMessageNotification(notification)).length,
     // Todas, mensajes incluidos (p. ej. para "Marcar todas como leídas")
     unreadTotal: unread.length,
     // Conversaciones (1:1 y de grupo) con mensajes sin leer, para el contador de Chats

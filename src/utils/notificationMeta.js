@@ -13,3 +13,8 @@ const NOTIFICATION_META = {
 const DEFAULT_META = { icon: "pi-bell", actionKey: "actions.default" };
 
 export const getNotificationMeta = (type) => NOTIFICATION_META[type] ?? DEFAULT_META;
+
+// Mensajes de chat (1:1 y de partida): los cuenta Chats, no la campana
+const MESSAGE_TYPES = new Set(["message", "group_message"]);
+
+export const isMessageNotification = (notification) => MESSAGE_TYPES.has(notification.type);

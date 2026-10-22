@@ -2,7 +2,8 @@ import { useTranslation } from "react-i18next";
 import { Button } from "primereact/button";
 
 export default function NotificationsHeader({
-  unreadCount,
+  // Hay no leídas de cualquier tipo, mensajes incluidos
+  canMarkAll,
   hasNotifications,
   markingAll,
   onMarkAllAsRead,
@@ -24,7 +25,7 @@ export default function NotificationsHeader({
             icon="pi pi-check"
             className="notifications__action"
             loading={markingAll}
-            disabled={unreadCount === 0}
+            disabled={!canMarkAll}
             onClick={onMarkAllAsRead}
           />
           <Button
